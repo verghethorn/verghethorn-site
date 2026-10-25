@@ -437,6 +437,7 @@ function initField(){
   resize(); addEventListener('resize', resize);
   addEventListener('pointermove', e => { mouse.x = e.clientX / innerWidth * 2 - 1; mouse.y = -(e.clientY / innerHeight) * 2 + 1; });
   document.getElementById('rN').textContent = N.toLocaleString('en-US');
+  window.__vg = {get pos(){return pos}, get points(){return points}, get camera(){return camera}, get renderer(){return renderer}};
   return true;
 }
 function resize(){ const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.position.z = w < 700 ? 14 : 9.5; camera.updateProjectionMatrix(); }
