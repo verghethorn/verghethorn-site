@@ -465,19 +465,20 @@ function frameBody(now){
   const A = targets[a][0], B = targets[b][0], CA = targets[a][1], CB = targets[b][1];
   tmpV.set(mouse.x, mouse.y, 0.5).unproject(camera).sub(camera.position).normalize();
   const dist = -camera.position.z / tmpV.z; m3.x = camera.position.x + tmpV.x * dist; m3.y = camera.position.y + tmpV.y * dist;
+  const sc0 = points.scale.x || 1, lx = (m3.x - points.position.x) / sc0, ly = (m3.y - points.position.y) / sc0, R2 = 5.0;
   const ro = (a === 0 && ease < 1) ? t * 0.25 : 0, cs = Math.cos(ro), sn = Math.sin(ro), split = N * 0.28;
   for (let i = 0, j = 0; i < N; i++, j += 3) {
     let tx = A[j] + (B[j] - A[j]) * ease, ty = A[j + 1] + (B[j + 1] - A[j + 1]) * ease, tz = A[j + 2] + (B[j + 2] - A[j + 2]) * ease;
     if (ro && i >= split) { const x = tx * cs - tz * sn; tz = tx * sn + tz * cs; tx = x; }
-    const dx = pos[j] - m3.x, dy = pos[j + 1] - m3.y, d2 = dx * dx + dy * dy;
-    if (d2 < 1.2) { const fz = (1.2 - d2) * 0.9; tx += dx * fz; ty += dy * fz; tz += 0.6 * fz; }
-    pos[j] += (tx - pos[j]) * 0.075; pos[j + 1] += (ty - pos[j + 1]) * 0.075; pos[j + 2] += (tz - pos[j + 2]) * 0.075;
+    const dx = pos[j] - lx, dy = pos[j + 1] - ly, d2 = dx * dx + dy * dy;
+    if (d2 < R2) { const q = 1 - d2 / R2, fz = q * q * 2.2, inv = 1 / (Math.sqrt(d2) + 0.15); tx += dx * inv * fz * 1.4 - dy * inv * fz * 0.9; ty += dy * inv * fz * 1.4 + dx * inv * fz * 0.9; tz += fz * 1.6; }
+    pos[j] += (tx - pos[j]) * 0.09; pos[j + 1] += (ty - pos[j + 1]) * 0.09; pos[j + 2] += (tz - pos[j + 2]) * 0.09;
     col[j] += (CA[j] + (CB[j] - CA[j]) * ease - col[j]) * 0.08;
     col[j + 1] += (CA[j + 1] + (CB[j + 1] - CA[j + 1]) * ease - col[j + 1]) * 0.08;
     col[j + 2] += (CA[j + 2] + (CB[j + 2] - CA[j + 2]) * ease - col[j + 2]) * 0.08;
   }
   geo.attributes.position.needsUpdate = true; geo.attributes.color.needsUpdate = true;
-  rot.y = mouse.x * 0.25 + (a === 3 ? t * 0.15 : 0); rot.x = -mouse.y * 0.15 + (a === 3 ? 0.35 : 0);
+  rot.y = mouse.x * 0.6 + (a === 3 ? t * 0.15 : 0); rot.x = -mouse.y * 0.35 + (a === 3 ? 0.35 : 0);
   if (Math.abs(mouse.x) > 2) { rot.y = a === 3 ? t * 0.15 : 0; rot.x = a === 3 ? 0.35 : 0; }
   points.rotation.y += (rot.y - points.rotation.y) * 0.04; points.rotation.x += (rot.x - points.rotation.x) * 0.04;
   const st = ease > 0.5 ? b : a, wide = innerWidth > 900, O = OFF[st];
