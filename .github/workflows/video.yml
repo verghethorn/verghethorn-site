@@ -8,13 +8,14 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg jq
+      - uses: AnimMouse/setup-ffmpeg@v1
       - run: |
           mkdir -p vout
           n=0
-          for u in $(jq -r '.urls[]' tools/video.json); do
+          for u in $(python3 -c "import json;print('\\n'.join(json.load(open('tools/video.json'))['urls']))"); do
             n=$((n+1)); curl -sSL -o vout/raw$n.mp4 "$u"
             ffprobe -v error -show_entries stream=width,height,r_frame_rate,duration -of json vout/raw$n.mp4 > vout/raw$n.json
             ffmpeg -y -v error -i vout/raw$n.mp4 -an -vf "scale=1920:-2:flags=lanczos" -c:v libx264 -preset slow -crf 21 -pix_fmt yuv420p -movflags +faststart vout/hero$n.mp4
@@ -26,4 +27,4 @@ jobs:
           ls -la vout
       - run: |
           git config user.name "Rashid Kurabegov"; git config user.email "verghethorn@gmail.com"
-          git add -A vout && git commit -m "Built video" && git push
+          git add -A vout && git commit -m "Built video" && git pull --rebase -X ours && git push
