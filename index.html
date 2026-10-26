@@ -631,7 +631,7 @@ $$('.soc').forEach(a => {
     await im.decode().catch(() => {});
     const src = samplePoints(im, {x: sr.left - r.left, y: sr.top - r.top, w: sr.width, h: sr.height}, 520);
     const cx = r.width / 2, cy = r.height / 2;
-    pts = fit(shuffle(src), 420).map((s, i) => { const col = i % 2 ? c1 : c2; return {sx: s.x, sy: s.y, a: Math.random() * 6.28, rad: r.width * (.37 + Math.random() * .08), w: (.35 + Math.random() * .5) * (i % 3 ? 1 : -1), tilt: (i % 3) * 1.05, fl: .82 + (i % 3) * .06, cx, cy, col, d: Math.random() * .3, s: Math.random() < .2 ? 2.2 : 1.5}; });
+    pts = fit(shuffle(src), 420).map((s, i) => { const col = i % 2 ? c1 : c2; return {sx: s.x, sy: s.y, a: Math.random() * 6.28, rad: Math.min(r.width * .75, r.height) * (.4 + Math.random() * .08), w: (.35 + Math.random() * .5) * (i % 3 ? 1 : -1), tilt: (i % 3) * 1.05, fl: .82 + (i % 3) * .06, cx, cy, col, d: Math.random() * .3, s: Math.random() < .2 ? 2.2 : 1.5}; });
   }
   function draw(now){
     const dt = Math.min(.05, (now - lastT) / 1000); lastT = now;
