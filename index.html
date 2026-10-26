@@ -454,7 +454,7 @@ const mouse = {x: -1e4, y: -1e4};
 hero.addEventListener('pointermove', e => { const r = hero.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; });
 hero.addEventListener('pointerleave', () => { mouse.x = mouse.y = -1e4; });
 function tick(now){
-  const t = (now - t0) / 1000; if (t > 5.0) { finish(); return; }
+  const t = Math.max(0, (now - t0) / 1000); if (t > 5.0) { finish(); return; }
   const cx = W / 2, cy = H * .5, R = Math.min(W, H) * (MOBILE ? .36 : .3);
   ctx.clearRect(0, 0, W, H);
   // nucleus glow
