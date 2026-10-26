@@ -1,0 +1,29 @@
+name: build-video
+on:
+  push:
+    branches: [assets-work]
+    paths: ['tools/video.json']
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg jq
+      - run: |
+          mkdir -p vout
+          n=0
+          for u in $(jq -r '.urls[]' tools/video.json); do
+            n=$((n+1)); curl -sSL -o vout/raw$n.mp4 "$u"
+            ffprobe -v error -show_entries stream=width,height,r_frame_rate,duration -of json vout/raw$n.mp4 > vout/raw$n.json
+            ffmpeg -y -v error -i vout/raw$n.mp4 -an -vf "scale=1920:-2:flags=lanczos" -c:v libx264 -preset slow -crf 21 -pix_fmt yuv420p -movflags +faststart vout/hero$n.mp4
+            ffmpeg -y -v error -i vout/raw$n.mp4 -an -vf "scale=1920:-2:flags=lanczos" -c:v libvpx-vp9 -b:v 0 -crf 33 -row-mt 1 vout/hero$n.webm
+            ffmpeg -y -v error -i vout/raw$n.mp4 -vf "scale=1920:-2" -frames:v 1 -q:v 3 vout/poster$n.jpg
+            for t in 0.5 1.5 2.5 3.5 4.5; do ffmpeg -y -v error -ss $t -i vout/raw$n.mp4 -vf "scale=640:-2" -frames:v 1 vout/f${n}_$t.jpg; done
+            rm vout/raw$n.mp4
+          done
+          ls -la vout
+      - run: |
+          git config user.name "Rashid Kurabegov"; git config user.email "verghethorn@gmail.com"
+          git add -A vout && git commit -m "Built video" && git push
