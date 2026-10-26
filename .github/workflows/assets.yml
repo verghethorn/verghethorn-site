@@ -1,0 +1,24 @@
+name: build-assets
+on:
+  push:
+    branches: [assets-work]
+    paths: ['tools/request.json']
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: pip install "rembg[cpu]" pillow requests
+      - run: npm i --no-save @fortawesome/fontawesome-free@6.5.2
+      - run: python tools/build_assets.py
+      - run: |
+          git config user.name "Rashid Kurabegov"; git config user.email "verghethorn@gmail.com"
+          git add -A out || true
+          git commit -m "Built assets" || echo nothing
+          git push

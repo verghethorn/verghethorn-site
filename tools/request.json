@@ -1,0 +1,10 @@
+{"cutouts": ["assets/zevvo_f.jpg","assets/lumo_f.jpg","assets/krodo_f.jpg","assets/thorne_f.jpg","assets/verghe_f.jpg",
+             "assets/zevvo_q.jpg","assets/lumo_q.jpg","assets/krodo_q.jpg","assets/thorne_q.jpg","assets/verghe_q.jpg"],
+ "n": 10,
+ "search": {"citrine": "citrine crystal", "quartz": "quartz crystal cluster macro",
+            "hydrogel": "hydrogel", "hydrogelbeads": "water beads polymer",
+            "keycap": "keycaps", "pbt": "keyboard keycap macro",
+            "spring": "steel coil spring", "spring2": "compression spring",
+            "fluorite": "fluorite octahedron", "fluorite2": "fluorite crystal",
+            "oobleck": "oobleck cornstarch"},
+ "icons": ["youtube","instagram","tiktok","x-twitter","linkedin","facebook"]}
