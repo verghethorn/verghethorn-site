@@ -1,12 +1,79 @@
 {
   "source": "ElevenLabs Sound Effects (model eleven_text_to_sound_v2), generated 2026-10-27 for VERGHETHORN on the owner's ElevenLabs account. Commercial use follows the ElevenLabs plan terms of that account.",
-  "flow": "VERGHETHORN site · material sounds (ElevenLabs flow BX9RT2lRITjdowKEGDM3); 4 takes per hero, the take used is listed below",
-  "edit": "trimmed to 2.0–2.2 s, 0.3 s fade-out, mono, level matched",
+  "flow": "VERGHETHORN site · material sounds (ElevenLabs flow BX9RT2lRITjdowKEGDM3); 4 takes per prompt, the take used is listed below",
+  "edit": "trimmed (leading silence removed), short fade-out, mono, level matched",
   "files": {
-    "zevvo.mp3":  {"generation": "v2tKXqrnH5mfQ1bSrlVN", "prompt": "quartz crystal: dry electric spark crackle, thin crystal ring, short electric hum"},
-    "lumo.mp3":   {"generation": "AlpKO0HyarD31pAoKoJ2", "prompt": "soft wet jelly squish and bloop, small bubbles popping"},
-    "krodo.mp3":  {"generation": "LjUSfryXwoqh0aDEefaT", "prompt": "two heavy thocky keystrokes on a thick PBT keycap"},
-    "thorne.mp3": {"generation": "NQXlAtLccOfAeqzK2WET", "prompt": "small steel coil spring: faint creak, released with a bright metallic boing"},
-    "verghe.mp3": {"generation": "fhsBESA2EvsjVBmAliwR", "prompt": "glassy crystal chimes, mineral fragments tinkling, soft crystal hum"}
+    "zevvo.mp3": {
+      "generation": "v2tKXqrnH5mfQ1bSrlVN",
+      "prompt": "quartz crystal: dry electric spark crackle, thin crystal ring, short electric hum"
+    },
+    "lumo.mp3": {
+      "generation": "AlpKO0HyarD31pAoKoJ2",
+      "prompt": "soft wet jelly squish and bloop, small bubbles popping"
+    },
+    "krodo.mp3": {
+      "generation": "LjUSfryXwoqh0aDEefaT",
+      "prompt": "two heavy thocky keystrokes on a thick PBT keycap"
+    },
+    "thorne.mp3": {
+      "generation": "NQXlAtLccOfAeqzK2WET",
+      "prompt": "small steel coil spring: faint creak, released with a bright metallic boing"
+    },
+    "verghe.mp3": {
+      "generation": "fhsBESA2EvsjVBmAliwR",
+      "prompt": "glassy crystal chimes, mineral fragments tinkling, soft crystal hum"
+    },
+    "stir1.mp3": {
+      "generation": "5fFg7i3pXhYaTpEhcaAR",
+      "prompt": "gentle liquid swirl, slowly stirring milk in a bowl"
+    },
+    "stir2.mp3": {
+      "generation": "DCCmEG6HnSRPxF1icvUv",
+      "prompt": "gentle liquid swirl, slowly stirring milk in a bowl"
+    },
+    "stir3.mp3": {
+      "generation": "EYNVEmmcgTa6AyoKhczp",
+      "prompt": "gentle liquid swirl, slowly stirring milk in a bowl"
+    },
+    "stir4.mp3": {
+      "generation": "ZgCwV0xpvXH5jYCW4r9g",
+      "prompt": "gentle liquid swirl, slowly stirring milk in a bowl"
+    },
+    "drop1.mp3": {
+      "generation": "duhKN3n7hrFNXEbngz5M",
+      "prompt": "single soft water droplet into milk"
+    },
+    "drop2.mp3": {
+      "generation": "wpJKGIDV6Pw0EhZCsIRq",
+      "prompt": "single soft water droplet into milk"
+    },
+    "drop3.mp3": {
+      "generation": "FDHt5e4kvRe3E7zR5Yz5",
+      "prompt": "single soft water droplet into milk"
+    },
+    "lab.mp3": {
+      "generation": "Xq0NvQoD5wZPc9JJUK5w",
+      "prompt": "soft airy shimmer of tiny particles drifting together"
+    },
+    "youtube.mp3": {
+      "generation": "CplS9hQHQyVVEJ3ThUuG",
+      "prompt": "soft warm wooden marimba note with a round bubble pop"
+    },
+    "instagram.mp3": {
+      "generation": "ZT4JU4fnxB7fTKV1M03f",
+      "prompt": "single soft glass chime with airy shimmer"
+    },
+    "tiktok.mp3": {
+      "generation": "hKV5iZ6bYoMCYnRPivpX",
+      "prompt": "two soft rounded electronic synth blips"
+    },
+    "email.mp3": {
+      "generation": "eejJOcSoo29utrydGkSw",
+      "prompt": "soft paper flutter and a tiny gentle bell"
+    },
+    "burst.mp3": {
+      "generation": "IStcK106R5WUKFSwkAjr",
+      "prompt": "soft airy whoosh of particles bursting outward"
+    }
   }
 }

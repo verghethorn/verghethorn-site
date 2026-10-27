@@ -553,6 +553,28 @@ const eio = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 const loaded = img => img.complete && img.naturalWidth ? Promise.resolve() : new Promise(r => { img.addEventListener('load', r, {once: true}); img.addEventListener('error', r, {once: true}); });
 const inView = (el, fn, opts) => new IntersectionObserver(es => es.forEach(e => fn(e.isIntersecting, e)), opts).observe(el);
 
+/* ================= SOUND · one quiet engine for the whole page =================
+   Browsers keep a page silent until the visitor's first tap, click or key press; after that sounds follow the animations.
+   No buttons. Everything stops while the tab is hidden. Sounds: ElevenLabs SFX, sources in assets/sfx/credits.json. */
+const SFX = (() => {
+  const AC = window.AudioContext || window.webkitAudioContext; let ctx = null, out = null;
+  const bufs = new Map(), wants = new Set();
+  const load = src => { if (!bufs.has(src)) bufs.set(src, fetch(src).then(r => r.arrayBuffer()).then(a => new Promise((ok, no) => ctx.decodeAudioData(a, ok, no))).catch(() => null)); return bufs.get(src); };
+  function unlock(){
+    if (!AC) return;
+    if (!ctx) { ctx = new AC(); out = ctx.createGain(); out.gain.value = .5; out.connect(ctx.destination); wants.forEach(load); }
+    if (ctx.state === 'suspended' && !document.hidden) ctx.resume();
+  }
+  ['pointerdown', 'keydown', 'touchend'].forEach(ev => addEventListener(ev, unlock, {capture: true, passive: true}));
+  document.addEventListener('visibilitychange', () => { if (ctx) document.hidden ? ctx.suspend() : ctx.resume(); });
+  const ready = () => !!ctx && ctx.state === 'running' && !document.hidden;
+  async function play(src, {gain = 1, rate = 1} = {}){
+    if (!ready()) return; const b = await load(src); if (!b || !ready()) return;
+    const s = ctx.createBufferSource(), g = ctx.createGain(); s.buffer = b; s.playbackRate.value = rate; g.gain.value = gain; s.connect(g); g.connect(out); s.start();
+  }
+  return {play, need: src => wants.add(src), ready};
+})();
+
 function samplePoints(img, rect, n, cover){
   const w = Math.max(1, Math.round(rect.w)), h = Math.max(1, Math.round(rect.h));
   const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d', {willReadFrequently: true});
@@ -743,18 +765,26 @@ document.addEventListener('selectstart', e => { const el = elOf(e.target); if (!
 
   // pointer: stir with any movement, click or tap = a drop of soap
   const ptr = {x: 0, y: 0, init: false, moved: false, dx: 0, dy: 0, c: PAL[0], ci: 0, last: 0};
+  // sound: stirring makes soft swirls of milk, as loud as you stir; a drop of soap goes "plip"
+  const STIR = [1, 2, 3, 4].map(n => `assets/sfx/stir${n}.mp3`), DROP = [1, 2, 3].map(n => `assets/sfx/drop${n}.mp3`);
+  STIR.concat(DROP).forEach(SFX.need);
+  const pick = a => a[(Math.random() * a.length) | 0];
+  let stirE = 0, lastStir = 0, lastPlip = 0;
+  const plip = (gain, rate) => { const n = performance.now(); if (n - lastPlip < 140) return; lastPlip = n; SFX.play(pick(DROP), {gain, rate}); };
+  function swirl(){ const n = performance.now(); if (stirE < .04 || n - lastStir < 420) return; lastStir = n;
+    SFX.play(pick(STIR), {gain: Math.min(.55, .12 + stirE * 1.6), rate: .82 + Math.random() * .3}); stirE *= .45; }
   hero.addEventListener('pointermove', e => {
     const r = cv.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = 1 - (e.clientY - r.top) / r.height;
     if (!ptr.init) { ptr.x = x; ptr.y = y; ptr.init = true; return; }
     let dx = x - ptr.x, dy = y - ptr.y; if (aspect < 1) dx *= aspect; if (aspect > 1) dy /= aspect;
-    ptr.dx += dx; ptr.dy += dy; ptr.x = x; ptr.y = y; ptr.moved = true;
+    ptr.dx += dx; ptr.dy += dy; ptr.x = x; ptr.y = y; ptr.moved = true; stirE += Math.hypot(dx, dy);
   });
   hero.addEventListener('pointerleave', () => { ptr.init = false; });
-  hero.addEventListener('click', e => { if (e.target.closest('a,button,.lt')) return; const r = cv.getBoundingClientRect(); soap((e.clientX - r.left) / r.width, 1 - (e.clientY - r.top) / r.height); hint('soap'); });
-  $$('#hero .lt').forEach((el, i) => el.addEventListener('pointerenter', () => { const r = el.getBoundingClientRect(), hr = cv.getBoundingClientRect(); pour((r.left + r.width / 2 - hr.left) / hr.width, 1 - (r.bottom - hr.top) / hr.height, -Math.PI / 2, hex3(el), .55, .8); }));
+  hero.addEventListener('click', e => { if (e.target.closest('a,button,.lt')) return; const r = cv.getBoundingClientRect(); soap((e.clientX - r.left) / r.width, 1 - (e.clientY - r.top) / r.height); hint('soap'); plip(.7, .92 + Math.random() * .16); });
+  $$('#hero .lt').forEach((el, i) => el.addEventListener('pointerenter', () => { plip(.22, 1.15 + (i % 5) * .09); const r = el.getBoundingClientRect(), hr = cv.getBoundingClientRect(); pour((r.left + r.width / 2 - hr.left) / hr.width, 1 - (r.bottom - hr.top) / hr.height, -Math.PI / 2, hex3(el), .55, .8); }));
   function hex3(el){ const m = getComputedStyle(el).color.match(/\d+/g).map(Number); return [m[0] / 255, m[1] / 255, m[2] / 255]; }
   $('#pourBtn').addEventListener('click', () => { opening(); hint('pour'); });
-  $('#soapBtn').addEventListener('click', () => { soap(.5, .32, 1200); hint('soap'); });
+  $('#soapBtn').addEventListener('click', () => { soap(.5, .32, 1200); hint('soap'); plip(.7, 1); });
   const tip = $('#heroTip');
   function hint(k){ tip.innerHTML = k === 'soap' ? '<b>Marangoni effect.</b> Soap lowers the surface tension, so the colours rush away from it, just like the “magic milk” experiment.' : '<b>Advection and vortices.</b> Each colour is carried by the flow and curls into eddies: the same equations describe smoke, oceans and blood.'; tip.classList.add('on'); clearTimeout(hint.t); hint.t = setTimeout(() => tip.classList.remove('on'), 6000); }
 
@@ -775,6 +805,7 @@ document.addEventListener('selectstart', e => { const el = elOf(e.target); if (!
       splat(ptr.x, ptr.y, ptr.dx * CFG.FORCE, ptr.dy * CFG.FORCE, c, Math.min(.5, Math.hypot(ptr.dx, ptr.dy) * 16 + .1)); ptr.dx = ptr.dy = 0; ptr.moved = false; }
     if (!RM) { if (t > nextPour) { randomPour(); nextPour = t + .6 + Math.random() * .8; }
       if (t > nextSoap) { soap(.15 + Math.random() * .7, .12 + Math.random() * .3, 700); nextSoap = t + 7 + Math.random() * 4; } }
+    swirl(); stirE *= Math.exp(-dt * 3);
     runPours(dt); step(dt); show(t);
     requestAnimationFrame(loop);
   }
@@ -905,27 +936,13 @@ if (TOUCH) splits.forEach(s => inView(s.row, v => { if (v && !s.goal) s.set(1); 
 
 })();
 
-/* ================= CAST · the sound of each hero's material =================
-   Browsers keep a page silent until the visitor's first tap, click or key press. After that, each hero's
-   material sounds when its line appears and when it splits into atoms. No buttons. Sounds: ElevenLabs SFX. */
+/* ================= CAST · the sound of each hero's material: when its line appears and when it splits into atoms ================= */
 (() => {
-  const rows = $$('.row[data-m]'); const AC = window.AudioContext || window.webkitAudioContext;
-  if (!rows.length || !AC) return;
-  let ctx = null, out = null; const buf = new Map(), last = new Map();
-  const load = src => { if (!buf.has(src)) buf.set(src, fetch(src).then(r => r.arrayBuffer()).then(a => new Promise((ok, no) => ctx.decodeAudioData(a, ok, no))).catch(() => null)); return buf.get(src); };
-  const unlock = () => {
-    if (!ctx) { ctx = new AC(); out = ctx.createGain(); out.gain.value = .5; out.connect(ctx.destination); rows.forEach(r => { const l = r.querySelector('.line'); if (l) load(l.dataset.sfx); }); }
-    if (ctx.state === 'suspended') ctx.resume();
-  };
-  ['pointerdown', 'keydown', 'touchend'].forEach(ev => addEventListener(ev, unlock, {capture: true, passive: true}));
-  async function sound(row){
-    const l = row.querySelector('.line'); if (!ctx || !l || document.hidden) return;
-    const now = performance.now(); if (now - (last.get(row) || 0) < 1800) return; last.set(row, now);
-    if (ctx.state === 'suspended') await ctx.resume();
-    const b = await load(l.dataset.sfx); if (!b || ctx.state !== 'running') return;
-    const src = ctx.createBufferSource(); src.buffer = b; src.connect(out); src.start();
-  }
-  rows.forEach(r => { r.addEventListener('split', () => sound(r)); r.addEventListener('reveal', () => sound(r)); });
+  $$('.row[data-m]').forEach(row => {
+    const l = row.querySelector('.line'); if (!l) return; let lastT = 0; SFX.need(l.dataset.sfx);
+    const sound = () => { const n = performance.now(); if (n - lastT < 1800) return; lastT = n; SFX.play(l.dataset.sfx); };
+    row.addEventListener('split', sound); row.addEventListener('reveal', sound);
+  });
 })();
 
 /* ================= LIVE LAB: sand → silicon → chip → neural network → VERGHETHORN, rendered in real time ================= */
@@ -1035,7 +1052,8 @@ if (TOUCH) splits.forEach(s => inView(s.row, v => { if (v && !s.goal) s.set(1); 
   let cur = -1, next = 0, m = 0, morphing = true, hold = 0, queued = null, W = 0, H = 0;
   const HOLD = 3.6, MORPH = 2.0;
   function go(i){ if (i === next && morphing) return; if (morphing) { queued = i; return; } start(i); }
-  function start(i){ const from = cur < 0 ? dust : STAGES[cur].s, to = STAGES[i].s; set(bA, from.p); set(bCA, from.c); set(bB, to.p); set(bCB, to.c); next = i; m = 0; morphing = true; caption(i); }
+  const NOTE = [1, 1.122, 1.26, 1.498, .891]; SFX.need('assets/sfx/lab.mp3');
+  function start(i){ const from = cur < 0 ? dust : STAGES[cur].s, to = STAGES[i].s; set(bA, from.p); set(bCA, from.c); set(bB, to.p); set(bCB, to.c); next = i; m = 0; morphing = true; caption(i); if (vis) SFX.play('assets/sfx/lab.mp3', {gain: .3, rate: NOTE[i]}); }
   caption(0);
 
   // view
@@ -1245,7 +1263,8 @@ if (TOUCH) splits.forEach(s => inView(s.row, v => { if (v && !s.goal) s.set(1); 
 const burst = $('#burst'), bx = burst.getContext('2d');
 $$('.soc').forEach(a => {
   const c = a.querySelector('canvas'), x = c.getContext('2d'), svg = a.querySelector('.ico');
-  const cols = a.dataset.c.split(',').map(hex);
+  const cols = a.dataset.c.split(',').map(hex), snd = 'assets/sfx/' + a.querySelector('.lbl').textContent.trim().toLowerCase() + '.mp3'; SFX.need(snd); SFX.need('assets/sfx/burst.mp3');
+  let lastSnd = 0;
   let pts = null, p = 0, goal = 0, run = false, lastT = 0, W = 0, H = 0, atoms = [];
   async function build(){
     const r = a.getBoundingClientRect(), sr = svg.getBoundingClientRect(); W = r.width; H = r.height;
@@ -1281,6 +1300,7 @@ $$('.soc').forEach(a => {
     if (goal || p > 0) requestAnimationFrame(draw); else { run = false; x.clearRect(0, 0, W, H); a.classList.remove('on'); }
   }
   async function set(on){
+    if (on && !goal && performance.now() - lastSnd > 700) { lastSnd = performance.now(); SFX.play(snd, {gain: .55}); }
     goal = on ? 1 : 0; if (RM || MOBILE) { a.classList.toggle('on', on && !MOBILE); return; }
     if (!pts || W !== a.getBoundingClientRect().width) await build();
     if (!run) { run = true; lastT = performance.now(); requestAnimationFrame(draw); }
@@ -1291,6 +1311,7 @@ $$('.soc').forEach(a => {
   a.addEventListener('click', e => {
     if (TOUCH && a.dataset.mailto) { e.preventDefault(); location.href = a.dataset.mailto; return; }
     if (RM || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+    SFX.play('assets/sfx/burst.mp3', {gain: .55});
     e.preventDefault(); let done = false; const href = TOUCH && a.dataset.mailto ? a.dataset.mailto : a.href, r = a.getBoundingClientRect(), ox = r.left + r.width / 2, oy = r.top + r.height / 2;
     burst.width = innerWidth * DPR; burst.height = innerHeight * DPR; bx.setTransform(DPR, 0, 0, DPR, 0, 0);
     const P = Array.from({length: 900}, (_, i) => { const ang = Math.random() * 6.283, v = 300 + Math.random() * 1400; return {vx: Math.cos(ang) * v, vy: Math.sin(ang) * v, c: cols[i % cols.length], s: 1.5 + Math.random() * 3}; });
