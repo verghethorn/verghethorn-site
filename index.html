@@ -120,8 +120,20 @@ p{margin:0}
 .scroll-cue::after{content:"";position:absolute;left:0;top:-40%;width:1px;height:40%;background:var(--ink);animation:cue 2.2s var(--ease) infinite}
 @keyframes cue{to{top:100%}}
 @media (max-width:760px){.br-d{display:none}.hero-bar{flex-direction:column;align-items:stretch;bottom:16px}.live{align-self:flex-start;font-size:10px}.ctrl{justify-content:stretch}.ctrl button{flex:1}.scroll-cue{display:none}.tip{bottom:118px}.hero-in{margin-top:-10vh}}
-/* phones: keep the first screen for the fluid itself (the YouTube button stays in the header) */
-@media (max-width:760px){.hero .cta .pill:not(.solid),.hero-bar,.tip{display:none}}
+.cast-m{display:none}
+/* phones: nothing to tap in the middle of the first screen, so people can just play with the fluid.
+   YouTube stays in the header; "Meet the cast" and the two fluid tools sit in one quiet row at the bottom edge. */
+@media (max-width:760px){
+  .hero .cta,.live{display:none}
+  .hero-bar{flex-direction:row;align-items:center;justify-content:space-between;bottom:max(14px,env(safe-area-inset-bottom))}
+  .cast-m{display:inline-flex;align-items:center;gap:8px;pointer-events:auto;padding:10px 16px;border-radius:999px;background:var(--ink);color:var(--paper);font-size:14px;font-weight:500}
+  .ctrl{gap:10px}
+  .ctrl button{flex:none;width:42px;height:42px;padding:0;border-radius:50%;font-size:0;display:grid;place-items:center}
+  .ctrl button::before{content:"";width:18px;height:18px;border-radius:50%}
+  #pourBtn::before{background:conic-gradient(var(--gold),var(--blue),var(--red),var(--green),var(--violet),var(--gold))}
+  #soapBtn::before{background:radial-gradient(circle at 35% 32%,#fff 0 18%,rgba(255,255,255,.2) 40%,transparent 62%);border:1.5px solid var(--soft)}
+  .tip{bottom:76px}
+}
 
 /* sections */
 section{position:relative}
@@ -374,6 +386,7 @@ footer details a{text-decoration:underline}
     <div class="scroll-cue" aria-hidden="true"></div>
     <div class="hero-bar">
       <div class="live mono"><b></b>Live fluid · Navier–Stokes<span class="hide-m"> · solved in your browser</span></div>
+      <a class="cast-m" href="#cast">Meet the cast <span aria-hidden="true">↓</span></a>
       <div class="ctrl"><button type="button" id="pourBtn">Pour colours</button><button type="button" id="soapBtn">Add a drop of soap</button></div>
     </div>
   </section>
@@ -784,7 +797,7 @@ document.addEventListener('selectstart', e => { const el = elOf(e.target); if (!
     ptr.dx += dx; ptr.dy += dy; ptr.x = x; ptr.y = y; ptr.moved = true; stirE += Math.hypot(dx, dy);
   });
   hero.addEventListener('pointerleave', () => { ptr.init = false; });
-  hero.addEventListener('click', e => { if (e.target.closest('a,button,.lt')) return; const r = cv.getBoundingClientRect(); soap((e.clientX - r.left) / r.width, 1 - (e.clientY - r.top) / r.height); hint('soap'); plip(.7, .92 + Math.random() * .16); });
+  hero.addEventListener('click', e => { if (e.target.closest('a,button,.lt')) return; const r = cv.getBoundingClientRect(); soap((e.clientX - r.left) / r.width, 1 - (e.clientY - r.top) / r.height); if (!TOUCH) hint('soap'); plip(.7, .92 + Math.random() * .16); });
   $$('#hero .lt').forEach((el, i) => el.addEventListener('pointerenter', () => { plip(.22, 1.15 + (i % 5) * .09); const r = el.getBoundingClientRect(), hr = cv.getBoundingClientRect(); pour((r.left + r.width / 2 - hr.left) / hr.width, 1 - (r.bottom - hr.top) / hr.height, -Math.PI / 2, hex3(el), .55, .8); }));
   function hex3(el){ const m = getComputedStyle(el).color.match(/\d+/g).map(Number); return [m[0] / 255, m[1] / 255, m[2] / 255]; }
   $('#pourBtn').addEventListener('click', () => { opening(); hint('pour'); });
