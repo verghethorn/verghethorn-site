@@ -181,6 +181,56 @@ section{position:relative}
 .num span{display:block;margin-top:8px;font-size:14px;color:var(--soft)}
 @media (max-width:820px){.row{grid-template-columns:minmax(0,1fr)}.facts{grid-template-columns:minmax(0,1fr)}.num{border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:14px}.who .idx{position:static;justify-self:start}.split-hint{display:none}}
 
+/* CAST · one line per hero. It arrives the way the hero's material behaves. */
+.line{margin:0;max-width:26ch;text-align:center;position:relative;cursor:pointer}
+.line blockquote{margin:0;position:relative;font-family:var(--serif);font-style:italic;font-size:clamp(23px,2.3vw,34px);line-height:1.12;letter-spacing:-.005em;color:var(--ink)}
+.line blockquote p{position:relative;text-wrap:balance}
+.line .voice{margin-top:8px}
+.line figcaption{margin-top:12px;display:flex;flex-direction:column;align-items:center;gap:4px;font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--dim)}
+.line figcaption i{font-style:normal;color:var(--c)}
+.line .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.line .w{display:inline-block;white-space:nowrap}
+.line .ch{display:inline-block}
+.voice{display:inline-flex;align-items:center;gap:7px;padding:5px 11px 5px 8px;border-radius:999px;border:1px solid var(--line2);background:rgba(255,255,255,.85);font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--soft)}
+.voice[hidden]{display:none}
+.voice svg{width:14px;height:14px;fill:var(--c)}
+.voice[aria-pressed="true"] svg{animation:pulse 1s ease-in-out infinite}
+/* before it plays (only once JS is ready, so the text is never lost) */
+.line.ready:not(.play) .ch,.line.ready:not(.play) .w,.line.ready:not(.play) figcaption{opacity:0}
+.line.play figcaption{animation:capin .7s var(--cd,1s) var(--ease) both}
+@keyframes capin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* Zevvo · quartz, electricity: the charge runs through the letters as a white-blue discharge, the colour of a real spark */
+.line.play[data-fx="spark"] .ch{animation:zap .55s calc(var(--i) * 26ms) linear both}
+@keyframes zap{0%{opacity:0;color:#fff;text-shadow:0 0 4px #fff,0 0 12px #8FD3FF,0 0 22px #3BA8FF}10%{opacity:1}18%{opacity:.2}28%{opacity:1;color:#fff;text-shadow:0 0 4px #fff,0 0 12px #8FD3FF,0 0 22px #3BA8FF}100%{opacity:1;color:var(--ink);text-shadow:0 0 0 transparent}}
+/* Lumo · hydrogel: letters rise like trapped bubbles and wobble like jelly before they set */
+.line.play[data-fx="bubble"] .ch{animation:blob 1s calc(var(--r) * 650ms) both}
+@keyframes blob{0%{opacity:0;transform:translateY(.8em) scale(.35);filter:blur(3px);color:var(--blue);animation-timing-function:cubic-bezier(.2,.7,.3,1)}50%{opacity:1;transform:translateY(-.05em) scale(1.1,.9);filter:blur(0)}70%{transform:scale(.96,1.05)}85%{transform:scale(1.02,.98)}100%{opacity:1;transform:none;color:var(--ink)}}
+/* Krodo · PBT keycap, mechanics: the first sentence is pressed down like keys, the second comes back up just as hard (Newton's third law) */
+.line.play[data-fx="key"] .w{animation:press-in .46s calc(var(--j) * 95ms) both;transform-origin:50% 100%}
+.line.play[data-fx="key"] .w.back{animation-name:push-back;transform-origin:50% 0}
+@keyframes press-in{0%{opacity:0;transform:translateY(-.9em);animation-timing-function:cubic-bezier(.6,0,1,.6)}55%{opacity:1;transform:translateY(.04em) scaleY(.8)}78%{transform:translateY(-.03em) scaleY(1.05)}100%{opacity:1;transform:none}}
+@keyframes push-back{0%{opacity:0;transform:translateY(.9em);animation-timing-function:cubic-bezier(.6,0,1,.6)}55%{opacity:1;transform:translateY(-.04em) scaleY(.8)}78%{transform:translateY(.03em) scaleY(1.05)}100%{opacity:1;transform:none}}
+.line.play[data-fx="key"] blockquote{animation:thud .28s var(--hit,.5s) both}
+@keyframes thud{30%{transform:translateY(2px)}60%{transform:translateY(-1px)}}
+/* Thorne · spring steel: each word starts compressed and springs out as a damped oscillator (keyframes are computed in JS) */
+.line[data-fx="spring"] .w{transform-origin:0 50%}
+/* Verghe · fluorite: the line comes together from four pieces along fluorite's four cleavage planes, then glows like fluorite under UV */
+.line .shard{position:absolute;inset:0;pointer-events:none;opacity:0;color:color-mix(in srgb,var(--violet) 75%,var(--ink))}
+.line .shard:nth-child(1){clip-path:polygon(0 0,100% 0,50% 50%);--dx:0;--dy:-.5em}
+.line .shard:nth-child(2){clip-path:polygon(100% 0,100% 100%,50% 50%);--dx:.6em;--dy:0}
+.line .shard:nth-child(3){clip-path:polygon(0 100%,100% 100%,50% 50%);--dx:0;--dy:.5em}
+.line .shard:nth-child(4){clip-path:polygon(0 0,0 100%,50% 50%);--dx:-.6em;--dy:0}
+.line.ready[data-fx="cleave"]:not(.play) blockquote p{opacity:0}
+.line.play[data-fx="cleave"] .shard{animation:cleave .95s var(--ease) both}
+.line.play[data-fx="cleave"] .shard:nth-child(2),.line.play[data-fx="cleave"] .shard:nth-child(4){animation-delay:.08s}
+@keyframes cleave{0%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(-2deg)}35%{opacity:1}75%{opacity:1;transform:none}100%{opacity:0;transform:none}}
+.line.play[data-fx="cleave"] blockquote p{animation:uv 1.9s .7s both}
+@keyframes uv{0%{opacity:0}12%{opacity:1;color:#B98CFF;text-shadow:0 0 10px rgba(120,90,255,.55),0 0 26px rgba(142,68,224,.35)}100%{opacity:1;color:var(--ink);text-shadow:0 0 0 transparent}}
+/* reduced motion: the line is simply there */
+.line.still .ch,.line.still .w,.line.still figcaption,.line.still blockquote p{opacity:1!important;animation:none!important;transform:none!important}
+.line.still .shard{display:none}
+@media (max-width:820px){.line{max-width:30ch}}
+
 /* METHOD: live lab + three experiments */
 .lab{position:relative;height:min(78svh,760px);min-height:480px;border-radius:30px;overflow:hidden;background:#070A12;box-shadow:0 50px 90px -50px rgba(20,14,40,.55);isolation:isolate}
 #gl{position:absolute;inset:0;width:100%;height:100%;cursor:grab;touch-action:pan-y}
@@ -341,35 +391,40 @@ footer details a{text-decoration:underline}
         <article class="row" tabindex="0" data-m="z" style="--c:var(--gold)" data-photo="assets/mat/zevvo.jpg">
           <div class="who"><span class="idx mono">01 / 05</span>
             <div class="stage"><span class="halo"></span><svg class="orbit" viewBox="-4 -4 268 108" aria-hidden="true"><ellipse cx="130" cy="50" rx="126" ry="46"/><circle r="4.5"><animateMotion dur="6.0s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle><circle r="3.2"><animateMotion dur="6.0s" begin="-3.0s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle></svg><span class="fig" style="--src:url(assets/cast/zevvo_q.webp)"><img src="assets/cast/zevvo_q.webp" alt="Zevvo, the citrine quartz hero of VERGHETHORN"></span><svg class="orbit front" viewBox="-4 -4 268 108" aria-hidden="true" style="clip-path:inset(50% 0 0 0)"><ellipse cx="130" cy="50" rx="126" ry="46"/><circle r="4.5"><animateMotion dur="6.0s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle><circle r="3.2"><animateMotion dur="6.0s" begin="-3.0s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle></svg><span class="shadow"></span><span class="split-hint"><b></b>Point to split</span></div>
-            <div class="name">Zevvo<small>Citrine quartz</small></div></div>
+            <div class="name">Zevvo<small>Citrine quartz</small></div>
+            <figure class="line" data-fx="spark" data-voice=""><blockquote><p>Can’t wait a second. Made of the stuff that measures one.</p></blockquote><figcaption><i>Quartz watch</i><span>32,768 vibrations = 1 second</span><button class="voice" type="button" hidden aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10l-4-3H2zM11 5.5a3.5 3.5 0 0 1 0 5l-.9-.9a2.2 2.2 0 0 0 0-3.2zM12.8 3.7a6 6 0 0 1 0 8.6l-.9-.9a4.7 4.7 0 0 0 0-6.8z"/></svg>Hear Zevvo</button></figcaption></figure></div>
           <div class="slot"><div class="frame"><img alt="Citrine quartz crystal, photograph" loading="lazy"><div class="hint"><span class="mono">Specimen slot</span><b>SiO₂</b><span class="mono">Point at Zevvo to split</span></div><span class="tag">Real citrine quartz</span></div>
             <div class="facts"><p><strong>Silicon dioxide, SiO₂.</strong> Its yellow colour comes from traces of iron. Quartz is <strong>piezoelectric</strong>: squeeze it and it produces a voltage, apply a voltage and it vibrates. That's why Zevvo runs on electricity.</p><div class="num"><b>32,768 Hz</b><span>how fast the quartz crystal in a watch vibrates to keep time</span></div></div></div>
         </article>
         <article class="row" tabindex="0" data-m="l" style="--c:var(--blue)" data-photo="assets/mat/lumo.jpg" data-pos="50% 85%">
           <div class="who"><span class="idx mono">02 / 05</span>
             <div class="stage"><span class="halo"></span><svg class="orbit" viewBox="-4 -4 268 108" aria-hidden="true"><ellipse cx="130" cy="50" rx="126" ry="46"/><circle r="4.5"><animateMotion dur="6.7s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle><circle r="3.2"><animateMotion dur="6.7s" begin="-3.35s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle></svg><span class="fig" style="--src:url(assets/cast/lumo_q.webp)"><img src="assets/cast/lumo_q.webp" alt="Lumo, the hydrogel hero of VERGHETHORN"></span><svg class="orbit front" viewBox="-4 -4 268 108" aria-hidden="true" style="clip-path:inset(50% 0 0 0)"><ellipse cx="130" cy="50" rx="126" ry="46"/><circle r="4.5"><animateMotion dur="6.7s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle><circle r="3.2"><animateMotion dur="6.7s" begin="-3.35s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle></svg><span class="shadow"></span><span class="split-hint"><b></b>Point to split</span></div>
-            <div class="name">Lumo<small>Hydrogel</small></div></div>
+            <div class="name">Lumo<small>Hydrogel</small></div>
+            <figure class="line" data-fx="bubble" data-voice=""><blockquote><p>Over ninety percent water. Still the one holding it together.</p></blockquote><figcaption><i>Hydrogel</i><span>a polymer network keeps the water in shape</span><button class="voice" type="button" hidden aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10l-4-3H2zM11 5.5a3.5 3.5 0 0 1 0 5l-.9-.9a2.2 2.2 0 0 0 0-3.2zM12.8 3.7a6 6 0 0 1 0 8.6l-.9-.9a4.7 4.7 0 0 0 0-6.8z"/></svg>Hear Lumo</button></figcaption></figure></div>
           <div class="slot"><div class="frame"><img alt="Hydrogel beads, photograph" loading="lazy"><div class="hint"><span class="mono">Specimen slot</span><b>polymer + H₂O</b><span class="mono">Point at Lumo to split</span></div><span class="tag">Real hydrogel</span></div>
             <div class="facts"><p><strong>A network of cross-linked polymer chains that traps water.</strong> It holds its shape while being mostly liquid. Hydrogels are used in soft contact lenses, wound dressings and the absorbent core of nappies.</p><div class="num"><b>&gt;90%</b><span>water by mass in many hydrogels, and they still hold their shape</span></div></div></div>
         </article>
         <article class="row" tabindex="0" data-m="k" style="--c:var(--red)" data-photo="assets/mat/krodo.jpg">
           <div class="who"><span class="idx mono">03 / 05</span>
             <div class="stage"><span class="halo"></span><svg class="orbit" viewBox="-4 -4 268 108" aria-hidden="true"><ellipse cx="130" cy="50" rx="126" ry="46"/><circle r="4.5"><animateMotion dur="7.4s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle><circle r="3.2"><animateMotion dur="7.4s" begin="-3.7s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle></svg><span class="fig" style="--src:url(assets/cast/krodo_q.webp)"><img src="assets/cast/krodo_q.webp" alt="Krodo, the plastic keycap hero of VERGHETHORN"></span><svg class="orbit front" viewBox="-4 -4 268 108" aria-hidden="true" style="clip-path:inset(50% 0 0 0)"><ellipse cx="130" cy="50" rx="126" ry="46"/><circle r="4.5"><animateMotion dur="7.4s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle><circle r="3.2"><animateMotion dur="7.4s" begin="-3.7s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle></svg><span class="shadow"></span><span class="split-hint"><b></b>Point to split</span></div>
-            <div class="name">Krodo<small>PBT plastic</small></div></div>
+            <div class="name">Krodo<small>PBT plastic</small></div>
+            <figure class="line" data-fx="key" data-voice=""><blockquote><p>Hits everything harder. Everything hits back exactly as hard.</p></blockquote><figcaption><i>Newton’s third law</i><span>equal force, opposite direction</span><button class="voice" type="button" hidden aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10l-4-3H2zM11 5.5a3.5 3.5 0 0 1 0 5l-.9-.9a2.2 2.2 0 0 0 0-3.2zM12.8 3.7a6 6 0 0 1 0 8.6l-.9-.9a4.7 4.7 0 0 0 0-6.8z"/></svg>Hear Krodo</button></figcaption></figure></div>
           <div class="slot"><div class="frame"><img alt="Plastic pellets, photograph" loading="lazy"><div class="hint"><span class="mono">Specimen slot</span><b>(C₁₂H₁₂O₄)ₙ</b><span class="mono">Point at Krodo to split</span></div><span class="tag">Real plastic pellets, before moulding</span></div>
             <div class="facts"><p><strong>Polybutylene terephthalate (PBT), a thermoplastic polyester.</strong> Plastics like it are made as small pellets like these, then melted and injection-moulded into shape. PBT is tough, resists heat and doesn't go shiny under fingers, which is why premium keycaps are made from it.</p><div class="num"><b>≈223 °C</b><span>melting point of PBT, so it can take hits and heat</span></div></div></div>
         </article>
         <article class="row" tabindex="0" data-m="t" style="--c:var(--green)" data-photo="assets/mat/thorne.jpg">
           <div class="who"><span class="idx mono">04 / 05</span>
             <div class="stage"><span class="halo"></span><svg class="orbit" viewBox="-4 -4 268 108" aria-hidden="true"><ellipse cx="130" cy="50" rx="126" ry="46"/><circle r="4.5"><animateMotion dur="8.1s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle><circle r="3.2"><animateMotion dur="8.1s" begin="-4.05s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle></svg><span class="fig" style="--src:url(assets/cast/thorne_q.webp)"><img src="assets/cast/thorne_q.webp" alt="Thorne, the steel spring hero of VERGHETHORN"></span><svg class="orbit front" viewBox="-4 -4 268 108" aria-hidden="true" style="clip-path:inset(50% 0 0 0)"><ellipse cx="130" cy="50" rx="126" ry="46"/><circle r="4.5"><animateMotion dur="8.1s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle><circle r="3.2"><animateMotion dur="8.1s" begin="-4.05s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle></svg><span class="shadow"></span><span class="split-hint"><b></b>Point to split</span></div>
-            <div class="name">Thorne<small>Spring steel</small></div></div>
+            <div class="name">Thorne<small>Spring steel</small></div>
+            <figure class="line" data-fx="spring" data-voice=""><blockquote><p>Bends the rules. Strictly within the elastic limit.</p></blockquote><figcaption><i>Elastic limit</i><span>past it, steel stays bent</span><button class="voice" type="button" hidden aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10l-4-3H2zM11 5.5a3.5 3.5 0 0 1 0 5l-.9-.9a2.2 2.2 0 0 0 0-3.2zM12.8 3.7a6 6 0 0 1 0 8.6l-.9-.9a4.7 4.7 0 0 0 0-6.8z"/></svg>Hear Thorne</button></figcaption></figure></div>
           <div class="slot"><div class="frame"><img alt="Steel springs, photograph" loading="lazy"><div class="hint"><span class="mono">Specimen slot</span><b>Fe + C</b><span class="mono">Point at Thorne to split</span></div><span class="tag">Real steel springs</span></div>
             <div class="facts"><p><strong>Iron alloyed with about 0.5–1% carbon.</strong> Inside the elastic limit its atomic bonds stretch and spring back, and the force grows in proportion to the stretch. That's Hooke's law.</p><div class="num"><b>F = −kx</b><span>Hooke's law: the restoring force is proportional to the stretch</span></div></div></div>
         </article>
         <article class="row" tabindex="0" data-m="v" style="--c:var(--violet)" data-photo="assets/mat/verghe.jpg">
           <div class="who"><span class="idx mono">05 / 05</span>
             <div class="stage"><span class="halo"></span><svg class="orbit" viewBox="-4 -4 268 108" aria-hidden="true"><ellipse cx="130" cy="50" rx="126" ry="46"/><circle r="4.5"><animateMotion dur="8.8s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle><circle r="3.2"><animateMotion dur="8.8s" begin="-4.4s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle></svg><span class="fig" style="--src:url(assets/cast/verghe_q.webp)"><img src="assets/cast/verghe_q.webp" alt="Verghe, the fluorite hero of VERGHETHORN"></span><svg class="orbit front" viewBox="-4 -4 268 108" aria-hidden="true" style="clip-path:inset(50% 0 0 0)"><ellipse cx="130" cy="50" rx="126" ry="46"/><circle r="4.5"><animateMotion dur="8.8s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle><circle r="3.2"><animateMotion dur="8.8s" begin="-4.4s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle></svg><span class="shadow"></span><span class="split-hint"><b></b>Point to split</span></div>
-            <div class="name">Verghe<small>Fluorite</small></div></div>
+            <div class="name">Verghe<small>Fluorite</small></div>
+            <figure class="line" data-fx="cleave" data-voice=""><blockquote><p>Splits hairs. Also splits, perfectly, along four planes.</p></blockquote><figcaption><i>Fluorite cleavage</i><span>four planes, octahedral pieces</span><button class="voice" type="button" hidden aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10l-4-3H2zM11 5.5a3.5 3.5 0 0 1 0 5l-.9-.9a2.2 2.2 0 0 0 0-3.2zM12.8 3.7a6 6 0 0 1 0 8.6l-.9-.9a4.7 4.7 0 0 0 0-6.8z"/></svg>Hear Verghe</button></figcaption></figure></div>
           <div class="slot"><div class="frame"><img alt="Fluorite octahedra, photograph" loading="lazy"><div class="hint"><span class="mono">Specimen slot</span><b>CaF₂</b><span class="mono">Point at Verghe to split</span></div><span class="tag">Real fluorite</span></div>
             <div class="facts"><p><strong>Calcium fluoride, CaF₂.</strong> It splits cleanly into octahedra and bends light with very low dispersion, which is why it's used in high-end camera and telescope lenses. Many samples glow under UV light.</p><div class="num"><b>1852</b><span>the year G. G. Stokes named fluorescence after fluorite</span></div></div></div>
         </article>
@@ -799,6 +854,68 @@ const splits = $$('.row').map(row => {
   return s;
 });
 if (TOUCH) splits.forEach(s => inView(s.row, v => { if (v && !s.goal) s.set(1); }, {rootMargin: '-35% 0px -35% 0px'}));
+})();
+
+/* ================= CAST · one line per hero, arriving the way its material behaves =================
+   Voice: put an audio file path in data-voice="" on a .line and the "Hear" button appears. */
+(() => {
+  const lines = $$('.line');
+  if (!lines.length) return;
+  const play = f => {
+    f.classList.remove('play'); void f.offsetWidth;
+    if (f.dataset.fx === 'spring') springs(f);
+    f.classList.add('play');
+  };
+  /* Thorne: underdamped spring, step response from 12% length, ζ = 0.28, period 0.55 s */
+  const SPRING = (() => { const z = .28, w = 2 * Math.PI / .55, wd = w * Math.sqrt(1 - z * z), T = 1.6, n = 48, s0 = .12, fr = [];
+    for (let k = 0; k <= n; k++) { const t = T * k / n, e = Math.exp(-z * w * t), x = e * (Math.cos(wd * t) + z / Math.sqrt(1 - z * z) * Math.sin(wd * t));
+      fr.push({offset: k / n, transform: `scaleX(${(1 - (1 - s0) * x).toFixed(4)})`, opacity: Math.min(1, k / n * 8)}); }
+    fr[n].transform = 'none'; return {fr, ms: T * 1000}; })();
+  function springs(f){ [...f.querySelectorAll('.w')].forEach((w, j) => { w.getAnimations().forEach(a => a.cancel()); w.animate(SPRING.fr, {duration: SPRING.ms, delay: j * 80, fill: 'both'}); }); }
+
+  /* plays once when the line is well in view; a tap or click replays it */
+  const once = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { play(e.target); once.unobserve(e.target); } }), {threshold: .6});
+  lines.forEach(f => {
+    const p = f.querySelector('blockquote p'), text = p.textContent.trim(), fx = f.dataset.fx;
+    if (RM) f.classList.add('still');
+    if (fx === 'cleave') {
+      /* four copies of the line, one per cleavage plane, laid exactly over the real text */
+      const q = f.querySelector('blockquote');
+      for (let k = 0; k < 4; k++) { const d = document.createElement('div'); d.className = 'shard'; d.setAttribute('aria-hidden', 'true'); d.textContent = text; q.prepend(d); }
+      f.style.setProperty('--cd', '1.4s');
+    } else {
+      /* split into words and letters for the animation; screen readers get the plain sentence */
+      const sentences = text.split(/(?<=\.)\s+/);
+      let i = 0, j = 0, firstWords = 0; const n = text.replace(/\s/g, '').length;
+      const vis = document.createElement('span'); vis.setAttribute('aria-hidden', 'true');
+      sentences.forEach((sen, si) => sen.split(/\s+/).forEach((word, wi) => {
+        if (vis.childNodes.length) vis.append(' ');
+        const w = document.createElement('span'); w.className = 'w' + (si ? ' back' : ''); w.style.setProperty('--j', j++);
+        if (!si) firstWords++;
+        for (const c of word) { const ch = document.createElement('span'); ch.className = 'ch'; ch.textContent = c; ch.style.setProperty('--i', i++); ch.style.setProperty('--r', Math.random().toFixed(3)); w.append(ch); }
+        vis.append(w);
+      }));
+      const sr = document.createElement('span'); sr.className = 'sr'; sr.textContent = text;
+      p.replaceChildren(sr, vis);
+      const cd = {spark: n * .026 + .4, bubble: 1.4, key: j * .095 + .4, spring: j * .08 + .9}[fx] || 1;
+      f.style.setProperty('--cd', cd.toFixed(2) + 's');
+      f.style.setProperty('--hit', ((firstWords - 1) * .095 + .26).toFixed(2) + 's');
+    }
+    if (RM) return;
+    f.classList.add('ready');
+    once.observe(f);
+    f.addEventListener('click', e => { if (e.target.closest('.voice')) return; e.stopPropagation(); play(f); });
+  });
+
+  /* the place for the hero's voice: empty until the voices are chosen */
+  lines.forEach(f => {
+    const btn = f.querySelector('.voice'), src = f.dataset.voice; if (!btn || !src) return;
+    const audio = new Audio(src); audio.preload = 'none';
+    btn.hidden = false;
+    btn.addEventListener('click', e => { e.stopPropagation(); if (audio.paused) { audio.currentTime = 0; audio.play().catch(() => {}); if (!RM) play(f); } else audio.pause(); });
+    audio.addEventListener('play', () => btn.setAttribute('aria-pressed', 'true'));
+    ['pause', 'ended'].forEach(ev => audio.addEventListener(ev, () => btn.setAttribute('aria-pressed', 'false')));
+  });
 })();
 
 /* ================= LIVE LAB: sand → silicon → chip → neural network → VERGHETHORN, rendered in real time ================= */
