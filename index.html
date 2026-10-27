@@ -120,6 +120,8 @@ p{margin:0}
 .scroll-cue::after{content:"";position:absolute;left:0;top:-40%;width:1px;height:40%;background:var(--ink);animation:cue 2.2s var(--ease) infinite}
 @keyframes cue{to{top:100%}}
 @media (max-width:760px){.br-d{display:none}.hero-bar{flex-direction:column;align-items:stretch;bottom:16px}.live{align-self:flex-start;font-size:10px}.ctrl{justify-content:stretch}.ctrl button{flex:1}.scroll-cue{display:none}.tip{bottom:118px}.hero-in{margin-top:-10vh}}
+/* phones: keep the first screen for the fluid itself (the YouTube button stays in the header) */
+@media (max-width:760px){.hero .cta .pill:not(.solid),.hero-bar,.tip{display:none}}
 
 /* sections */
 section{position:relative}
@@ -562,8 +564,10 @@ const SFX = (() => {
   const load = src => { if (!bufs.has(src)) bufs.set(src, fetch(src).then(r => r.arrayBuffer()).then(a => new Promise((ok, no) => ctx.decodeAudioData(a, ok, no))).catch(() => null)); return bufs.get(src); };
   function unlock(){
     if (!AC) return;
-    if (!ctx) { ctx = new AC(); out = ctx.createGain(); out.gain.value = .5; out.connect(ctx.destination); wants.forEach(load); }
-    if (ctx.state === 'suspended' && !document.hidden) ctx.resume();
+    if (!ctx) { ctx = new AC(); out = ctx.createGain(); out.gain.value = .5; out.connect(ctx.destination); wants.forEach(load);
+      /* iOS Safari only wakes audio after a sound is started inside the tap itself: play one silent sample */
+      const s = ctx.createBufferSource(); s.buffer = ctx.createBuffer(1, 1, 22050); s.connect(ctx.destination); s.start(0); }
+    if (ctx.state !== 'running' && !document.hidden) ctx.resume();
   }
   ['pointerdown', 'keydown', 'touchend'].forEach(ev => addEventListener(ev, unlock, {capture: true, passive: true}));
   document.addEventListener('visibilitychange', () => { if (ctx) document.hidden ? ctx.suspend() : ctx.resume(); });
