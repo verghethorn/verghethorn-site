@@ -185,16 +185,11 @@ section{position:relative}
 .line{margin:0;max-width:26ch;text-align:center;position:relative;cursor:pointer}
 .line blockquote{margin:0;position:relative;font-family:var(--serif);font-style:italic;font-size:clamp(23px,2.3vw,34px);line-height:1.12;letter-spacing:-.005em;color:var(--ink)}
 .line blockquote p{position:relative;text-wrap:balance}
-.line .voice{margin-top:8px}
 .line figcaption{margin-top:12px;display:flex;flex-direction:column;align-items:center;gap:4px;font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--dim)}
 .line figcaption i{font-style:normal;color:var(--c)}
 .line .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .line .w{display:inline-block;white-space:nowrap}
 .line .ch{display:inline-block}
-.voice{display:inline-flex;align-items:center;gap:7px;padding:5px 11px 5px 8px;border-radius:999px;border:1px solid var(--line2);background:rgba(255,255,255,.85);font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--soft)}
-.voice[hidden]{display:none}
-.voice svg{width:14px;height:14px;fill:var(--c)}
-.voice[aria-pressed="true"] svg{animation:pulse 1s ease-in-out infinite}
 /* before it plays (only once JS is ready, so the text is never lost) */
 .line.ready:not(.play) .ch,.line.ready:not(.play) .w,.line.ready:not(.play) figcaption{opacity:0}
 .line.play figcaption{animation:capin .7s var(--cd,1s) var(--ease) both}
@@ -392,7 +387,7 @@ footer details a{text-decoration:underline}
           <div class="who"><span class="idx mono">01 / 05</span>
             <div class="stage"><span class="halo"></span><svg class="orbit" viewBox="-4 -4 268 108" aria-hidden="true"><ellipse cx="130" cy="50" rx="126" ry="46"/><circle r="4.5"><animateMotion dur="6.0s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle><circle r="3.2"><animateMotion dur="6.0s" begin="-3.0s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle></svg><span class="fig" style="--src:url(assets/cast/zevvo_q.webp)"><img src="assets/cast/zevvo_q.webp" alt="Zevvo, the citrine quartz hero of VERGHETHORN"></span><svg class="orbit front" viewBox="-4 -4 268 108" aria-hidden="true" style="clip-path:inset(50% 0 0 0)"><ellipse cx="130" cy="50" rx="126" ry="46"/><circle r="4.5"><animateMotion dur="6.0s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle><circle r="3.2"><animateMotion dur="6.0s" begin="-3.0s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle></svg><span class="shadow"></span><span class="split-hint"><b></b>Point to split</span></div>
             <div class="name">Zevvo<small>Citrine quartz</small></div>
-            <figure class="line" data-fx="spark" data-voice=""><blockquote><p>Can’t wait a second. Made of the stuff that measures one.</p></blockquote><figcaption><i>Quartz watch</i><span>32,768 vibrations = 1 second</span><button class="voice" type="button" hidden aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10l-4-3H2zM11 5.5a3.5 3.5 0 0 1 0 5l-.9-.9a2.2 2.2 0 0 0 0-3.2zM12.8 3.7a6 6 0 0 1 0 8.6l-.9-.9a4.7 4.7 0 0 0 0-6.8z"/></svg>Hear Zevvo</button></figcaption></figure></div>
+            <figure class="line" data-fx="spark" data-sfx="assets/sfx/zevvo.mp3"><blockquote><p>Can’t wait a second. Made of the stuff that measures one.</p></blockquote><figcaption><i>Quartz watch</i><span>32,768 vibrations = 1 second</span></figcaption></figure></div>
           <div class="slot"><div class="frame"><img alt="Citrine quartz crystal, photograph" loading="lazy"><div class="hint"><span class="mono">Specimen slot</span><b>SiO₂</b><span class="mono">Point at Zevvo to split</span></div><span class="tag">Real citrine quartz</span></div>
             <div class="facts"><p><strong>Silicon dioxide, SiO₂.</strong> Its yellow colour comes from traces of iron. Quartz is <strong>piezoelectric</strong>: squeeze it and it produces a voltage, apply a voltage and it vibrates. That's why Zevvo runs on electricity.</p><div class="num"><b>32,768 Hz</b><span>how fast the quartz crystal in a watch vibrates to keep time</span></div></div></div>
         </article>
@@ -400,7 +395,7 @@ footer details a{text-decoration:underline}
           <div class="who"><span class="idx mono">02 / 05</span>
             <div class="stage"><span class="halo"></span><svg class="orbit" viewBox="-4 -4 268 108" aria-hidden="true"><ellipse cx="130" cy="50" rx="126" ry="46"/><circle r="4.5"><animateMotion dur="6.7s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle><circle r="3.2"><animateMotion dur="6.7s" begin="-3.35s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle></svg><span class="fig" style="--src:url(assets/cast/lumo_q.webp)"><img src="assets/cast/lumo_q.webp" alt="Lumo, the hydrogel hero of VERGHETHORN"></span><svg class="orbit front" viewBox="-4 -4 268 108" aria-hidden="true" style="clip-path:inset(50% 0 0 0)"><ellipse cx="130" cy="50" rx="126" ry="46"/><circle r="4.5"><animateMotion dur="6.7s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle><circle r="3.2"><animateMotion dur="6.7s" begin="-3.35s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle></svg><span class="shadow"></span><span class="split-hint"><b></b>Point to split</span></div>
             <div class="name">Lumo<small>Hydrogel</small></div>
-            <figure class="line" data-fx="bubble" data-voice=""><blockquote><p>Over ninety percent water. Still the one holding it together.</p></blockquote><figcaption><i>Hydrogel</i><span>a polymer network keeps the water in shape</span><button class="voice" type="button" hidden aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10l-4-3H2zM11 5.5a3.5 3.5 0 0 1 0 5l-.9-.9a2.2 2.2 0 0 0 0-3.2zM12.8 3.7a6 6 0 0 1 0 8.6l-.9-.9a4.7 4.7 0 0 0 0-6.8z"/></svg>Hear Lumo</button></figcaption></figure></div>
+            <figure class="line" data-fx="bubble" data-sfx="assets/sfx/lumo.mp3"><blockquote><p>Over ninety percent water. Still the one holding it together.</p></blockquote><figcaption><i>Hydrogel</i><span>a polymer network keeps the water in shape</span></figcaption></figure></div>
           <div class="slot"><div class="frame"><img alt="Hydrogel beads, photograph" loading="lazy"><div class="hint"><span class="mono">Specimen slot</span><b>polymer + H₂O</b><span class="mono">Point at Lumo to split</span></div><span class="tag">Real hydrogel</span></div>
             <div class="facts"><p><strong>A network of cross-linked polymer chains that traps water.</strong> It holds its shape while being mostly liquid. Hydrogels are used in soft contact lenses, wound dressings and the absorbent core of nappies.</p><div class="num"><b>&gt;90%</b><span>water by mass in many hydrogels, and they still hold their shape</span></div></div></div>
         </article>
@@ -408,7 +403,7 @@ footer details a{text-decoration:underline}
           <div class="who"><span class="idx mono">03 / 05</span>
             <div class="stage"><span class="halo"></span><svg class="orbit" viewBox="-4 -4 268 108" aria-hidden="true"><ellipse cx="130" cy="50" rx="126" ry="46"/><circle r="4.5"><animateMotion dur="7.4s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle><circle r="3.2"><animateMotion dur="7.4s" begin="-3.7s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle></svg><span class="fig" style="--src:url(assets/cast/krodo_q.webp)"><img src="assets/cast/krodo_q.webp" alt="Krodo, the plastic keycap hero of VERGHETHORN"></span><svg class="orbit front" viewBox="-4 -4 268 108" aria-hidden="true" style="clip-path:inset(50% 0 0 0)"><ellipse cx="130" cy="50" rx="126" ry="46"/><circle r="4.5"><animateMotion dur="7.4s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle><circle r="3.2"><animateMotion dur="7.4s" begin="-3.7s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle></svg><span class="shadow"></span><span class="split-hint"><b></b>Point to split</span></div>
             <div class="name">Krodo<small>PBT plastic</small></div>
-            <figure class="line" data-fx="key" data-voice=""><blockquote><p>Hits everything harder. Everything hits back exactly as hard.</p></blockquote><figcaption><i>Newton’s third law</i><span>equal force, opposite direction</span><button class="voice" type="button" hidden aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10l-4-3H2zM11 5.5a3.5 3.5 0 0 1 0 5l-.9-.9a2.2 2.2 0 0 0 0-3.2zM12.8 3.7a6 6 0 0 1 0 8.6l-.9-.9a4.7 4.7 0 0 0 0-6.8z"/></svg>Hear Krodo</button></figcaption></figure></div>
+            <figure class="line" data-fx="key" data-sfx="assets/sfx/krodo.mp3"><blockquote><p>Hits everything harder. Everything hits back exactly as hard.</p></blockquote><figcaption><i>Newton’s third law</i><span>equal force, opposite direction</span></figcaption></figure></div>
           <div class="slot"><div class="frame"><img alt="Plastic pellets, photograph" loading="lazy"><div class="hint"><span class="mono">Specimen slot</span><b>(C₁₂H₁₂O₄)ₙ</b><span class="mono">Point at Krodo to split</span></div><span class="tag">Real plastic pellets, before moulding</span></div>
             <div class="facts"><p><strong>Polybutylene terephthalate (PBT), a thermoplastic polyester.</strong> Plastics like it are made as small pellets like these, then melted and injection-moulded into shape. PBT is tough, resists heat and doesn't go shiny under fingers, which is why premium keycaps are made from it.</p><div class="num"><b>≈223 °C</b><span>melting point of PBT, so it can take hits and heat</span></div></div></div>
         </article>
@@ -416,7 +411,7 @@ footer details a{text-decoration:underline}
           <div class="who"><span class="idx mono">04 / 05</span>
             <div class="stage"><span class="halo"></span><svg class="orbit" viewBox="-4 -4 268 108" aria-hidden="true"><ellipse cx="130" cy="50" rx="126" ry="46"/><circle r="4.5"><animateMotion dur="8.1s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle><circle r="3.2"><animateMotion dur="8.1s" begin="-4.05s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle></svg><span class="fig" style="--src:url(assets/cast/thorne_q.webp)"><img src="assets/cast/thorne_q.webp" alt="Thorne, the steel spring hero of VERGHETHORN"></span><svg class="orbit front" viewBox="-4 -4 268 108" aria-hidden="true" style="clip-path:inset(50% 0 0 0)"><ellipse cx="130" cy="50" rx="126" ry="46"/><circle r="4.5"><animateMotion dur="8.1s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle><circle r="3.2"><animateMotion dur="8.1s" begin="-4.05s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle></svg><span class="shadow"></span><span class="split-hint"><b></b>Point to split</span></div>
             <div class="name">Thorne<small>Spring steel</small></div>
-            <figure class="line" data-fx="spring" data-voice=""><blockquote><p>Bends the rules. Strictly within the elastic limit.</p></blockquote><figcaption><i>Elastic limit</i><span>past it, steel stays bent</span><button class="voice" type="button" hidden aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10l-4-3H2zM11 5.5a3.5 3.5 0 0 1 0 5l-.9-.9a2.2 2.2 0 0 0 0-3.2zM12.8 3.7a6 6 0 0 1 0 8.6l-.9-.9a4.7 4.7 0 0 0 0-6.8z"/></svg>Hear Thorne</button></figcaption></figure></div>
+            <figure class="line" data-fx="spring" data-sfx="assets/sfx/thorne.mp3"><blockquote><p>Bends the rules. Strictly within the elastic limit.</p></blockquote><figcaption><i>Elastic limit</i><span>past it, steel stays bent</span></figcaption></figure></div>
           <div class="slot"><div class="frame"><img alt="Steel springs, photograph" loading="lazy"><div class="hint"><span class="mono">Specimen slot</span><b>Fe + C</b><span class="mono">Point at Thorne to split</span></div><span class="tag">Real steel springs</span></div>
             <div class="facts"><p><strong>Iron alloyed with about 0.5–1% carbon.</strong> Inside the elastic limit its atomic bonds stretch and spring back, and the force grows in proportion to the stretch. That's Hooke's law.</p><div class="num"><b>F = −kx</b><span>Hooke's law: the restoring force is proportional to the stretch</span></div></div></div>
         </article>
@@ -424,7 +419,7 @@ footer details a{text-decoration:underline}
           <div class="who"><span class="idx mono">05 / 05</span>
             <div class="stage"><span class="halo"></span><svg class="orbit" viewBox="-4 -4 268 108" aria-hidden="true"><ellipse cx="130" cy="50" rx="126" ry="46"/><circle r="4.5"><animateMotion dur="8.8s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle><circle r="3.2"><animateMotion dur="8.8s" begin="-4.4s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle></svg><span class="fig" style="--src:url(assets/cast/verghe_q.webp)"><img src="assets/cast/verghe_q.webp" alt="Verghe, the fluorite hero of VERGHETHORN"></span><svg class="orbit front" viewBox="-4 -4 268 108" aria-hidden="true" style="clip-path:inset(50% 0 0 0)"><ellipse cx="130" cy="50" rx="126" ry="46"/><circle r="4.5"><animateMotion dur="8.8s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle><circle r="3.2"><animateMotion dur="8.8s" begin="-4.4s" repeatCount="indefinite" path="M4,50 a126,46 0 1,0 252,0 a126,46 0 1,0 -252,0"/></circle></svg><span class="shadow"></span><span class="split-hint"><b></b>Point to split</span></div>
             <div class="name">Verghe<small>Fluorite</small></div>
-            <figure class="line" data-fx="cleave" data-voice=""><blockquote><p>Splits hairs. Also splits, perfectly, along four planes.</p></blockquote><figcaption><i>Fluorite cleavage</i><span>four planes, octahedral pieces</span><button class="voice" type="button" hidden aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10l-4-3H2zM11 5.5a3.5 3.5 0 0 1 0 5l-.9-.9a2.2 2.2 0 0 0 0-3.2zM12.8 3.7a6 6 0 0 1 0 8.6l-.9-.9a4.7 4.7 0 0 0 0-6.8z"/></svg>Hear Verghe</button></figcaption></figure></div>
+            <figure class="line" data-fx="cleave" data-sfx="assets/sfx/verghe.mp3"><blockquote><p>Splits hairs. Also splits, perfectly, along four planes.</p></blockquote><figcaption><i>Fluorite cleavage</i><span>four planes, octahedral pieces</span></figcaption></figure></div>
           <div class="slot"><div class="frame"><img alt="Fluorite octahedra, photograph" loading="lazy"><div class="hint"><span class="mono">Specimen slot</span><b>CaF₂</b><span class="mono">Point at Verghe to split</span></div><span class="tag">Real fluorite</span></div>
             <div class="facts"><p><strong>Calcium fluoride, CaF₂.</strong> It splits cleanly into octahedra and bends light with very low dispersion, which is why it's used in high-end camera and telescope lenses. Many samples glow under UV light.</p><div class="num"><b>1852</b><span>the year G. G. Stokes named fluorescence after fluorite</span></div></div></div>
         </article>
@@ -811,7 +806,8 @@ class Split {
     this.key = innerWidth + 'x' + innerHeight;
   }
   async set(on){
-    this.goal = on ? 1 : 0;
+    const was = this.goal; this.goal = on ? 1 : 0;
+    if (on && !was) this.row.dispatchEvent(new Event('split'));
     if (on) this.row.classList.add('splitting');
     if (!this.pts || this.key !== innerWidth + 'x' + innerHeight) { if (this.building) return; this.building = true; await this.build(); this.building = false; }
     if (RM) { this.p = this.goal; this.render(0); return; }
@@ -856,8 +852,7 @@ const splits = $$('.row').map(row => {
 if (TOUCH) splits.forEach(s => inView(s.row, v => { if (v && !s.goal) s.set(1); }, {rootMargin: '-35% 0px -35% 0px'}));
 })();
 
-/* ================= CAST · one line per hero, arriving the way its material behaves =================
-   Voice: put an audio file path in data-voice="" on a .line and the "Hear" button appears. */
+/* ================= CAST · one line per hero, arriving the way its material behaves ================= */
 (() => {
   const lines = $$('.line');
   if (!lines.length) return;
@@ -865,6 +860,7 @@ if (TOUCH) splits.forEach(s => inView(s.row, v => { if (v && !s.goal) s.set(1); 
     f.classList.remove('play'); void f.offsetWidth;
     if (f.dataset.fx === 'spring') springs(f);
     f.classList.add('play');
+    f.dispatchEvent(new Event('reveal', {bubbles: true}));
   };
   /* Thorne: underdamped spring, step response from 12% length, ζ = 0.28, period 0.55 s */
   const SPRING = (() => { const z = .28, w = 2 * Math.PI / .55, wd = w * Math.sqrt(1 - z * z), T = 1.6, n = 48, s0 = .12, fr = [];
@@ -904,18 +900,32 @@ if (TOUCH) splits.forEach(s => inView(s.row, v => { if (v && !s.goal) s.set(1); 
     if (RM) return;
     f.classList.add('ready');
     once.observe(f);
-    f.addEventListener('click', e => { if (e.target.closest('.voice')) return; e.stopPropagation(); play(f); });
+    f.addEventListener('click', e => { e.stopPropagation(); play(f); });
   });
 
-  /* the place for the hero's voice: empty until the voices are chosen */
-  lines.forEach(f => {
-    const btn = f.querySelector('.voice'), src = f.dataset.voice; if (!btn || !src) return;
-    const audio = new Audio(src); audio.preload = 'none';
-    btn.hidden = false;
-    btn.addEventListener('click', e => { e.stopPropagation(); if (audio.paused) { audio.currentTime = 0; audio.play().catch(() => {}); if (!RM) play(f); } else audio.pause(); });
-    audio.addEventListener('play', () => btn.setAttribute('aria-pressed', 'true'));
-    ['pause', 'ended'].forEach(ev => audio.addEventListener(ev, () => btn.setAttribute('aria-pressed', 'false')));
-  });
+})();
+
+/* ================= CAST · the sound of each hero's material =================
+   Browsers keep a page silent until the visitor's first tap, click or key press. After that, each hero's
+   material sounds when its line appears and when it splits into atoms. No buttons. Sounds: ElevenLabs SFX. */
+(() => {
+  const rows = $$('.row[data-m]'); const AC = window.AudioContext || window.webkitAudioContext;
+  if (!rows.length || !AC) return;
+  let ctx = null, out = null; const buf = new Map(), last = new Map();
+  const load = src => { if (!buf.has(src)) buf.set(src, fetch(src).then(r => r.arrayBuffer()).then(a => new Promise((ok, no) => ctx.decodeAudioData(a, ok, no))).catch(() => null)); return buf.get(src); };
+  const unlock = () => {
+    if (!ctx) { ctx = new AC(); out = ctx.createGain(); out.gain.value = .5; out.connect(ctx.destination); rows.forEach(r => { const l = r.querySelector('.line'); if (l) load(l.dataset.sfx); }); }
+    if (ctx.state === 'suspended') ctx.resume();
+  };
+  ['pointerdown', 'keydown', 'touchend'].forEach(ev => addEventListener(ev, unlock, {capture: true, passive: true}));
+  async function sound(row){
+    const l = row.querySelector('.line'); if (!ctx || !l || document.hidden) return;
+    const now = performance.now(); if (now - (last.get(row) || 0) < 1800) return; last.set(row, now);
+    if (ctx.state === 'suspended') await ctx.resume();
+    const b = await load(l.dataset.sfx); if (!b || ctx.state !== 'running') return;
+    const src = ctx.createBufferSource(); src.buffer = b; src.connect(out); src.start();
+  }
+  rows.forEach(r => { r.addEventListener('split', () => sound(r)); r.addEventListener('reveal', () => sound(r)); });
 })();
 
 /* ================= LIVE LAB: sand → silicon → chip → neural network → VERGHETHORN, rendered in real time ================= */

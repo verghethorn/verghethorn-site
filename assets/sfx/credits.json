@@ -1,0 +1,12 @@
+{
+  "source": "ElevenLabs Sound Effects (model eleven_text_to_sound_v2), generated 2026-10-27 for VERGHETHORN on the owner's ElevenLabs account. Commercial use follows the ElevenLabs plan terms of that account.",
+  "flow": "VERGHETHORN site · material sounds (ElevenLabs flow BX9RT2lRITjdowKEGDM3); 4 takes per hero, the take used is listed below",
+  "edit": "trimmed to 2.0–2.2 s, 0.3 s fade-out, mono, level matched",
+  "files": {
+    "zevvo.mp3":  {"generation": "v2tKXqrnH5mfQ1bSrlVN", "prompt": "quartz crystal: dry electric spark crackle, thin crystal ring, short electric hum"},
+    "lumo.mp3":   {"generation": "AlpKO0HyarD31pAoKoJ2", "prompt": "soft wet jelly squish and bloop, small bubbles popping"},
+    "krodo.mp3":  {"generation": "LjUSfryXwoqh0aDEefaT", "prompt": "two heavy thocky keystrokes on a thick PBT keycap"},
+    "thorne.mp3": {"generation": "NQXlAtLccOfAeqzK2WET", "prompt": "small steel coil spring: faint creak, released with a bright metallic boing"},
+    "verghe.mp3": {"generation": "fhsBESA2EvsjVBmAliwR", "prompt": "glassy crystal chimes, mineral fragments tinkling, soft crystal hum"}
+  }
+}
