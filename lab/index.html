@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lab — interactive experiments · VERGHÉTHORN</title>
+<meta name="description" content="Three working interactive demonstrations: the Reality Shift shader, a spring-based motion study and a small storyboard app.">
+<link rel="canonical" href="https://verghethorn.com/lab/">
+<link rel="alternate" hreflang="en" href="https://verghethorn.com/lab/">
+<link rel="alternate" hreflang="ru" href="https://verghethorn.com/ru/lab/">
+<link rel="alternate" hreflang="x-default" href="https://verghethorn.com/lab/">
+<meta name="theme-color" content="#0B0D10">
+<meta name="color-scheme" content="dark">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="VERGHÉTHORN">
+<meta property="og:title" content="Lab — interactive experiments · VERGHÉTHORN">
+<meta property="og:description" content="Three working interactive demonstrations: the Reality Shift shader, a spring-based motion study and a small storyboard app.">
+<meta property="og:url" content="https://verghethorn.com/lab/">
+<meta property="og:image" content="https://verghethorn.com/media/og.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US"><meta property="og:locale:alternate" content="ru_RU">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.png" type="image/png" sizes="180x180">
+<link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@300..700&family=Spectral:ital,wght@0,300;0,400;1,300;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/static/css/site.css?v=f9e6ed00">
+
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap">
+    <a class="wordmark" href="/" aria-label="VERGHÉTHORN — home"><span class="slit" aria-hidden="true"></span>VERGHÉTHORN</a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav class="nav" id="site-nav" aria-label="Main">
+      <a href="/work/">Work</a><a href="/practice/">Practice</a><a href="/lab/" aria-current="page">Lab</a><a href="/about/">About</a><a href="/contact/">Contact</a>
+      <span class="lang" role="group" aria-label="Language">
+        <a href="/lab/" hreflang="en" lang="en" data-lang-link="en" aria-current="true">EN</a>
+        <a href="/ru/lab/" hreflang="ru" lang="ru" data-lang-link="ru">RU</a>
+      </span>
+    </nav>
+  </div>
+</header>
+<main id="main" tabindex="-1">
+
+<header class="page-head"><div class="wrap"><p class="eyebrow">Lab</p><h1 class="display">Things you can <em>touch.</em></h1><p class="lede">Three working demonstrations. Each starts only when you ask it to, works with touch and keyboard, and never blocks the rest of the site.</p></div></header>
+<div class="wrap">
+<section class="lab-item" data-lab="shift" aria-labelledby="lab-a">
+  <header><div><p class="eyebrow">A / Lab</p><h2 class="h2" id="lab-a">Reality Shift</h2></div><p class="body-copy" style="margin:0">The Living Frame engine with its controls exposed. Scrub from film to structure to interface, and open or close the aperture.</p></header>
+  <div class="lab-canvas">
+    <div class="frame" data-mode="0" data-src="/media/living-shapes-2048.webp" style="width:100%;cursor:default">
+      <div class="frame-fallback" style="background-image:url(/media/living-shapes-1600.webp)"></div>
+      <canvas aria-hidden="true"></canvas>
+    </div>
+    <div class="opt-in"><button class="btn" type="button" data-start>Start demo <svg class="arr" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></button><p>Loads a small WebGL scene (about 70 KB image).</p></div>
+  </div>
+  <div class="controls">
+    <div class="control"><label for="lab-mode">Shift <output for="lab-mode">0.00</output></label><input id="lab-mode" type="range" min="0" max="2" step="0.01" value="0.6"></div>
+    <div class="control"><label for="lab-open">Aperture <output for="lab-open">—</output></label><input id="lab-open" type="range" min="0" max="1" step="0.01" value="1"></div>
+  </div>
+</section>
+<section class="lab-item" data-lab="motion" aria-labelledby="lab-b">
+  <header><div><p class="eyebrow">B / Lab</p><h2 class="h2" id="lab-b">Motion Language</h2></div><p class="body-copy" style="margin:0">Seven coupled springs. Pull one and watch the others answer. Stiffness and damping are the two numbers behind every animation on this site.</p></header>
+  <div class="lab-canvas"><div class="springs" role="group" aria-label="Motion Language"></div></div>
+  <div class="controls">
+    <div class="control"><label for="lab-k">Stiffness <output for="lab-k"></output></label><input id="lab-k" type="range" min="20" max="400" step="1" value="140"></div>
+    <div class="control"><label for="lab-c">Damping <output for="lab-c"></output></label><input id="lab-c" type="range" min="1" max="40" step="0.5" value="7"></div>
+    <p class="mono" style="flex-basis:100%;margin:0;text-transform:none;letter-spacing:.02em">Keyboard: focus a spring, press ↑ or ↓; ← → move between springs.</p>
+  </div>
+</section>
+<section class="lab-item" data-lab="board" aria-labelledby="lab-c-t">
+  <header><div><p class="eyebrow">C / Lab</p><h2 class="h2" id="lab-c-t">Playable Product</h2></div><p class="body-copy" style="margin:0">A tiny storyboard app. Add shots, rename them, set durations and reorder — runtime and timeline update live and are saved in this browser.</p></header>
+  <div class="lab-canvas board">
+    <div class="board-main">
+      <ol class="shots" aria-label="Playable Product"></ol>
+      <form class="add-shot" autocomplete="off"><label class="visually-hidden" for="new-shot">New shot title</label><input id="new-shot" type="text" maxlength="60" placeholder="New shot…"><button class="btn ghost" type="submit">Add shot</button></form>
+      <p class="mono" style="margin:0;text-transform:none;letter-spacing:.02em">Reorder with the number handle: drag, or focus it and press ↑ ↓.</p>
+    </div>
+    <aside class="board-side">
+      <p class="mono" style="margin:0">Runtime</p>
+      <p class="runtime" aria-live="polite">0:00</p>
+      <div class="timeline" aria-hidden="true"></div>
+      <p class="mono" data-shot-count style="margin:0"></p>
+      <button class="btn ghost" type="button" data-reset style="justify-self:start">Reset</button>
+      <p class="visually-hidden" aria-live="polite" data-live></p>
+    </aside>
+  </div>
+</section>
+</div>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div style="display:grid;gap:14px">
+      <a class="wordmark" href="/"><span class="slit" aria-hidden="true"></span>VERGHÉTHORN</a>
+      <small>Independent author-led studio · Film, campaigns, interactive and digital products.<br>All work shown is original and labelled with its real status.</small>
+      <small>© 2026 VERGHÉTHORN · <a href="mailto:verghethorn@gmail.com">verghethorn@gmail.com</a></small>
+    </div>
+    <nav aria-label="Footer">
+      <a href="/work/">Work</a><a href="/practice/">Practice</a><a href="/lab/">Lab</a><a href="/about/">About</a><a href="/contact/">Contact</a>
+      <a href="https://www.youtube.com/@verghethorn" rel="me noopener" target="_blank">YouTube <svg width="11" height="11" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 9l6-6M4 3h5v5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></a><a href="https://www.instagram.com/verghethorn" rel="me noopener" target="_blank">Instagram <svg width="11" height="11" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 9l6-6M4 3h5v5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></a><a href="https://www.tiktok.com/@verghethorn_official" rel="me noopener" target="_blank">TikTok <svg width="11" height="11" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 9l6-6M4 3h5v5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></a>
+    </nav>
+  </div>
+</footer>
+<script type="application/json" id="i18n">{"menu":"Menu","close":"Close","play":"Play","pause":"Pause","shown":"{n} shown","frameMeta":["FILM · 24 FPS","STRUCTURE · EDGES","INTERFACE · 5 OBJECTS"],"modes":["film","structure","interface"],"proto":{"idle":"Ready · tap to hear","loading":"Connecting…","speaking":"Speaking","done":"Finished · tap to replay","pending":"Voice in production","error":"Audio could not start · try again","listen":"Hear the voice","stop":"Stop","unavailable":"Voice coming soon"},"form":{"sending":"Sending…","errName":"Add your name so I know who to answer.","errEmail":"Check the email — it needs an @ and a domain.","errCategory":"Choose the closest project type.","errMessage":"A few more words, please — at least 10 characters.","okTitle":"Thank you. Your inquiry is saved.","okText":"I read every message personally and will reply to {email}.","errTitle":"The message wasn’t sent.","errNet":"Your text is still in the form. Try again in a moment, or write directly to verghethorn@gmail.com.","errBot":"Something about this submission looked automated. Please wait a few seconds and send again, or write to verghethorn@gmail.com."},"lab":{"knob":"Spring {n}: drag, or use arrow keys","drag":"Drag","move":"Shot {n}: use arrow up and down to reorder","shotTitle":"Shot {n} title","duration":"Shot {n} duration","remove":"Remove shot {n}","removed":"Shot removed","moved":"Moved to position {n}","added":"Shot added","resetDone":"Storyboard reset","shots":"{n} shots","defaults":[["Hook — “What if…?”",2],["CGI adventure with the heroes",8],["Real experiment on camera",10],["Through Verghe’s lens",6]]}}</script>
+<script type="module" src="/static/js/site.js?v=cadbc11a"></script>
+</body>
+</html>

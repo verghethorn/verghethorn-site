@@ -1,5 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://verghethorn.com/</loc><lastmod>2026-10-31</lastmod></url>
-  <url><loc>https://verghethorn.com/links/</loc><lastmod>2026-10-31</lastmod></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url><loc>https://verghethorn.com/</loc><lastmod>2026-11-07</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://verghethorn.com/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://verghethorn.com/ru/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://verghethorn.com/"/>
+  </url>
+  <url><loc>https://verghethorn.com/ru/</loc><lastmod>2026-11-07</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://verghethorn.com/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://verghethorn.com/ru/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://verghethorn.com/"/>
+  </url>
+  <url><loc>https://verghethorn.com/work/</loc><lastmod>2026-11-07</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://verghethorn.com/work/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://verghethorn.com/ru/work/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://verghethorn.com/work/"/>
+  </url>
+  <url><loc>https://verghethorn.com/ru/work/</loc><lastmod>2026-11-07</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://verghethorn.com/work/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://verghethorn.com/ru/work/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://verghethorn.com/work/"/>
+  </url>
+  <url><loc>https://verghethorn.com/work/living-shapes/</loc><lastmod>2026-11-07</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://verghethorn.com/work/living-shapes/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://verghethorn.com/ru/work/living-shapes/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://verghethorn.com/work/living-shapes/"/>
+  </url>
+  <url><loc>https://verghethorn.com/ru/work/living-shapes/</loc><lastmod>2026-11-07</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://verghethorn.com/work/living-shapes/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://verghethorn.com/ru/work/living-shapes/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://verghethorn.com/work/living-shapes/"/>
+  </url>
+  <url><loc>https://verghethorn.com/work/usefive/</loc><lastmod>2026-11-07</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://verghethorn.com/work/usefive/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://verghethorn.com/ru/work/usefive/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://verghethorn.com/work/usefive/"/>
+  </url>
+  <url><loc>https://verghethorn.com/ru/work/usefive/</loc><lastmod>2026-11-07</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://verghethorn.com/work/usefive/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://verghethorn.com/ru/work/usefive/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://verghethorn.com/work/usefive/"/>
+  </url>
+  <url><loc>https://verghethorn.com/work/living-frame/</loc><lastmod>2026-11-07</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://verghethorn.com/work/living-frame/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://verghethorn.com/ru/work/living-frame/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://verghethorn.com/work/living-frame/"/>
+  </url>
+  <url><loc>https://verghethorn.com/ru/work/living-frame/</loc><lastmod>2026-11-07</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://verghethorn.com/work/living-frame/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://verghethorn.com/ru/work/living-frame/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://verghethorn.com/work/living-frame/"/>
+  </url>
+  <url><loc>https://verghethorn.com/practice/</loc><lastmod>2026-11-07</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://verghethorn.com/practice/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://verghethorn.com/ru/practice/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://verghethorn.com/practice/"/>
+  </url>
+  <url><loc>https://verghethorn.com/ru/practice/</loc><lastmod>2026-11-07</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://verghethorn.com/practice/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://verghethorn.com/ru/practice/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://verghethorn.com/practice/"/>
+  </url>
+  <url><loc>https://verghethorn.com/lab/</loc><lastmod>2026-11-07</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://verghethorn.com/lab/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://verghethorn.com/ru/lab/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://verghethorn.com/lab/"/>
+  </url>
+  <url><loc>https://verghethorn.com/ru/lab/</loc><lastmod>2026-11-07</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://verghethorn.com/lab/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://verghethorn.com/ru/lab/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://verghethorn.com/lab/"/>
+  </url>
+  <url><loc>https://verghethorn.com/about/</loc><lastmod>2026-11-07</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://verghethorn.com/about/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://verghethorn.com/ru/about/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://verghethorn.com/about/"/>
+  </url>
+  <url><loc>https://verghethorn.com/ru/about/</loc><lastmod>2026-11-07</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://verghethorn.com/about/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://verghethorn.com/ru/about/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://verghethorn.com/about/"/>
+  </url>
+  <url><loc>https://verghethorn.com/contact/</loc><lastmod>2026-11-07</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://verghethorn.com/contact/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://verghethorn.com/ru/contact/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://verghethorn.com/contact/"/>
+  </url>
+  <url><loc>https://verghethorn.com/ru/contact/</loc><lastmod>2026-11-07</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://verghethorn.com/contact/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://verghethorn.com/ru/contact/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://verghethorn.com/contact/"/>
+  </url>
 </urlset>
