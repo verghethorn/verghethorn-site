@@ -5,7 +5,7 @@ export const SITE = {
   email: 'verghethorn@gmail.com',
   social: {
     youtube: { name: 'YouTube', handle: '@verghethorn', href: 'https://www.youtube.com/@verghethorn' },
-    instagram: { name: 'Instagram', handle: '@verghethorn', href: 'https://www.instagram.com/verghethorn' },
+    instagram: { name: 'Instagram', handle: '@verghethorn.studio', href: 'https://www.instagram.com/verghethorn.studio' },
     tiktok: { name: 'TikTok', handle: '@verghethorn_official', href: 'https://www.tiktok.com/@verghethorn_official' },
   },
   inquiries: {
