@@ -1,24 +1,23 @@
 # verghethorn.com
 
-One page per language — EN at `/`, RU at `/ru/` — served by GitHub Pages from this branch. No server needed.
+One interactive page in English, served by GitHub Pages from this branch. `/ru/` and older URLs redirect to it.
 
 ## Edit text
-1. Change copy in `tools/content.mjs` (both `en` and `ru`).
-2. Run `node tools/build.mjs` — it regenerates both pages, redirects for old URLs, `sitemap.xml` and `robots.txt`.
+1. Change copy in `tools/content.mjs`.
+2. Run `node tools/build.mjs`.
 3. Commit and push. Pages publishes in about a minute.
 
-## What is on the page (mobile first)
-- **The set** — real film-set photography seen through a camera viewfinder. Tap A / B / C (or swipe the picture) to cut between cameras.
-- **Product design** — a swipeable reel: watch, engine, turbine, sneakers, camera, cosmetics, kettle. Each card scans itself to show what is inside (or our blueprint drawing); tap to switch.
-- **Advertising** — one product, NOVA serum, as a different ad for each audience.
-- **Our films & collaborations** — letterbox frame with subtitles.
-- **How we work**, **Also on request** (websites, apps, AI agents).
-- **Contact** — four doors shaped like Instagram, YouTube, TikTok and email; the short form.
+## What is on the page
+- **The screen** (`static/js/hero.js`) — six live, generated film worlds (Neon, Space, Sunset, Noir, Aurora, Warp) rendered with WebGL. Tap the screen for explosions, sparks, lightning, portals and confetti; Action cuts to a new scene.
+- **Script lab** — a story slot machine; tap a reel to lock it; "Make it our next ad" drops the idea into the pitch form.
+- **Design it. Film it. Ship it.** (`product.js`, three.js) — design your own drink can (name, flavour, finish), then see it in a film ad or inside a shop app.
+- **Make some noise** — nine special-effect pads (keys Q W E · A S D · Z X C).
+- **Five ways to work with us** — flip cards.
+- **Pick a portal** — YouTube, Instagram, TikTok and email, each opened with its own effect and sound.
+- **Pitch form**.
 
-Scrolling is always native: no pinned sections and nothing that captures touch.
+Effects engine: `fx.js`. Sounds are synthesised in `sfx.js` (no audio files) and start only after the first tap; the header button mutes them.
+Scrolling is always native: taps only fire when the finger didn't move, nothing captures vertical swipes.
 
-## Photos
-`media/v4/` — WebP, two sizes each. Photography from Unsplash (photographers credited in the page footer and in `PHOTOS` in `tools/content.mjs`). The blueprint drawings (`*-in` for sneaker, serum, kettle) were traced from those photos.
-
-## Contact form
-Submissions go to Supabase project **verghethorn-site**, table `public.inquiries` (insert-only for the public via row-level security). Read them in the Supabase dashboard → Table editor → `inquiries`.
+## Pitch form
+Submissions go to Supabase project **verghethorn-site**, table `public.inquiries` (insert-only for the public via row-level security).

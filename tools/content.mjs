@@ -1,235 +1,102 @@
-// All site copy, EN and RU. Edit text here and run `node tools/build.mjs`.
+// All site copy (English only). Edit text here and run `node tools/build.mjs`.
 
 export const SITE = {
   url: 'https://verghethorn.com',
   email: 'verghethorn@gmail.com',
-  social: [
-    { id: 'youtube', name: 'YouTube', handle: '@verghethorn', href: 'https://www.youtube.com/@verghethorn' },
-    { id: 'instagram', name: 'Instagram', handle: '@verghethorn', href: 'https://www.instagram.com/verghethorn' },
-    { id: 'tiktok', name: 'TikTok', handle: '@verghethorn_official', href: 'https://www.tiktok.com/@verghethorn_official' },
-  ],
+  social: {
+    youtube: { name: 'YouTube', handle: '@verghethorn', href: 'https://www.youtube.com/@verghethorn' },
+    instagram: { name: 'Instagram', handle: '@verghethorn', href: 'https://www.instagram.com/verghethorn' },
+    tiktok: { name: 'TikTok', handle: '@verghethorn_official', href: 'https://www.tiktok.com/@verghethorn_official' },
+  },
   inquiries: {
     endpoint: 'https://vgotvplikubsncujcxmk.supabase.co/rest/v1/inquiries',
     key: 'sb_publishable_N2ea44ITl-54nQS16gD0NQ_O_ywKAmd', // publishable: insert-only by row-level security
   },
 };
 
-// Photography (Unsplash licence). Keys match files in /media/v4/.
-export const PHOTOS = {
-  'hero-a': 'Jose P. Ortiz', 'hero-b': 'Daniel', 'hero-c': 'Jakob Owens',
-  watch: 'Tareq Hasan', 'watch-in': 'KC Shum', engine: 'Yukon Haughton', 'engine-in': 'Adem Percem',
-  turbine: 'Allan Rodrigues', 'turbine-in': 'Javier Vermaas', camera: 'Hunter Moranville', 'camera-in': 'Shane Aldendorff',
-  sneaker: 'Seb Reivers', serum: 'Point Normal', kettle: 'Adiptalk',
-  'aud-young': 'Deny Hill', 'aud-business': 'Rodrigo Rodrigues', 'aud-elders': 'Quan-You Zhang', 'aud-dreamers': 'Eleni Trapp',
-  film: 'Adam Hornyak', 'step-idea': 'Balázs Kétyi', 'step-shoot': 'Jakob Owens', 'step-edit': 'Peter Stumpf', 'step-premiere': 'Zhyar Ibrahim',
-};
-
-// id, outside image, inside image, inside mode (x-ray of a real mechanism, or our blueprint drawing)
-export const PRODUCTS = [
-  ['watch', 'watch', 'watch-in', 'xray'],
-  ['engine', 'engine', 'engine-in', 'xray'],
-  ['turbine', 'turbine', 'turbine-in', 'xray'],
-  ['sneaker', 'sneaker', 'sneaker-in', 'blue'],
-  ['camera', 'camera', 'camera-in', 'xray'],
-  ['serum', 'serum', 'serum-in', 'blue'],
-  ['kettle', 'kettle', 'kettle-in', 'blue'],
-];
-export const AUDIENCES = ['young', 'business', 'elders', 'dreamers'];
-
-const en = {
-  lang: 'en', locale: 'en_US', other: 'ru', otherName: 'RU', otherLabel: 'Русская версия',
-  title: 'VERGHÉTHORN — advertising films and product design for brands',
-  desc: 'We shoot advertising films for brands, design products of any kind — from watches to kettles — and make our own films with brands inside the story.',
+export const L = {
+  title: 'VERGHÉTHORN — films you can’t scroll past',
+  desc: 'VERGHÉTHORN is a film studio for short films, brand ads, collabs and product design. Tap the screen, spin a story, design a drink and set off some special effects.',
   skip: 'Skip to content',
-  nav: [['design', 'Design'], ['ads', 'Ads'], ['films', 'Films'], ['how', 'How we work']],
-  contactBtn: 'Contact',
+  pitch: 'Pitch us', soundOn: 'Sound on', soundOff: 'Sound off',
+
   hero: {
-    eyebrow: 'VERGHÉTHORN · film studio',
-    h1: 'We shoot films<br>for brands.',
-    sub: 'Commercials, product design and our own cinema — made to be watched to the end.',
-    cta: 'Tell us your idea',
-    cams: [['A', 'Wide', '35MM'], ['B', 'Dolly', '24MM'], ['C', 'Close-up', '85MM']],
-    alts: ['A film crew shooting an actress in a red dress in a bright apartment', 'A crew in light beams laying a dolly track on a studio floor', 'A cinema camera on a tripod in a white studio'],
-    group: 'Cameras on set',
+    eyebrow: 'Short films · Brand ads · Collabs · Products',
+    h1: 'Films you can’t<br>scroll past.',
+    sub: 'We’re VERGHÉTHORN — a film studio for brands and big ideas. Go on, tap the screen.',
+    hint: 'Tap anywhere',
+    action: 'Action',
+    genres: [['neon', 'Neon', 'NEON NIGHTS'], ['space', 'Space', 'LAST SIGNAL'], ['sunset', 'Sunset', 'SUMMER NEVER ENDS'], ['noir', 'Noir', 'RAIN CITY'], ['aurora', 'Aurora', 'NORTHERN LIGHTS'], ['warp', 'Warp', 'LIGHTSPEED']],
+    canvas: 'A live, generated film scene. Tap it to set off effects; choose a genre or press Action to cut to a new scene.',
   },
-  statement: 'Films that sell. <em>Products people want to hold.</em> Stories with your brand inside.',
-  design: {
-    eyebrow: 'Product design', h2: 'We design anything.<br>Down to the last bolt.',
-    sub: 'Watches, engines, kettles, sneakers, cosmetics, clothing. We design the product — then we film it.',
-    show: 'See inside', hide: 'Outside', showBlue: 'See the drawing', hint: 'Swipe',
-    items: {
-      watch: ['Watch', 'Every gear, spring and jewel in its place.'],
-      engine: ['Engine', 'Every belt, pulley and bolt — and how they move.'],
-      turbine: ['Turbine', 'Every blade, balanced to the gram.'],
-      sneaker: ['Sneakers', 'From the first line to the sole.'],
-      camera: ['Camera', 'Taken apart, part by part.'],
-      serum: ['Cosmetics', 'Bottle, dropper and label — all designed.'],
-      kettle: ['Kettle', 'A shape you want to pick up.'],
-    },
-    alts: {
-      watch: ['A steel watch with a white dial on a white table', 'The mechanical movement inside a watch: gears and springs'],
-      engine: ['A car engine on a workshop stand', 'Inside an engine: timing belt, pulleys and gears'],
-      turbine: ['A jet engine under an airliner wing', 'The core of a jet engine: rows of turbine blades'],
-      sneaker: ['A black running shoe with a neon sole held by a hand', 'A blueprint drawing of the same shoe'],
-      camera: ['A cinema camera on a tripod', 'A camera taken apart, every part laid out on white'],
-      serum: ['An amber serum bottle with a dropper on peach', 'A blueprint drawing of the bottle and dropper'],
-      kettle: ['A black pour-over kettle on a table', 'A blueprint drawing of the kettle'],
-    },
+
+  story: {
+    eyebrow: 'Script lab', h2: 'Spin a story.',
+    sub: 'Every great ad starts with a wild idea. Spin the reels — tap one to lock it.',
+    reels: [
+      ['Hero', ['A shy skater', 'A grandma DJ', 'Two rival influencers', 'A robot barista', 'A lost astronaut', 'A street dancer', 'A gamer who never sleeps', 'A cat with a million followers', 'The new kid in town', 'A very serious pigeon']],
+      ['Place', ['on the last night of summer', 'in a city that never logs off', 'on Mars, with bad Wi‑Fi', 'inside a vending machine', 'at a rooftop party', 'in Tokyo, 2049', 'on a ferry to nowhere', 'at a 24‑hour laundromat', 'in the school’s lost & found', 'backstage at a sold‑out show']],
+      ['Twist', ['finds sneakers that can fly', 'swaps lives with their phone', 'has 60 seconds to go viral', 'falls for their own hologram', 'starts a band with total strangers', 'learns the soda tastes like memories', 'wins — but the prize is a kettle', 'realises everyone is in a commercial', 'gets one wish and wastes it on snacks', 'becomes a meme overnight']],
+    ],
+    spin: 'Spin', lock: 'Locked', tapLock: 'Tap a reel to lock it',
+    use: 'Make it our next ad', count: 'stories spun',
   },
-  ads: {
-    eyebrow: 'Advertising', h2: 'One product.<br>Every audience.',
-    sub: 'We film the same product as a different story for every audience that matters to you.',
-    ad: 'AD', product: 'NOVA', productLine: 'Face serum',
-    audiences: {
-      young: ['Young', 'Glow loud.'],
-      business: ['Business', 'Ten seconds. Ready for anything.'],
-      elders: ['Grandparents', 'For every story you still tell.'],
-      dreamers: ['Dreamers', 'Made for golden hour.'],
-    },
-    alts: { young: 'Two young women with skateboards at sunset', business: 'A confident woman in a black suit on a city street', elders: 'Three older friends laughing at a yellow table in a garden', dreamers: 'A woman dancing in a field at sunset' },
-    serumAlt: 'NOVA serum bottle',
+
+  product: {
+    eyebrow: 'Product → film → app', h2: 'Design it.<br>Film it. Ship it.',
+    sub: 'Invent your own drink. Then watch us shoot the ad and drop it in an app — that’s what we do for brands.',
+    name: 'Name it', flavour: 'Flavour', finish: 'Finish',
+    flavours: [['citrus', 'Citrus'], ['berry', 'Berry'], ['mint', 'Mint'], ['ice', 'Ice'], ['night', 'Night'], ['pearl', 'Pearl']],
+    finishes: [['gloss', 'Gloss'], ['matte', 'Matte'], ['chrome', 'Chrome'], ['neon', 'Neon']],
+    modes: [['design', 'Design'], ['film', 'Film'], ['app', 'App']],
+    tagline: 'Taste the future.', ad: 'AD', drop: 'New drop', add: 'Add to bag', added: 'In your bag ✓',
+    canvas: 'A drink can you design: it spins in 3D, can be filmed in a dramatic ad, or shown inside a shop app. Drag sideways to turn it.',
+    drag: 'Drag to spin',
   },
-  films: {
-    eyebrow: 'Our films & collaborations', h2: 'Our own films.<br>Your brand, inside the story.',
-    sub: 'We make our own films and collaborations. A brand appears the way it does in life — naturally, never in the way.',
-    subs: ['— Where are we going?', '— Somewhere worth filming.'],
-    alt: 'A woman in a meadow looks at snowy mountains at dusk',
-    cta: 'Propose a collaboration',
+
+  fx: {
+    eyebrow: 'Special effects', h2: 'Make some noise.',
+    sub: 'Nine effects from our toolkit. Tap fast — it’s a beat machine.',
+    pads: [['boom', 'Boom'], ['bolt', 'Bolt'], ['rain', 'Rain'], ['snow', 'Snow'], ['warp', 'Warp'], ['glitch', 'Glitch'], ['confetti', 'Confetti'], ['slowmo', 'Slo‑mo'], ['cut', 'Cut']],
+    keys: 'QWEASDZXC', keysHint: 'On a keyboard? Use Q W E · A S D · Z X C',
+    canvas: 'A stage for special effects triggered by the pads below.',
   },
-  how: {
-    eyebrow: 'How we work', h2: 'From idea to premiere.',
-    steps: [
-      ['idea', 'Idea', 'One clear thought: what to say, and to whom.', 'A designer sketching on a tablet'],
-      ['shoot', 'Shoot', 'Real light, real people, the right camera.', 'A camera operator with a stabilised rig on set'],
-      ['edit', 'Edit', 'Rhythm, colour and sound until it feels right.', 'A video being edited on a laptop'],
-      ['premiere', 'Premiere', 'Released where your audience already looks.', 'An audience watching a big screen in the dark'],
+
+  what: {
+    eyebrow: 'What we do', h2: 'Five ways to<br>work with us.', tap: 'Tap a card',
+    cards: [
+      ['film', 'Short films', 'Original stories with real feelings. Festival‑ready, feed‑ready.'],
+      ['ads', 'Brand ads', 'Scripts that hook in the first second — and a film to match.'],
+      ['collab', 'Collabs', 'Your brand inside our films. Natural, never cringe.'],
+      ['design', 'Product design', 'From a sketch to the thing in your hand. Then we film it.'],
+      ['apps', 'Apps & sites', 'When your product needs a home online, we build that too.'],
     ],
   },
-  also: {
-    eyebrow: 'Also, on request', h2: 'Websites, apps and AI agents.',
-    sub: 'Built with the same care as a film.',
-    items: [['web', 'Websites', 'Pages that feel like a scene.'], ['app', 'Apps', 'Clear from the first touch.'], ['ai', 'AI agents', 'A voice for your brand, awake around the clock.']],
-    chat: ['Hi! Can you film our new kettle?', 'Of course. Tell me about it'],
+
+  portals: {
+    eyebrow: 'Follow the story', h2: 'Pick a portal.', sub: 'Each one opens with its own effect. Sound on.',
+    items: [['youtube', 'Watch'], ['instagram', 'Follow'], ['tiktok', 'Scroll'], ['email', 'Write to us']],
+    email: 'Email',
   },
+
   contact: {
-    eyebrow: 'Contact', h2: 'The doors are open.', sub: 'Every door leads to us.',
-    notes: { email: 'Write to us', youtube: 'Watch', instagram: 'Follow', tiktok: 'Short films' },
-    emailName: 'Email',
-    formTitle: 'Or tell us here', name: 'Name', mail: 'Email', what: 'What is it about?', message: 'Your idea', messageHint: 'A few lines are enough.',
-    kinds: [['film', 'Ad film'], ['product', 'Product design'], ['collaboration', 'Collaboration'], ['interactive', 'Website or app'], ['ai', 'AI agent'], ['other', 'Other']],
-    send: 'Send', privacy: 'Used only to reply to you.',
+    eyebrow: 'Pitch us', h2: 'Got an idea?<br>Pitch it.',
+    name: 'Name', mail: 'Email', what: 'What is it?', message: 'Your idea', messageHint: 'A few lines are enough.',
+    kinds: [['film', 'Short film'], ['campaign', 'Brand ad'], ['collaboration', 'Collab'], ['product', 'Product'], ['interactive', 'App / site'], ['other', 'Other']],
+    send: 'Send it', privacy: 'Used only to reply to you.',
   },
-  footer: 'Advertising films · Product design · Our own cinema',
-  photos: 'Photography via Unsplash',
+
+  footer: 'Short films · Brand ads · Collabs · Product design',
   js: {
     form: {
       sending: 'Sending…', errName: 'Add your name so we know who to answer.', errEmail: 'Check the email — it needs an @ and a domain.',
       errMessage: 'A few more words, please — at least 10 characters.',
-      okTitle: 'Thank you — the door is open.', okText: 'We read every message personally and will reply to {email}.',
+      okTitle: 'Sent. Cut — that’s a wrap!', okText: 'We read every pitch personally and will reply to {email}.',
       errTitle: 'The message wasn’t sent.', errNet: 'Your text is still here. Try again in a moment, or write to verghethorn@gmail.com.',
-      errBot: 'This looked automated. Wait a few seconds and send again.',
+      errBot: 'That was a bit too fast. Wait a few seconds and send again.',
     },
+    pitchPrefix: 'Story idea from the Script lab:',
   },
   notFound: { title: 'Page not found — VERGHÉTHORN', h1: 'Cut. Wrong scene.', text: 'This page doesn’t exist.', home: 'Back to the set' },
   moved: 'This page has moved.',
 };
-
-const ru = {
-  lang: 'ru', locale: 'ru_RU', other: 'en', otherName: 'EN', otherLabel: 'English version',
-  title: 'VERGHÉTHORN — рекламное кино и дизайн продуктов для брендов',
-  desc: 'Снимаем рекламное кино для брендов, проектируем любые продукты — от часов до чайников — и снимаем собственные фильмы, где бренд живёт внутри истории.',
-  skip: 'Перейти к содержанию',
-  nav: [['design', 'Дизайн'], ['ads', 'Реклама'], ['films', 'Фильмы'], ['how', 'Как работаем']],
-  contactBtn: 'Связаться',
-  hero: {
-    eyebrow: 'VERGHÉTHORN · киностудия',
-    h1: 'Снимаем кино<br>для брендов.',
-    sub: 'Реклама, дизайн продуктов и собственное кино — такое, что досматривают до конца.',
-    cta: 'Рассказать идею',
-    cams: [['A', 'Общий', '35ММ'], ['B', 'Тележка', '24ММ'], ['C', 'Крупный', '85ММ']],
-    alts: ['Съёмочная группа снимает актрису в красном в светлой квартире', 'Группа в лучах света прокладывает рельсы для тележки', 'Кинокамера на штативе в белой студии'],
-    group: 'Камеры на площадке',
-  },
-  statement: 'Кино, которое продаёт. <em>Вещи, которые хочется взять в руки.</em> Истории, где ваш бренд — внутри.',
-  design: {
-    eyebrow: 'Дизайн продуктов', h2: 'Проектируем что угодно.<br>До последнего болтика.',
-    sub: 'Часы, двигатели, чайники, кроссовки, косметика, одежда. Создаём продукт — и снимаем его.',
-    show: 'Заглянуть внутрь', hide: 'Снаружи', showBlue: 'Показать чертёж', hint: 'Листайте',
-    items: {
-      watch: ['Часы', 'Каждая шестерёнка, пружина и камень на своём месте.'],
-      engine: ['Двигатель', 'Каждый ремень, шкив и болт — и как они движутся.'],
-      turbine: ['Турбина', 'Каждая лопатка выверена до грамма.'],
-      sneaker: ['Кроссовки', 'От первой линии до подошвы.'],
-      camera: ['Камера', 'Разобрана до последней детали.'],
-      serum: ['Косметика', 'Флакон, пипетка и этикетка — всё продумано.'],
-      kettle: ['Чайник', 'Форма, которую хочется взять в руки.'],
-    },
-    alts: {
-      watch: ['Стальные часы с белым циферблатом на белом столе', 'Механизм часов изнутри: шестерёнки и пружины'],
-      engine: ['Автомобильный двигатель на стенде в мастерской', 'Двигатель изнутри: ремень ГРМ, шкивы и шестерни'],
-      turbine: ['Реактивный двигатель под крылом самолёта', 'Сердце двигателя: ряды лопаток турбины'],
-      sneaker: ['Чёрный кроссовок с неоновой подошвой в руке', 'Чертёж того же кроссовка'],
-      camera: ['Кинокамера на штативе', 'Разобранная камера: все детали разложены на белом'],
-      serum: ['Янтарный флакон сыворотки с пипеткой на персиковом фоне', 'Чертёж флакона и пипетки'],
-      kettle: ['Чёрный чайник для пуровера на столе', 'Чертёж чайника'],
-    },
-  },
-  ads: {
-    eyebrow: 'Реклама', h2: 'Один продукт.<br>Любая аудитория.',
-    sub: 'Снимаем один и тот же продукт как разные истории — для каждой аудитории, которая вам важна.',
-    ad: 'РЕКЛАМА', product: 'NOVA', productLine: 'Сыворотка для лица',
-    audiences: {
-      young: ['Молодёжь', 'Сияй громко.'],
-      business: ['Бизнес', 'Десять секунд — и готова ко всему.'],
-      elders: ['Бабушки и дедушки', 'Для всех историй, которые вы ещё расскажете.'],
-      dreamers: ['Мечтатели', 'Создано для золотого часа.'],
-    },
-    alts: { young: 'Две девушки со скейтбордами на закате', business: 'Уверенная женщина в чёрном костюме на улице города', elders: 'Трое пожилых друзей смеются за жёлтым столом в саду', dreamers: 'Девушка танцует в поле на закате' },
-    serumAlt: 'Флакон сыворотки NOVA',
-  },
-  films: {
-    eyebrow: 'Наши фильмы и коллаборации', h2: 'Собственное кино.<br>Ваш бренд — внутри истории.',
-    sub: 'Снимаем свои фильмы и коллаборации. Бренд появляется так, как в жизни, — естественно и никогда не мешает.',
-    subs: ['— Куда мы идём?', '— Туда, где стоит снимать.'],
-    alt: 'Девушка на лугу смотрит на снежные горы в сумерках',
-    cta: 'Предложить коллаборацию',
-  },
-  how: {
-    eyebrow: 'Как мы работаем', h2: 'От идеи до премьеры.',
-    steps: [
-      ['idea', 'Идея', 'Одна ясная мысль: что сказать и кому.', 'Дизайнер рисует эскиз на планшете'],
-      ['shoot', 'Съёмка', 'Настоящий свет, живые люди, правильная камера.', 'Оператор со стабилизатором на площадке'],
-      ['edit', 'Монтаж', 'Ритм, цвет и звук — пока не станет точно.', 'Монтаж видео на ноутбуке'],
-      ['premiere', 'Премьера', 'Выпускаем туда, куда уже смотрит ваша аудитория.', 'Зрители смотрят на большой экран в темноте'],
-    ],
-  },
-  also: {
-    eyebrow: 'По запросу', h2: 'Сайты, приложения и AI-агенты.',
-    sub: 'С той же заботой, что и кино.',
-    items: [['web', 'Сайты', 'Страницы, похожие на сцену из фильма.'], ['app', 'Приложения', 'Понятны с первого касания.'], ['ai', 'AI-агенты', 'Голос вашего бренда, который не спит.']],
-    chat: ['Привет! Снимете наш новый чайник?', 'Конечно. Расскажите о нём'],
-  },
-  contact: {
-    eyebrow: 'Контакт', h2: 'Двери открыты.', sub: 'Каждая дверь ведёт к нам.',
-    notes: { email: 'Написать нам', youtube: 'Смотреть', instagram: 'Подписаться', tiktok: 'Короткие видео' },
-    emailName: 'Почта',
-    formTitle: 'Или расскажите здесь', name: 'Имя', mail: 'Email', what: 'О чём речь?', message: 'Ваша идея', messageHint: 'Хватит нескольких строк.',
-    kinds: [['film', 'Рекламный фильм'], ['product', 'Дизайн продукта'], ['collaboration', 'Коллаборация'], ['interactive', 'Сайт или приложение'], ['ai', 'AI-агент'], ['other', 'Другое']],
-    send: 'Отправить', privacy: 'Используем только для ответа вам.',
-  },
-  footer: 'Рекламное кино · Дизайн продуктов · Собственные фильмы',
-  photos: 'Фотографии: Unsplash',
-  js: {
-    form: {
-      sending: 'Отправка…', errName: 'Укажите имя, чтобы мы знали, кому ответить.', errEmail: 'Проверьте email — нужен символ @ и домен.',
-      errMessage: 'Пожалуйста, чуть подробнее — хотя бы 10 символов.',
-      okTitle: 'Спасибо — дверь открыта.', okText: 'Мы лично читаем каждое сообщение и ответим на {email}.',
-      errTitle: 'Сообщение не отправлено.', errNet: 'Текст остался здесь. Попробуйте ещё раз через минуту или напишите на verghethorn@gmail.com.',
-      errBot: 'Похоже на автоматическую отправку. Подождите несколько секунд и отправьте снова.',
-    },
-  },
-  notFound: { title: 'Страница не найдена — VERGHÉTHORN', h1: 'Стоп. Не та сцена.', text: 'Такой страницы нет.', home: 'Вернуться на площадку' },
-  moved: 'Страница переехала.',
-};
-
-export const LANGS = { en, ru };
