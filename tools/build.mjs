@@ -33,7 +33,7 @@ function head({ title, desc, path, noindex = false, refresh = '' }) {
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 ${refresh}${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${SITE.url}${path}">`}
-<meta name="theme-color" content="#0a0a0a">
+<meta name="theme-color" content="#0c0c0d">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="VERGHÉTHORN">
 <meta property="og:title" content="${esc(title)}">
@@ -48,118 +48,91 @@ ${refresh}${noindex ? '<meta name="robots" content="noindex">' : `<link rel="can
 <script>document.documentElement.classList.add('js')</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="/static/css/site.css?v=${V}">
 </head>`;
 }
 
 function page() {
-  const H = L.hero, F = L.films, S = L.set, B = L.brand, D = L.design, ST = L.story, X = L.portals, C = L.contact;
-  const portals = X.items.map(([id, note]) => id === 'email' ? { id, name: X.email, handle: SITE.email, href: `mailto:${SITE.email}`, note } : { id, ...SITE.social[id], note });
+  const H = L.hero, SV = L.services, P = L.process, ST = L.story, C = L.contact;
+  const socials = [...Object.entries(SITE.social).map(([id, s]) => ({ id, ...s })), { id: 'email', name: C.emailName, handle: SITE.email, href: `mailto:${SITE.email}`, color: '#3d5afe' }];
   const jsonld = { '@context': 'https://schema.org', '@type': 'Organization', name: 'VERGHÉTHORN', url: SITE.url, email: SITE.email, sameAs: Object.values(SITE.social).map(s => s.href), description: L.desc };
-  const tile = (group, [id, img, name, spec], i) => `<button type="button" class="tile" data-${group}="${id}" aria-pressed="${i === (group === 'light' ? 1 : 0)}"><img src="/media/t/${img}.webp" alt="" loading="lazy" decoding="async"><span><b>${name}</b><small>${spec}</small></span></button>`;
   return `${head({ title: L.title, desc: L.desc, path: '/' })}
 <body>
 <a class="skip" href="#main">${L.skip}</a>
 <header class="hd" data-hd>
   <a class="wm" href="/" aria-label="VERGHÉTHORN home">VERGHÉTHORN</a>
   <button class="snd" type="button" data-sound aria-pressed="true" aria-label="${L.soundOff}" data-on="${L.soundOff}" data-off="${L.soundOn}">${SOUND}</button>
-  <a class="hd-cta" href="#pitch">${L.pitch}</a>
+  <a class="hd-cta" href="#contact">${L.contactBtn}</a>
 </header>
 
 <main id="main">
-<section class="hero" aria-labelledby="h1" data-hero>
-  <div class="hero-v" data-reel-hero>
-    ${H.mobile.map(([id, t], i) => `<video class="hv m${i === 0 ? ' on' : ''}" data-src="${V_(id)}.mp4" poster="${V_(id)}.webp" muted playsinline preload="none" data-label="${t}"></video>`).join('\n    ')}
-    ${H.desktop.map(([id, t], i) => `<video class="hv d${i === 0 ? ' on' : ''}" data-src="${V_(id)}.mp4" poster="${V_(id)}.webp" muted playsinline preload="none" data-label="${t}"></video>`).join('\n    ')}
-  </div>
-  <div class="bars" aria-hidden="true" data-bars></div>
-  <div class="hero-c">
-    <p class="eyebrow">${H.eyebrow}</p>
+<section class="stage" aria-labelledby="h1" data-stage data-view="set">
+  <canvas class="set3d" data-set3d role="img" aria-label="${esc(H.fallback)}"></canvas>
+  <img class="poster" src="/media/set-poster.webp" alt="" aria-hidden="true">
+  <p class="loading" data-loading aria-hidden="true">${H.loading}</p>
+  <div class="labels" data-labels>${Object.entries(H.labels).map(([id, t]) => `<button type="button" class="lbl" data-lbl="${id}"><i></i>${t}</button>`).join('')}</div>
+  <div class="pov" aria-hidden="true"><span class="lb t"></span><span class="lb b"></span><span class="pov-hud"><span class="rec"><i></i>REC</span><span data-povcam>CAMERA A</span><span data-tc>00:00:00:00</span></span><p class="subs" data-subs></p></div>
+  <div class="stage-top"><span class="slate"><i></i>${H.slate}</span></div>
+  <div class="stage-bottom">
     <h1 id="h1">${H.h1}</h1>
-    <p class="hero-sub">${H.sub}</p>
-    <p class="hero-cta"><a class="btn light" href="#pitch">${H.cta} ${ARROW}</a><a class="btn line" href="#set">${H.cta2}</a></p>
+    <p class="hint">${H.hint}</p>
+    <div class="views" role="tablist" aria-label="View">${H.views.map(([id, t], i) => `<button type="button" role="tab" aria-selected="${i === 0}" data-view-btn="${id}">${t}</button>`).join('')}</div>
   </div>
-  <p class="hero-label" data-hlabel aria-hidden="true"></p>
+  <script type="application/json" id="hero-lines">${JSON.stringify({ lines: H.lines, product: H.productCard })}</script>
 </section>
 
-<section class="sec films" id="films" aria-labelledby="f-t">
-  <div class="sec-head"><p class="eyebrow">${F.eyebrow}</p><h2 id="f-t">${F.h2}</h2><p class="lead">${F.sub}</p></div>
-  <ul class="reels">${F.reels.map(([id, t]) => `<li><figure class="reel">${vid(id)}<figcaption><b>${t}</b></figcaption></figure></li>`).join('')}</ul>
+<section class="intro"><p class="rv">${L.intro}</p></section>
+
+<section class="sec services" aria-label="${SV.eyebrow}">
+  <p class="eyebrow wrap">${SV.eyebrow}</p>
+  <ul class="svc">${SV.items.map(([v, t, d]) => `<li class="svc-i rv"><div class="svc-v">${vid(v)}</div><div class="svc-t"><h2>${t}</h2><p>${d}</p></div></li>`).join('')}</ul>
 </section>
 
-<section class="sec set" id="set" aria-labelledby="s-t">
-  <div class="sec-head"><p class="eyebrow">${S.eyebrow}</p><h2 id="s-t">${S.h2}</h2><p class="lead">${S.sub}</p></div>
-  <div class="setbox">
-    <div class="monitor" data-monitor>
-      <video class="mon-v" src="${V_('set')}.mp4" poster="${V_('set')}.webp" muted loop playsinline preload="auto" crossorigin="anonymous" aria-label="${S.alt}"></video>
-      <canvas class="mon-c" data-mon aria-hidden="true"></canvas>
-      <div class="mon-hud" aria-hidden="true"><span class="rec"><i></i>REC</span><span data-mhud>A‑CAM · 35MM · 3200K · 24FPS</span><span class="tc" data-tc>00:00:00:00</span><span class="keyc" data-keyc></span></div>
-      <p class="mon-tip" aria-hidden="true">${S.tapKey}</p>
-    </div>
-    <div class="rig">
-      <div class="grp"><p class="grp-t">${S.light}</p><div class="tiles">${S.lights.map((l, i) => tile('light', l, i)).join('')}</div></div>
-      <div class="grp"><p class="grp-t">${S.lens}</p><div class="tiles">${S.lenses.map((l, i) => tile('lens', l, i)).join('')}</div></div>
-    </div>
-  </div>
-</section>
-
-<section class="sec brand" id="brand" aria-labelledby="b-t">
-  <div class="sec-head"><p class="eyebrow">${B.eyebrow}</p><h2 id="b-t">${B.h2}</h2></div>
-  ${B.panels.map(([id, k, t]) => `<figure class="panel">${vid(id)}<figcaption><span class="eyebrow">${k}</span><p class="ptitle">${t}</p></figcaption></figure>`).join('\n  ')}
-  <p class="brand-line">${B.line}</p>
-</section>
-
-<section class="sec design" id="design" aria-labelledby="d-t">
-  <div class="sec-head"><p class="eyebrow">${D.eyebrow}</p><h2 id="d-t">${D.h2}</h2><p class="lead">${D.sub}</p></div>
-  <ol class="steps">${D.steps.map(([id, t, d], i) => `<li class="step">${vid(id)}<div><small>0${i + 1}</small><h3>${t}</h3><p>${d}</p></div></li>`).join('')}</ol>
-  <div class="cw" data-cw="champagne">
-    <div class="cw-v">${vid('p-ring', 'cw-video')}</div>
-    <div class="cw-c"><h3>${D.cwTitle}</h3><p class="lead">${D.cwSub}</p><div class="cw-chips">${D.colourways.map(([id, t], i) => `<button type="button" data-colour="${id}" aria-pressed="${i === 0}"><i class="sw-${id}"></i>${t}</button>`).join('')}</div></div>
-  </div>
+<section class="sec process" aria-labelledby="p-t">
+  <div class="wrap"><p class="eyebrow">${P.eyebrow}</p><h2 id="p-t" class="rv">${P.h2}</h2>
+  <ol class="steps">${P.steps.map(([t, d], i) => `<li class="rv"><span>0${i + 1}</span><b>${t}</b><p>${d}</p></li>`).join('')}</ol></div>
 </section>
 
 <section class="sec story" id="story" aria-labelledby="st-t">
-  <div class="sec-head"><p class="eyebrow">${ST.eyebrow}</p><h2 id="st-t">${ST.h2}</h2><p class="lead">${ST.sub}</p></div>
+  <div class="wrap"><p class="eyebrow">${ST.eyebrow}</p><h2 id="st-t" class="rv">${ST.h2}</h2><p class="lead">${ST.sub}</p></div>
   <div class="slot" data-slot>
     <div class="slot-reels">${ST.reels.map(([label, items], i) => `<button class="sreel" type="button" data-reel="${i}" aria-pressed="false" aria-label="${label}: ${esc(items[0])}"><span class="sreel-l">${label}</span><span class="sreel-w"><span class="sreel-s" data-strip></span></span><span class="sreel-lock">${ST.lock}</span></button>`).join('')}</div>
     <p class="logline" data-logline aria-live="polite"></p>
-    <div class="slot-row"><button class="btn light big" type="button" data-spin>${ST.spin}</button><a class="btn line" href="#pitch" data-use>${ST.use} ${ARROW}</a></div>
-    <p class="meta"><span data-spun>0</span> ${ST.count} · ${ST.tapLock}</p>
+    <div class="slot-row"><button class="btn dark" type="button" data-spin>${ST.spin}</button><a class="btn ghost" href="#contact" data-use>${ST.use} ${ARROW}</a><span class="meta"><span data-spun>0</span> ${ST.count}</span></div>
   </div>
   <script type="application/json" id="reels">${JSON.stringify(ST.reels.map(r => r[1]))}</script>
 </section>
 
-<section class="sec portals" id="portals" aria-labelledby="x-t">
-  <div class="sec-head"><p class="eyebrow">${X.eyebrow}</p><h2 id="x-t">${X.h2}</h2><p class="lead">${X.sub}</p></div>
-  <ul class="ports">${portals.map(p => `<li><a class="port pt-${p.id}" href="${p.href}" data-portal="${p.id}"${p.id === 'email' ? '' : ' rel="me noopener"'}><span class="orb">${GLYPH[p.id]}</span><b>${esc(p.name)}</b><span>${esc(p.handle)}</span></a></li>`).join('')}</ul>
-</section>
-
-<section class="sec pitch" id="pitch" aria-labelledby="c-t">
-  <div class="sec-head"><p class="eyebrow">${C.eyebrow}</p><h2 id="c-t">${C.h2}</h2></div>
-  <form class="form" data-inquiry data-endpoint="${SITE.inquiries.endpoint}" data-key="${SITE.inquiries.key}" novalidate>
+<section class="sec contact" id="contact" aria-labelledby="c-t">
+  <div class="wrap"><p class="eyebrow">${C.eyebrow}</p><h2 id="c-t" class="rv">${C.h2}</h2></div>
+  <ul class="socials wrap">${socials.map(s => `<li><a class="soc" href="${s.href}" data-soc="${s.id}" style="--c:${s.color}"${s.id === 'email' ? '' : ' rel="me noopener"'}><span class="soc-i">${GLYPH[s.id]}</span><span class="soc-t"><b>${esc(s.name)}</b><small>${esc(s.handle)}</small></span><span class="soc-a">${ARROW}</span></a></li>`).join('')}</ul>
+  <form class="form wrap" data-inquiry data-endpoint="${SITE.inquiries.endpoint}" data-key="${SITE.inquiries.key}" novalidate>
+    <h3>${C.formTitle}</h3>
     <fieldset class="kinds"><legend>${C.what}</legend>${C.kinds.map(([v, t], i) => `<label><input type="radio" name="category" value="${v}"${i === 0 ? ' checked' : ''}><span>${t}</span></label>`).join('')}</fieldset>
-    <div class="field"><label for="f-name">${C.name}</label><input id="f-name" name="name" type="text" autocomplete="name" maxlength="120" required aria-describedby="e-name"><p class="error" id="e-name"></p></div>
-    <div class="field"><label for="f-email">${C.mail}</label><input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="200" required aria-describedby="e-email"><p class="error" id="e-email"></p></div>
+    <div class="row2">
+      <div class="field"><label for="f-name">${C.name}</label><input id="f-name" name="name" type="text" autocomplete="name" maxlength="120" required aria-describedby="e-name"><p class="error" id="e-name"></p></div>
+      <div class="field"><label for="f-email">${C.mail}</label><input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="200" required aria-describedby="e-email"><p class="error" id="e-email"></p></div>
+    </div>
     <div class="field"><label for="f-msg">${C.message}</label><textarea id="f-msg" name="message" rows="4" maxlength="4000" required placeholder="${esc(C.messageHint)}" aria-describedby="e-msg"></textarea><p class="error" id="e-msg"></p></div>
     <div class="hp" aria-hidden="true"><label for="f-web">Website</label><input id="f-web" name="website" type="text" tabindex="-1" autocomplete="off"></div>
-    <p class="form-send"><button class="btn light big" type="submit">${C.send}</button><small>${C.privacy}</small></p>
+    <p class="form-send"><button class="btn dark" type="submit">${C.send}</button><small>${C.privacy}</small></p>
     <div class="form-status" data-form-status role="status" tabindex="-1" hidden></div>
   </form>
 </section>
 </main>
 
-<footer class="foot">
+<footer class="foot wrap">
   <p class="foot-wm">VERGHÉTHORN</p>
   <p>${L.footer}</p>
-  <p class="foot-links"><a href="mailto:${SITE.email}">${SITE.email}</a>${Object.values(SITE.social).map(s => `<a href="${s.href}" rel="me noopener">${s.name}</a>`).join('')}</p>
-  <p class="foot-c">© ${new Date().getFullYear()} VERGHÉTHORN · ${L.stock}</p>
+  <p class="foot-c">© ${new Date().getFullYear()} VERGHÉTHORN · ${L.credits}</p>
 </footer>
 
-<div class="portal-ov" data-portal-ov aria-hidden="true"><i class="p1"></i><i class="p2"></i><i class="p3"></i><span class="plane">${svg('<path d="M2 11.5 22 3l-6.5 18-3.8-7.2z" fill="#fff"/><path d="m11.7 13.8 3.8-3.6" stroke="#0a0a0a" stroke-width="1.4"/>')}</span></div>
+<div class="warp" data-warp aria-hidden="true"><span class="warp-i"></span></div>
 
 <script type="application/ld+json">${JSON.stringify(jsonld)}</script>
 <script type="application/json" id="i18n">${JSON.stringify(L.js).replace(/</g, '\\u003c')}</script>
+<script type="importmap">{"imports":{"three":"/static/vendor/three/build/three.module.min.js","three/addons/":"/static/vendor/three/jsm/"}}</script>
 <script type="module" src="/static/js/site.js?v=${V}"></script>
 </body>
 </html>
@@ -181,7 +154,7 @@ function redirect(from, to) {
 
 for (const d of ['work', 'practice', 'lab', 'about', 'services', 'approach', 'contact', 'archive', 'links', 'ru']) { const p = join(ROOT, d); if (existsSync(p)) rmSync(p, { recursive: true }); }
 writeFileSync(join(ROOT, 'index.html'), page());
-const old = [['/ru/', '/'], ['/services/', '/#design'], ['/approach/', '/#set'], ['/contact/', '/#pitch'], ['/links/', '/#portals'], ['/archive/', '/'], ['/archive/qist/', '/'], ['/archive/qist/app/', '/'], ['/archive/use-5-now/', '/'], ['/archive/living-shapes/', '/'], ['/archive/lab/', '/'], ['/work/', '/'], ['/work/living-shapes/', '/'], ['/work/usefive/', '/'], ['/work/living-frame/', '/'], ['/practice/', '/'], ['/lab/', '/'], ['/about/', '/']];
+const old = [['/ru/', '/'], ['/services/', '/'], ['/approach/', '/'], ['/contact/', '/#contact'], ['/links/', '/#contact'], ['/archive/', '/'], ['/archive/qist/', '/'], ['/archive/qist/app/', '/'], ['/archive/use-5-now/', '/'], ['/archive/living-shapes/', '/'], ['/archive/lab/', '/'], ['/work/', '/'], ['/work/living-shapes/', '/'], ['/work/usefive/', '/'], ['/work/living-frame/', '/'], ['/practice/', '/'], ['/lab/', '/'], ['/about/', '/']];
 old.forEach(([a, b]) => { redirect(a, b); if (a !== '/ru/') redirect('/ru' + a, b); });
 writeFileSync(join(ROOT, '404.html'), notFound());
 writeFileSync(join(ROOT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>

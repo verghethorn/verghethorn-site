@@ -1,6 +1,5 @@
-// VERGHÉTHORN v6 — video-first. Nothing here ever blocks page scrolling.
+// VERGHÉTHORN v7. Nothing here blocks page scrolling.
 import { sfx, isMuted, setMuted, unlock } from './sfx.js';
-import { startMonitor } from './grade.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -9,78 +8,57 @@ const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const seen = (els, fn, opts = { threshold: .2 }) => { const io = new IntersectionObserver(es => es.forEach(e => fn(e, io)), opts); els.forEach(el => el && io.observe(el)); return io; };
 const store = { get: (k, d) => { try { return localStorage.getItem(k) ?? d; } catch { return d; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
 const buzz = ms => { try { navigator.vibrate?.(ms); } catch {} };
-const onTap = (el, fn) => { let d = null; el.addEventListener('pointerdown', e => { d = { x: e.clientX, y: e.clientY, t: Date.now() }; }); el.addEventListener('pointerup', e => { if (!d) return; if (Math.hypot(e.clientX - d.x, e.clientY - d.y) < 12 && Date.now() - d.t < 600) fn(e); d = null; }); el.addEventListener('pointercancel', () => { d = null; }); };
 const play = v => { const p = v.play(); if (p) p.catch(() => {}); };
 
-/* sound toggle */
 const sndBtn = $('[data-sound]');
 const paintSnd = () => { const m = isMuted(); sndBtn.setAttribute('aria-pressed', String(!m)); sndBtn.setAttribute('aria-label', m ? sndBtn.dataset.off : sndBtn.dataset.on); };
 paintSnd(); sndBtn.addEventListener('click', () => { setMuted(!isMuted()); paintSnd(); sfx('tick'); });
 addEventListener('pointerdown', unlock, { once: true, passive: true });
 
-/* header */
-const hd = $('[data-hd]'), hero = $('[data-hero]');
-seen([hero], e => hd.classList.toggle('solid', !e.isIntersecting), { rootMargin: '-80px 0px 0px 0px', threshold: 0 });
-seen($$('.sec-head'), (e, io) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }, { threshold: .2 });
+const hd = $('[data-hd]'), stage = $('[data-stage]');
+seen([stage], e => hd.classList.toggle('light', !e.isIntersecting), { rootMargin: '-72px 0px 0px 0px', threshold: 0 });
+seen($$('.rv'), (e, io) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }, { threshold: .15 });
+seen($$('video[data-auto]'), e => { const v = e.target; if (e.isIntersecting) { if (v.preload === 'none') v.preload = 'auto'; play(v); } else v.pause(); }, { threshold: .25 });
 
-/* ---------- hero: stories-style montage ---------- */
+/* ---------- the 3D film set ---------- */
 {
-  const wide = matchMedia('(min-width: 1000px) and (min-aspect-ratio: 1/1)').matches;
-  const clips = $$(wide ? '.hv.d' : '.hv.m', hero), bars = $('[data-bars]'), label = $('[data-hlabel]');
-  bars.innerHTML = clips.map(() => '<i><b></b></i>').join(''); const bi = $$('i', bars);
-  let cur = -1, timer;
-  const load = v => { if (!v.src) { v.src = v.dataset.src; v.load(); } };
-  const show = i => {
-    i = (i + clips.length) % clips.length; const prev = clips[cur];
-    cur = i; const v = clips[cur]; load(v); load(clips[(cur + 1) % clips.length]);
-    clips.forEach(c => c !== v && c.classList.remove('on')); v.classList.add('on');
-    v.style.animation = 'none'; void v.offsetWidth; v.style.animation = '';
-    v.currentTime = 0; play(v); if (prev && prev !== v) setTimeout(() => prev.pause(), 900);
-    label.textContent = v.dataset.label;
-    bi.forEach((b, j) => { b.className = j < cur ? 'done' : ''; });
-    const dur = still ? 9 : 6.5; bi[cur].style.setProperty('--dur', dur + 's'); void bi[cur].offsetWidth; bi[cur].className = 'now';
-    clearTimeout(timer); timer = setTimeout(() => show(cur + 1), dur * 1000);
+  const canvas = $('[data-set3d]'), lbls = Object.fromEntries($$('[data-lbl]').map(b => [b.dataset.lbl, b]));
+  const { lines, product } = JSON.parse($('#hero-lines').textContent);
+  const subs = $('[data-subs]'), povcam = $('[data-povcam]'), tc = $('[data-tc]'), viewBtns = $$('[data-view-btn]');
+  let api = null, subT = 0, subI = 0;
+  const showSub = text => { subs.classList.remove('show'); setTimeout(() => { subs.textContent = text; subs.classList.add('show'); }, 250); };
+  const ui = {
+    model: '/media/3d/xbot.glb',
+    place(id, x, y, vis) { const b = lbls[id]; if (!b) return; b.style.transform = `translate(${x}px, ${y}px) translate(-50%, -100%)`; b.classList.toggle('hidden', !vis); },
+    onLamp(id, on) { lbls['lamp:' + id]?.classList.toggle('on', on); },
+    onView(v) {
+      stage.dataset.view = v; viewBtns.forEach(b => b.setAttribute('aria-selected', String(b.dataset.viewBtn === v)));
+      povcam.textContent = v === 'a' ? 'CAMERA A · 35MM' : 'CAMERA B · 85MM · DOLLY';
+      clearInterval(subT); subs.classList.remove('show');
+      if (v === 'a') { subI = 0; showSub(lines[0]); subT = setInterval(() => showSub(lines[++subI % lines.length]), 3200); }
+      if (v === 'b') showSub(product);
+    },
+    onActor() { sfx('swoosh'); },
+    onReady() { stage.classList.add('ready'); },
   };
-  clips.forEach(v => { v.loop = true; });
-  show(0);
-  onTap($('[data-reel-hero]'), e => { const left = e.clientX < innerWidth * .3; show(cur + (left ? -1 : 1)); sfx('swoosh'); });
-  seen([hero], e => { const v = clips[cur]; if (e.isIntersecting) { play(v); } else v.pause(); }, { threshold: 0 });
-}
-
-/* ---------- autoplay muted clips only while on screen ---------- */
-seen($$('video[data-auto]'), e => {
-  const v = e.target;
-  if (e.isIntersecting) { if (v.preload === 'none') v.preload = 'auto'; play(v); } else v.pause();
-}, { threshold: .25 });
-seen($$('.panel'), (e, io) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }, { threshold: .35 });
-
-/* ---------- on set: lights, lenses, aim the key ---------- */
-{
-  const box = $('[data-monitor]'), video = $('.mon-v', box), canvas = $('[data-mon]'), hud = $('[data-mhud]'), tc = $('[data-tc]'), keyc = $('[data-keyc]');
-  let mon = null; try { mon = startMonitor(canvas, video, [.56, .32]); } catch (e) { console.warn(e); }
-  const state = { light: 'tungsten', lens: '35' };
-  const LBL = { light: { day: '5600K', tungsten: '3200K', neon: 'NEON', golden: 'GOLDEN HOUR' }, lens: { 35: '35MM', 85: '85MM · T1.5', ana: '40MM ANAMORPHIC · 2.39:1', 16: '16MM FILM' } };
-  const FALL = { day: 'saturate(1) brightness(1.05)', tungsten: 'sepia(.35) saturate(1.2) contrast(1.1)', neon: 'hue-rotate(-40deg) saturate(1.6) contrast(1.15)', golden: 'sepia(.5) saturate(1.3) brightness(1.05)' };
-  const paint = () => { hud.textContent = `A‑CAM · ${LBL.lens[state.lens]} · ${LBL.light[state.light]} · 24FPS`; if (!mon) video.style.filter = FALL[state.light]; };
-  const pick = (group, btn) => { $$(`[data-${group}]`).forEach(b => b.setAttribute('aria-pressed', String(b === btn))); state[group] = btn.dataset[group]; mon?.[group](state[group]); paint(); sfx(group === 'lens' ? 'shutter' : 'clap'); buzz(10); };
-  $$('[data-light]').forEach(b => b.addEventListener('click', () => pick('light', b)));
-  $$('[data-lens]').forEach(b => b.addEventListener('click', () => pick('lens', b)));
-  const aim = (x, y) => { keyc.style.left = `${x * 100}%`; keyc.style.top = `${y * 100}%`; mon?.key(x, 1 - y); };
-  aim(.42, .4);
-  onTap(box, e => { const r = box.getBoundingClientRect(); aim((e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height); box.classList.add('aimed'); sfx('tick'); });
-  if (!mon) canvas.remove();
-  paint();
-  play(video);
+  const boot = async () => {
+    try {
+      const m = await import('./set3d.js');
+      api = await m.startSet(canvas, ui);
+    } catch (e) { console.warn(e); stage.classList.add('failed'); }
+  };
+  if (!window.WebGLRenderingContext) stage.classList.add('failed'); else boot();
+  // the floating labels are real buttons: same actions as tapping the object
+  Object.entries(lbls).forEach(([id, b]) => b.addEventListener('click', () => {
+    if (!api) return; const [kind, key] = id.split(':');
+    if (kind === 'lamp') { api.toggleLamp(key); sfx('tick'); buzz(8); }
+    if (kind === 'cam') { api.setView(key); sfx('shutter'); }
+    if (kind === 'actor') api.moveActor(key);
+  }));
+  viewBtns.forEach(b => b.addEventListener('click', () => { api?.setView(b.dataset.viewBtn); sfx(b.dataset.viewBtn === 'set' ? 'tick' : 'shutter'); }));
+  canvas.addEventListener('pointerup', () => sfx('tick'));
   const t0 = performance.now(), pad = n => String(n).padStart(2, '0');
-  let vis = false; seen([box], e => { vis = e.isIntersecting; }, { threshold: 0 });
-  const tick = now => { if (vis) { const f = Math.floor((now - t0) / (1000 / 24)), s = Math.floor(f / 24); tc.textContent = `00:${pad(Math.floor(s / 60) % 60)}:${pad(s % 60)}:${pad(f % 24)}`; } requestAnimationFrame(tick); };
-  requestAnimationFrame(tick);
-}
-
-/* ---------- colourways ---------- */
-{
-  const cw = $('[data-cw]');
-  $$('[data-colour]', cw).forEach(b => b.addEventListener('click', () => { cw.dataset.cw = b.dataset.colour; $$('[data-colour]', cw).forEach(x => x.setAttribute('aria-pressed', String(x === b))); sfx('tick'); }));
+  setInterval(() => { if (stage.dataset.view === 'set') return; const f = Math.floor((performance.now() - t0) / (1000 / 24)), s = Math.floor(f / 24); tc.textContent = `00:${pad(Math.floor(s / 60) % 60)}:${pad(s % 60)}:${pad(f % 24)}`; }, 42);
 }
 
 /* ---------- script lab ---------- */
@@ -93,7 +71,7 @@ seen($$('.panel'), (e, io) => { if (e.isIntersecting) { e.target.classList.add('
   const ih = r => $('.sreel-w', r).offsetHeight;
   const place = (i, idx, ms) => { const s = $('[data-strip]', reels[i]); s.style.transition = ms ? `transform ${ms}ms cubic-bezier(.15,.85,.25,1.05)` : 'none'; s.style.transform = `translateY(${-idx * ih(reels[i])}px)`; };
   const text = () => pos.map((p, i) => lists[i][p % lists[i].length]).join(' ') + '.';
-  const type = str => { clearInterval(typer); out.innerHTML = ''; const sp = document.createElement('span'), cur = document.createElement('span'); cur.className = 'cur'; out.append(sp, cur); let k = 0; typer = setInterval(() => { sp.textContent = str.slice(0, ++k); if (k % 3 === 0) sfx('key'); if (k >= str.length) clearInterval(typer); }, still ? 0 : 26); };
+  const type = str => { clearInterval(typer); out.innerHTML = ''; const sp = document.createElement('span'), cur = document.createElement('span'); cur.className = 'cur'; out.append(sp, cur); let k = 0; typer = setInterval(() => { sp.textContent = str.slice(0, ++k); if (k % 3 === 0) sfx('key'); if (k >= str.length) clearInterval(typer); }, still ? 0 : 24); };
   reels.forEach(r => r.addEventListener('click', () => { if (busy) return; const on = r.getAttribute('aria-pressed') !== 'true'; r.setAttribute('aria-pressed', String(on)); sfx(on ? 'pop' : 'tick'); }));
   const finish = () => { busy = false; sfx('ding'); count++; spun.textContent = count; store.set('vt-spun', count); type(text()); };
   spinBtn.addEventListener('click', () => {
@@ -112,27 +90,28 @@ seen($$('.panel'), (e, io) => { if (e.isIntersecting) { e.target.classList.add('
   addEventListener('resize', () => reels.forEach((_, i) => place(i, pos[i] % lists[i].length, 0)));
   reels.forEach((_, i) => { pos[i] = Math.floor(Math.random() * lists[i].length); place(i, pos[i], 0); });
   type(text());
-  use.addEventListener('click', () => { const m = $('#f-msg'); if (m) m.value = `${T.pitchPrefix} ${out.textContent.trim()}\n\n`; const r = $('.kinds input[value="film"]'); if (r) r.checked = true; });
+  use.addEventListener('click', () => { const m = $('#f-msg'); if (m) m.value = `${T.pitchPrefix} ${out.textContent.trim()}\n\n`; const r = $('.kinds input[value="campaign"]'); if (r) r.checked = true; });
 }
 
-/* ---------- portals ---------- */
+/* ---------- social cards: the brand colour fills the screen, then we go ---------- */
 {
-  const ov = $('[data-portal-ov]');
-  const FX = { youtube: ['yt', ['power', 'whoosh'], 900], instagram: ['ig', ['shutter'], 950], tiktok: ['tt', ['glitch', 'drop'], 750], email: ['mail', ['swoosh', 'ding'], 950] };
-  const reset = () => { ov.className = 'portal-ov'; document.body.classList.remove('tt-glitch'); $$('.port.fire').forEach(p => p.classList.remove('fire')); };
-  $$('[data-portal]').forEach(a => a.addEventListener('click', e => {
+  const warp = $('[data-warp]'), icon = $('.warp-i', warp);
+  const reset = () => { warp.className = 'warp'; };
+  $$('[data-soc]').forEach(a => a.addEventListener('click', e => {
     if (e.metaKey || e.ctrlKey || e.shiftKey || still) return;
     e.preventDefault();
-    const [cls, sounds, ms] = FX[a.dataset.portal], r = $('.orb', a).getBoundingClientRect();
-    ov.style.setProperty('--x', `${r.left + r.width / 2}px`); ov.style.setProperty('--y', `${r.top + r.height / 2}px`);
-    a.classList.add('fire'); ov.className = `portal-ov go ${cls}`; if (cls === 'tt') document.body.classList.add('tt-glitch');
-    sounds.forEach((s, i) => setTimeout(() => sfx(s), i * 260)); buzz(25);
-    setTimeout(() => { location.href = a.href; }, ms); setTimeout(reset, ms + 1500);
+    const i = $('.soc-i', a), r = i.getBoundingClientRect();
+    warp.style.setProperty('--x', `${r.left + r.width / 2}px`); warp.style.setProperty('--y', `${r.top + r.height / 2}px`);
+    warp.style.setProperty('--c', getComputedStyle(a).getPropertyValue('--c'));
+    icon.innerHTML = $('svg', i).outerHTML;
+    warp.className = `warp go${a.dataset.soc === 'instagram' ? ' ig' : ''}`;
+    sfx('whoosh'); setTimeout(() => sfx('pop'), 380); buzz(15);
+    setTimeout(() => { location.href = a.href; }, 900); setTimeout(reset, 2400);
   }));
   addEventListener('pageshow', reset);
 }
 
-/* ---------- pitch form ---------- */
+/* ---------- form ---------- */
 const form = $('form[data-inquiry]');
 if (form) {
   const statusEl = $('[data-form-status]'), submit = $('button[type=submit]', form), opened = Date.now();
@@ -150,7 +129,7 @@ if (form) {
     try {
       const r = await fetch(form.dataset.endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: form.dataset.key, Prefer: 'return=minimal' }, body: JSON.stringify(body) });
       if (!r.ok) throw new Error(String(r.status));
-      show('ok', T.form.okTitle, T.form.okText.replace('{email}', body.email)); form.reset(); sfx('clap');
+      show('ok', T.form.okTitle, T.form.okText.replace('{email}', body.email)); form.reset(); sfx('ding');
     } catch { show('error', T.form.errTitle, T.form.errNet); }
     finally { submit.disabled = false; submit.textContent = label; }
   });

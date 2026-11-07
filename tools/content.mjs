@@ -4,9 +4,9 @@ export const SITE = {
   url: 'https://verghethorn.com',
   email: 'verghethorn@gmail.com',
   social: {
-    youtube: { name: 'YouTube', handle: '@verghethorn', href: 'https://www.youtube.com/@verghethorn' },
-    instagram: { name: 'Instagram', handle: '@verghethorn.studio', href: 'https://www.instagram.com/verghethorn.studio' },
-    tiktok: { name: 'TikTok', handle: '@verghethorn_official', href: 'https://www.tiktok.com/@verghethorn_official' },
+    instagram: { name: 'Instagram', handle: '@verghethorn.studio', href: 'https://www.instagram.com/verghethorn.studio', color: '#d6249f' },
+    youtube: { name: 'YouTube', handle: '@verghethorn', href: 'https://www.youtube.com/@verghethorn', color: '#ff0033' },
+    tiktok: { name: 'TikTok', handle: '@verghethorn_official', href: 'https://www.tiktok.com/@verghethorn_official', color: '#111111' },
   },
   inquiries: {
     endpoint: 'https://vgotvplikubsncujcxmk.supabase.co/rest/v1/inquiries',
@@ -14,93 +14,71 @@ export const SITE = {
   },
 };
 
-// Video clips live in /media/v/<id>.mp4 with a poster /media/v/<id>.webp
 export const L = {
-  title: 'VERGHÉTHORN — cinema for brands',
-  desc: 'VERGHÉTHORN is a film studio: short films, brand films for fashion, jewellery, beauty and fragrance, and product design — from the first sketch to the final frame.',
-  skip: 'Skip to content', pitch: 'Pitch a project', soundOn: 'Sound on', soundOff: 'Sound off',
+  title: 'VERGHÉTHORN — brand commercials and short films',
+  desc: 'VERGHÉTHORN is a film studio. We make brand commercials and short films, and design the products we film.',
+  skip: 'Skip to content', contactBtn: 'Contact', soundOn: 'Sound on', soundOff: 'Sound off',
 
   hero: {
-    eyebrow: 'VERGHÉTHORN · Film studio',
-    h1: 'Cinema<br>for brands.',
-    sub: 'Short films, brand films and product design — from the first sketch to the final frame.',
-    cta: 'Pitch a project', cta2: 'Step on set',
-    mobile: [['m-noir', 'Neo‑noir'], ['m-jewel', 'Jewellery film'], ['m-neon', 'Night drive'], ['m-sun', 'Summer campaign']],
-    desktop: [['d-tunnel', 'Neo‑noir'], ['d-diamond', 'Jewellery film'], ['d-hourglass', 'Short film'], ['d-candle', 'Beauty film'], ['d-shore', 'Fragrance film']],
-    tapHint: 'Tap to skip',
+    slate: 'Brand commercial · Scene 4 · Take 2',
+    h1: 'Brand commercials<br>and short films.',
+    hint: 'Tap a light, a camera or an actor.',
+    views: [['set', 'Set'], ['a', 'Camera A'], ['b', 'Camera B']],
+    labels: { 'lamp:key': 'Key light', 'lamp:fill': 'Fill light', 'lamp:back': 'Back light', 'lamp:set': 'Background', 'cam:a': 'Camera A', 'cam:b': 'Camera B · dolly', 'actor:presenter': 'Presenter', 'actor:guest': 'Actor' },
+    lines: ['Every brand has a story worth filming.', 'We write it, we light it, we shoot it.', 'This is VERGHÉTHORN.'],
+    productCard: 'Product shot · 85mm',
+    loading: 'Building the set…',
+    fallback: 'A 3D film set: a presenter beside a product on a plinth, lit by a key light, a softbox and a back light, filmed by two cinema cameras.',
   },
 
-  films: {
-    eyebrow: 'Short films', h2: 'Stories that stay<br>after the credits.',
-    sub: 'Original short films in every genre — with brands living inside them, naturally.',
-    reels: [['r-scifi', 'Sci‑fi'], ['m-noir', 'Neo‑noir'], ['r-drama', 'Drama'], ['r-thriller', 'Thriller'], ['m-sun', 'Romance'], ['r-road', 'Road movie'], ['r-docu', 'Behind the lens']],
-  },
+  intro: 'VERGHÉTHORN is a film studio. We make <b>brand commercials</b> and <b>short films</b> — and design the products we film.',
 
-  set: {
-    eyebrow: 'On set', h2: 'One scene.<br>Your light. Your lens.',
-    sub: 'This is how a frame is made. Switch the lamp, swap the lens — tap the picture to move the key light.',
-    light: 'Light', lens: 'Lens', tapKey: 'Tap the frame to aim the key light',
-    lights: [['day', 'l-day', 'Daylight', '5600K · soft'], ['tungsten', 'l-spot', 'Tungsten', '3200K · hard'], ['neon', 'l-neon', 'Neon', 'magenta · cyan'], ['golden', 'l-golden', 'Golden hour', 'low sun · haze']],
-    lenses: [['35', 'c-35', '35mm', 'spherical'], ['85', 'c-85', '85mm', 'portrait · T1.5'], ['ana', 'c-ana', '40mm', 'anamorphic'], ['16', 'c-16', '16mm', 'film stock']],
-    alt: 'A woman in a teal sari with gold jewellery, filmed in a studio',
-  },
-
-  brand: {
-    eyebrow: 'Brand films', h2: 'For houses<br>that sell desire.',
-    panels: [
-      ['d-diamond', 'Jewellery', 'Light,<br>cut to fit.'],
-      ['b-perfume', 'Fragrance', 'One second.<br>One memory.'],
-      ['b-eye', 'Beauty', 'Closer<br>than life.'],
-      ['d-tunnel', 'Automotive', 'Speed, in<br>slow motion.'],
+  services: {
+    eyebrow: 'What we do',
+    items: [
+      ['s-camera', 'Brand commercials', 'From the script to the final grade. One team, one standard — for brands that want to be remembered.'],
+      ['s-film', 'Short films', 'Original stories made with the craft of cinema. Brands appear inside them naturally, as collaborations.'],
+      ['s-design', 'Product design', 'We design the product, its colours and materials — then film it, and build its app or website.'],
     ],
-    line: 'Fashion · Jewellery · Beauty · Fragrance · Automotive',
   },
 
-  design: {
-    eyebrow: 'Product design', h2: 'We design the product.<br>Then we film it.',
-    sub: 'Form, colour, material and light — designed together, so the product is born ready for its film.',
-    steps: [['p-colour', 'Colour', 'A colour story, not a swatch.'], ['p-metal', 'Material', 'Metal, glass and fabric chosen for how they catch light.'], ['p-ring', 'Form', 'Beautiful in a hand. Even better in a close‑up.'], ['b-perfume', 'Film', 'The launch film, the campaign, the app.']],
-    cwTitle: 'Try a colourway', cwSub: 'Same piece. Four moods.',
-    colourways: [['champagne', 'Champagne'], ['rose', 'Rose gold'], ['emerald', 'Emerald'], ['onyx', 'Onyx']],
+  process: {
+    eyebrow: 'How we work', h2: 'From the first idea<br>to the first screening.',
+    steps: [['Script', 'One clear idea for one audience.'], ['Set & light', 'Locations, actors, cameras, light.'], ['Shoot', 'Shot on cinema cameras.'], ['Edit & release', 'Edit, colour, sound — then out into the world.']],
   },
 
   story: {
     eyebrow: 'Script lab', h2: 'Spin a story.',
-    sub: 'Every film starts as a wild idea. Spin the reels — tap one to lock it.',
+    sub: 'Every commercial starts as an idea. Spin the reels — tap one to keep it.',
     reels: [
-      ['Hero', ['A shy skater', 'A grandma DJ', 'Two rival influencers', 'A robot barista', 'A lost astronaut', 'A street dancer', 'A jeweller’s apprentice', 'A cat with a million followers', 'The new kid in town', 'A retired racing driver']],
-      ['Place', ['on the last night of summer', 'in a city that never sleeps', 'on Mars, with bad Wi‑Fi', 'inside a perfume bottle', 'at a rooftop party', 'in Tokyo, 2049', 'on a ferry to nowhere', 'at a 24‑hour laundromat', 'in a silent cinema', 'backstage at a sold‑out show']],
-      ['Twist', ['finds shoes that remember every step', 'swaps lives with their reflection', 'has sixty seconds to change everything', 'falls for a hologram', 'starts a band with total strangers', 'learns a scent can bring back a memory', 'wins — but the prize is a kettle', 'realises everyone is in a commercial', 'finds a ring that stops time', 'becomes famous overnight']],
+      ['Hero', ['A night‑shift baker', 'A retired racing driver', 'A young architect', 'A street musician', 'A lighthouse keeper', 'A watchmaker', 'A taxi driver', 'A football coach', 'A new pilot', 'A grandfather and his grandson']],
+      ['Place', ['on the first snowy morning', 'in a city that never sleeps', 'on the last ferry home', 'in a quiet mountain village', 'at a sold‑out stadium', 'in an empty airport at dawn', 'on a long desert road', 'in a busy kitchen', 'on the roof of a skyscraper', 'at the edge of the sea']],
+      ['Twist', ['finds a letter written ten years ago', 'gets one minute to change everything', 'teaches a stranger something new', 'discovers the old family recipe', 'fixes something no one else could', 'keeps a promise against all odds', 'hears a song that brings back a memory', 'builds something with their own hands', 'meets the person who inspired them', 'chooses the harder, better road']],
     ],
-    spin: 'Spin', lock: 'Locked', tapLock: 'Tap a reel to lock it',
-    use: 'Make it our next film', count: 'stories spun',
-  },
-
-  portals: {
-    eyebrow: 'Follow the work', h2: 'Pick a portal.', sub: 'Each one opens with its own effect.',
-    items: [['youtube', 'Watch'], ['instagram', 'Follow'], ['tiktok', 'Scroll'], ['email', 'Write to us']],
-    email: 'Email',
+    spin: 'Spin', lock: 'Kept', use: 'Pitch this idea', count: 'stories spun',
   },
 
   contact: {
-    eyebrow: 'Pitch us', h2: 'Have a film<br>in mind?',
-    name: 'Name', mail: 'Email', what: 'What is it?', message: 'Your idea', messageHint: 'A few lines are enough.',
-    kinds: [['film', 'Short film'], ['campaign', 'Brand film'], ['collaboration', 'Collab'], ['product', 'Product design'], ['interactive', 'App / site'], ['other', 'Other']],
-    send: 'Send', privacy: 'Used only to reply to you.',
+    eyebrow: 'Contact', h2: 'Let’s make<br>your film.',
+    emailName: 'Email', emailNote: 'Write to us',
+    formTitle: 'Tell us about your project',
+    name: 'Name', mail: 'Email', what: 'Project', message: 'Message', messageHint: 'A few lines are enough.',
+    kinds: [['campaign', 'Brand commercial'], ['film', 'Short film'], ['collaboration', 'Collaboration'], ['product', 'Product design'], ['interactive', 'App / website'], ['other', 'Other']],
+    send: 'Send', privacy: 'We use your details only to reply.',
   },
 
-  footer: 'Short films · Brand films · Collabs · Product design',
-  stock: 'Footage: Mixkit',
+  footer: 'Brand commercials · Short films · Product design',
+  credits: '3D actor: three.js / Mixamo · Footage: Mixkit',
   js: {
     form: {
-      sending: 'Sending…', errName: 'Add your name so we know who to answer.', errEmail: 'Check the email — it needs an @ and a domain.',
+      sending: 'Sending…', errName: 'Please add your name.', errEmail: 'Please check the email address.',
       errMessage: 'A few more words, please — at least 10 characters.',
-      okTitle: 'Sent. That’s a wrap.', okText: 'We read every pitch personally and will reply to {email}.',
+      okTitle: 'Thank you. Message received.', okText: 'We will reply to {email} personally.',
       errTitle: 'The message wasn’t sent.', errNet: 'Your text is still here. Try again in a moment, or write to verghethorn@gmail.com.',
-      errBot: 'That was a bit too fast. Wait a few seconds and send again.',
+      errBot: 'That was a little too fast. Please wait a few seconds and send again.',
     },
-    pitchPrefix: 'Story idea from the Script lab:',
+    pitchPrefix: 'Idea from the Script lab:',
   },
-  notFound: { title: 'Page not found — VERGHÉTHORN', h1: 'Cut. Wrong scene.', text: 'This page doesn’t exist.', home: 'Back to the set' },
+  notFound: { title: 'Page not found — VERGHÉTHORN', h1: 'Wrong scene.', text: 'This page doesn’t exist.', home: 'Back to the set' },
   moved: 'This page has moved.',
 };
