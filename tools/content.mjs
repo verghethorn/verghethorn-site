@@ -1,4 +1,4 @@
-// All site copy (English only). Edit text here and run `node tools/build.mjs`.
+// All site copy (English). Edit text here and run `node tools/build.mjs`.
 
 export const SITE = {
   url: 'https://verghethorn.com',
@@ -14,84 +14,88 @@ export const SITE = {
   },
 };
 
+// Video clips live in /media/v/<id>.mp4 with a poster /media/v/<id>.webp
 export const L = {
-  title: 'VERGHÉTHORN — films you can’t scroll past',
-  desc: 'VERGHÉTHORN is a film studio for short films, brand ads, collabs and product design. Tap the screen, spin a story, design a drink and set off some special effects.',
-  skip: 'Skip to content',
-  pitch: 'Pitch us', soundOn: 'Sound on', soundOff: 'Sound off',
+  title: 'VERGHÉTHORN — cinema for brands',
+  desc: 'VERGHÉTHORN is a film studio: short films, brand films for fashion, jewellery, beauty and fragrance, and product design — from the first sketch to the final frame.',
+  skip: 'Skip to content', pitch: 'Pitch a project', soundOn: 'Sound on', soundOff: 'Sound off',
 
   hero: {
-    eyebrow: 'Short films · Brand ads · Collabs · Products',
-    h1: 'Films you can’t<br>scroll past.',
-    sub: 'We’re VERGHÉTHORN — a film studio for brands and big ideas. Go on, tap the screen.',
-    hint: 'Tap anywhere',
-    action: 'Action',
-    genres: [['neon', 'Neon', 'NEON NIGHTS'], ['space', 'Space', 'LAST SIGNAL'], ['sunset', 'Sunset', 'SUMMER NEVER ENDS'], ['noir', 'Noir', 'RAIN CITY'], ['aurora', 'Aurora', 'NORTHERN LIGHTS'], ['warp', 'Warp', 'LIGHTSPEED']],
-    canvas: 'A live, generated film scene. Tap it to set off effects; choose a genre or press Action to cut to a new scene.',
+    eyebrow: 'VERGHÉTHORN · Film studio',
+    h1: 'Cinema<br>for brands.',
+    sub: 'Short films, brand films and product design — from the first sketch to the final frame.',
+    cta: 'Pitch a project', cta2: 'Step on set',
+    mobile: [['m-noir', 'Neo‑noir'], ['m-jewel', 'Jewellery film'], ['m-neon', 'Night drive'], ['m-sun', 'Summer campaign']],
+    desktop: [['d-tunnel', 'Neo‑noir'], ['d-diamond', 'Jewellery film'], ['d-hourglass', 'Short film'], ['d-candle', 'Beauty film'], ['d-shore', 'Fragrance film']],
+    tapHint: 'Tap to skip',
+  },
+
+  films: {
+    eyebrow: 'Short films', h2: 'Stories that stay<br>after the credits.',
+    sub: 'Original short films in every genre — with brands living inside them, naturally.',
+    reels: [['r-scifi', 'Sci‑fi'], ['m-noir', 'Neo‑noir'], ['r-drama', 'Drama'], ['r-thriller', 'Thriller'], ['m-sun', 'Romance'], ['r-road', 'Road movie'], ['r-docu', 'Behind the lens']],
+  },
+
+  set: {
+    eyebrow: 'On set', h2: 'One scene.<br>Your light. Your lens.',
+    sub: 'This is how a frame is made. Switch the lamp, swap the lens — tap the picture to move the key light.',
+    light: 'Light', lens: 'Lens', tapKey: 'Tap the frame to aim the key light',
+    lights: [['day', 'l-day', 'Daylight', '5600K · soft'], ['tungsten', 'l-spot', 'Tungsten', '3200K · hard'], ['neon', 'l-neon', 'Neon', 'magenta · cyan'], ['golden', 'l-golden', 'Golden hour', 'low sun · haze']],
+    lenses: [['35', 'c-35', '35mm', 'spherical'], ['85', 'c-85', '85mm', 'portrait · T1.5'], ['ana', 'c-ana', '40mm', 'anamorphic'], ['16', 'c-16', '16mm', 'film stock']],
+    alt: 'A woman in a teal sari with gold jewellery, filmed in a studio',
+  },
+
+  brand: {
+    eyebrow: 'Brand films', h2: 'For houses<br>that sell desire.',
+    panels: [
+      ['d-diamond', 'Jewellery', 'Light,<br>cut to fit.'],
+      ['b-perfume', 'Fragrance', 'One second.<br>One memory.'],
+      ['b-eye', 'Beauty', 'Closer<br>than life.'],
+      ['d-tunnel', 'Automotive', 'Speed, in<br>slow motion.'],
+    ],
+    line: 'Fashion · Jewellery · Beauty · Fragrance · Automotive',
+  },
+
+  design: {
+    eyebrow: 'Product design', h2: 'We design the product.<br>Then we film it.',
+    sub: 'Form, colour, material and light — designed together, so the product is born ready for its film.',
+    steps: [['p-colour', 'Colour', 'A colour story, not a swatch.'], ['p-metal', 'Material', 'Metal, glass and fabric chosen for how they catch light.'], ['p-ring', 'Form', 'Beautiful in a hand. Even better in a close‑up.'], ['b-perfume', 'Film', 'The launch film, the campaign, the app.']],
+    cwTitle: 'Try a colourway', cwSub: 'Same piece. Four moods.',
+    colourways: [['champagne', 'Champagne'], ['rose', 'Rose gold'], ['emerald', 'Emerald'], ['onyx', 'Onyx']],
   },
 
   story: {
     eyebrow: 'Script lab', h2: 'Spin a story.',
-    sub: 'Every great ad starts with a wild idea. Spin the reels — tap one to lock it.',
+    sub: 'Every film starts as a wild idea. Spin the reels — tap one to lock it.',
     reels: [
-      ['Hero', ['A shy skater', 'A grandma DJ', 'Two rival influencers', 'A robot barista', 'A lost astronaut', 'A street dancer', 'A gamer who never sleeps', 'A cat with a million followers', 'The new kid in town', 'A very serious pigeon']],
-      ['Place', ['on the last night of summer', 'in a city that never logs off', 'on Mars, with bad Wi‑Fi', 'inside a vending machine', 'at a rooftop party', 'in Tokyo, 2049', 'on a ferry to nowhere', 'at a 24‑hour laundromat', 'in the school’s lost & found', 'backstage at a sold‑out show']],
-      ['Twist', ['finds sneakers that can fly', 'swaps lives with their phone', 'has 60 seconds to go viral', 'falls for their own hologram', 'starts a band with total strangers', 'learns the soda tastes like memories', 'wins — but the prize is a kettle', 'realises everyone is in a commercial', 'gets one wish and wastes it on snacks', 'becomes a meme overnight']],
+      ['Hero', ['A shy skater', 'A grandma DJ', 'Two rival influencers', 'A robot barista', 'A lost astronaut', 'A street dancer', 'A jeweller’s apprentice', 'A cat with a million followers', 'The new kid in town', 'A retired racing driver']],
+      ['Place', ['on the last night of summer', 'in a city that never sleeps', 'on Mars, with bad Wi‑Fi', 'inside a perfume bottle', 'at a rooftop party', 'in Tokyo, 2049', 'on a ferry to nowhere', 'at a 24‑hour laundromat', 'in a silent cinema', 'backstage at a sold‑out show']],
+      ['Twist', ['finds shoes that remember every step', 'swaps lives with their reflection', 'has sixty seconds to change everything', 'falls for a hologram', 'starts a band with total strangers', 'learns a scent can bring back a memory', 'wins — but the prize is a kettle', 'realises everyone is in a commercial', 'finds a ring that stops time', 'becomes famous overnight']],
     ],
     spin: 'Spin', lock: 'Locked', tapLock: 'Tap a reel to lock it',
-    use: 'Make it our next ad', count: 'stories spun',
-  },
-
-  product: {
-    eyebrow: 'Product → film → app', h2: 'Design it.<br>Film it. Ship it.',
-    sub: 'Invent your own drink. Then watch us shoot the ad and drop it in an app — that’s what we do for brands.',
-    name: 'Name it', flavour: 'Flavour', finish: 'Finish',
-    flavours: [['citrus', 'Citrus'], ['berry', 'Berry'], ['mint', 'Mint'], ['ice', 'Ice'], ['night', 'Night'], ['pearl', 'Pearl']],
-    finishes: [['gloss', 'Gloss'], ['matte', 'Matte'], ['chrome', 'Chrome'], ['neon', 'Neon']],
-    modes: [['design', 'Design'], ['film', 'Film'], ['app', 'App']],
-    tagline: 'Taste the future.', ad: 'AD', drop: 'New drop', add: 'Add to bag', added: 'In your bag ✓',
-    canvas: 'A drink can you design: it spins in 3D, can be filmed in a dramatic ad, or shown inside a shop app. Drag sideways to turn it.',
-    drag: 'Drag to spin',
-  },
-
-  fx: {
-    eyebrow: 'Special effects', h2: 'Make some noise.',
-    sub: 'Nine effects from our toolkit. Tap fast — it’s a beat machine.',
-    pads: [['boom', 'Boom'], ['bolt', 'Bolt'], ['rain', 'Rain'], ['snow', 'Snow'], ['warp', 'Warp'], ['glitch', 'Glitch'], ['confetti', 'Confetti'], ['slowmo', 'Slo‑mo'], ['cut', 'Cut']],
-    keys: 'QWEASDZXC', keysHint: 'On a keyboard? Use Q W E · A S D · Z X C',
-    canvas: 'A stage for special effects triggered by the pads below.',
-  },
-
-  what: {
-    eyebrow: 'What we do', h2: 'Five ways to<br>work with us.', tap: 'Tap a card',
-    cards: [
-      ['film', 'Short films', 'Original stories with real feelings. Festival‑ready, feed‑ready.'],
-      ['ads', 'Brand ads', 'Scripts that hook in the first second — and a film to match.'],
-      ['collab', 'Collabs', 'Your brand inside our films. Natural, never cringe.'],
-      ['design', 'Product design', 'From a sketch to the thing in your hand. Then we film it.'],
-      ['apps', 'Apps & sites', 'When your product needs a home online, we build that too.'],
-    ],
+    use: 'Make it our next film', count: 'stories spun',
   },
 
   portals: {
-    eyebrow: 'Follow the story', h2: 'Pick a portal.', sub: 'Each one opens with its own effect. Sound on.',
+    eyebrow: 'Follow the work', h2: 'Pick a portal.', sub: 'Each one opens with its own effect.',
     items: [['youtube', 'Watch'], ['instagram', 'Follow'], ['tiktok', 'Scroll'], ['email', 'Write to us']],
     email: 'Email',
   },
 
   contact: {
-    eyebrow: 'Pitch us', h2: 'Got an idea?<br>Pitch it.',
+    eyebrow: 'Pitch us', h2: 'Have a film<br>in mind?',
     name: 'Name', mail: 'Email', what: 'What is it?', message: 'Your idea', messageHint: 'A few lines are enough.',
-    kinds: [['film', 'Short film'], ['campaign', 'Brand ad'], ['collaboration', 'Collab'], ['product', 'Product'], ['interactive', 'App / site'], ['other', 'Other']],
-    send: 'Send it', privacy: 'Used only to reply to you.',
+    kinds: [['film', 'Short film'], ['campaign', 'Brand film'], ['collaboration', 'Collab'], ['product', 'Product design'], ['interactive', 'App / site'], ['other', 'Other']],
+    send: 'Send', privacy: 'Used only to reply to you.',
   },
 
-  footer: 'Short films · Brand ads · Collabs · Product design',
+  footer: 'Short films · Brand films · Collabs · Product design',
+  stock: 'Footage: Mixkit',
   js: {
     form: {
       sending: 'Sending…', errName: 'Add your name so we know who to answer.', errEmail: 'Check the email — it needs an @ and a domain.',
       errMessage: 'A few more words, please — at least 10 characters.',
-      okTitle: 'Sent. Cut — that’s a wrap!', okText: 'We read every pitch personally and will reply to {email}.',
+      okTitle: 'Sent. That’s a wrap.', okText: 'We read every pitch personally and will reply to {email}.',
       errTitle: 'The message wasn’t sent.', errNet: 'Your text is still here. Try again in a moment, or write to verghethorn@gmail.com.',
       errBot: 'That was a bit too fast. Wait a few seconds and send again.',
     },

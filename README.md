@@ -1,23 +1,19 @@
 # verghethorn.com
 
-One interactive page in English, served by GitHub Pages from this branch. `/ru/` and older URLs redirect to it.
+One video-first page in English, served by GitHub Pages from this branch. `/ru/` and older URLs redirect to it.
 
 ## Edit text
-1. Change copy in `tools/content.mjs`.
-2. Run `node tools/build.mjs`.
-3. Commit and push. Pages publishes in about a minute.
+Change copy in `tools/content.mjs`, run `node tools/build.mjs`, commit and push.
 
-## What is on the page
-- **The screen** (`static/js/hero.js`) — six live, generated film worlds (Neon, Space, Sunset, Noir, Aurora, Warp) rendered with WebGL. Tap the screen for explosions, sparks, lightning, portals and confetti; Action cuts to a new scene.
-- **Script lab** — a story slot machine; tap a reel to lock it; "Make it our next ad" drops the idea into the pitch form.
-- **Design it. Film it. Ship it.** (`product.js`, three.js) — design your own drink can (name, flavour, finish), then see it in a film ad or inside a shop app.
-- **Make some noise** — nine special-effect pads (keys Q W E · A S D · Z X C).
-- **Five ways to work with us** — flip cards.
-- **Pick a portal** — YouTube, Instagram, TikTok and email, each opened with its own effect and sound.
-- **Pitch form**.
+## Sections
+- **Hero** — stories-style montage of cinematic clips (vertical set on phones, wide set on desktop); tap to skip.
+- **Short films** — vertical reels by genre.
+- **On set** (`static/js/grade.js`) — one real clip re-lit and re-lensed live in WebGL: Daylight / Tungsten / Neon / Golden hour; 35mm / 85mm / 40mm anamorphic / 16mm film. Tap the frame to aim the key light.
+- **Brand films** — full-bleed editorial panels.
+- **Product design** — colour, material, form, film; try a colourway.
+- **Script lab** — spin a story; it can be sent straight into the pitch form.
+- **Portals** — YouTube, Instagram, TikTok, email with their own effects; **Pitch form** (Supabase `public.inquiries`).
 
-Effects engine: `fx.js`. Sounds are synthesised in `sfx.js` (no audio files) and start only after the first tap; the header button mutes them.
-Scrolling is always native: taps only fire when the finger didn't move, nothing captures vertical swipes.
-
-## Pitch form
-Submissions go to Supabase project **verghethorn-site**, table `public.inquiries` (insert-only for the public via row-level security).
+## Footage
+`media/v/` — clips from Mixkit (free licence), trimmed and re-encoded (H.264, no audio, posters `.webp`). Swap any file for your own film with the same name to replace it.
+Sounds are synthesised in `static/js/sfx.js`.
