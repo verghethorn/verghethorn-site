@@ -1,20 +1,19 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-look="day">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>VERGHÉTHORN — фильмы, сайты, приложения и AI-ассистенты</title>
-<meta name="description" content="VERGHÉTHORN превращает идеи в фильмы, сайты, приложения и умных ассистентов — с режиссурой кино и новейшими технологиями искусственного интеллекта.">
+<title>VERGHÉTHORN — студия AI-кино: фильмы, реклама, сайты и приложения</title>
+<meta name="description" content="VERGHÉTHORN ставит идеи как кино: фильмы, реклама, сайты, приложения и AI-ассистенты — придуманы как сцена и сделаны на новейшем AI.">
 <link rel="canonical" href="https://verghethorn.com/ru/">
 <link rel="alternate" hreflang="en" href="https://verghethorn.com/">
 <link rel="alternate" hreflang="ru" href="https://verghethorn.com/ru/">
 <link rel="alternate" hreflang="x-default" href="https://verghethorn.com/">
-<meta name="theme-color" content="#0B0D10">
-<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#F5F5F7">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="VERGHÉTHORN">
-<meta property="og:title" content="VERGHÉTHORN — фильмы, сайты, приложения и AI-ассистенты">
-<meta property="og:description" content="VERGHÉTHORN превращает идеи в фильмы, сайты, приложения и умных ассистентов — с режиссурой кино и новейшими технологиями искусственного интеллекта.">
+<meta property="og:title" content="VERGHÉTHORN — студия AI-кино: фильмы, реклама, сайты и приложения">
+<meta property="og:description" content="VERGHÉTHORN ставит идеи как кино: фильмы, реклама, сайты, приложения и AI-ассистенты — придуманы как сцена и сделаны на новейшем AI.">
 <meta property="og:url" content="https://verghethorn.com/ru/">
 <meta property="og:image" content="https://verghethorn.com/media/og.jpg">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
@@ -23,145 +22,171 @@
 <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.png" type="image/png" sizes="180x180">
 <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+<script>try{var l=localStorage.getItem('vt-look');if(l&&/^(day|golden|anamorphic|night|film)$/.test(l))document.documentElement.dataset.look=l}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@300..700&family=Spectral:ital,wght@0,300;0,400;1,300;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="/static/css/site.css?v=3335e2f4">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://verghethorn.com/#org","name":"VERGHÉTHORN","alternateName":"VERGHETHORN","url":"https://verghethorn.com/","email":"verghethorn@gmail.com","logo":"https://verghethorn.com/static/apple-touch-icon.png","founder":{"@type":"Person","name":"Rashid Kurabegov"},"sameAs":["https://www.youtube.com/@verghethorn","https://www.instagram.com/verghethorn","https://www.tiktok.com/@verghethorn_official"],"knowsAbout":["Film production","Web design","Mobile apps","Artificial intelligence"]},{"@type":"WebSite","@id":"https://verghethorn.com/#site","url":"https://verghethorn.com/","name":"VERGHÉTHORN","inLanguage":["en","ru"],"publisher":{"@id":"https://verghethorn.com/#org"}}]}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@300..800&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/static/css/site.css?v=20320a8c">
+<script type="importmap">{"imports":{"three":"/static/vendor/three/three.module.min.js"}}</script>
+<link rel="modulepreload" href="/static/vendor/three/three.module.min.js">
 </head>
-<body class="is-home">
+<body>
 <a class="skip-link" href="#main">Перейти к содержанию</a>
-<header class="site-header">
-  <div class="wrap">
-    <a class="wordmark" href="/ru/" aria-label="VERGHÉTHORN — [object Object]"><span class="slit" aria-hidden="true"></span>VERGHÉTHORN</a>
-    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav">Меню</button>
-    <nav class="nav" id="site-nav" aria-label="Основное">
-      <a href="/ru/services/">Что мы делаем</a><a href="/ru/approach/">Как мы работаем</a><a href="/ru/contact/">Контакт</a>
-      <span class="lang" role="group" aria-label="Язык">
+<header class="gnav">
+  <div class="gnav-in">
+    <a class="wordmark" href="/ru/" aria-label="VERGHÉTHORN — главная"><span class="slit" aria-hidden="true"></span>VERGHÉTHORN</a>
+    <nav class="gnav-links" id="gnav-links" aria-label="Разделы">
+      <a href="#film" data-nav="film">Кино</a><a href="#web" data-nav="web">Сайты</a><a href="#ads" data-nav="ads">Реклама</a><a href="#how" data-nav="how">Как мы работаем</a><a href="#contact" data-nav="contact">Контакт</a>
+    </nav>
+    <div class="gnav-tools">
+      <button class="icon-btn" type="button" data-sound aria-pressed="true" aria-label="Звук включён" data-on="Звук включён" data-off="Звук выключен"><svg class="ico-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg><svg class="ico-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5z"/><path d="m16 9.5 5 5M21 9.5l-5 5"/></svg></button>
+      <span class="lang" role="group" aria-label="Language">
         <a href="/" hreflang="en" lang="en" data-lang-link="en">EN</a>
         <a href="/ru/" hreflang="ru" lang="ru" data-lang-link="ru" aria-current="true">RU</a>
       </span>
-    </nav>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="gnav-links">Меню</button>
+    </div>
   </div>
 </header>
+
+<div class="dock" data-dock>
+  <button class="dock-btn" type="button" aria-expanded="false" aria-controls="dock-menu" title="Измените, как снят весь сайт">
+    <span class="dock-cam"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="8" width="13" height="10" rx="2"/><path d="M15.5 11.5 21 9v8l-5.5-2.5"/><circle cx="6" cy="5.5" r="2.3"/><circle cx="11.5" cy="5.5" r="2.3"/></svg></span><span class="dock-txt"><small>Камера</small><b data-look-name>Дневной свет</b></span><span class="dock-rec" aria-hidden="true"></span>
+  </button>
+  <div class="dock-menu" id="dock-menu" role="radiogroup" aria-label="Измените, как снят весь сайт" hidden>
+    <button type="button" role="radio" aria-checked="true" data-look="day" data-name="Дневной свет"><span class="lk-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg></span><span><b>Дневной свет</b><small>Чистый студийный свет</small></span></button><button type="button" role="radio" aria-checked="false" data-look="golden" data-name="Золотой час"><span class="lk-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 16h18M6 19.5h12"/><path d="M7 16a5 5 0 0 1 10 0"/><path d="M12 6.5v2M5.2 9.5l1.4 1.2M18.8 9.5l-1.4 1.2"/></svg></span><span><b>Золотой час</b><small>Низкое тёплое солнце</small></span></button><button type="button" role="radio" aria-checked="false" data-look="anamorphic" data-name="Анаморфот"><span class="lk-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="12" rx="9" ry="4.6"/><ellipse cx="12" cy="12" rx="3.4" ry="2.2"/><path d="M1 12h3M20 12h3"/></svg></span><span><b>Анаморфот</b><small>Широкий кадр, холод, блики</small></span></button><button type="button" role="radio" aria-checked="false" data-look="night" data-name="Ночь"><span class="lk-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.3 1 2.2h5.2c0-.9.4-1.7 1-2.2A6 6 0 0 0 12 3z"/></svg></span><span><b>Ночь</b><small>Лампы накаливания в темноте</small></span></button><button type="button" role="radio" aria-checked="false" data-look="film" data-name="Плёнка 16 мм"><span class="lk-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="1.4"/><circle cx="12" cy="6.6" r="1.9"/><circle cx="12" cy="17.4" r="1.9"/><circle cx="6.6" cy="12" r="1.9"/><circle cx="17.4" cy="12" r="1.9"/></svg></span><span><b>Плёнка 16 мм</b><small>Зерно и тепло</small></span></button>
+  </div>
+</div>
+<div class="fx-bars" aria-hidden="true"><i></i><i></i></div>
+<div class="fx-grain" aria-hidden="true"></div>
+<div class="fx-vignette" aria-hidden="true"></div>
+
 <main id="main" tabindex="-1">
 
-<div class="stage" data-stage>
-  <div class="stage-canvas" aria-hidden="false">
-    <canvas id="lumen" role="img" aria-label="Поле света, которое меняет форму: название студии, кинохлопушка, сайт, приложение, голос и сфера."></canvas>
-    <div class="stage-fallback" aria-hidden="true"><span>VERGHÉTHORN</span></div>
+<section class="hero" id="film" aria-labelledby="hero-title">
+  <div class="scene scene-set" data-scene="set" role="img" aria-label="3D-съёмочная площадка: глиняная фигура на белой сцене, три кинокамеры — на тележке, кране и штативе — и софтбокс, который можно двигать.">
+    <div class="set-hud" aria-hidden="false">
+      <span class="hud-tag hud-key" data-label="key"><b>СВЕТ</b> · <span data-angle>45°</span></span>
+      <button class="hud-tag hud-cam" type="button" data-cam="A" aria-pressed="false"><i class="tally" aria-hidden="true"></i><b>КАМ A</b> 35 мм · тележка</button><button class="hud-tag hud-cam" type="button" data-cam="B" aria-pressed="false"><i class="tally" aria-hidden="true"></i><b>КАМ B</b> 24 мм · кран</button><button class="hud-tag hud-cam" type="button" data-cam="C" aria-pressed="false"><i class="tally" aria-hidden="true"></i><b>КАМ C</b> 85 мм · крупный</button>
+    </div>
+    <div class="viewfinder" hidden>
+      <div class="vf-frame" aria-hidden="true"><i></i><i></i><i></i><i></i><span class="vf-cross"></span></div>
+      <p class="vf-top"><span class="vf-rec">● REC</span><span data-vf-info></span><span data-vf-tc>00:00:00:00</span></p>
+      <button class="vf-exit" type="button" data-vf-exit>Вернуться на площадку <kbd>Esc</kbd></button>
+    </div>
   </div>
-
-  <section class="hero2" data-scene="intro" aria-labelledby="hero-title">
-    <div class="wrap">
-      <ol class="forms" aria-hidden="true"><li class="is-on">VERGHÉTHORN</li><li>Кино</li><li>Сайт</li><li>Приложение</li><li>Голос</li><li>Идея</li></ol>
-      <form class="try" data-try autocomplete="off">
-        <label for="try-word">Напишите слово — и увидите, как оно обретает форму</label>
-        <div class="try-row"><input id="try-word" name="word" type="text" maxlength="18" placeholder="Ваша идея" enterkeyhint="go"><button type="submit" class="try-btn" data-cursor="Создать">Создать <svg class="arr" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></button></div>
-      </form>
-      <div class="hero2-copy">
-        <div>
-          <p class="eyebrow">Студия кино, сайтов и AI</p>
-          <h1 class="display" id="hero-title">Идеи, которые принимают <em>любую форму.</em></h1>
-        </div>
-        <div class="side">
-          <p class="lede">Мы превращаем вашу идею в фильм, сайт, приложение или умного ассистента — с режиссурой большого кино и на новейших технологиях.</p>
-          <div class="actions">
-            <a class="btn" href="/ru/contact/">Обсудить проект <svg class="arr" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a>
-            <a class="btn ghost" href="#forms">Что мы делаем</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="story-head wrap" id="forms">
-    <p class="eyebrow">Что мы делаем</p>
-    <h2 class="h2">Одна идея. <em>Четыре формы.</em></h2>
+  <div class="hero-copy">
+    <p class="eyebrow">VERGHÉTHORN · студия AI-кино</p>
+    <h1 id="hero-title" class="h-hero">Мы ставим идеи<br>как кино.</h1>
+    <p class="hero-sub">Фильмы, реклама, сайты и приложения — придуманы как сцена, сделаны на новейшем AI.</p>
+    <p class="hero-cta"><a class="btn" href="#contact">Обсудить идею</a><a class="link" href="#web">Посмотреть, как это работает <svg class="arr" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M1 6h9M6.5 2.5 10 6l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a></p>
   </div>
-  
-  <section class="scene" data-scene="film" aria-labelledby="sc-film">
-    <div class="wrap">
-      <div class="panel">
-        <p class="scene-k"><span>01</span><span class="scene-icon"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="8" y="20" width="32" height="20" rx="2"/><path d="M8 20l30-7 1.5 6M14 18.6l4 5M21 17l4 5M28 15.4l4 5M8 26h32"/></svg></span></p>
-        <h3 class="h2" id="sc-film">Фильмы и реклама</h3>
-        <p class="lede">От сценария до финального монтажа. Имиджевые фильмы, рекламные ролики и авторские истории кинематографического качества — сняты с помощью AI, без ограничений реальной площадки.</p>
-        <ul class="points"><li>Сценарий, режиссура, монтаж и звук</li><li>Версии для любого экрана — от кинотеатра до телефона</li><li>Производство с AI: больше свободы, меньше ожидания</li></ul>
-      </div>
-    </div>
-  </section>
-  <section class="scene" data-scene="web" aria-labelledby="sc-web">
-    <div class="wrap">
-      <div class="panel">
-        <p class="scene-k"><span>02</span><span class="scene-icon"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="5" y="10" width="38" height="28" rx="2"/><path d="M5 16h38M11 21h14v9H11zM29 22h9M29 26h7"/></svg></span></p>
-        <h3 class="h2" id="sc-web">Сайты, которые запоминают</h3>
-        <p class="lede">Сайт — первая встреча с вашей компанией. Мы делаем её событием: понятно любому посетителю, незабываемо в движении, быстро на любом устройстве.</p>
-        <ul class="points"><li>Сайты брендов и компаний</li><li>Интерактивная 3D-графика и анимация</li><li>Быстро, доступно, на любом языке</li></ul>
-      </div>
-    </div>
-  </section>
-  <section class="scene" data-scene="app" aria-labelledby="sc-app">
-    <div class="wrap">
-      <div class="panel">
-        <p class="scene-k"><span>03</span><span class="scene-icon"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="15" y="5" width="18" height="38" rx="4"/><path d="M21 9h6M19 15h3v3h-3zM26 15h3v3h-3zM19 21h3v3h-3zM26 21h3v3h-3zM19 28h10v6H19z"/></svg></span></p>
-        <h3 class="h2" id="sc-app">Приложения для бизнеса и людей</h3>
-        <p class="lede">От первой идеи до прототипа, который можно взять в руки. Интерфейсы, понятные с первого касания и председателю совета директоров, и бабушке.</p>
-        <ul class="points"><li>Мобильные приложения и веб-сервисы</li><li>Работающий прототип ещё до начала разработки</li><li>Дизайн, построенный вокруг реальных людей</li></ul>
-      </div>
-    </div>
-  </section>
-  <section class="scene" data-scene="voice" aria-labelledby="sc-voice">
-    <div class="wrap">
-      <div class="panel">
-        <p class="scene-k"><span>04</span><span class="scene-icon"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M6 24v0M11 20v8M16 15v18M21 10v28M26 14v20M31 18v12M36 21v6M41 23v2"/></svg></span></p>
-        <h3 class="h2" id="sc-voice">Умные ассистенты</h3>
-        <p class="lede">Ассистенты, которые отвечают вашим клиентам, голоса, которые говорят от имени бренда, и AI внутри вашего продукта — всегда под контролем человека.</p>
-        <ul class="points"><li>AI-ассистенты и агенты</li><li>Голос бренда и озвучка</li><li>Автоматизация внутри вашего продукта</li></ul>
-      </div>
-    </div>
-  </section>
-</div>
+  <ul class="hints" aria-label="Попробуйте"><li><span class="hint-dot" aria-hidden="true"></span>Двигайте свет</li><li><span class="hint-dot cam" aria-hidden="true"></span>Нажмите на камеру — посмотрите её глазами</li></ul>
+</section>
 
-<section class="section how" aria-labelledby="how-t">
-  <div class="wrap">
-    <div class="section-head reveal"><div><p class="eyebrow">Как мы работаем</p><h2 class="h2" id="how-t">Четыре понятных шага. <em>Без сюрпризов.</em></h2></div>
-    <a class="link-arrow" href="/ru/approach/">Как мы работаем <svg class="arr" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></div>
-    <div class="steps-wrap"><span class="steps-line" aria-hidden="true"></span><ol class="steps"><li><span class="k">01</span><h3 class="h3">Слушаем</h3><p>Разговор о вашей цели, аудитории и сроках. Вашими словами, без жаргона.</p></li><li><span class="k">02</span><h3 class="h3">Показываем</h3><p>Вы видите идею до начала производства: сценарий, дизайн или работающий прототип.</p></li><li><span class="k">03</span><h3 class="h3">Создаём</h3><p>Кино, дизайн, код и голос — с точками согласования, где вы можете скорректировать курс.</p></li><li><span class="k">04</span><h3 class="h3">Передаём</h3><p>Запуск, финальные файлы и понятная передача — чтобы результат продолжал работать на вас.</p></li></ol></div>
+<section class="statement" aria-label="Во что мы верим">
+  <p class="statement-text"><span class="w">Инструментам</span> <span class="w">может</span> <span class="w">научиться</span> <span class="w">каждый.</span> <em><span class="w">Решает</span> <span class="w">фантазия</span></em> <span class="w">—</span> <span class="w">сюжет,</span> <span class="w">свет,</span> <span class="w">кадр</span> <span class="w">и</span> <span class="w">чувство,</span> <span class="w">которое</span> <span class="w">остаётся</span> <span class="w">после.</span></p>
+</section>
+
+<section class="pin" id="web" data-pin="web" aria-labelledby="web-t">
+  <div class="pin-stage">
+    <div class="scene scene-web" data-scene="web" role="img" aria-label="Детали сайта парят в невесомости и при прокрутке собираются в готовую страницу."></div>
+    <div class="pin-copy">
+      <p class="eyebrow">Сайты</p>
+      <h2 class="h-sec" id="web-t">Сайты, которые собираются<br>из воздуха.</h2>
+      <p class="sec-sub">Каждая деталь продумана — от первого пикселя до последнего клика. Схватите любую деталь и бросьте.</p>
+    </div>
+    <ol class="stages" aria-hidden="true"><li data-stage="0">Идея</li><li data-stage="1">Структура</li><li data-stage="2">Дизайн</li><li data-stage="3">Код</li><li data-stage="4">Запуск</li></ol>
   </div>
 </section>
 
-<section class="section" aria-labelledby="why-t">
-  <div class="wrap">
-    <div class="reveal" style="max-width:980px"><p class="eyebrow">Почему VERGHÉTHORN</p><h2 class="h2" id="why-t">Мышление кино, <em>новые технологии,</em> простота для людей.</h2></div>
-    <ol class="disciplines" style="margin-top:clamp(40px,6vw,80px)">
-      <li class="reveal"><span class="work-num">01</span><span class="h3">Режиссура, как в кино</span><p>У каждого проекта есть история, ритм и один образ, который запоминают. Именно он делает бренд узнаваемым.</p></li><li class="reveal"><span class="work-num">02</span><span class="h3">Новейшие технологии</span><p>Мы работаем с последними AI-моделями и веб-технологиями — и берём только то, что служит вашей цели.</p></li><li class="reveal"><span class="work-num">03</span><span class="h3">Понятно каждому</span><p>Кто бы ни был вашей аудиторией — совет директоров, клиент или бабушка — всё понятно с первого взгляда.</p></li>
-    </ol>
+<section class="ads" id="ads" aria-labelledby="ads-t">
+  <div class="sec-head">
+    <p class="eyebrow">Реклама</p>
+    <h2 class="h-sec" id="ads-t">Один продукт.<br>Любая аудитория.</h2>
+    <p class="sec-sub">Одна и та же бутылка рассказывает пять разных историй. Выберите аудиторию — и поймайте светящийся объект: его можно бросить куда угодно.</p>
+  </div>
+  <div class="ad-player" data-ad-player data-aud="genz">
+    <div class="scene scene-ad" data-scene="ad" role="img" aria-label="Рекламный кадр бутылки NOVA, который меняет стиль под выбранную аудиторию, со светящимся объектом, который можно бросить."></div>
+    <div class="ad-ui" aria-hidden="true">
+      <p class="ad-top"><span class="ad-badge">РЕКЛАМА</span><span>NOVA</span><span class="ad-time" data-ad-time>0:03</span></p>
+      <p class="ad-catch">Поймайте</p>
+    </div>
+    <p class="ad-tag" aria-live="polite" data-ad-tag>Слишком хорошо, чтобы листать дальше.</p>
+    <div class="ad-flash" aria-hidden="true"></div>
+  </div>
+  <div class="aud" role="tablist" aria-label="Реклама">
+    <button class="aud-arrow" type="button" data-aud-step="-1" aria-label="Предыдущая аудитория">‹</button>
+    <div class="aud-track"><button type="button" role="tab" aria-selected="true" data-aud="genz" data-tag="Слишком хорошо, чтобы листать дальше.">Зумеры</button><button type="button" role="tab" aria-selected="false" data-aud="business" data-tag="Ясность — ваше преимущество.">Бизнес</button><button type="button" role="tab" aria-selected="false" data-aud="public" data-tag="Одно послание. Каждый голос.">Политика</button><button type="button" role="tab" aria-selected="false" data-aud="science" data-tag="Любопытство в каждой капле.">Наука</button><button type="button" role="tab" aria-selected="false" data-aud="family" data-tag="Моменты, которыми хочется делиться.">Семья</button></div>
+    <button class="aud-arrow" type="button" data-aud-step="1" aria-label="Следующая аудитория">›</button>
   </div>
 </section>
 
-<section class="section final" aria-labelledby="final-t">
-  <div class="wrap contact-band">
-    <h2 class="display reveal" id="final-t" style="font-size:clamp(40px,6.4vw,104px)">Расскажите идею. <em>Мы найдём её форму.</em></h2>
-    <a class="big-mail reveal" href="mailto:verghethorn@gmail.com">verghethorn@gmail.com</a>
-    <p><a class="btn" href="/ru/contact/">Начать разговор <svg class="arr" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></p>
+<section class="pin pin-how" id="how" data-pin="how" aria-labelledby="how-t">
+  <div class="pin-stage">
+    <div class="scene scene-how" data-scene="how" role="img" aria-label="Механические часы, которые разделяются на шесть слоёв — по одному на каждый шаг работы.">
+    </div>
+    <div class="pin-copy">
+      <p class="eyebrow">Как мы работаем</p>
+      <h2 class="h-sec" id="how-t">Разберите идею на детали.<br>Каждая работает.</h2>
+      <p class="sec-sub">Шесть слоёв — один ясный путь от первой мысли до премьеры.</p>
+    </div>
+    <ol class="how-steps"><li data-step="0"><button type="button" data-step-go="0"><b>Идея</b><span>Всё начинается с одной ясной мысли: что вы хотите сказать и кому.</span></button></li><li data-step="1"><button type="button" data-step-go="1"><b>Форма</b><span>Выбираем форму: фильм, реклама, сайт, приложение — или всё вместе.</span></button></li><li data-step="2"><button type="button" data-step-go="2"><b>Сюжет</b><span>Пишем историю с началом, ритмом и финалом, который запоминают.</span></button></li><li data-step="3"><button type="button" data-step-go="3"><b>Образ</b><span>Свет, цвет, шрифты, декорации и костюмы — всё, что чувствует зритель.</span></button></li><li data-step="4"><button type="button" data-step-go="4"><b>Технологии</b><span>AI, 3D и код — механизм, который приводит всё в движение.</span></button></li><li data-step="5"><button type="button" data-step-go="5"><b>Премьера</b><span>Выпускаем в мир и следим, чтобы всё работало безупречно.</span></button></li></ol>
+    <p class="drag-hint" aria-hidden="true">Потяните, чтобы повернуть</p>
   </div>
+</section>
+
+<section class="services" aria-labelledby="svc-t">
+  <div class="sec-head">
+    <p class="eyebrow">Что мы создаём</p>
+    <h2 class="h-sec" id="svc-t">Всё, чем может стать<br>история.</h2>
+  </div>
+  <ul class="tiles"><li class="tile tile-film reveal"><span class="tile-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="9" width="18" height="11" rx="1.5"/><path d="M3 9l16.5-4 .8 3.2M7.5 7.9l2.2 2.7M12 6.8l2.2 2.7M16.5 5.7l2.2 2.7"/></svg></span><h3>Фильмы</h3><p>Короткий метр, имиджевые фильмы и клипы.</p></li><li class="tile tile-ad reveal"><span class="tile-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4a1 1 0 0 0 1 1h2l6 4V5L7 9H5a1 1 0 0 0-1 1z"/><path d="M17 9a4 4 0 0 1 0 6M19.5 6.5a7.5 7.5 0 0 1 0 11"/></svg></span><h3>Реклама</h3><p>Ролики для ТВ, сайта и соцсетей.</p></li><li class="tile tile-app reveal"><span class="tile-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M10.5 5h3M10 9h1.5v1.5H10zM12.5 9H14v1.5h-1.5zM10 12h1.5v1.5H10zM12.5 12H14v1.5h-1.5z"/></svg></span><h3>Приложения</h3><p>Интерфейсы, понятные с первого касания.</p></li><li class="tile tile-web reveal"><span class="tile-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="4" width="19" height="15" rx="2"/><path d="M2.5 8h19M5.5 6h.01M8 6h.01"/><path d="M6 11.5h6v4H6zM14 12h4M14 14.5h3"/></svg></span><h3>Сайты</h3><p>Сайты, которые запоминают.</p></li><li class="tile tile-ai reveal"><span class="tile-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h1.5M6.5 8v8M10 5v14M13.5 9v6M17 7v10M20.5 11v2"/></svg></span><h3>AI-ассистенты</h3><p>Голоса и агенты для вашего бренда.</p></li><li class="tile tile-anim reveal"><span class="tile-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="M12 15c2-6 4-9 9-10"/><circle cx="18.5" cy="6.5" r="2"/></svg></span><h3>Анимация</h3><p>Персонажи, движение и 3D-миры.</p></li><li class="tile tile-pod reveal"><span class="tile-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/></svg></span><h3>Подкасты и интервью</h3><p>Студийная картинка без студии.</p></li></ul>
+</section>
+
+<section class="contact" id="contact" aria-labelledby="ct-t">
+  <div class="sec-head">
+    <p class="eyebrow">Контакт</p>
+    <h2 class="h-sec" id="ct-t">Двери открыты.</h2>
+    <p class="sec-sub">Выберите дверь — каждая ведёт к нам.</p>
+  </div>
+  <ul class="doors"><li><a class="door" href="mailto:verghethorn@gmail.com" data-email style="--c:#E8A33D" data-door="email" aria-label="Почта — Напишите нам">
+    <span class="door-room" aria-hidden="true"><span class="door-glyph"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="m3.5 7 8.5 6 8.5-6"/></svg></span><span class="door-handle">verghethorn@gmail.com</span></span>
+    <span class="door-leaf" aria-hidden="true"><span class="door-panel"></span><span class="door-panel"></span><span class="door-knob"></span><span class="door-sign">Почта</span></span>
+  </a><p class="door-cap"><b>Почта</b><span>Напишите нам</span></p></li><li><a class="door" href="https://www.youtube.com/@verghethorn" target="_blank" rel="me noopener" style="--c:#FF0033" data-door="youtube" aria-label="YouTube — @verghethorn">
+    <span class="door-room" aria-hidden="true"><span class="door-glyph"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="M10 9.2v5.6l4.8-2.8z" fill="currentColor"/></svg></span><span class="door-handle">@verghethorn</span></span>
+    <span class="door-leaf" aria-hidden="true"><span class="door-panel"></span><span class="door-panel"></span><span class="door-knob"></span><span class="door-sign">YouTube</span></span>
+  </a><p class="door-cap"><b>YouTube</b><span>@verghethorn</span></p></li><li><a class="door" href="https://www.instagram.com/verghethorn" target="_blank" rel="me noopener" style="--c:#E1306C" data-door="instagram" aria-label="Instagram — @verghethorn">
+    <span class="door-room" aria-hidden="true"><span class="door-glyph"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17" cy="7" r=".9" fill="currentColor"/></svg></span><span class="door-handle">@verghethorn</span></span>
+    <span class="door-leaf" aria-hidden="true"><span class="door-panel"></span><span class="door-panel"></span><span class="door-knob"></span><span class="door-sign">Instagram</span></span>
+  </a><p class="door-cap"><b>Instagram</b><span>@verghethorn</span></p></li><li><a class="door" href="https://www.tiktok.com/@verghethorn_official" target="_blank" rel="me noopener" style="--c:#25F4EE" data-door="tiktok" aria-label="TikTok — @verghethorn_official">
+    <span class="door-room" aria-hidden="true"><span class="door-glyph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.5 2.6 2.4 4.3 5 4.5"/></svg></span><span class="door-handle">@verghethorn_official</span></span>
+    <span class="door-leaf" aria-hidden="true"><span class="door-panel"></span><span class="door-panel"></span><span class="door-knob"></span><span class="door-sign">TikTok</span></span>
+  </a><p class="door-cap"><b>TikTok</b><span>@verghethorn_official</span></p></li></ul>
+  <p class="toast" role="status" aria-live="polite" data-toast hidden>Адрес скопирован</p>
+
+  <form class="form" data-inquiry data-endpoint="https://vgotvplikubsncujcxmk.supabase.co/rest/v1/inquiries" data-key="sb_publishable_N2ea44ITl-54nQS16gD0NQ_O_ywKAmd" novalidate>
+    <h3 class="form-title">Или расскажите здесь</h3>
+    <fieldset class="kinds"><legend>О чём вы думаете?</legend><label><input type="radio" name="category" value="film" checked><span>Фильм</span></label><label><input type="radio" name="category" value="campaign"><span>Реклама</span></label><label><input type="radio" name="category" value="interactive"><span>Сайт</span></label><label><input type="radio" name="category" value="product"><span>Приложение</span></label><label><input type="radio" name="category" value="ai"><span>AI-ассистент</span></label><label><input type="radio" name="category" value="other"><span>Другое</span></label></fieldset>
+    <div class="row2">
+      <div class="field"><label for="f-name">Имя</label><input id="f-name" name="name" type="text" autocomplete="name" maxlength="120" required aria-describedby="e-name"><p class="error" id="e-name"></p></div>
+      <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="200" required aria-describedby="e-email"><p class="error" id="e-email"></p></div>
+    </div>
+    <div class="field"><label for="f-msg">Ваша идея</label><textarea id="f-msg" name="message" maxlength="4000" required placeholder="Хватит нескольких строк." aria-describedby="e-msg"></textarea><p class="error" id="e-msg"></p></div>
+    <div class="hp" aria-hidden="true"><label for="f-web">Website</label><input id="f-web" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+    <p class="form-send"><button class="btn" type="submit">Отправить</button><small>Используем только для ответа вам.</small></p>
+    <div class="form-status" data-form-status role="status" tabindex="-1" hidden></div>
+  </form>
 </section>
 </main>
-<footer class="site-footer">
-  <div class="wrap">
-    <div style="display:grid;gap:14px">
-      <a class="wordmark" href="/ru/"><span class="slit" aria-hidden="true"></span>VERGHÉTHORN</a>
-      <small>Студия кино, сайтов, приложений и AI.<br>Идеи, которые принимают любую форму.</small>
-      <small>© 2026 VERGHÉTHORN · <a href="mailto:verghethorn@gmail.com">verghethorn@gmail.com</a></small>
-    </div>
-    <nav aria-label="Подвал">
-      <a href="/ru/services/">Что мы делаем</a><a href="/ru/approach/">Как мы работаем</a><a href="/ru/contact/">Контакт</a>
-      <a href="https://www.youtube.com/@verghethorn" rel="me noopener" target="_blank">YouTube <svg width="11" height="11" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 9l6-6M4 3h5v5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></a><a href="https://www.instagram.com/verghethorn" rel="me noopener" target="_blank">Instagram <svg width="11" height="11" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 9l6-6M4 3h5v5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></a><a href="https://www.tiktok.com/@verghethorn_official" rel="me noopener" target="_blank">TikTok <svg width="11" height="11" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 9l6-6M4 3h5v5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></a>
-      <a class="quiet" href="/ru/archive/">Архив</a>
-    </nav>
-  </div>
+
+<footer class="foot">
+  <p><span class="wordmark small"><span class="slit" aria-hidden="true"></span>VERGHÉTHORN</span> Студия AI-кино · Фильмы, реклама, сайты, приложения.</p>
+  <p class="foot-links"><a href="mailto:verghethorn@gmail.com">verghethorn@gmail.com</a><a href="https://www.youtube.com/@verghethorn" target="_blank" rel="me noopener">YouTube</a><a href="https://www.instagram.com/verghethorn" target="_blank" rel="me noopener">Instagram</a><a href="https://www.tiktok.com/@verghethorn_official" target="_blank" rel="me noopener">TikTok</a><span>© 2026</span></p>
 </footer>
-<script type="application/json" id="i18n">{"menu":"Меню","close":"Закрыть","play":"Воспроизвести","pause":"Пауза","forms":["VERGHÉTHORN","Кино","Сайт","Приложение","Голос","Идея"],"yours":"Ваша идея","frameMeta":["КИНО · 24 FPS","СТРУКТУРА · КОНТУРЫ","ИНТЕРФЕЙС · 5 ОБЪЕКТОВ"],"modes":["кино","структура","интерфейс"],"form":{"sending":"Отправка…","errName":"Укажите имя, чтобы мы знали, кому ответить.","errEmail":"Проверьте email — нужен символ @ и домен.","errCategory":"Выберите ближайший вариант.","errMessage":"Пожалуйста, чуть подробнее — хотя бы 10 символов.","okTitle":"Спасибо. Сообщение получено.","okText":"Мы лично читаем каждое сообщение и ответим на {email}.","errTitle":"Сообщение не отправлено.","errNet":"Текст остался в форме. Попробуйте ещё раз через минуту или напишите на verghethorn@gmail.com.","errBot":"Похоже на автоматическую отправку. Подождите несколько секунд и отправьте снова или напишите на verghethorn@gmail.com."},"lab":{"knob":"Пружина {n}: потяните или используйте стрелки","drag":"Тянуть","move":"Кадр {n}: стрелки вверх и вниз меняют порядок","shotTitle":"Название кадра {n}","duration":"Длительность кадра {n}","remove":"Удалить кадр {n}","removed":"Кадр удалён","moved":"Перемещён на позицию {n}","added":"Кадр добавлен","resetDone":"Раскадровка сброшена","shots":"Кадров: {n}","defaults":[["Первый образ",3],["Проблема — в одной сцене",6],["Продукт в деле",10],["Логотип и посыл",4]]}}</script>
-<script type="module" src="/static/js/site.js?v=b19a0146"></script>
+
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"VERGHÉTHORN","alternateName":"VERGHETHORN","url":"https://verghethorn.com/","email":"verghethorn@gmail.com","logo":"https://verghethorn.com/static/apple-touch-icon.png","founder":{"@type":"Person","name":"Rashid Kurabegov"},"sameAs":["https://www.youtube.com/@verghethorn","https://www.instagram.com/verghethorn","https://www.tiktok.com/@verghethorn_official"],"description":"VERGHÉTHORN ставит идеи как кино: фильмы, реклама, сайты, приложения и AI-ассистенты — придуманы как сцена и сделаны на новейшем AI."}</script>
+<script type="application/json" id="i18n">{"menu":"Меню","close":"Закрыть","form":{"sending":"Отправка…","errName":"Укажите имя, чтобы мы знали, кому ответить.","errEmail":"Проверьте email — нужен символ @ и домен.","errMessage":"Пожалуйста, чуть подробнее — хотя бы 10 символов.","okTitle":"Спасибо — дверь открыта.","okText":"Мы лично читаем каждое сообщение и ответим на {email}.","errTitle":"Сообщение не отправлено.","errNet":"Текст остался здесь. Попробуйте ещё раз через минуту или напишите на verghethorn@gmail.com.","errBot":"Похоже на автоматическую отправку. Подождите несколько секунд и отправьте снова."},"how":{"dialLine":"СДЕЛАНО С ФАНТАЗИЕЙ","steps":["Идея","Форма","Сюжет","Образ","Технологии","Премьера"]},"ad":{"labelLine":"ИГРИСТАЯ ИДЕЯ"},"webSite":{"brand":"ваш бренд","nav":["История","Проекты","Контакт"],"title":["Привет,","будущее."],"cta1":"Начать","cta2":"Узнать","cards":["Кино","Сайт","Приложение"]},"looks":{"day":"Дневной свет","golden":"Золотой час","anamorphic":"Анаморфот","night":"Ночь","film":"Плёнка 16 мм"},"sound":{"on":"Звук включён","off":"Звук выключен"},"copied":"Адрес скопирован"}</script>
+<script type="module" src="/static/js/site.js?v=20320a8c"></script>
 </body>
 </html>

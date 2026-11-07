@@ -1,337 +1,201 @@
-// VERGHÉTHORN — shared behaviour. Every enhancement is optional: the site works without this file.
+// VERGHÉTHORN — page behaviour. Everything degrades gracefully: the page reads fine without scripts or WebGL.
+import { sfx, isMuted, setMuted } from './sound.js';
+
 const T = JSON.parse(document.getElementById('i18n')?.textContent || '{}');
-const LANG = document.documentElement.lang || 'en';
-const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
-const saveData = navigator.connection?.saveData === true;
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-const store = {
-  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
-  set(k, v) { try { localStorage.setItem(k, v); } catch { /* storage unavailable */ } },
-};
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch { /* ignore */ } } };
+const LANG = document.documentElement.lang;
 
-/* ---------- header ---------- */
-const header = $('.site-header');
-const onScroll = () => header?.classList.toggle('is-solid', scrollY > 24 || !!$('.nav.is-open'));
-addEventListener('scroll', onScroll, { passive: true }); onScroll();
+/* ---------- nav ---------- */
+const menuBtn = $('.menu-btn'), links = $('#gnav-links');
+const closeMenu = () => { links.classList.remove('is-open'); menuBtn.setAttribute('aria-expanded', 'false'); menuBtn.textContent = T.menu; };
+menuBtn?.addEventListener('click', () => {
+  const open = !links.classList.contains('is-open');
+  links.classList.toggle('is-open', open); menuBtn.setAttribute('aria-expanded', String(open)); menuBtn.textContent = open ? T.close : T.menu;
+  sfx('tick');
+});
+$$('a', links).forEach(a => a.addEventListener('click', closeMenu));
+addEventListener('keydown', e => { if (e.key === 'Escape') { closeMenu(); closeDock(); } });
+// highlight the section on screen
+const navMap = Object.fromEntries($$('[data-nav]').map(a => [a.dataset.nav, a]));
+const navObs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { $$('[data-nav]').forEach(a => a.classList.remove('is-active')); navMap[e.target.id]?.classList.add('is-active'); } }), { rootMargin: '-45% 0px -50% 0px' });
+['film', 'web', 'ads', 'how', 'contact'].forEach(id => { const el = document.getElementById(id); if (el) navObs.observe(el); });
 
-const menuBtn = $('.menu-btn'), nav = $('#site-nav');
-if (menuBtn && nav) {
-  const close = () => { nav.classList.remove('is-open'); menuBtn.setAttribute('aria-expanded', 'false'); menuBtn.textContent = T.menu; onScroll(); };
-  menuBtn.addEventListener('click', () => {
-    const open = !nav.classList.contains('is-open');
-    nav.classList.toggle('is-open', open);
-    menuBtn.setAttribute('aria-expanded', String(open));
-    menuBtn.textContent = open ? T.close : T.menu;
-    onScroll();
-    if (open) nav.querySelector('a')?.focus();
-  });
-  addEventListener('keydown', e => { if (e.key === 'Escape' && nav.classList.contains('is-open')) { close(); menuBtn.focus(); } });
-  matchMedia('(min-width: 861px)').addEventListener('change', close);
-}
-
-/* ---------- language: remember the reader's choice ---------- */
+/* ---------- language memory ---------- */
 $$('[data-lang-link]').forEach(a => a.addEventListener('click', () => store.set('vt-lang', a.dataset.langLink)));
-if (LANG === 'en' && location.pathname === '/' && store.get('vt-lang') === 'ru' && !document.referrer.startsWith(location.origin)) {
-  location.replace('/ru/');
-}
+if (LANG === 'en' && location.pathname === '/' && store.get('vt-lang') === 'ru' && !document.referrer.startsWith(location.origin)) location.replace('/ru/');
 
-/* ---------- reveal fallback (browsers without scroll-driven animations) ---------- */
-if (!CSS.supports('animation-timeline: view()') && !reduce) {
-  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
-  $$('.reveal').forEach(el => io.observe(el));
-} else { $$('.reveal').forEach(el => el.classList.add('is-in')); }
+/* ---------- sound ---------- */
+const sBtn = $('[data-sound]');
+const syncSound = () => { const on = !isMuted(); sBtn.setAttribute('aria-pressed', String(on)); sBtn.setAttribute('aria-label', on ? sBtn.dataset.on : sBtn.dataset.off); };
+sBtn?.addEventListener('click', () => { setMuted(!isMuted()); syncSound(); }); syncSound();
 
-/* ---------- living cursor ---------- */
-if (fine && !reduce) {
-  const c = document.createElement('div');
-  c.className = 'cursor'; c.setAttribute('aria-hidden', 'true'); c.innerHTML = '<span></span>';
-  document.body.appendChild(c);
-  const label = c.firstChild;
-  let x = -100, y = -100, cx = x, cy = y, raf = 0;
-  const tick = () => { cx += (x - cx) * .22; cy += (y - cy) * .22; c.style.transform = `translate3d(${cx}px, ${cy}px, 0)`; raf = (Math.abs(x - cx) + Math.abs(y - cy) > .3) ? requestAnimationFrame(tick) : 0; };
-  addEventListener('pointermove', e => {
-    if (e.pointerType !== 'mouse') return;
-    x = e.clientX; y = e.clientY; c.classList.add('is-visible');
-    const t = e.target.closest?.('[data-cursor]');
-    const txt = t ? t.dataset.cursor : '';
-    if (label.textContent !== txt) label.textContent = txt;
-    c.classList.toggle('has-label', !!txt);
-    if (!raf) raf = requestAnimationFrame(tick);
-  }, { passive: true });
-  document.addEventListener('pointerleave', () => c.classList.remove('is-visible'));
-}
-
-/* ---------- home: LUMEN stage — one field of light, many forms ---------- */
-const stage = $('[data-stage]');
-if (stage) {
-  const canvas = $('#lumen', stage);
-  const formsEl = $$('.forms li', stage);
-  const KEYS = ['text:VERGHÉTHORN', 'film', 'web', 'app', 'voice', 'sphere'];
-  const SCENE_IDX = { film: 1, web: 2, app: 3, voice: 4 };
-  const mobile = () => matchMedia('(max-width: 860px)').matches;
-  const layout = scene => {
-    if (scene === 'intro') return mobile() ? { offset: [0, .44], scale: .44 } : { offset: [0, .36], scale: .68 };
-    return mobile() ? { offset: [0, .44], scale: .42 } : { offset: [.46, .02], scale: .62 };
-  };
-  let lumen = null, scene = 'intro', idx = 0, timer = 0, userUntil = 0;
-  const mark = i => formsEl.forEach((li, j) => li.classList.toggle('is-on', j === i));
-  const show = (key, i) => { lumen?.morph(key, layout(scene)); if (i != null) mark(i); };
-  const cycle = () => {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      if (scene === 'intro' && Date.now() > userUntil && !document.hidden) { idx = (idx + 1) % KEYS.length; show(KEYS[idx], idx); }
-      cycle();
-    }, reduce ? 5200 : 3400);
-  };
-  const start = async () => {
-    if (saveData) { stage.classList.add('no-gl'); return; }
-    try { await Promise.race([document.fonts.load('600 120px Onest'), new Promise(r => setTimeout(r, 1500))]); } catch { /* font optional */ }
-    const { createLumen } = await import('./lumen.js');
-    lumen = createLumen(canvas, { reduce, pointerTarget: stage, onLost: () => stage.classList.add('no-gl') });
-    if (!lumen) { stage.classList.add('no-gl'); return; }
-    show(KEYS[0], 0);
-    cycle();
-    const idle = window.requestIdleCallback || (f => setTimeout(f, 300));
-    KEYS.slice(1).forEach((k, i) => idle(() => lumen.prepare(k), { timeout: 2000 + i * 400 }));
-  };
-  start();
-
-  const sceneIO = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (!e.isIntersecting) return;
-      scene = e.target.dataset.scene;
-      if (scene === 'intro') { show(KEYS[idx], idx); }
-      else { show(scene, SCENE_IDX[scene]); }
-    });
-  }, { threshold: .5 });
-  $$('[data-scene]', stage).forEach(el => sceneIO.observe(el));
-
-  // the visitor's own word
-  const tryForm = $('[data-try]', stage);
-  tryForm?.addEventListener('submit', e => {
-    e.preventDefault();
-    const w = tryForm.elements.word.value.trim();
-    if (!w) { tryForm.elements.word.focus(); return; }
-    userUntil = Date.now() + 9000;
-    mark(-1);
-    if (lumen) lumen.morph('text:' + w, layout('intro'));
-    store.set('vt-idea', w.slice(0, 60));
-    tryForm.elements.word.blur();
-  });
-  addEventListener('resize', () => lumen && lumen.morph(lumen.current, layout(scene)), { passive: true });
-}
-
-/* ---------- carousel arrows ---------- */
-$$('[data-carousel]').forEach(car => {
-  const wrap = car.closest('section');
-  $$('[data-car]', wrap).forEach(b => b.addEventListener('click', () => {
-    const step = (car.querySelector('li')?.getBoundingClientRect().width || 260) + 20;
-    car.scrollBy({ left: step * +b.dataset.car, behavior: reduce ? 'auto' : 'smooth' });
-  }));
-  car.addEventListener('keydown', e => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); car.scrollBy({ left: (e.key === 'ArrowRight' ? 1 : -1) * 280, behavior: reduce ? 'auto' : 'smooth' }); }
+/* ---------- camera looks ---------- */
+const dock = $('[data-dock]'), dockBtn = $('.dock-btn', dock), dockMenu = $('#dock-menu');
+const lookBtns = $$('[data-look]', dockMenu);
+const closeDock = () => { if (!dockMenu.hidden) { dockMenu.hidden = true; dockBtn.setAttribute('aria-expanded', 'false'); } };
+dockBtn.addEventListener('click', () => {
+  const open = dockMenu.hidden; dockMenu.hidden = !open; dockBtn.setAttribute('aria-expanded', String(open)); sfx('tick');
+  if (open) ($('[aria-checked="true"]', dockMenu) || lookBtns[0]).focus();
+});
+document.addEventListener('pointerdown', e => { if (!dock.contains(e.target)) closeDock(); });
+const reflectLook = id => {
+  lookBtns.forEach(b => { const on = b.dataset.look === id; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; });
+  $('[data-look-name]').textContent = T.looks[id];
+  document.querySelector('meta[name=theme-color]').content = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+};
+const setLook = (id, from) => {
+  const apply = () => { document.documentElement.dataset.look = id; reflectLook(id); dispatchEvent(new CustomEvent('vt:look', { detail: id })); };
+  store.set('vt-look', id);
+  if (from) { const r = from.getBoundingClientRect(); document.documentElement.style.setProperty('--ix', r.left + r.width / 2 + 'px'); document.documentElement.style.setProperty('--iy', r.top + r.height / 2 + 'px'); }
+  if (document.startViewTransition && !reduce) document.startViewTransition(apply); else apply();
+  sfx('shutter');
+};
+lookBtns.forEach((b, i) => {
+  b.addEventListener('click', () => { setLook(b.dataset.look, dockBtn); closeDock(); dockBtn.focus(); });
+  b.addEventListener('keydown', e => {
+    const d = ['ArrowDown', 'ArrowRight'].includes(e.key) ? 1 : ['ArrowUp', 'ArrowLeft'].includes(e.key) ? -1 : 0;
+    if (d) { e.preventDefault(); lookBtns[(i + d + lookBtns.length) % lookBtns.length].focus(); }
   });
 });
+reflectLook(document.documentElement.dataset.look || 'day');
 
-/* ---------- media previews: play muted clips only while visible ---------- */
-$$('video[data-preview]').forEach(v => {
-  if (reduce || saveData) { v.removeAttribute('autoplay'); return; }
-  const io = new IntersectionObserver(([e]) => {
-    if (e.isIntersecting) { if (!v.src && v.dataset.src) v.src = v.dataset.src; v.play().catch(() => {}); }
-    else v.pause();
-  }, { rootMargin: '120px' });
-  io.observe(v);
-});
-
-/* ---------- work filter ---------- */
-const filter = $('[data-filter]');
-if (filter) {
-  const rows = $$('[data-cats]');
-  const empty = $('[data-empty]');
-  const apply = cat => {
-    let shown = 0;
-    rows.forEach(r => { const ok = cat === 'all' || r.dataset.cats.split(' ').includes(cat); r.hidden = !ok; if (ok) shown++; });
-    $$('button', filter).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.cat === cat)));
-    if (empty) { empty.hidden = shown > 0; const n = $('[data-empty-name]', empty); if (n) n.textContent = $(`button[data-cat="${cat}"] .label`, filter)?.textContent || ''; }
-    $('[data-result-count]').textContent = T.shown.replace('{n}', shown);
-  };
-  $$('button', filter).forEach(b => b.addEventListener('click', () => {
-    const cat = b.dataset.cat; apply(cat);
-    history.replaceState(null, '', cat === 'all' ? location.pathname : '#' + cat);
-  }));
-  const fromHash = location.hash.slice(1);
-  apply($(`button[data-cat="${fromHash}"]`, filter) ? fromHash : 'all');
+/* ---------- statement words (fallback for browsers without scroll timelines) ---------- */
+if (!CSS.supports('animation-timeline: view()')) {
+  const words = $$('.statement-text .w');
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-lit'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -35% 0px' });
+  words.forEach(w => io.observe(w));
 }
+const revIO = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-in'); revIO.unobserve(e.target); } }), { rootMargin: '0px 0px -10% 0px' });
+$$('.reveal').forEach(el => reduce ? el.classList.add('is-in') : revIO.observe(el));
 
-/* ---------- case player ---------- */
-$$('[data-player]').forEach(p => {
-  const v = $('video', p), btn = $('[data-play]', p), big = $('.player-big', p), bar = $('input[type=range]', p), time = $('time', p);
-  const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
-  const icon = playing => playing ? '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="2" y="1" width="3.5" height="12" fill="currentColor"/><rect x="8.5" y="1" width="3.5" height="12" fill="currentColor"/></svg>'
-                                  : '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5v11l9-5.5z" fill="currentColor"/></svg>';
-  const sync = () => {
-    const playing = !v.paused && !v.ended;
-    p.classList.toggle('is-playing', playing);
-    btn.innerHTML = icon(playing);
-    btn.setAttribute('aria-label', playing ? T.pause : T.play);
-  };
-  const toggle = () => { v.paused || v.ended ? v.play() : v.pause(); };
-  btn.addEventListener('click', toggle); big.addEventListener('click', toggle);
-  v.addEventListener('click', toggle);
-  v.addEventListener('play', sync); v.addEventListener('pause', sync); v.addEventListener('ended', sync);
-  v.addEventListener('loadedmetadata', () => { bar.max = v.duration; time.textContent = `0:00 / ${fmt(v.duration)}`; });
-  v.addEventListener('timeupdate', () => { bar.value = v.currentTime; time.textContent = `${fmt(v.currentTime)} / ${fmt(v.duration || 0)}`; });
-  bar.addEventListener('input', () => { v.currentTime = +bar.value; });
-  sync();
-});
+/* ---------- 3D scenes: loaded when near the screen ---------- */
+const scenes = {};
+const loaders = {
+  set: el => import('./scenes/set.js').then(m => m.initSet(el, T, sfx)),
+  web: el => import('./scenes/web.js').then(m => m.initWeb(el, T, sfx)),
+  ad: el => import('./scenes/ad.js').then(m => m.initAd(el, T, sfx)),
+  how: el => import('./scenes/explode.js').then(m => m.initExplode(el, T, sfx)),
+};
+const sceneIO = new IntersectionObserver(es => es.forEach(e => {
+  if (!e.isIntersecting) return;
+  const el = e.target, id = el.dataset.scene; sceneIO.unobserve(el);
+  loaders[id](el).then(api => { scenes[id] = api; onScroll(); if (id === 'ad' && api) api.setAudience(curAud); })
+    .catch(err => { console.warn('scene', id, err); el.classList.add('no-gl'); });
+}), { rootMargin: '600px 0px' });
+$$('[data-scene]').forEach(el => sceneIO.observe(el));
 
-/* ---------- Living Shapes: hero explorer ---------- */
-const explorer = $('[data-heroes]');
-if (explorer) {
-  const stage = $('.heroes-stage', explorer);
-  const btns = $$('[data-hero]', explorer);
-  const caption = $('[data-hero-caption]', explorer);
-  const pick = (b, push = true) => {
-    const on = b && b.getAttribute('aria-pressed') !== 'true';
-    btns.forEach(x => x.setAttribute('aria-pressed', String(on && x === b)));
-    if (on) {
-      stage.style.setProperty('--fx', b.dataset.x + '%'); stage.style.setProperty('--fy', b.dataset.y + '%');
-      stage.style.setProperty('--z', matchMedia('(max-width: 860px)').matches ? 2.2 : 2.6);
-      stage.style.setProperty('--r', '9%');
-      caption.textContent = b.dataset.caption;
-      if (push) history.replaceState(null, '', '#' + b.dataset.hero);
-    } else {
-      stage.style.setProperty('--z', 1); stage.style.setProperty('--r', '100%');
-      caption.textContent = caption.dataset.default;
-      if (push) history.replaceState(null, '', location.pathname);
-    }
-  };
-  btns.forEach(b => b.addEventListener('click', () => pick(b)));
-  const h = location.hash.slice(1); const pre = btns.find(b => b.dataset.hero === h); if (pre) pick(pre, false);
-}
-
-/* ---------- UseFive: playable prototype ---------- */
-const proto = $('[data-proto]');
-if (proto) {
-  const imgs = { brother: $('img[data-agent="brother"]', proto), sister: $('img[data-agent="sister"]', proto) };
-  const segBtns = $$('.seg button', proto), speak = $('.speak', proto), state = $('.state', proto), canvas = $('canvas.wave', proto);
-  const audio = new Audio(); audio.preload = 'none'; audio.src = proto.dataset.voice;
-  let agent = 'brother', ctx, analyser, data, raf = 0;
-  const setState = k => { state.textContent = T.proto[k]; proto.dataset.state = k; };
-  const draw = () => {
-    const c = canvas.getContext('2d'), w = canvas.width = canvas.clientWidth * devicePixelRatio, h = canvas.height = canvas.clientHeight * devicePixelRatio;
-    c.clearRect(0, 0, w, h);
-    if (analyser) analyser.getByteFrequencyData(data);
-    const bars = 48, bw = w / bars;
-    for (let i = 0; i < bars; i++) {
-      const j = Math.abs(i - (bars - 1) / 2) / (bars / 2); // mirrored from the centre
-      const v = analyser ? data[Math.floor(4 + j * 90)] / 255 : 0;
-      const bh = Math.max(2 * devicePixelRatio, Math.pow(v, 1.4) * h * .95);
-      c.fillStyle = 'rgba(126, 200, 255, .9)';
-      c.fillRect(i * bw + bw * .3, (h - bh) / 2, bw * .4, bh);
-    }
-    if (!audio.paused) raf = requestAnimationFrame(draw); else { raf = 0; c.clearRect(0, 0, w, h); }
-  };
-  const choose = a => {
-    agent = a;
-    segBtns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.agent === a)));
-    Object.entries(imgs).forEach(([k, el]) => el.hidden = k !== a);
-    audio.pause(); audio.currentTime = 0;
-    const ready = a === 'brother';
-    speak.disabled = !ready; speak.setAttribute('aria-pressed', 'false');
-    speak.lastChild.textContent = ready ? T.proto.listen : T.proto.unavailable;
-    setState(ready ? 'idle' : 'pending');
-  };
-  segBtns.forEach(b => b.addEventListener('click', () => choose(b.dataset.agent)));
-  speak.addEventListener('click', async () => {
-    if (!audio.paused) { audio.pause(); return; }
-    try {
-      if (!ctx) {
-        ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const src = ctx.createMediaElementSource(audio); analyser = ctx.createAnalyser(); analyser.fftSize = 512;
-        data = new Uint8Array(analyser.frequencyBinCount); analyser.smoothingTimeConstant = .7; src.connect(analyser); analyser.connect(ctx.destination);
+/* ---------- pinned sections: scroll progress ---------- */
+const pins = $$('[data-pin]');
+const stagesEl = $$('.stages li');
+const stepEls = $$('.how-steps li');
+let lastStep = -2, lastStage = -1;
+function progressOf(el) { const r = el.getBoundingClientRect(); return Math.min(1, Math.max(0, -r.top / Math.max(1, r.height - innerHeight))); }
+function onScroll() {
+  pins.forEach(el => {
+    const p = progressOf(el);
+    if (el.dataset.pin === 'web') {
+      scenes.web?.setProgress(p * 1.15);
+      const st = Math.min(stagesEl.length - 1, Math.floor(p * stagesEl.length * .999));
+      if (st !== lastStage) { lastStage = st; stagesEl.forEach((li, i) => { li.classList.toggle('is-on', i === st); li.classList.toggle('is-done', i < st); }); }
+    } else if (el.dataset.pin === 'how') {
+      const a = scenes.how?.setProgress(p) ?? (p < .18 ? -1 : Math.min(5, Math.floor((p - .18) / .82 * 6)));
+      if (a !== lastStep) {
+        if (lastStep !== -2 && a >= 0) sfx('tick');
+        lastStep = a;
+        stepEls.forEach((li, i) => { li.classList.toggle('is-on', i === a); li.classList.toggle('is-done', i < a); });
+        const lab = $('[data-layer-label]'); if (lab && a >= 0) lab.textContent = T.how.steps[a].toUpperCase();
       }
-      await ctx.resume();
-      setState('loading');
-      await audio.play();
-    } catch { setState('error'); }
+    }
   });
-  audio.addEventListener('playing', () => { setState('speaking'); speak.setAttribute('aria-pressed', 'true'); speak.lastChild.textContent = T.proto.stop; if (!raf) draw(); });
-  audio.addEventListener('pause', () => { if (proto.dataset.state === 'speaking') setState('idle'); speak.setAttribute('aria-pressed', 'false'); if (agent === 'brother') speak.lastChild.textContent = T.proto.listen; });
-  audio.addEventListener('ended', () => setState('done'));
-  choose('brother');
 }
+let ticking = false;
+addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; onScroll(); }); } }, { passive: true });
+addEventListener('resize', onScroll, { passive: true });
+onScroll();
+// clicking a step scrolls to it
+$$('[data-step-go]').forEach(b => b.addEventListener('click', () => {
+  const pin = $('[data-pin="how"]'), i = +b.dataset.stepGo;
+  const target = .18 + (i + .5) / 6 * .82;
+  const top = pin.getBoundingClientRect().top + scrollY + target * (pin.offsetHeight - innerHeight);
+  scrollTo({ top, behavior: reduce ? 'auto' : 'smooth' });
+}));
 
-/* ---------- contact form: real submission to the inquiries backend ---------- */
+/* ---------- ad audiences ---------- */
+const player = $('[data-ad-player]'), tag = $('[data-ad-tag]'), audBtns = $$('[data-aud]', $('.aud'));
+let curAud = 'genz';
+const pickAud = (id, focus) => {
+  curAud = id;
+  audBtns.forEach(b => { const on = b.dataset.aud === id; b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1; if (on) { b.scrollIntoView({ block: 'nearest', inline: 'center', behavior: reduce ? 'auto' : 'smooth' }); if (focus) b.focus(); } });
+  player.dataset.aud = id;
+  const b = audBtns.find(x => x.dataset.aud === id);
+  tag.textContent = b.dataset.tag; tag.style.animation = 'none'; void tag.offsetWidth; tag.style.animation = '';
+  scenes.ad?.setAudience(id);
+  sfx('cut');
+};
+audBtns.forEach((b, i) => {
+  b.addEventListener('click', () => pickAud(b.dataset.aud));
+  b.addEventListener('keydown', e => { const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0; if (d) { e.preventDefault(); pickAud(audBtns[(i + d + audBtns.length) % audBtns.length].dataset.aud, true); } });
+});
+$$('[data-aud-step]').forEach(b => b.addEventListener('click', () => {
+  const i = audBtns.findIndex(x => x.dataset.aud === curAud);
+  pickAud(audBtns[(i + +b.dataset.audStep + audBtns.length) % audBtns.length].dataset.aud);
+}));
+// a little countdown, like a real spot
+const adTime = $('[data-ad-time]');
+if (adTime && !reduce) { let n = 3; setInterval(() => { n = n <= 1 ? 3 : n - 1; adTime.textContent = '0:0' + n; }, 1000); }
+
+/* ---------- doors ---------- */
+const toast = $('[data-toast]');
+let toastT = 0;
+const showToast = () => { toast.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => toast.hidden = true, 2200); };
+$$('.door').forEach(d => {
+  d.addEventListener('pointerenter', () => sfx('tick'));
+  d.addEventListener('click', e => {
+    e.preventDefault();
+    d.classList.add('is-open'); sfx('door');
+    const href = d.getAttribute('href');
+    if (d.hasAttribute('data-email')) {
+      navigator.clipboard?.writeText(href.replace('mailto:', '')).then(showToast, () => {});
+      setTimeout(() => { location.href = href; }, 650);
+    } else {
+      setTimeout(() => { const w = window.open(href, '_blank', 'noopener'); if (!w) location.href = href; }, 650);
+    }
+    setTimeout(() => d.classList.remove('is-open'), 2600);
+  });
+});
+
+/* ---------- inquiry form ---------- */
 const form = $('form[data-inquiry]');
 if (form) {
-  const statusEl = $('[data-form-status]');
-  const submit = $('button[type=submit]', form);
-  const opened = Date.now();
+  const statusEl = $('[data-form-status]'), submit = $('button[type=submit]', form), opened = Date.now();
   const rules = {
-    name: v => v.trim().length ? '' : T.form.errName,
+    name: v => v.trim() ? '' : T.form.errName,
     email: v => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v.trim()) ? '' : T.form.errEmail,
-    category: v => v ? '' : T.form.errCategory,
     message: v => v.trim().length >= 10 ? '' : T.form.errMessage,
   };
   const check = (el, show) => {
-    const msg = rules[el.name]?.(el.value) ?? '';
-    const field = el.closest('.field'), err = $('.error', field);
-    if (show || field.classList.contains('is-invalid')) {
-      field.classList.toggle('is-invalid', !!msg); err.textContent = msg; el.setAttribute('aria-invalid', String(!!msg));
-    }
+    const msg = rules[el.name]?.(el.value) ?? '', field = el.closest('.field'), err = $('.error', field);
+    if (show || field.classList.contains('is-invalid')) { field.classList.toggle('is-invalid', !!msg); err.textContent = msg; el.setAttribute('aria-invalid', String(!!msg)); }
     return !msg;
   };
-  $$('input, select, textarea', form).forEach(el => {
-    if (!rules[el.name]) return;
-    el.addEventListener('blur', () => { if (el.value) check(el, true); });
-    el.addEventListener('input', () => check(el, false));
-  });
-  // keep an unsent draft in this browser only
-  const draftKey = 'vt-inquiry-draft';
-  try { const d = JSON.parse(store.get(draftKey) || '{}'); Object.entries(d).forEach(([k, v]) => { if (form.elements[k] && !form.elements[k].value) form.elements[k].value = v; }); } catch { /* ignore */ }
-  const idea = store.get('vt-idea');
-  if (idea && !form.elements.message.value) form.elements.message.value = (LANG === 'ru' ? 'Идея: ' : 'Idea: ') + idea + '\n';
-  form.addEventListener('input', () => {
-    const d = {}; ['name', 'email', 'category', 'message'].forEach(k => d[k] = form.elements[k].value); store.set(draftKey, JSON.stringify(d));
-  });
-  const show = (kind, title, text) => {
-    statusEl.hidden = false; statusEl.dataset.kind = kind;
-    statusEl.innerHTML = ''; const s = document.createElement('strong'); s.textContent = title; const p = document.createElement('p'); p.textContent = text;
-    statusEl.append(s, p); statusEl.focus();
-  };
+  $$('input, textarea', form).forEach(el => { if (!rules[el.name]) return; el.addEventListener('blur', () => { if (el.value) check(el, true); }); el.addEventListener('input', () => check(el, false)); });
+  $$('.kinds input', form).forEach(r => r.addEventListener('change', () => sfx('tick')));
+  const show = (kind, title, text) => { statusEl.hidden = false; statusEl.dataset.kind = kind; statusEl.innerHTML = ''; const s = document.createElement('strong'); s.textContent = title; const p = document.createElement('p'); p.textContent = text; statusEl.append(s, p); statusEl.focus(); };
   form.addEventListener('submit', async e => {
     e.preventDefault();
-    const fields = $$('input, select, textarea', form).filter(el => rules[el.name]);
-    const bad = fields.filter(el => !check(el, true));
+    const bad = $$('input, textarea', form).filter(el => rules[el.name] && !check(el, true));
     if (bad.length) { bad[0].focus(); return; }
-    if (form.elements.website.value || Date.now() - opened < 2500) {
-      show('error', T.form.errTitle, T.form.errBot); return;
-    }
-    submit.disabled = true; const label = submit.firstChild.textContent; submit.firstChild.textContent = T.form.sending;
-    const body = {
-      name: form.elements.name.value.trim().slice(0, 120),
-      email: form.elements.email.value.trim().slice(0, 200),
-      category: form.elements.category.value,
-      message: form.elements.message.value.trim().slice(0, 4000),
-      lang: LANG, page: location.pathname.slice(0, 200),
-    };
+    if (form.elements.website.value || Date.now() - opened < 2500) { show('error', T.form.errTitle, T.form.errBot); return; }
+    submit.disabled = true; const label = submit.textContent; submit.textContent = T.form.sending;
+    const body = { name: form.elements.name.value.trim().slice(0, 120), email: form.elements.email.value.trim().slice(0, 200), category: form.elements.category.value || 'other', message: form.elements.message.value.trim().slice(0, 4000), lang: LANG, page: location.pathname.slice(0, 200) };
     try {
-      const r = await fetch(form.dataset.endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', apikey: form.dataset.key, Prefer: 'return=minimal' },
-        body: JSON.stringify(body),
-      });
+      const r = await fetch(form.dataset.endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: form.dataset.key, Prefer: 'return=minimal' }, body: JSON.stringify(body) });
       if (!r.ok) throw new Error(String(r.status));
-      show('ok', T.form.okTitle, T.form.okText.replace('{email}', body.email));
-      form.reset(); store.set(draftKey, '{}');
-    } catch {
-      show('error', T.form.errTitle, T.form.errNet);
-    } finally { submit.disabled = false; submit.firstChild.textContent = label; }
+      show('ok', T.form.okTitle, T.form.okText.replace('{email}', body.email)); form.reset(); sfx('chime');
+    } catch { show('error', T.form.errTitle, T.form.errNet); }
+    finally { submit.disabled = false; submit.textContent = label; }
   });
 }
-
-/* ---------- lab (opt-in, loaded on demand) ---------- */
-if ($('[data-lab]')) import('./lab.js').then(m => m.initLab(T, { reduce }));

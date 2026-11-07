@@ -1,465 +1,276 @@
 // Static site generator for verghethorn.com — run: node tools/build.mjs
-// EN pages at /…, RU pages at /ru/…, with hreflang, sitemap and shared assets.
-import { mkdirSync, writeFileSync, readFileSync, rmSync, existsSync } from 'node:fs';
+// One cinematic page per language: EN at /, RU at /ru/.
+import { mkdirSync, writeFileSync, readFileSync, rmSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
-import { SITE, HEROES, LANGS, U5_SCREENS } from './content.mjs';
+import { SITE, LANGS, LOOK_IDS, AUDIENCE_IDS } from './content.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const BUILD_DATE = new Date().toISOString().slice(0, 10);
-const ver = f => createHash('sha1').update(readFileSync(join(ROOT, f))).digest('hex').slice(0, 8);
-const V = { css: ver('static/css/site.css'), js: ver('static/js/site.js') };
+const hashDir = d => { const h = createHash('sha1'); const walk = p => { for (const f of readdirSync(p).sort()) { const q = join(p, f); statSync(q).isDirectory() ? walk(q) : h.update(readFileSync(q)); } }; walk(join(ROOT, d)); return h.digest('hex').slice(0, 8); };
+const V = hashDir('static');
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-const strip = s => String(s).replace(/<[^>]+>/g, '');
+const strip = s => String(s).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 const pre = L => (L.lang === 'en' ? '' : '/ru');
-const href = (L, p) => pre(L) + p;
-const n2 = i => String(i + 1).padStart(2, '0');
 
-const ARROW = '<svg class="arr" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>';
-const EXT = '<svg width="11" height="11" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 9l6-6M4 3h5v5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>';
+const ARROW = '<svg class="arr" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M1 6h9M6.5 2.5 10 6l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const svg = (d, vb = 24) => `<svg viewBox="0 0 ${vb} ${vb}" aria-hidden="true">${d}</svg>`;
 
-// small line icons for the four forms (used outside the particle stage)
-const ICON = {
-  film: '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="8" y="20" width="32" height="20" rx="2"/><path d="M8 20l30-7 1.5 6M14 18.6l4 5M21 17l4 5M28 15.4l4 5M8 26h32"/></svg>',
-  web: '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="5" y="10" width="38" height="28" rx="2"/><path d="M5 16h38M11 21h14v9H11zM29 22h9M29 26h7"/></svg>',
-  app: '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="15" y="5" width="18" height="38" rx="4"/><path d="M21 9h6M19 15h3v3h-3zM26 15h3v3h-3zM19 21h3v3h-3zM26 21h3v3h-3zM19 28h10v6H19z"/></svg>',
-  voice: '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M6 24v0M11 20v8M16 15v18M21 10v28M26 14v20M31 18v12M36 21v6M41 23v2"/></svg>',
+const LOOK_ICON = {
+  day: svg('<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/>'),
+  golden: svg('<path d="M3 16h18M6 19.5h12"/><path d="M7 16a5 5 0 0 1 10 0"/><path d="M12 6.5v2M5.2 9.5l1.4 1.2M18.8 9.5l-1.4 1.2"/>'),
+  anamorphic: svg('<ellipse cx="12" cy="12" rx="9" ry="4.6"/><ellipse cx="12" cy="12" rx="3.4" ry="2.2"/><path d="M1 12h3M20 12h3"/>'),
+  night: svg('<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.3 1 2.2h5.2c0-.9.4-1.7 1-2.2A6 6 0 0 0 12 3z"/>'),
+  film: svg('<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="1.4"/><circle cx="12" cy="6.6" r="1.9"/><circle cx="12" cy="17.4" r="1.9"/><circle cx="6.6" cy="12" r="1.9"/><circle cx="17.4" cy="12" r="1.9"/>'),
 };
+const CAMERA_ICON = svg('<rect x="2.5" y="8" width="13" height="10" rx="2"/><path d="M15.5 11.5 21 9v8l-5.5-2.5"/><circle cx="6" cy="5.5" r="2.3"/><circle cx="11.5" cy="5.5" r="2.3"/>');
+const SERVICE_ICON = {
+  film: svg('<rect x="3" y="9" width="18" height="11" rx="1.5"/><path d="M3 9l16.5-4 .8 3.2M7.5 7.9l2.2 2.7M12 6.8l2.2 2.7M16.5 5.7l2.2 2.7"/>'),
+  ad: svg('<path d="M4 10v4a1 1 0 0 0 1 1h2l6 4V5L7 9H5a1 1 0 0 0-1 1z"/><path d="M17 9a4 4 0 0 1 0 6M19.5 6.5a7.5 7.5 0 0 1 0 11"/>'),
+  web: svg('<rect x="2.5" y="4" width="19" height="15" rx="2"/><path d="M2.5 8h19M5.5 6h.01M8 6h.01"/><path d="M6 11.5h6v4H6zM14 12h4M14 14.5h3"/>'),
+  app: svg('<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M10.5 5h3M10 9h1.5v1.5H10zM12.5 9H14v1.5h-1.5zM10 12h1.5v1.5H10zM12.5 12H14v1.5h-1.5z"/>'),
+  ai: svg('<path d="M3 12h1.5M6.5 8v8M10 5v14M13.5 9v6M17 7v10M20.5 11v2"/>'),
+  anim: svg('<circle cx="8" cy="15" r="4"/><path d="M12 15c2-6 4-9 9-10"/><circle cx="18.5" cy="6.5" r="2"/>'),
+  pod: svg('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/>'),
+};
+const DOOR_GLYPH = {
+  email: svg('<rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="m3.5 7 8.5 6 8.5-6"/>'),
+  youtube: svg('<rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="M10 9.2v5.6l4.8-2.8z" fill="currentColor"/>'),
+  instagram: svg('<rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17" cy="7" r=".9" fill="currentColor"/>'),
+  tiktok: svg('<path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.5 2.6 2.4 4.3 5 4.5"/>'),
+};
+const SOUND_ICON = '<svg class="ico-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg><svg class="ico-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5z"/><path d="m16 9.5 5 5M21 9.5l-5 5"/></svg>';
 
-function head(L, { title, desc, path, image = '/media/og.jpg', jsonld = '', noindex = false, alt = true, refresh = '' }) {
+function head(L, { title, desc, path, noindex = false, refresh = '' }) {
   const enUrl = SITE.url + path, ruUrl = SITE.url + '/ru' + path;
   const self = L.lang === 'en' ? enUrl : ruUrl;
   return `<!doctype html>
-<html lang="${L.lang}">
+<html lang="${L.lang}" data-look="day">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
-${refresh}${noindex ? '<meta name="robots" content="noindex">\n' : ''}${!noindex ? `<link rel="canonical" href="${self}">\n` : ''}${alt && !noindex ? `<link rel="alternate" hreflang="en" href="${enUrl}">
+${refresh}${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${self}">
+<link rel="alternate" hreflang="en" href="${enUrl}">
 <link rel="alternate" hreflang="ru" href="${ruUrl}">
-<link rel="alternate" hreflang="x-default" href="${enUrl}">` : ''}
-<meta name="theme-color" content="#0B0D10">
-<meta name="color-scheme" content="dark">
+<link rel="alternate" hreflang="x-default" href="${enUrl}">`}
+<meta name="theme-color" content="#F5F5F7">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="VERGHÉTHORN">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${self}">
-<meta property="og:image" content="${SITE.url}${image}">
+<meta property="og:image" content="${SITE.url}/media/og.jpg">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:locale" content="${L.locale}"><meta property="og:locale:alternate" content="${LANGS[L.other].locale}">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon.png" type="image/png" sizes="180x180">
 <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+<script>try{var l=localStorage.getItem('vt-look');if(l&&/^(day|golden|anamorphic|night|film)$/.test(l))document.documentElement.dataset.look=l}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@300..700&family=Spectral:ital,wght@0,300;0,400;1,300;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="/static/css/site.css?v=${V.css}">
-${jsonld}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@300..800&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/static/css/site.css?v=${V}">
+<script type="importmap">{"imports":{"three":"/static/vendor/three/three.module.min.js"}}</script>
+<link rel="modulepreload" href="/static/vendor/three/three.module.min.js">
 </head>`;
 }
 
-function header(L, active, path) {
-  const n = L.nav;
-  const item = (k, p) => `<a href="${href(L, p)}"${active === k ? ' aria-current="page"' : ''}>${n[k]}</a>`;
-  return `<a class="skip-link" href="#main">${L.skip}</a>
-<header class="site-header">
-  <div class="wrap">
-    <a class="wordmark" href="${href(L, '/')}" aria-label="VERGHÉTHORN — ${L.home}"><span class="slit" aria-hidden="true"></span>VERGHÉTHORN</a>
-    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav">${L.menu}</button>
-    <nav class="nav" id="site-nav" aria-label="${L.lang === 'en' ? 'Main' : 'Основное'}">
-      ${item('services', '/services/')}${item('approach', '/approach/')}${item('contact', '/contact/')}
-      <span class="lang" role="group" aria-label="${L.lang === 'en' ? 'Language' : 'Язык'}">
-        <a href="${path}" hreflang="en" lang="en" data-lang-link="en"${L.lang === 'en' ? ' aria-current="true"' : ''}>EN</a>
-        <a href="/ru${path}" hreflang="ru" lang="ru" data-lang-link="ru"${L.lang === 'ru' ? ' aria-current="true"' : ''}>RU</a>
+function page(L) {
+  const H = L.hero, C = L.contact;
+  const lp = pre(L);
+  const jsonld = { '@context': 'https://schema.org', '@type': 'Organization', name: 'VERGHÉTHORN', alternateName: 'VERGHETHORN', url: SITE.url + '/', email: SITE.email, logo: SITE.url + '/static/apple-touch-icon.png', founder: { '@type': 'Person', name: 'Rashid Kurabegov' }, sameAs: SITE.social.map(s => s.href), description: L.desc };
+  const doors = [{ id: 'email', name: C.email, handle: SITE.email, href: `mailto:${SITE.email}`, color: '#E8A33D', note: C.emailNote }, ...SITE.social.map(s => ({ ...s, note: s.handle }))];
+
+  return `${head(L, { title: L.title, desc: L.desc, path: '/' })}
+<body>
+<a class="skip-link" href="#main">${L.skip}</a>
+<header class="gnav">
+  <div class="gnav-in">
+    <a class="wordmark" href="${lp}/" aria-label="VERGHÉTHORN — ${L.home}"><span class="slit" aria-hidden="true"></span>VERGHÉTHORN</a>
+    <nav class="gnav-links" id="gnav-links" aria-label="${L.lang === 'en' ? 'Sections' : 'Разделы'}">
+      ${L.nav.map(([id, t]) => `<a href="#${id}" data-nav="${id}">${t}</a>`).join('')}
+    </nav>
+    <div class="gnav-tools">
+      <button class="icon-btn" type="button" data-sound aria-pressed="true" aria-label="${L.sound.on}" data-on="${L.sound.on}" data-off="${L.sound.off}">${SOUND_ICON}</button>
+      <span class="lang" role="group" aria-label="Language">
+        <a href="/" hreflang="en" lang="en" data-lang-link="en"${L.lang === 'en' ? ' aria-current="true"' : ''}>EN</a>
+        <a href="/ru/" hreflang="ru" lang="ru" data-lang-link="ru"${L.lang === 'ru' ? ' aria-current="true"' : ''}>RU</a>
       </span>
-    </nav>
-  </div>
-</header>`;
-}
-
-function footer(L) {
-  const n = L.nav;
-  return `<footer class="site-footer">
-  <div class="wrap">
-    <div style="display:grid;gap:14px">
-      <a class="wordmark" href="${href(L, '/')}"><span class="slit" aria-hidden="true"></span>VERGHÉTHORN</a>
-      <small>${L.footer.line}<br>${L.footer.small}</small>
-      <small>© ${new Date().getFullYear()} VERGHÉTHORN · <a href="mailto:${SITE.email}">${SITE.email}</a></small>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="gnav-links">${L.menu}</button>
     </div>
-    <nav aria-label="${L.lang === 'en' ? 'Footer' : 'Подвал'}">
-      <a href="${href(L, '/services/')}">${n.services}</a><a href="${href(L, '/approach/')}">${n.approach}</a><a href="${href(L, '/contact/')}">${n.contact}</a>
-      ${SITE.social.map(s => `<a href="${s.href}" rel="me noopener" target="_blank">${s.name} ${EXT}</a>`).join('')}
-      <a class="quiet" href="${href(L, '/archive/')}">${n.archive}</a>
-    </nav>
   </div>
-</footer>`;
-}
+</header>
 
-function page(L, meta, active, body) {
-  return `${head(L, meta)}
-<body${meta.bodyClass ? ` class="${meta.bodyClass}"` : ''}>
-${header(L, active, meta.path)}
+<div class="dock" data-dock>
+  <button class="dock-btn" type="button" aria-expanded="false" aria-controls="dock-menu" title="${esc(L.dock.hint)}">
+    <span class="dock-cam">${CAMERA_ICON}</span><span class="dock-txt"><small>${L.dock.label}</small><b data-look-name>${L.looks.day[0]}</b></span><span class="dock-rec" aria-hidden="true"></span>
+  </button>
+  <div class="dock-menu" id="dock-menu" role="radiogroup" aria-label="${esc(L.dock.hint)}" hidden>
+    ${LOOK_IDS.map((id, i) => `<button type="button" role="radio" aria-checked="${i === 0}" data-look="${id}" data-name="${esc(L.looks[id][0])}"><span class="lk-ico">${LOOK_ICON[id]}</span><span><b>${L.looks[id][0]}</b><small>${L.looks[id][1]}</small></span></button>`).join('')}
+  </div>
+</div>
+<div class="fx-bars" aria-hidden="true"><i></i><i></i></div>
+<div class="fx-grain" aria-hidden="true"></div>
+<div class="fx-vignette" aria-hidden="true"></div>
+
 <main id="main" tabindex="-1">
-${body}
+
+<section class="hero" id="film" aria-labelledby="hero-title">
+  <div class="scene scene-set" data-scene="set" role="img" aria-label="${esc(H.canvas)}">
+    <div class="set-hud" aria-hidden="false">
+      <span class="hud-tag hud-key" data-label="key"><b>${H.key}</b> · <span data-angle>45°</span></span>
+      ${['A', 'B', 'C'].map(id => `<button class="hud-tag hud-cam" type="button" data-cam="${id}" aria-pressed="false"><i class="tally" aria-hidden="true"></i><b>${H.cams[id][0]}</b> ${H.cams[id][1]}</button>`).join('')}
+    </div>
+    <div class="viewfinder" hidden>
+      <div class="vf-frame" aria-hidden="true"><i></i><i></i><i></i><i></i><span class="vf-cross"></span></div>
+      <p class="vf-top"><span class="vf-rec">● REC</span><span data-vf-info></span><span data-vf-tc>00:00:00:00</span></p>
+      <button class="vf-exit" type="button" data-vf-exit>${H.exit} <kbd>Esc</kbd></button>
+    </div>
+  </div>
+  <div class="hero-copy">
+    <p class="eyebrow">${H.eyebrow}</p>
+    <h1 id="hero-title" class="h-hero">${H.h1}</h1>
+    <p class="hero-sub">${H.sub}</p>
+    <p class="hero-cta"><a class="btn" href="#contact">${H.cta}</a><a class="link" href="#web">${H.cta2} ${ARROW}</a></p>
+  </div>
+  <ul class="hints" aria-label="${L.lang === 'en' ? 'Try' : 'Попробуйте'}">${H.hints.map((h, i) => `<li><span class="hint-dot${i ? ' cam' : ''}" aria-hidden="true"></span>${h}</li>`).join('')}</ul>
+</section>
+
+<section class="statement" aria-label="${L.lang === 'en' ? 'Our belief' : 'Во что мы верим'}">
+  <p class="statement-text">${L.statement.split(/(<em>.*?<\/em>)/).map(part => part.startsWith('<em>') ? `<em>${part.slice(4, -5).split(' ').map(w => `<span class="w">${w}</span>`).join(' ')}</em>` : part.split(' ').filter(Boolean).map(w => `<span class="w">${w}</span>`).join(' ')).join(' ')}</p>
+</section>
+
+<section class="pin" id="web" data-pin="web" aria-labelledby="web-t">
+  <div class="pin-stage">
+    <div class="scene scene-web" data-scene="web" role="img" aria-label="${esc(L.web.canvas)}"></div>
+    <div class="pin-copy">
+      <p class="eyebrow">${L.web.eyebrow}</p>
+      <h2 class="h-sec" id="web-t">${L.web.h2}</h2>
+      <p class="sec-sub">${L.web.sub}</p>
+    </div>
+    <ol class="stages" aria-hidden="true">${L.web.stages.map((s, i) => `<li data-stage="${i}">${s}</li>`).join('')}</ol>
+  </div>
+</section>
+
+<section class="ads" id="ads" aria-labelledby="ads-t">
+  <div class="sec-head">
+    <p class="eyebrow">${L.ads.eyebrow}</p>
+    <h2 class="h-sec" id="ads-t">${L.ads.h2}</h2>
+    <p class="sec-sub">${L.ads.sub}</p>
+  </div>
+  <div class="ad-player" data-ad-player data-aud="genz">
+    <div class="scene scene-ad" data-scene="ad" role="img" aria-label="${esc(L.ads.canvas)}"></div>
+    <div class="ad-ui" aria-hidden="true">
+      <p class="ad-top"><span class="ad-badge">${L.ads.ad}</span><span>NOVA</span><span class="ad-time" data-ad-time>0:03</span></p>
+      <p class="ad-catch">${L.ads.catch}</p>
+    </div>
+    <p class="ad-tag" aria-live="polite" data-ad-tag>${L.ads.tags.genz}</p>
+    <div class="ad-flash" aria-hidden="true"></div>
+  </div>
+  <div class="aud" role="tablist" aria-label="${L.ads.eyebrow}">
+    <button class="aud-arrow" type="button" data-aud-step="-1" aria-label="${L.ads.prev}">‹</button>
+    <div class="aud-track">${AUDIENCE_IDS.map((id, i) => `<button type="button" role="tab" aria-selected="${i === 0}" data-aud="${id}" data-tag="${esc(L.ads.tags[id])}">${L.ads.audiences[id]}</button>`).join('')}</div>
+    <button class="aud-arrow" type="button" data-aud-step="1" aria-label="${L.ads.next}">›</button>
+  </div>
+</section>
+
+<section class="pin pin-how" id="how" data-pin="how" aria-labelledby="how-t">
+  <div class="pin-stage">
+    <div class="scene scene-how" data-scene="how" role="img" aria-label="${esc(L.how.canvas)}">
+    </div>
+    <div class="pin-copy">
+      <p class="eyebrow">${L.how.eyebrow}</p>
+      <h2 class="h-sec" id="how-t">${L.how.h2}</h2>
+      <p class="sec-sub">${L.how.sub}</p>
+    </div>
+    <ol class="how-steps">${L.how.steps.map(([t, d], i) => `<li data-step="${i}"><button type="button" data-step-go="${i}"><b>${t}</b><span>${d}</span></button></li>`).join('')}</ol>
+    <p class="drag-hint" aria-hidden="true">${L.how.hint}</p>
+  </div>
+</section>
+
+<section class="services" aria-labelledby="svc-t">
+  <div class="sec-head">
+    <p class="eyebrow">${L.services.eyebrow}</p>
+    <h2 class="h-sec" id="svc-t">${L.services.h2}</h2>
+  </div>
+  <ul class="tiles">${L.services.items.map(([id, t, d]) => `<li class="tile tile-${id} reveal"><span class="tile-ico">${SERVICE_ICON[id]}</span><h3>${t}</h3><p>${d}</p></li>`).join('')}</ul>
+</section>
+
+<section class="contact" id="contact" aria-labelledby="ct-t">
+  <div class="sec-head">
+    <p class="eyebrow">${C.eyebrow}</p>
+    <h2 class="h-sec" id="ct-t">${C.h2}</h2>
+    <p class="sec-sub">${C.sub}</p>
+  </div>
+  <ul class="doors">${doors.map(d => `<li><a class="door" href="${d.href}"${d.id === 'email' ? ' data-email' : ' target="_blank" rel="me noopener"'} style="--c:${d.color}" data-door="${d.id}" aria-label="${esc(d.name)} — ${esc(d.note)}">
+    <span class="door-room" aria-hidden="true"><span class="door-glyph">${DOOR_GLYPH[d.id]}</span><span class="door-handle">${esc(d.handle)}</span></span>
+    <span class="door-leaf" aria-hidden="true"><span class="door-panel"></span><span class="door-panel"></span><span class="door-knob"></span><span class="door-sign">${esc(d.name)}</span></span>
+  </a><p class="door-cap"><b>${esc(d.name)}</b><span>${esc(d.note)}</span></p></li>`).join('')}</ul>
+  <p class="toast" role="status" aria-live="polite" data-toast hidden>${C.copied}</p>
+
+  <form class="form" data-inquiry data-endpoint="${SITE.inquiries.endpoint}" data-key="${SITE.inquiries.key}" novalidate>
+    <h3 class="form-title">${C.formTitle}</h3>
+    <fieldset class="kinds"><legend>${C.what}</legend>${C.kinds.map(([v, t], i) => `<label><input type="radio" name="category" value="${v}"${i === 0 ? ' checked' : ''}><span>${t}</span></label>`).join('')}</fieldset>
+    <div class="row2">
+      <div class="field"><label for="f-name">${C.name}</label><input id="f-name" name="name" type="text" autocomplete="name" maxlength="120" required aria-describedby="e-name"><p class="error" id="e-name"></p></div>
+      <div class="field"><label for="f-email">${C.mail}</label><input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="200" required aria-describedby="e-email"><p class="error" id="e-email"></p></div>
+    </div>
+    <div class="field"><label for="f-msg">${C.message}</label><textarea id="f-msg" name="message" maxlength="4000" required placeholder="${esc(C.messageHint)}" aria-describedby="e-msg"></textarea><p class="error" id="e-msg"></p></div>
+    <div class="hp" aria-hidden="true"><label for="f-web">Website</label><input id="f-web" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+    <p class="form-send"><button class="btn" type="submit">${C.send}</button><small>${C.privacy}</small></p>
+    <div class="form-status" data-form-status role="status" tabindex="-1" hidden></div>
+  </form>
+</section>
 </main>
-${footer(L)}
-<script type="application/json" id="i18n">${JSON.stringify(L.js).replace(/</g, '\\u003c')}</script>
-<script type="module" src="/static/js/site.js?v=${V.js}"></script>
+
+<footer class="foot">
+  <p><span class="wordmark small"><span class="slit" aria-hidden="true"></span>VERGHÉTHORN</span> ${L.footer}</p>
+  <p class="foot-links"><a href="mailto:${SITE.email}">${SITE.email}</a>${SITE.social.map(s => `<a href="${s.href}" target="_blank" rel="me noopener">${s.name}</a>`).join('')}<span>© ${new Date().getFullYear()}</span></p>
+</footer>
+
+<script type="application/ld+json">${JSON.stringify(jsonld)}</script>
+<script type="application/json" id="i18n">${JSON.stringify({ ...L.js, how: { dialLine: L.how.dialLine, steps: L.how.steps.map(s => s[0]) }, ad: L.ad, webSite: L.webSite, looks: Object.fromEntries(LOOK_IDS.map(id => [id, L.looks[id][0]])), sound: L.sound, copied: C.copied }).replace(/</g, '\\u003c')}</script>
+<script type="module" src="/static/js/site.js?v=${V}"></script>
 </body>
 </html>
 `;
 }
 
-const written = [];
-function out(path, html) {
-  const file = join(ROOT, path.endsWith('/') ? path + 'index.html' : path);
-  mkdirSync(dirname(file), { recursive: true });
-  writeFileSync(file, html);
-  written.push(path);
-}
-
-const statusTags = (L, p) => p.status.map(s => `<span class="status"${s === 'live' ? ' data-live' : ''}>${L.statuses[s]}</span>`).join('');
-const pageHead = (eyebrow, h1, lede) => `<header class="page-head"><div class="wrap"><p class="eyebrow">${eyebrow}</p><h1 class="display">${h1}</h1>${lede ? `<p class="lede">${lede}</p>` : ''}</div></header>`;
-const stepsList = L => `<ol class="steps">${L.steps.map(([k, t, d]) => `<li><span class="k">${k}</span><h3 class="h3">${t}</h3><p>${d}</p></li>`).join('')}</ol>`;
-const chapters = list => list.map(([k, h, ps]) => `<section class="chapter reveal"><h2>${k}</h2><div><p class="h2">${h}</p><div class="body-copy">${ps.map(t => `<p>${t}</p>`).join('')}</div></div></section>`).join('\n');
-
-/* ================= HOME ================= */
-function home(L) {
-  const H = L.home;
-  const jsonld = `<script type="application/ld+json">${JSON.stringify({
-    '@context': 'https://schema.org',
-    '@graph': [
-      { '@type': 'Organization', '@id': SITE.url + '/#org', name: 'VERGHÉTHORN', alternateName: 'VERGHETHORN', url: SITE.url + '/', email: SITE.email, logo: SITE.url + '/static/apple-touch-icon.png', founder: { '@type': 'Person', name: 'Rashid Kurabegov' }, sameAs: SITE.social.map(s => s.href), knowsAbout: ['Film production', 'Web design', 'Mobile apps', 'Artificial intelligence'] },
-      { '@type': 'WebSite', '@id': SITE.url + '/#site', url: SITE.url + '/', name: 'VERGHÉTHORN', inLanguage: ['en', 'ru'], publisher: { '@id': SITE.url + '/#org' } },
-    ],
-  })}</script>`;
-  const body = `
-<div class="stage" data-stage>
-  <div class="stage-canvas" aria-hidden="false">
-    <canvas id="lumen" role="img" aria-label="${esc(H.canvasLabel)}"></canvas>
-    <div class="stage-fallback" aria-hidden="true"><span>VERGHÉTHORN</span></div>
-  </div>
-
-  <section class="hero2" data-scene="intro" aria-labelledby="hero-title">
-    <div class="wrap">
-      <ol class="forms" aria-hidden="true">${L.js.forms.map((f, i) => `<li${i === 0 ? ' class="is-on"' : ''}>${f}</li>`).join('')}</ol>
-      <form class="try" data-try autocomplete="off">
-        <label for="try-word">${H.tryLabel}</label>
-        <div class="try-row"><input id="try-word" name="word" type="text" maxlength="18" placeholder="${esc(H.tryPh)}" enterkeyhint="go"><button type="submit" class="try-btn" data-cursor="${esc(H.tryBtn)}">${H.tryBtn} ${ARROW}</button></div>
-      </form>
-      <div class="hero2-copy">
-        <div>
-          <p class="eyebrow">${H.eyebrow}</p>
-          <h1 class="display" id="hero-title">${H.h1}</h1>
-        </div>
-        <div class="side">
-          <p class="lede">${H.lede}</p>
-          <div class="actions">
-            <a class="btn" href="${href(L, '/contact/')}">${H.cta} ${ARROW}</a>
-            <a class="btn ghost" href="#forms">${H.cta2}</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="story-head wrap" id="forms">
-    <p class="eyebrow">${H.storyEyebrow}</p>
-    <h2 class="h2">${H.storyTitle}</h2>
-  </div>
-  ${H.story.map(s => `
-  <section class="scene" data-scene="${s.shape}" aria-labelledby="sc-${s.shape}">
-    <div class="wrap">
-      <div class="panel">
-        <p class="scene-k"><span>${s.k}</span><span class="scene-icon">${ICON[s.shape]}</span></p>
-        <h3 class="h2" id="sc-${s.shape}">${s.title}</h3>
-        <p class="lede">${s.text}</p>
-        <ul class="points">${s.points.map(p => `<li>${p}</li>`).join('')}</ul>
-      </div>
-    </div>
-  </section>`).join('')}
-</div>
-
-<section class="section how" aria-labelledby="how-t">
-  <div class="wrap">
-    <div class="section-head reveal"><div><p class="eyebrow">${H.howEyebrow}</p><h2 class="h2" id="how-t">${H.howTitle}</h2></div>
-    <a class="link-arrow" href="${href(L, '/approach/')}">${L.nav.approach} ${ARROW}</a></div>
-    <div class="steps-wrap"><span class="steps-line" aria-hidden="true"></span>${stepsList(L)}</div>
-  </div>
-</section>
-
-<section class="section" aria-labelledby="why-t">
-  <div class="wrap">
-    <div class="reveal" style="max-width:980px"><p class="eyebrow">${H.why.eyebrow}</p><h2 class="h2" id="why-t">${H.why.title}</h2></div>
-    <ol class="disciplines" style="margin-top:clamp(40px,6vw,80px)">
-      ${H.why.items.map(([t, d], i) => `<li class="reveal"><span class="work-num">${n2(i)}</span><span class="h3">${t}</span><p>${d}</p></li>`).join('')}
-    </ol>
-  </div>
-</section>
-
-<section class="section final" aria-labelledby="final-t">
-  <div class="wrap contact-band">
-    <h2 class="display reveal" id="final-t" style="font-size:clamp(40px,6.4vw,104px)">${H.final.title}</h2>
-    <a class="big-mail reveal" href="mailto:${SITE.email}">${SITE.email}</a>
-    <p><a class="btn" href="${href(L, '/contact/')}">${H.final.btn} ${ARROW}</a></p>
-  </div>
-</section>`;
-  out(href(L, '/'), page(L, { title: H.title, desc: H.desc, path: '/', jsonld, bodyClass: 'is-home' }, null, body));
-}
-
-/* ================= SERVICES ================= */
-function services(L) {
-  const S = L.services;
-  const body = `
-${pageHead(S.eyebrow, S.h1, S.lede)}
-<div class="wrap">
-${S.items.map((d, i) => `<section class="practice-item reveal" id="${d.shape}" aria-labelledby="sv-${d.shape}">
-  <div><p class="scene-k"><span>${n2(i)}</span><span class="scene-icon">${ICON[d.shape]}</span></p><h2 class="h2" id="sv-${d.shape}" style="margin-top:14px">${d.name}</h2><p class="lede" style="margin-top:18px">${d.line}</p></div>
-  <div class="sv-cols">
-    <div><p class="mono">${S.forWhom}</p><p class="body-copy" style="margin:10px 0 0">${d.who}</p></div>
-    <div><p class="mono">${S.youGet}</p><ul>${d.get.map(t => `<li>${t}</li>`).join('')}</ul></div>
-  </div>
-</section>`).join('\n')}
-<section class="section unsure" style="border-top:0">
-  <h2 class="h2">${S.unsure}</h2>
-  <p class="lede" style="margin:20px 0 32px">${S.unsureText}</p>
-  <a class="btn" href="${href(L, '/contact/')}">${S.unsureBtn} ${ARROW}</a>
-</section>
-</div>`;
-  out(href(L, '/services/'), page(L, { title: S.title, desc: S.desc, path: '/services/' }, 'services', body));
-}
-
-/* ================= APPROACH ================= */
-function approach(L) {
-  const A = L.approach;
-  const body = `
-${pageHead(A.eyebrow, A.h1, A.lede)}
-<div class="wrap">
-  <section class="section" style="border-top:0" aria-labelledby="ap-steps"><h2 class="h2" id="ap-steps" style="margin-bottom:48px">${A.stepsTitle}</h2><div class="steps-wrap"><span class="steps-line" aria-hidden="true"></span>${stepsList(L)}</div></section>
-  <section class="chapter" aria-labelledby="ap-tech"><h2 id="ap-tech">${A.techTitle}</h2><ol class="disciplines">${A.tech.map(([t, d], i) => `<li class="reveal"><span class="work-num">${n2(i)}</span><span class="h3">${t}</span><p>${d}</p></li>`).join('')}</ol></section>
-  <section class="chapter" aria-labelledby="ap-faq"><h2 id="ap-faq">${A.faqTitle}</h2><div class="faq">${A.faq.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join('')}</div></section>
-  <section class="section" style="border-top:0"><a class="btn" href="${href(L, '/contact/')}">${A.cta} ${ARROW}</a></section>
-</div>`;
-  out(href(L, '/approach/'), page(L, { title: A.title, desc: A.desc, path: '/approach/' }, 'approach', body));
-}
-
-/* ================= CONTACT ================= */
-function contact(L) {
-  const C = L.contact;
-  const gmail = `https://mail.google.com/mail/?view=cm&fs=1&to=${SITE.email}&su=${encodeURIComponent(L.lang === 'en' ? 'Project inquiry — VERGHÉTHORN' : 'Проект — VERGHÉTHORN')}`;
-  const body = `
-${pageHead(C.eyebrow, C.h1, C.lede)}
-<section class="section" style="border-top:0"><div class="wrap contact-grid">
-  <form class="form" data-inquiry data-endpoint="${SITE.inquiries.endpoint}" data-key="${SITE.inquiries.key}" novalidate>
-    <div class="field"><label for="f-name">${C.name}</label><input id="f-name" name="name" type="text" autocomplete="name" maxlength="120" required aria-describedby="e-name"><p class="error" id="e-name" aria-live="polite"></p></div>
-    <div class="field"><label for="f-email">${C.email}</label><input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="200" required aria-describedby="e-email"><p class="error" id="e-email" aria-live="polite"></p></div>
-    <div class="field"><label for="f-cat">${C.category}</label><select id="f-cat" name="category" required aria-describedby="e-cat"><option value="">${C.choose}</option>${C.options.map(([v, t]) => `<option value="${v}">${t}</option>`).join('')}</select><p class="error" id="e-cat" aria-live="polite"></p></div>
-    <div class="field"><label for="f-msg">${C.message}</label><span class="hint" id="h-msg">${C.messageHint}</span><textarea id="f-msg" name="message" maxlength="4000" required aria-describedby="h-msg e-msg"></textarea><p class="error" id="e-msg" aria-live="polite"></p></div>
-    <div class="hp" aria-hidden="true"><label for="f-web">Website</label><input id="f-web" name="website" type="text" tabindex="-1" autocomplete="off"></div>
-    <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap"><button class="btn" type="submit">${C.send} ${ARROW}</button><small class="muted">${C.privacy}</small></div>
-    <div class="form-status" data-form-status role="status" tabindex="-1" hidden></div>
-  </form>
-  <aside class="contact-aside">
-    <dl>
-      <div><dt>${C.direct}</dt><dd><a href="mailto:${SITE.email}" style="font-size:20px">${SITE.email}</a><br><a href="${gmail}" target="_blank" rel="noopener" style="font-size:14px;color:var(--steel)">${C.gmail} ${EXT}</a></dd></div>
-      <div><dt>${C.follow}</dt><dd style="display:grid;gap:10px">${SITE.social.map(s => `<a href="${s.href}" target="_blank" rel="me noopener">${s.name} · ${s.handle} ${EXT}</a>`).join('')}</dd></div>
-    </dl>
-  </aside>
-</div></section>`;
-  out(href(L, '/contact/'), page(L, { title: C.title, desc: C.desc, path: '/contact/' }, 'contact', body));
-}
-
-/* ================= ARCHIVE ================= */
-function archiveIndex(L) {
-  const A = L.archive;
-  const body = `
-${pageHead(A.eyebrow, A.h1, A.lede)}
-<section class="section" style="padding-top:0;border-top:0"><div class="wrap">
-  <ol class="work-list" style="border-top:0">
-  ${L.projects.map((p, i) => `<li class="work-row"><a href="${href(L, '/archive/' + p.slug + '/')}" data-cursor="${A.open}">
-    <span class="work-num">${n2(i)}</span><span class="work-title">${esc(p.title)}</span><span class="work-desc">${esc(p.short)}</span>
-    <span class="work-meta"><span class="tag-row">${statusTags(L, p)}</span><span class="mono">${p.kind} · ${p.year}</span></span>
-  </a></li>`).join('\n')}
-  </ol>
-  <section style="margin-top:clamp(64px,9vw,120px)" aria-labelledby="concepts-t">
-    <div class="section-head" style="margin-bottom:28px"><div><p class="eyebrow">${L.statuses.concept}</p><h2 class="h2" id="concepts-t">${A.conceptsTitle}</h2></div><p class="notice" style="margin:0">${A.conceptNote}</p></div>
-    <ul class="concepts">${L.concepts.map(([t, d]) => `<li><span class="tag-row"><span class="status">${L.statuses.concept}</span><span class="status">${L.statuses.dev}</span></span><h3 class="h3">${t}</h3><p>${d}</p></li>`).join('')}</ul>
-  </section>
-</div></section>`;
-  out(href(L, '/archive/'), page(L, { title: A.title, desc: A.desc, path: '/archive/', noindex: true }, null, body));
-}
-
-function caseShell(L, slug, C, inner, media) {
-  const A = L.archive, p = L.projects.find(x => x.slug === slug);
-  const idx = L.projects.indexOf(p), next = L.projects[(idx + 1) % L.projects.length];
-  const body = `
-<article>
-<header class="case-hero"><div class="wrap">
-  <p class="eyebrow"><a href="${href(L, '/archive/')}" style="text-decoration:none">${A.back}</a> / ${p.kind}</p>
-  <h1 class="display">${C.h1}</h1>
-  <p class="lede" style="margin-top:28px">${C.lede}</p>
-  ${media || ''}
-  <dl class="facts"${media ? '' : ' style="margin-top:48px"'}>
-    <div><dt>${A.status}</dt><dd><span class="tag-row">${statusTags(L, p)}</span></dd></div>
-    <div><dt>${A.year}</dt><dd>${p.year}</dd></div>
-    <div><dt>${A.role}</dt><dd>${esc(p.role)}</dd></div>
-    <div><dt>${A.format}</dt><dd>${esc(p.format)}</dd></div>
-  </dl>
-</div></header>
-<div class="wrap">${inner}</div>
-</article>
-<a class="next-case" href="${href(L, '/archive/' + next.slug + '/')}" data-cursor="${A.open}"><div class="wrap">
-  <p class="eyebrow">${A.back}</p><p class="display" style="font-size:clamp(44px,8vw,128px)">${esc(next.title)}</p>
-</div></a>`;
-  out(href(L, '/archive/' + slug + '/'), page(L, { title: C.title, desc: C.desc, path: '/archive/' + slug + '/', noindex: true }, null, body));
-}
-
-function qist(L) {
-  const C = L.qist;
-  const inner = `
-${chapters(C.chapters)}
-<section class="chapter" aria-labelledby="q-try"><h2 id="q-try">${C.tryTitle}</h2>
-  <div class="proto">
-    <div class="body-copy"><p>${C.tryText}</p><p><a class="link-arrow" href="/archive/qist/app/" target="_blank" rel="noopener">${C.full} ${EXT}</a></p><p class="notice">${C.note}</p></div>
-    <div class="phone phone-live"><div class="phone-screen" style="display:block;background:#fff"><iframe src="/archive/qist/app/" title="Qist — prototype" loading="lazy"></iframe></div></div>
-  </div>
-</section>`;
-  caseShell(L, 'qist', C, inner);
-}
-
-function use5now(L) {
-  const C = L.u5;
-  const media = `<div class="u5-hero"><div class="u5-glow" aria-hidden="true"></div><img src="/media/u5/welcome.webp" width="508" height="1100" alt="USE 5 NOW — ${L.lang === 'en' ? 'welcome screen' : 'первый экран'}" fetchpriority="high"><p class="mono">${C.countries}</p></div>`;
-  const inner = `
-${chapters(C.chapters)}
-<section class="chapter" aria-labelledby="u5-how"><h2 id="u5-how">${C.howTitle}</h2><ol class="steps" style="grid-template-columns:repeat(2,minmax(0,1fr))">${C.how.map(([t, d], i) => `<li><span class="k">${n2(i)}</span><h3 class="h3">${t}</h3><p>${d}</p></li>`).join('')}</ol></section>
-<section class="chapter" aria-labelledby="u5-sc" style="grid-template-columns:minmax(0,1fr)"><div style="display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap"><div><h2 id="u5-sc">${C.screensTitle}</h2><p class="muted" style="margin:8px 0 0;font-size:14px">${C.screensHint}</p></div>
-  <div class="car-ctrl"><button type="button" data-car="-1" aria-label="${L.lang === 'en' ? 'Previous' : 'Назад'}">←</button><button type="button" data-car="1" aria-label="${L.lang === 'en' ? 'Next' : 'Вперёд'}">→</button></div></div>
-  <ul class="carousel" data-carousel tabindex="0" aria-label="${C.screensTitle}">${U5_SCREENS.map(s => `<li><img src="/media/u5/${s}.webp" width="492" height="1068" alt="" loading="lazy" decoding="async"></li>`).join('')}</ul>
-</section>`;
-  caseShell(L, 'use-5-now', C, inner, media);
-}
-
-function livingShapes(L) {
-  const C = L.ls;
-  const media = `<div class="media"><img src="/media/living-shapes-1600.webp" srcset="/media/living-shapes-960.webp 960w, /media/living-shapes-1600.webp 1600w, /media/living-shapes-2048.webp 2048w" sizes="(max-width: 1440px) 100vw, 1440px" width="1600" height="900" alt="${esc(C.imgAlt)}" fetchpriority="high"></div>`;
-  const inner = `
-${chapters(C.chapters)}
-<section class="chapter" aria-labelledby="heroes-t">
-  <h2 id="heroes-t">${C.heroesTitle}</h2>
-  <div class="heroes" data-heroes>
-    <p class="body-copy" style="margin:0">${C.heroesHint}</p>
-    <div class="heroes-stage"><img src="/media/living-shapes-1600.webp" srcset="/media/living-shapes-1600.webp 1600w, /media/living-shapes-2048.webp 2048w" sizes="(max-width: 860px) 100vw, 66vw" width="1600" height="900" alt="" loading="lazy" decoding="async"></div>
-    <p class="mono" aria-live="polite" data-hero-caption data-default="${esc(C.heroesDefault)}">${C.heroesDefault}</p>
-    <ul class="heroes-list">
-      ${HEROES.map(h => `<li id="${h.id}"><button type="button" aria-pressed="false" data-hero="${h.id}" data-x="${(h.x * 100).toFixed(1)}" data-y="${(h.y * 100).toFixed(1)}" data-caption="${esc(h.name + ' — ' + C.heroes[h.id])}" style="--c:${h.color}"><span class="n">${h.name.toUpperCase()}</span><span class="m">${C.heroes[h.id]}</span></button></li>`).join('')}
-    </ul>
-  </div>
-</section>
-<section class="chapter reveal"><h2>YouTube</h2><div><p><img src="/media/ring-720.webp" width="120" height="120" alt="" loading="lazy" style="width:120px;height:120px;mix-blend-mode:screen"></p><a class="link-arrow" href="https://www.youtube.com/@verghethorn" rel="noopener" target="_blank">@verghethorn ${EXT}</a></div></section>`;
-  caseShell(L, 'living-shapes', C, inner, media);
-}
-
-function lab(L) {
-  const B = L.lab;
-  const head_ = (x, id) => `<header><div><p class="eyebrow">${x.k}</p><h2 class="h2" id="${id}">${x.name}</h2></div><p class="body-copy" style="margin:0">${x.text}</p></header>`;
-  const inner = `
-<section class="lab-item" data-lab="shift" aria-labelledby="lab-a">
-  ${head_(B.a, 'lab-a')}
-  <div class="lab-canvas">
-    <div class="frame" data-mode="0" data-src="/media/living-shapes-2048.webp" style="width:100%;cursor:default">
-      <div class="frame-fallback" style="background-image:url(/media/living-shapes-1600.webp)"></div>
-      <canvas aria-hidden="true"></canvas>
-    </div>
-    <div class="opt-in"><button class="btn" type="button" data-start>${B.start} ${ARROW}</button><p>${B.startNote}</p></div>
-  </div>
-  <div class="controls">
-    <div class="control"><label for="lab-mode">${B.a.mode} <output for="lab-mode">0.00</output></label><input id="lab-mode" type="range" min="0" max="2" step="0.01" value="0.6"></div>
-    <div class="control"><label for="lab-open">${B.a.open} <output for="lab-open">—</output></label><input id="lab-open" type="range" min="0" max="1" step="0.01" value="1"></div>
-  </div>
-</section>
-<section class="lab-item" data-lab="motion" aria-labelledby="lab-b">
-  ${head_(B.b, 'lab-b')}
-  <div class="lab-canvas"><div class="springs" role="group" aria-label="${B.b.name}"></div></div>
-  <div class="controls">
-    <div class="control"><label for="lab-k">${B.b.k1} <output for="lab-k"></output></label><input id="lab-k" type="range" min="20" max="400" step="1" value="140"></div>
-    <div class="control"><label for="lab-c">${B.b.c1} <output for="lab-c"></output></label><input id="lab-c" type="range" min="1" max="40" step="0.5" value="7"></div>
-    <p class="mono" style="flex-basis:100%;margin:0;text-transform:none;letter-spacing:.02em">${B.b.kbd}</p>
-  </div>
-</section>
-<section class="lab-item" data-lab="board" aria-labelledby="lab-c-t">
-  ${head_(B.c, 'lab-c-t')}
-  <div class="lab-canvas board">
-    <div class="board-main">
-      <ol class="shots" aria-label="${B.c.name}"></ol>
-      <form class="add-shot" autocomplete="off"><label class="visually-hidden" for="new-shot">${B.c.addLabel}</label><input id="new-shot" type="text" maxlength="60" placeholder="${B.c.placeholder}"><button class="btn ghost" type="submit">${B.c.add}</button></form>
-      <p class="mono" style="margin:0;text-transform:none;letter-spacing:.02em">${B.c.kbd}</p>
-    </div>
-    <aside class="board-side">
-      <p class="mono" style="margin:0">${B.c.runtime}</p>
-      <p class="runtime" aria-live="polite">0:00</p>
-      <div class="timeline" aria-hidden="true"></div>
-      <p class="mono" data-shot-count style="margin:0"></p>
-      <button class="btn ghost" type="button" data-reset style="justify-self:start">${B.c.reset}</button>
-      <p class="visually-hidden" aria-live="polite" data-live></p>
-    </aside>
-  </div>
-</section>`;
-  caseShell(L, 'lab', B, inner);
-}
-
-/* ================= 404, links, redirects, sitemap ================= */
 function notFound() {
   const L = LANGS.en, N = L.notFound, R = LANGS.ru.notFound;
-  const body = `<section class="not-found"><div><p class="eyebrow" style="justify-content:center">404</p><h1 class="display">${N.h1}</h1><p class="lede" style="margin:24px auto 36px">${N.text}<br><span lang="ru">${R.text}</span></p><p style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><a class="btn" href="/">${N.home}</a><a class="btn ghost" href="/ru/" lang="ru">${R.home}</a></p></div></section>`;
-  writeFileSync(join(ROOT, '404.html'), page(L, { title: N.title, desc: N.text, path: '/404.html', noindex: true }, null, body));
-}
-
-function links(L) {
-  const K = L.links;
-  const body = `<section class="not-found" style="min-height:auto;padding-top:140px"><div style="width:100%;max-width:440px;display:grid;gap:12px">
-  <p class="eyebrow" style="justify-content:center">${K.line}</p>
-  <a class="btn" style="justify-content:space-between" href="${href(L, '/')}">${K.site} ${ARROW}</a>
-  <a class="btn ghost" style="justify-content:space-between" href="${href(L, '/contact/')}">${K.contact} ${ARROW}</a>
-  ${SITE.social.map(s => `<a class="btn ghost" style="justify-content:space-between" href="${s.href}" rel="me noopener">${s.name} <span class="mono">${s.handle}</span></a>`).join('')}
-  <a class="btn ghost" style="justify-content:space-between" href="mailto:${SITE.email}">Email <span class="mono" style="text-transform:none">${SITE.email}</span></a>
-</div></section>`;
-  out(href(L, '/links/'), page(L, { title: K.title, desc: K.line, path: '/links/', noindex: true }, null, body));
+  return `${head(L, { title: N.title, desc: N.text, path: '/404.html', noindex: true })}
+<body class="nf"><main class="nf-main"><p class="eyebrow">404</p><h1 class="h-sec">${N.h1}<br><span lang="ru">${R.h1}</span></h1><p class="sec-sub">${N.text} <span lang="ru">${R.text}</span></p><p class="hero-cta"><a class="btn" href="/">${N.home}</a><a class="link" href="/ru/" lang="ru">${R.home} ${ARROW}</a></p></main></body></html>`;
 }
 
 function redirect(L, from, to) {
-  const dest = href(L, to);
+  const dest = pre(L) + to;
   const html = `${head(L, { title: 'VERGHÉTHORN', desc: L.moved, path: from, noindex: true, refresh: `<meta http-equiv="refresh" content="0; url=${dest}">\n` })}
-<body><p style="padding:40px;font-family:system-ui;color:#F1EEE8"><a href="${dest}">${L.moved}</a></p><script>location.replace(${JSON.stringify(dest)} + location.hash)</script></body></html>`;
-  const file = join(ROOT, href(L, from), 'index.html');
+<body><p style="padding:40px"><a href="${dest}">${L.moved}</a></p><script>location.replace(${JSON.stringify(dest)})</script></body></html>`;
+  const file = join(ROOT, pre(L) + from, 'index.html');
   mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, html);
 }
 
-function sitemap() {
-  const paths = ['/', '/services/', '/approach/', '/contact/'];
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
-${paths.flatMap(p => ['', '/ru'].map(pr => `  <url><loc>${SITE.url}${pr}${p}</loc><lastmod>${BUILD_DATE}</lastmod>
-    <xhtml:link rel="alternate" hreflang="en" href="${SITE.url}${p}"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="${SITE.url}/ru${p}"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="${SITE.url}${p}"/>
-  </url>`)).join('\n')}
-</urlset>
-`;
-  writeFileSync(join(ROOT, 'sitemap.xml'), xml);
-  writeFileSync(join(ROOT, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /tools/\n\nSitemap: ${SITE.url}/sitemap.xml\n`);
-}
-
-// clear generated folders from earlier site versions
-for (const d of ['work', 'practice', 'lab', 'about', 'ru/work', 'ru/practice', 'ru/lab', 'ru/about']) { const p = join(ROOT, d); if (existsSync(p)) rmSync(p, { recursive: true }); }
+// clean every folder generated by earlier versions
+for (const d of ['work', 'practice', 'lab', 'about', 'services', 'approach', 'contact', 'archive', 'links', 'ru']) { const p = join(ROOT, d); if (existsSync(p)) rmSync(p, { recursive: true }); }
 
 for (const L of Object.values(LANGS)) {
-  home(L); services(L); approach(L); contact(L); archiveIndex(L); qist(L); use5now(L); livingShapes(L); lab(L); links(L);
-  [['/work/', '/archive/'], ['/work/living-shapes/', '/archive/living-shapes/'], ['/work/usefive/', '/archive/use-5-now/'], ['/work/living-frame/', '/archive/lab/'], ['/practice/', '/services/'], ['/lab/', '/archive/lab/'], ['/about/', '/approach/']].forEach(([a, b]) => redirect(L, a, b));
+  const file = join(ROOT, pre(L), 'index.html'); mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, page(L));
+  const old = [['/services/', '/#web'], ['/approach/', '/#how'], ['/contact/', '/#contact'], ['/links/', '/#contact'], ['/archive/', '/'], ['/archive/qist/', '/'], ['/archive/qist/app/', '/'], ['/archive/use-5-now/', '/'], ['/archive/living-shapes/', '/'], ['/archive/lab/', '/'], ['/work/', '/'], ['/work/living-shapes/', '/'], ['/work/usefive/', '/'], ['/work/living-frame/', '/'], ['/practice/', '/#web'], ['/lab/', '/'], ['/about/', '/']];
+  old.forEach(([a, b]) => redirect(L, a, b));
 }
-notFound(); sitemap();
-console.log(`built ${written.length + 1} pages · css ${V.css} · js ${V.js}`);
+writeFileSync(join(ROOT, '404.html'), notFound());
+writeFileSync(join(ROOT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${['', '/ru'].map(pr => `  <url><loc>${SITE.url}${pr}/</loc><lastmod>${BUILD_DATE}</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="${SITE.url}/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="${SITE.url}/ru/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="${SITE.url}/"/>
+  </url>`).join('\n')}
+</urlset>
+`);
+writeFileSync(join(ROOT, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /tools/\n\nSitemap: ${SITE.url}/sitemap.xml\n`);
+console.log('built · v' + V);

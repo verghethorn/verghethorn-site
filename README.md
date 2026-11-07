@@ -1,24 +1,23 @@
 # verghethorn.com
 
-Static, bilingual (EN at `/`, RU at `/ru/`) site served by GitHub Pages from this branch's root. No build server is needed.
+One cinematic page per language — EN at `/`, RU at `/ru/` — served by GitHub Pages from this branch. No server needed.
 
-## Edit text or projects
-1. Change copy in `tools/content.mjs` (both `en` and `ru` blocks).
-2. Run `node tools/build.mjs` — it regenerates every page, `sitemap.xml` and `robots.txt`.
+## Edit text
+1. Change copy in `tools/content.mjs` (both `en` and `ru`).
+2. Run `node tools/build.mjs` — it regenerates both pages, redirects for old URLs, `sitemap.xml` and `robots.txt`.
 3. Commit and push. Pages publishes in about a minute.
 
-## Structure
-- `tools/build.mjs` — page templates; `tools/content.mjs` — all text, projects, hero hotspots.
-- `static/css/site.css` — design tokens (Obsidian, Graphite, Ivory, Steel, Bronze), layout, components.
-- `static/js/site.js` — navigation, language memory, cursor, filters, player, prototype, contact form.
-- `static/js/lumen.js` — LUMEN, the home-page field of light: ~76k GPU particles that morph between words and shapes (film, website, app, voice). WebGL with CSS fallback.
-- `static/js/frame.js`, `static/js/lab.js` — The Living Frame shader and the Lab studies (Archive → Lab).
-- Main pages: `/`, `/services/`, `/approach/`, `/contact/`. Works live only in `/archive/` (linked from the footer, not indexed).
-- `archive/qist/app/` — showcase copy of the Qist prototype with fictional names and numbers.
-- `media/` — optimized images, video and audio. `brand/` — source brand files.
+## What is on the page
+- **Film** (`static/js/scenes/set.js`) — a 3D film set: drag the key light, tap a camera (dolly, jib, tripod) to look through it.
+- **Websites** (`web.js`) — a site assembling itself in zero gravity as you scroll; pieces can be grabbed and thrown.
+- **Ads** (`ad.js`) — one product restyled for five audiences; the glowing object can be caught and thrown.
+- **How we work** (`explode.js`) — a working watch that separates into six layers, one per step.
+- **Services**, **Contact** (doors with sound, short form).
+- **Camera dock** (bottom-left) — five looks that re-light the whole site: Daylight, Golden hour, Anamorphic, Night, 16 mm film.
+- Sounds are synthesized in `static/js/sound.js` (no audio files); a toggle in the header turns them off.
+
+## Tech
+three.js r180 (vendored in `static/vendor/three`, MIT), WebGL with graceful fallback, View Transitions for the camera switch, scroll-driven CSS, reduced-motion support.
 
 ## Contact form
-Submissions go to the Supabase project **verghethorn-site**, table `public.inquiries` (insert-only for the public via row-level security). Read them in the Supabase dashboard → Table editor → `inquiries`. The key in `content.mjs` is the publishable key, safe to ship in the browser.
-
-## Honesty rules
-No invented clients, awards, reviews or figures. Every project carries its real status (Original / Commissioned / Concept / Collaboration, plus In development / Live).
+Submissions go to Supabase project **verghethorn-site**, table `public.inquiries` (insert-only for the public via row-level security). Read them in the Supabase dashboard → Table editor → `inquiries`.
