@@ -63,54 +63,77 @@ if (fine && !reduce) {
   document.addEventListener('pointerleave', () => c.classList.remove('is-visible'));
 }
 
-/* ---------- hero: the Living Frame ---------- */
-const hero = $('[data-living-frame]');
-if (hero) {
-  const spots = JSON.parse(hero.dataset.spots || '[]');
-  const shiftBtns = $$('.shift-track [role="radio"]');
-  const thumb = $('.shift-thumb');
-  const meta = $('[data-frame-meta]');
-  const tc = $('[data-timecode]');
-  const reflect = m => {
-    shiftBtns.forEach((b, i) => { b.setAttribute('aria-checked', String(i === m)); b.tabIndex = i === m ? 0 : -1; });
-    thumb?.style.setProperty('--i', m);
-    if (meta) meta.textContent = T.frameMeta[m];
+/* ---------- home: LUMEN stage — one field of light, many forms ---------- */
+const stage = $('[data-stage]');
+if (stage) {
+  const canvas = $('#lumen', stage);
+  const formsEl = $$('.forms li', stage);
+  const KEYS = ['text:VERGHÉTHORN', 'film', 'web', 'app', 'voice', 'sphere'];
+  const SCENE_IDX = { film: 1, web: 2, app: 3, voice: 4 };
+  const mobile = () => matchMedia('(max-width: 860px)').matches;
+  const layout = scene => {
+    if (scene === 'intro') return mobile() ? { offset: [0, .44], scale: .44 } : { offset: [0, .36], scale: .68 };
+    return mobile() ? { offset: [0, .44], scale: .42 } : { offset: [.46, .02], scale: .62 };
   };
-  let lf = null;
-  const ui = $('.frame-ui', hero); if (ui) ui.inert = true;
-  import('./frame.js').then(({ createLivingFrame }) => {
-    lf = createLivingFrame(hero, { src: hero.dataset.src, cropX: .5, hotspots: spots, autoOpen: 2400, webgl: !saveData });
-    lf.onMode(reflect);
-    $$('[data-spot]', hero).forEach(a => {
-      const i = +a.dataset.spot;
-      a.addEventListener('pointerenter', () => lf.setFocus(i));
-      a.addEventListener('focus', () => lf.setFocus(i));
-      a.addEventListener('pointerleave', () => lf.setFocus(null));
-      a.addEventListener('blur', () => lf.setFocus(null));
+  let lumen = null, scene = 'intro', idx = 0, timer = 0, userUntil = 0;
+  const mark = i => formsEl.forEach((li, j) => li.classList.toggle('is-on', j === i));
+  const show = (key, i) => { lumen?.morph(key, layout(scene)); if (i != null) mark(i); };
+  const cycle = () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      if (scene === 'intro' && Date.now() > userUntil && !document.hidden) { idx = (idx + 1) % KEYS.length; show(KEYS[idx], idx); }
+      cycle();
+    }, reduce ? 5200 : 3400);
+  };
+  const start = async () => {
+    if (saveData) { stage.classList.add('no-gl'); return; }
+    try { await Promise.race([document.fonts.load('600 120px Onest'), new Promise(r => setTimeout(r, 1500))]); } catch { /* font optional */ }
+    const { createLumen } = await import('./lumen.js');
+    lumen = createLumen(canvas, { reduce, pointerTarget: stage, onLost: () => stage.classList.add('no-gl') });
+    if (!lumen) { stage.classList.add('no-gl'); return; }
+    show(KEYS[0], 0);
+    cycle();
+    const idle = window.requestIdleCallback || (f => setTimeout(f, 300));
+    KEYS.slice(1).forEach((k, i) => idle(() => lumen.prepare(k), { timeout: 2000 + i * 400 }));
+  };
+  start();
+
+  const sceneIO = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      scene = e.target.dataset.scene;
+      if (scene === 'intro') { show(KEYS[idx], idx); }
+      else { show(scene, SCENE_IDX[scene]); }
     });
+  }, { threshold: .5 });
+  $$('[data-scene]', stage).forEach(el => sceneIO.observe(el));
+
+  // the visitor's own word
+  const tryForm = $('[data-try]', stage);
+  tryForm?.addEventListener('submit', e => {
+    e.preventDefault();
+    const w = tryForm.elements.word.value.trim();
+    if (!w) { tryForm.elements.word.focus(); return; }
+    userUntil = Date.now() + 9000;
+    mark(-1);
+    if (lumen) lumen.morph('text:' + w, layout('intro'));
+    store.set('vt-idea', w.slice(0, 60));
+    tryForm.elements.word.blur();
   });
-  shiftBtns.forEach((b, i) => {
-    b.addEventListener('click', () => { lf?.setMode(i); reflect(i); });
-    b.addEventListener('keydown', e => {
-      const d = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0;
-      if (!d) return;
-      e.preventDefault();
-      const n = (i + d + 3) % 3;
-      shiftBtns[n].focus(); lf?.setMode(n); reflect(n);
-    });
-  });
-  // a quiet timecode that only runs while the hero is on screen
-  if (tc && !reduce) {
-    let start = performance.now(), on = true;
-    new IntersectionObserver(([e]) => on = e.isIntersecting).observe(hero);
-    const fmt = n => String(n).padStart(2, '0');
-    setInterval(() => {
-      if (!on || document.hidden) return;
-      const f = Math.floor((performance.now() - start) / (1000 / 24));
-      tc.textContent = `TC ${fmt(Math.floor(f / 86400))}:${fmt(Math.floor(f / 1440) % 60)}:${fmt(Math.floor(f / 24) % 60)}:${fmt(f % 24)}`;
-    }, 1000 / 12);
-  }
+  addEventListener('resize', () => lumen && lumen.morph(lumen.current, layout(scene)), { passive: true });
 }
+
+/* ---------- carousel arrows ---------- */
+$$('[data-carousel]').forEach(car => {
+  const wrap = car.closest('section');
+  $$('[data-car]', wrap).forEach(b => b.addEventListener('click', () => {
+    const step = (car.querySelector('li')?.getBoundingClientRect().width || 260) + 20;
+    car.scrollBy({ left: step * +b.dataset.car, behavior: reduce ? 'auto' : 'smooth' });
+  }));
+  car.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); car.scrollBy({ left: (e.key === 'ArrowRight' ? 1 : -1) * 280, behavior: reduce ? 'auto' : 'smooth' }); }
+  });
+});
 
 /* ---------- media previews: play muted clips only while visible ---------- */
 $$('video[data-preview]').forEach(v => {
@@ -269,6 +292,8 @@ if (form) {
   // keep an unsent draft in this browser only
   const draftKey = 'vt-inquiry-draft';
   try { const d = JSON.parse(store.get(draftKey) || '{}'); Object.entries(d).forEach(([k, v]) => { if (form.elements[k] && !form.elements[k].value) form.elements[k].value = v; }); } catch { /* ignore */ }
+  const idea = store.get('vt-idea');
+  if (idea && !form.elements.message.value) form.elements.message.value = (LANG === 'ru' ? 'Идея: ' : 'Idea: ') + idea + '\n';
   form.addEventListener('input', () => {
     const d = {}; ['name', 'email', 'category', 'message'].forEach(k => d[k] = form.elements[k].value); store.set(draftKey, JSON.stringify(d));
   });

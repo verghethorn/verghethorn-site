@@ -11,8 +11,10 @@ Static, bilingual (EN at `/`, RU at `/ru/`) site served by GitHub Pages from thi
 - `tools/build.mjs` — page templates; `tools/content.mjs` — all text, projects, hero hotspots.
 - `static/css/site.css` — design tokens (Obsidian, Graphite, Ivory, Steel, Bronze), layout, components.
 - `static/js/site.js` — navigation, language memory, cursor, filters, player, prototype, contact form.
-- `static/js/frame.js` — The Living Frame: hand-written WebGL shader (film → structure → interface) with CSS fallback.
-- `static/js/lab.js` — the three Lab demonstrations.
+- `static/js/lumen.js` — LUMEN, the home-page field of light: ~76k GPU particles that morph between words and shapes (film, website, app, voice). WebGL with CSS fallback.
+- `static/js/frame.js`, `static/js/lab.js` — The Living Frame shader and the Lab studies (Archive → Lab).
+- Main pages: `/`, `/services/`, `/approach/`, `/contact/`. Works live only in `/archive/` (linked from the footer, not indexed).
+- `archive/qist/app/` — showcase copy of the Qist prototype with fictional names and numbers.
 - `media/` — optimized images, video and audio. `brand/` — source brand files.
 
 ## Contact form
