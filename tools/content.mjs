@@ -4,7 +4,7 @@ export const SITE = {
   url: 'https://verghethorn.com',
   email: 'verghethorn@gmail.com',
   // search-engine ownership codes (Google Search Console, Yandex Webmaster, Bing Webmaster)
-  verify: { google: '', yandex: '0e9df34121548a99', bing: '' },
+  verify: { google: '', yandex: '0e9df34121548a99', bing: '43C67FDD5834467CDB0D295C3CC069F1' },
   social: {
     instagram: { name: 'Instagram', handle: '@verghethorn.studio', href: 'https://www.instagram.com/verghethorn.studio', color: '#d6249f' },
     youtube: { name: 'YouTube', handle: '@verghethorn', href: 'https://www.youtube.com/@verghethorn', color: '#ff0033' },
