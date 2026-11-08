@@ -461,3 +461,8 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .back { margin-right: 10px; }
 @media (max-width: 833px) { .gn-sub .wm { font-size: 12px; letter-spacing: .2em; } }
 @media (max-width: 360px) { .gn-sub .wm { letter-spacing: .12em; } }
+/* inner pages: Back / Home / menu always on screen; section bar sticks right under it */
+.gn.gn-sub { position: sticky; top: 0; }
+.ln { top: 48px; }
+body.sub { scroll-padding-top: 110px; }
+html:has(body.sub) { scroll-padding-top: 110px; }
