@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap">
-<link rel="stylesheet" href="/static/css/site.css?v=54060cbf">
+<link rel="stylesheet" href="/static/css/site.css?v=e1493990">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -43,13 +43,18 @@
 </section>
 
 <section class="tile agents gray" id="agents" aria-label="AI Agents">
-  <div class="t-txt"><h2>AI Agents</h2><p class="sub">Chat, voice and video. Always on.</p><p class="ctas"><a class="pill" href="#lineup">Learn more</a><a class="pill ol" href="#contact">Request a demo</a></p></div>
+  <div class="t-txt"><h2>AI Agents</h2><p class="sub">Chat, voice and video. Always on.</p><p class="ctas"><button type="button" class="pill" data-agent-call>Talk to the agent</button><a class="pill ol" href="#contact">Request a demo</a></p></div>
   <div class="t-media phone-wrap">
     <div class="phone" data-chat>
       <div class="ph-call"><img src="/media/agent-call.webp?v=4d34e03d" alt="The VERGHÉTHORN AI agent: a figure in a dark suit with a black helmet and a glowing blue visor" width="940" height="620"><span class="visor" aria-hidden="true"></span>
         <span class="live"><i></i>Live</span><span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
-      <p class="ph-top"><img class="ph-av" src="/media/agent-av.webp?v=4d34e03d" alt="" width="36" height="36"><span><b>VERGHÉTHORN Agent</b><small>AI agent · online</small></span></p>
-      <ul class="ph-msgs"><li class="m u">Can you make a 30-second film for my coffee brand?</li><li class="m a">Of course. Tell me about your brand and your audience — I’ll prepare a concept.</li><li class="m u">Perfect. Let’s talk.</li><li class="m a typing" aria-hidden="true"><i></i><i></i><i></i></li></ul>
+      <p class="ph-top"><img class="ph-av" src="/media/agent-av.webp?v=4d34e03d" alt="" width="36" height="36"><span><b>VERGHÉTHORN Agent</b><small data-agent-status>AI agent · online</small></span></p>
+      <ul class="ph-msgs" data-agent-log aria-live="polite"><li class="m u">Can you make a 30-second film for my coffee brand?</li><li class="m a">Of course. Tell me about your brand and your audience — I’ll prepare a concept.</li><li class="m u">Perfect. Let’s talk.</li><li class="m a typing" aria-hidden="true"><i></i><i></i><i></i></li></ul>
+      <div class="ph-dock">
+        <form class="ph-comp" data-agent-form><input type="text" data-agent-input placeholder="Message the agent…" aria-label="Message the agent…" maxlength="400" autocomplete="off" enterkeyhint="send"><button type="submit" class="ph-send" aria-label="Send"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></form>
+        <button type="button" class="ph-mic" data-agent-call aria-label="Talk to the agent" data-on="Talk to the agent" data-off="End the call"><svg class="i-mic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><svg class="i-end" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 14.5c5-4.7 13-4.7 18 0l-2.4 2.6-3.6-1.6v-2.6a12 12 0 0 0-6 0v2.6l-3.6 1.6z" fill="currentColor"/></svg></button>
+      </div>
+      <script type="application/json" id="agent-cfg">{"id":"agent_8301m6y0jvjce27are2pzqj9k34v","sdk":"/static/vendor/elevenlabs-client-1.30.0.js?v=e1493990","t":{"connecting":"Connecting…","listening":"Listening…","speaking":"Speaking…","online":"AI agent · online","ended":"Call ended · AI agent","mic":"Microphone access is off — you can type to me instead.","busy":"I’m resting right now. Please write to verghethorn@gmail.com — the director replies personally."}}</script>
     </div>
   </div>
 </section>
@@ -138,6 +143,6 @@
 <div class="warp" data-warp aria-hidden="true"><span class="warp-i"></span></div>
 
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"VERGHÉTHORN","url":"https://verghethorn.com","email":"verghethorn@gmail.com","sameAs":["https://www.instagram.com/verghethorn.studio","https://www.youtube.com/@verghethorn","https://www.tiktok.com/@verghethorn_official"],"description":"VERGHÉTHORN creates films, brand commercials and AI agents. Cinema, created with AI."}</script>
-<script type="module" src="/static/js/site.js?v=54060cbf"></script>
+<script type="module" src="/static/js/site.js?v=e1493990"></script>
 </body>
 </html>

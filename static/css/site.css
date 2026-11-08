@@ -270,3 +270,34 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 }
 .tile.agents { height: 780px; }
 @media (min-width: 735px) { .tile.agents { height: 900px; } }
+
+/* live AI agent */
+.agents .ctas button.pill { cursor: pointer; }
+.phone { display: flex; flex-direction: column; height: 100%; }
+.ph-msgs { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; align-content: start; padding-bottom: 6px; -webkit-mask-image: linear-gradient(transparent, #000 14px); mask-image: linear-gradient(transparent, #000 14px); }
+.ph-msgs::-webkit-scrollbar { display: none; }
+.phone.on-air .ph-msgs .m { opacity: 1; transform: none; animation: msg .35s var(--ease) both; }
+.ph-dock { display: flex; gap: 8px; align-items: center; padding: 8px 0 12px; border-top: 1px solid var(--line); }
+.ph-comp { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; height: 42px; padding: 0 5px 0 14px; border-radius: 21px; background: var(--gray); }
+.ph-comp input { flex: 1; min-width: 0; border: 0; background: none; font: inherit; font-size: 16px; color: var(--fg); outline: none; }
+.ph-comp input::placeholder { color: #8e8e93; }
+.ph-send { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: var(--blue); color: #fff; flex: none; transition: opacity .2s; }
+.ph-send svg { width: 17px; height: 17px; }
+.ph-comp:not(.has) .ph-send { opacity: .35; }
+.ph-mic { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: #1d1d1f; color: #fff; flex: none; position: relative; transition: background .25s; }
+.ph-mic svg { width: 20px; height: 20px; }
+.ph-mic .i-end { display: none; }
+.phone.calling .ph-mic { background: #ff3b30; }
+.phone.calling .ph-mic .i-mic { display: none; }
+.phone.calling .ph-mic .i-end { display: block; }
+.phone.calling .ph-mic::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid #ff3b30; opacity: .5; animation: ring 1.6s ease-out infinite; }
+@keyframes ring { from { transform: scale(.9); opacity: .6; } to { transform: scale(1.35); opacity: 0; } }
+.phone.on-air .visor { animation: none; opacity: .12; transition: opacity .15s; }
+.phone.on-air .wave i { animation: none; }
+.phone.speaking .visor { animation: talk .9s ease-in-out infinite; }
+.phone.speaking .wave i { animation: wv .8s ease-in-out infinite; }
+.phone.on-air .live i { background: #ff3b30; }
+.phone.on-air:not(.calling) .live { opacity: 0; }
+.ph-top small.busy { color: var(--blue); }
+.tile.agents { height: 880px; }
+@media (min-width: 735px) { .tile.agents { height: 940px; } }

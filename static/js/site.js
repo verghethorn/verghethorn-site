@@ -75,3 +75,6 @@ seen([$('[data-chat]')], (e, io) => { if (e.isIntersecting) { const ph = e.targe
   }));
   addEventListener('pageshow', reset);
 }
+
+/* live AI agent loads its own module (same cache-busting version as this file) */
+import(`./agent.js${new URL(import.meta.url).search}`);

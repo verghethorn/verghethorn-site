@@ -82,13 +82,18 @@ function page() {
 </section>
 
 <section class="tile agents gray" id="agents" aria-label="${G.h2}">
-  <div class="t-txt"><h2>${G.h2}</h2><p class="sub">${G.sub}</p>${btns(G.a, G.b, '#lineup')}</div>
+  <div class="t-txt"><h2>${G.h2}</h2><p class="sub">${G.sub}</p><p class="ctas"><button type="button" class="pill" data-agent-call>${G.a}</button><a class="pill ol" href="#contact">${G.b}</a></p></div>
   <div class="t-media phone-wrap">
     <div class="phone" data-chat>
       <div class="ph-call"><img src="/media/agent-call.webp?v=${MV}" alt="${esc(chat.alt)}" width="940" height="620"><span class="visor" aria-hidden="true"></span>
         <span class="live"><i></i>${chat.live}</span><span class="wave" aria-hidden="true">${'<i></i>'.repeat(14)}</span></div>
-      <p class="ph-top"><img class="ph-av" src="/media/agent-av.webp?v=${MV}" alt="" width="36" height="36"><span><b>${chat.name}</b><small>${chat.status}</small></span></p>
-      <ul class="ph-msgs">${chat.msgs.map(([w, t]) => `<li class="m ${w}">${esc(t)}</li>`).join('')}<li class="m a typing" aria-hidden="true"><i></i><i></i><i></i></li></ul>
+      <p class="ph-top"><img class="ph-av" src="/media/agent-av.webp?v=${MV}" alt="" width="36" height="36"><span><b>${chat.name}</b><small data-agent-status>${chat.status}</small></span></p>
+      <ul class="ph-msgs" data-agent-log aria-live="polite">${chat.msgs.map(([w, t]) => `<li class="m ${w}">${esc(t)}</li>`).join('')}<li class="m a typing" aria-hidden="true"><i></i><i></i><i></i></li></ul>
+      <div class="ph-dock">
+        <form class="ph-comp" data-agent-form><input type="text" data-agent-input placeholder="${esc(chat.type)}" aria-label="${esc(chat.type)}" maxlength="400" autocomplete="off" enterkeyhint="send"><button type="submit" class="ph-send" aria-label="${esc(chat.send)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></form>
+        <button type="button" class="ph-mic" data-agent-call aria-label="${esc(chat.call)}" data-on="${esc(chat.call)}" data-off="${esc(chat.end)}"><svg class="i-mic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><svg class="i-end" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 14.5c5-4.7 13-4.7 18 0l-2.4 2.6-3.6-1.6v-2.6a12 12 0 0 0-6 0v2.6l-3.6 1.6z" fill="currentColor"/></svg></button>
+      </div>
+      <script type="application/json" id="agent-cfg">${JSON.stringify({ id: chat.agentId, sdk: `/static/vendor/elevenlabs-client-1.30.0.js?v=${V}`, t: chat.t })}</script>
     </div>
   </div>
 </section>
