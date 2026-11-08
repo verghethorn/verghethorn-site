@@ -15,6 +15,7 @@ export const L = {
   desc: 'VERGHÉTHORN creates films, brand commercials and AI agents. Cinema, created with AI.',
   skip: 'Skip to content', soundOn: 'Sound on', soundOff: 'Sound off', menu: 'Menu', close: 'Close',
   nav: [['#films', 'Films'], ['#commercials', 'Commercials'], ['#agents', 'AI Agents'], ['#collab', 'Collaborations'], ['#lineup', 'Services'], ['#contact', 'Contact']],
+  reels: { label: 'Reels', pick: 'Choose a reel', items: [['show', 'Showreel', 'reel'], ['films', 'Films', 's-films'], ['ads', 'Commercials', 's-ads'], ['worlds', 'Worlds', 'c-stars']] },
   ribbon: ['Now taking projects for 2027.', 'Start a conversation'],
 
   hero: { h1: 'AI Cinema', sub: 'Films and commercials for brands.<br>Created with AI.', a: 'Watch the reel', b: 'Start a project' },
@@ -53,7 +54,7 @@ export const L = {
 
   contact: { h2: 'Let’s create together.', sub: 'Films, commercials, AI agents and collaborations.', emailName: 'Email' },
 
-  footNote: 'Demo footage on this site: Mixkit. Brand names in examples are fictional.',
+  footNote: 'Demo footage and music on this site: Mixkit. Brand names in examples are fictional.',
   footCols: [['Create', ['Films', 'Commercials', 'Product design', 'Nature & travel']], ['AI', ['AI Agents', 'Concierge assistants', 'Customer support']], ['Together', ['Collaborations', 'Partnerships']]],
   notFound: { title: 'Page not found — VERGHÉTHORN', h1: 'Wrong scene.', text: 'This page doesn’t exist.', home: 'Back to the start' },
   moved: 'This page has moved.',

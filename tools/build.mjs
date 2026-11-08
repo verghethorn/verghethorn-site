@@ -142,9 +142,13 @@ function page() {
   </div>
 </footer>
 
-<dialog class="reel" data-reel-dlg aria-label="Showreel">
+<dialog class="reel" data-reel-dlg aria-label="${L.reels.label}">
   <button type="button" class="reel-x" data-reel-close aria-label="${L.close}"><i></i><i></i></button>
-  <video src="${V_('reel')}.mp4?v=${MV}" playsinline controls loop preload="none"></video>
+  <div class="reel-in">
+    <video playsinline controls preload="none" data-reel-v></video>
+    <p class="reel-h">${L.reels.pick}</p>
+    <ul class="reel-pick">${L.reels.items.map(([id, t, th], i) => `<li><button type="button" data-reel="/media/r/${id}.mp4?v=${MV}" aria-pressed="${i === 0}"><img src="${V_(th)}.webp?v=${MV}" alt="" loading="lazy"><span>${t}</span></button></li>`).join('')}</ul>
+  </div>
 </dialog>
 <div class="warp" data-warp aria-hidden="true"><span class="warp-i"></span></div>
 

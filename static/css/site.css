@@ -231,7 +231,17 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .reel { width: 100vw; height: 100svh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: #000; display: none; place-items: center; }
 .reel[open] { display: grid; animation: fade .4s var(--ease); }
 .reel::backdrop { background: #000; }
-.reel video { width: min(100vw, 1400px); max-height: 86svh; }
+.reel-in { width: min(100vw, 1200px); display: grid; gap: 18px; padding: 0 0 max(20px, env(safe-area-inset-bottom)); }
+.reel video { width: 100%; max-height: 64svh; background: #000; }
+@media (min-width: 735px) { .reel-in { width: min(92vw, 1100px, 105svh); } .reel video { max-height: 62svh; border-radius: 14px; } }
+.reel-h { color: rgba(255,255,255,.6); font-size: 13px; padding: 0 var(--gut); }
+.reel-pick { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 0 var(--gut); }
+.reel-pick button { display: grid; gap: 8px; width: 100%; text-align: left; color: rgba(255,255,255,.7); font-size: 13px; transition: color .2s; }
+.reel-pick img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 10px; opacity: .55; outline: 2px solid transparent; outline-offset: 2px; transition: opacity .25s, outline-color .25s; }
+.reel-pick button:hover img { opacity: .85; }
+.reel-pick button[aria-pressed="true"] { color: #fff; }
+.reel-pick button[aria-pressed="true"] img { opacity: 1; outline-color: #fff; }
+@media (min-width: 735px) { .reel-pick { gap: 16px; } .reel-pick button { font-size: 15px; } }
 .reel-x { position: absolute; top: max(18px, env(safe-area-inset-top)); right: 18px; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.14); z-index: 2; }
 .reel-x i { position: absolute; left: 14px; top: 21px; width: 16px; height: 1.6px; background: #fff; transform: rotate(45deg); }
 .reel-x i + i { transform: rotate(-45deg); }

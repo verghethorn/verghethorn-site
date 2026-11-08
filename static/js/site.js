@@ -42,10 +42,16 @@ seen([$('[data-chat]')], (e, io) => { if (e.isIntersecting) { const ph = e.targe
   car.addEventListener('scroll', () => { paint(); paintDots(); }, { passive: true }); addEventListener('resize', paint); paint(); paintDots();
 }
 
-/* showreel player */
+/* reel player: pick a reel, plays with sound */
 {
-  const dlg = $('[data-reel-dlg]'), v = $('video', dlg);
-  $('[data-reel-open]').addEventListener('click', e => { e.preventDefault(); sfx('whoosh'); v.muted = false; dlg.showModal(); v.currentTime = 0; play(v); });
+  const dlg = $('[data-reel-dlg]'), v = $('[data-reel-v]', dlg), picks = $$('[data-reel]', dlg);
+  const load = (btn, withSound = true) => {
+    picks.forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+    v.src = btn.dataset.reel; v.muted = !withSound; v.currentTime = 0; play(v);
+  };
+  $('[data-reel-open]').addEventListener('click', e => { e.preventDefault(); sfx('whoosh'); dlg.showModal(); load(picks.find(b => b.getAttribute('aria-pressed') === 'true') || picks[0]); });
+  picks.forEach(b => b.addEventListener('click', () => { sfx('tick'); load(b); }));
+  v.addEventListener('ended', () => { const i = picks.findIndex(b => b.getAttribute('aria-pressed') === 'true'); load(picks[(i + 1) % picks.length]); });
   const close = () => { v.pause(); dlg.close(); };
   $('[data-reel-close]').addEventListener('click', close);
   dlg.addEventListener('close', () => v.pause());
