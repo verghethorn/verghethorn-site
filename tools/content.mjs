@@ -54,7 +54,7 @@ export const L = {
 
   contact: { h2: 'Let’s create together.', sub: 'Films, commercials, AI agents and collaborations.', emailName: 'Email' },
 
-  footNote: 'Demo footage and music on this site: Mixkit. Brand names in examples are fictional.',
+  footNote: 'Demo footage, music and sound effects on this site: Mixkit. Brand names in examples are fictional.',
   footCols: [['Create', ['Films', 'Commercials', 'Product design', 'Nature & travel']], ['AI', ['AI Agents', 'Concierge assistants', 'Customer support']], ['Together', ['Collaborations', 'Partnerships']]],
   notFound: { title: 'Page not found — VERGHÉTHORN', h1: 'Wrong scene.', text: 'This page doesn’t exist.', home: 'Back to the start' },
   moved: 'This page has moved.',
