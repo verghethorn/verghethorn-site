@@ -434,3 +434,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .pill.big { font-size: 17px; padding: 14px 32px; margin-top: 22px; cursor: pointer; }
 .st-note { color: var(--dim); font-size: 13px; margin-top: 12px; }
 .st-err { color: #e30000; font-size: 15px; margin-top: 18px; }
+.t-txt .more { margin-top: 14px; } .t-txt .more .lnk { font-size: 17px; }
+.fh-media img, .t-media > img, .sheet-v img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.fh-media img { object-position: 50% 35%; }

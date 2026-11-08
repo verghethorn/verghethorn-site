@@ -4,7 +4,10 @@ import { mkdirSync, writeFileSync, readFileSync, rmSync, existsSync, readdirSync
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
-import { SITE, L, FILMS, START } from './content.mjs';
+import { SITE, L, FILMS, START, COMMERCIALS, AGENTS, COLLAB, DESIGN, NATURE } from './content.mjs';
+const SERVICES = [FILMS, COMMERCIALS, AGENTS, COLLAB, DESIGN, NATURE];
+const LUK = { 's-films': 'films', 's-ads': 'commercials', 'p-pottery': 'design', agent: 'agents' };
+const PAGE = { films: '/films/', commercials: '/commercials/', agents: '/ai-agents/', collab: '/collaborations/', design: '/product-design/', nature: '/nature-travel/' };
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const BUILD_DATE = new Date().toISOString().slice(0, 10);
@@ -29,7 +32,8 @@ const vid = (id, cls = '', pos = '') => `<video class="${cls}"${pos ? ` style="o
 const SOCIALS = () => [...Object.entries(SITE.social).map(([id, s]) => ({ id, ...s })), { id: 'email', name: L.contact.emailName, handle: SITE.email, href: `mailto:${SITE.email}`, color: '#3d5afe' }];
 const HOMEHREF = h => h.startsWith('#') ? `/${h}` : h;
 function gnav(sub = false) {
-  const nav = L.nav.map(([h, t]) => [t === 'Films' ? '/films/' : (sub ? HOMEHREF(h) : h), t]);
+  const NAVPAGE = { Films: PAGE.films, Commercials: PAGE.commercials, 'AI Agents': PAGE.agents, Collaborations: PAGE.collab };
+  const nav = L.nav.map(([h, t]) => [NAVPAGE[t] || (sub ? HOMEHREF(h) : h), t]);
   return `<header class="gn${sub ? ' gn-sub' : ''}" data-gn>
   <nav class="gn-in" aria-label="Main">
     <a class="wm" href="/" aria-label="VERGHÉTHORN home">VERGHÉTHORN</a>
@@ -40,7 +44,7 @@ function gnav(sub = false) {
 </header>`;
 }
 function footer(sub = false) {
-  const anchor = { Films: '/films/', Commercials: '#commercials', 'Product design': '#design', 'Nature & travel': '#nature', 'AI Agents': '#agents', Collaborations: '#collab' };
+  const anchor = { Films: PAGE.films, Commercials: PAGE.commercials, 'Product design': PAGE.design, 'Nature & travel': PAGE.nature, 'AI Agents': PAGE.agents, 'Concierge assistants': PAGE.agents, 'Customer support': PAGE.agents, Collaborations: PAGE.collab, Partnerships: PAGE.collab };
   const href = x => { const h = anchor[x] || '#lineup'; return sub ? HOMEHREF(h) : h; };
   const socials = SOCIALS();
   return `<footer class="ft">
@@ -94,16 +98,16 @@ function page() {
 <body>
 <a class="skip" href="#main">${L.skip}</a>
 ${gnav()}
-<p class="ribbon">${L.ribbon[0]} <a href="#contact">${L.ribbon[1]} ›</a></p>
+<p class="ribbon">${L.ribbon[0]} <a href="/start/">${L.ribbon[1]} ›</a></p>
 
 <main id="main">
 <section class="tile hero dark" aria-labelledby="h1">
-  <div class="t-txt"><h1 id="h1">${H.h1}</h1><p class="sub">${H.sub}</p>${btns(H.a, H.b, '#reel', '#contact', ' data-reel-open')}</div>
+  <div class="t-txt"><h1 id="h1">${H.h1}</h1><p class="sub">${H.sub}</p>${btns(H.a, H.b, '#reel', '/start/', ' data-reel-open')}</div>
   <div class="t-media hero-media"><video poster="${V_('reel')}.webp?v=${MV}" muted loop playsinline autoplay preload="auto" disablepictureinpicture data-auto><source src="${V_('reel-m')}.mp4?v=${MV}" type="video/mp4" media="(max-width: 734px)"><source src="${V_('reel')}.mp4?v=${MV}" type="video/mp4"></video></div>
 </section>
 
 <section class="tile agents gray" id="agents" aria-label="${G.h2}">
-  <div class="t-txt"><h2>${G.h2}</h2><p class="sub">${G.sub}</p><p class="ctas"><button type="button" class="pill" data-agent-call>${G.a}</button><a class="pill ol" href="#contact">${G.b}</a></p></div>
+  <div class="t-txt"><h2>${G.h2}</h2><p class="sub">${G.sub}</p><p class="ctas"><button type="button" class="pill" data-agent-call>${G.a}</button><a class="pill ol" href="/start/?s=agents">${G.b}</a></p><p class="more"><a class="lnk" href="/ai-agents/">${L.tileA} ›</a></p></div>
   <div class="t-media phone-wrap">
     <div class="phone" data-chat>
       <div class="ph-call"><img src="/media/agent-call.webp?v=${MV}" alt="${esc(chat.alt)}" width="940" height="620"><span class="visor" aria-hidden="true"></span>
@@ -120,12 +124,12 @@ ${gnav()}
 </section>
 
 <section class="tile ads" id="commercials" aria-label="${A.h2}">
-  <div class="t-txt"><h2>${A.h2}</h2><p class="sub">${A.sub}</p>${btns(A.a, A.b, '#lineup')}</div>
+  <div class="t-txt"><h2>${A.h2}</h2><p class="sub">${A.sub}</p>${btns(A.a, A.b, '/commercials/', '/start/?s=commercials')}</div>
   <div class="t-media">${vid('s-ads')}</div>
 </section>
 
 <div class="grid">${L.tiles.map(([id, th, v, t, d, pos]) => `<section class="tile half ${th}" id="${id}" aria-label="${t}">
-  <div class="t-txt"><h2>${t}</h2><p class="sub">${d}</p>${id === 'films' ? btns(L.tileA, L.tileB, '/films/', '/start/?s=films') : btns(L.tileA, L.tileB, '#lineup')}</div>
+  <div class="t-txt"><h2>${t}</h2><p class="sub">${d}</p>${btns(L.tileA, L.tileB, PAGE[id], `/start/?s=${id}`)}</div>
   <div class="t-media">${vid(v, '', pos)}</div>
 </section>`).join('')}</div>
 
@@ -143,7 +147,7 @@ ${gnav()}
   <ul class="lineup wrap">${LU.items.map(([v, t, d, pts]) => `<li class="rv">
     <div class="li-img">${v === 'agent' ? agentIcon : `<img src="${V_(v)}.webp?v=${MV}" alt="" loading="lazy">`}</div>
     <h3>${t}</h3><p class="li-d">${d}</p>
-    <p class="ctas sm"><a class="pill" href="${v === 's-films' ? '/start/?s=films' : '#contact'}">${LU.b}</a><a class="lnk" href="${v === 's-films' ? '/films/' : '#contact'}">${LU.a} ›</a></p>
+    <p class="ctas sm"><a class="pill" href="/start/?s=${LUK[v]}">${LU.b}</a><a class="lnk" href="${PAGE[LUK[v]]}">${LU.a} ›</a></p>
     <ul class="li-pts">${pts.map(x => `<li>${x}</li>`).join('')}</ul>
   </li>`).join('')}</ul>
 </section>
@@ -154,7 +158,7 @@ ${gnav()}
 </section>
 
 <section class="sec contact" id="contact" aria-labelledby="c-h">
-  <div class="sec-h wrap center"><h2 id="c-h">${C.h2}</h2><p class="sub">${C.sub}</p></div>
+  <div class="sec-h wrap center"><h2 id="c-h">${C.h2}</h2><p class="sub">${C.sub}</p><p class="ctas"><a class="pill" href="/start/">${L.tileB}</a></p></div>
   <ul class="socials wrap">${socials.map((s, i) => `<li class="rv" style="--d:${i * 70}ms"><a class="soc" href="${s.href}" data-soc="${s.id}" style="--c:${s.color}"${s.id === 'email' ? '' : ' rel="me noopener"'}><span class="soc-i">${GLYPH[s.id]}</span><span class="soc-t"><b>${esc(s.name)}</b><small>${esc(s.handle)}</small></span><span class="soc-a">${ARROW}</span></a></li>`).join('')}</ul>
 </section>
 </main>
@@ -179,10 +183,11 @@ ${footer()}
 }
 
 
-function filmsPage() {
-  const F = FILMS, H = F.hero;
+function servicePage(F) {
+  const H = F.hero, go = `/start/?s=${F.kind}`;
+  const media = id => id.startsWith('img:') ? `<img src="${id.slice(4)}?v=${MV}" alt="" loading="lazy">` : vid(id);
   const plus = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
-  return `${head({ title: F.title, desc: F.desc, path: '/films/' })}
+  return `${head({ title: F.title, desc: F.desc, path: `/${F.slug}/` })}
 <body class="sub">
 <a class="skip" href="#main">${L.skip}</a>
 ${gnav(true)}
@@ -190,7 +195,7 @@ ${gnav(true)}
   <div class="ln-in">
     <a class="ln-t" href="#overview">${F.name}</a>
     <ul class="ln-l">${F.local.map(([h, t]) => `<li><a href="${h}">${t}</a></li>`).join('')}</ul>
-    <a class="pill ln-b" href="/start/?s=films">${F.cta}</a>
+    <a class="pill ln-b" href="${go}">${F.cta}</a>
   </div>
 </nav>
 
@@ -200,9 +205,9 @@ ${gnav(true)}
     <p class="fh-eb rv">${H.eyebrow}</p>
     <h1 id="fh-h" class="rv" style="--d:80ms">${H.h1}</h1>
     <p class="fh-sub rv" style="--d:160ms">${H.sub}</p>
-    <p class="ctas rv" style="--d:240ms"><button type="button" class="pill" data-film-reel>${H.a}</button><a class="pill ol" href="/start/?s=films">${H.b}</a></p>
+    <p class="ctas rv" style="--d:240ms">${F.reel ? `<button type="button" class="pill" data-film-reel>${H.a}</button>` : `<a class="pill" href="${H.aHref}">${H.a}</a>`}<a class="pill ol" href="${go}">${H.b}</a></p>
   </div>
-  <div class="fh-media">${vid('s-films')}</div>
+  <div class="fh-media">${media(F.heroMedia)}</div>
 </section>
 
 <section class="fstmt" aria-label="About">
@@ -212,7 +217,7 @@ ${gnav(true)}
 <section class="sec gray" id="highlights" aria-labelledby="hl-h">
   <div class="sec-h wrap"><h2 id="hl-h">${F.highlights.h2}</h2></div>
   <div class="car-w">
-    <ul class="car" data-car>${F.highlights.items.map(([v, k, t], i) => `<li class="card">${vid(v)}<p><span>${k}</span><b>${t}</b></p><button type="button" class="card-plus" data-sheet="${i}" aria-label="More about ${esc(k)}">${plus}</button></li>`).join('')}</ul>
+    <ul class="car" data-car>${F.highlights.items.map(([v, k, t], i) => `<li class="card">${media(v)}<p><span>${k}</span><b>${t}</b></p><button type="button" class="card-plus" data-sheet="${i}" aria-label="More about ${esc(k)}">${plus}</button></li>`).join('')}</ul>
     <p class="car-dots" data-dots>${F.highlights.items.map((_, i) => `<button type="button" aria-label="${i + 1} / ${F.highlights.items.length}"></button>`).join('')}</p>
     <p class="car-nav wrap"><button type="button" data-car-prev aria-label="Previous">${ARROW}</button><button type="button" data-car-next aria-label="Next">${ARROW}</button></p>
   </div>
@@ -234,8 +239,8 @@ ${gnav(true)}
 </section>
 
 <section class="tile hero dark fend" aria-labelledby="end-h">
-  <div class="t-txt"><h2 id="end-h">${F.end.h2}</h2><p class="ctas"><a class="pill" href="/start/?s=films">${F.end.a}</a><a class="pill ol" href="${SITE.social.instagram.href}" rel="noopener">${F.end.b}</a></p></div>
-  <div class="t-media">${vid('c-stars')}</div>
+  <div class="t-txt"><h2 id="end-h">${F.end.h2}</h2><p class="ctas"><a class="pill" href="${go}">${F.end.a}</a><a class="pill ol" href="${SITE.social.instagram.href}" rel="noopener">${F.end.b}</a></p></div>
+  <div class="t-media">${media(F.endMedia)}</div>
 </section>
 </main>
 
@@ -245,11 +250,11 @@ ${footer(true)}
   <button type="button" class="sheet-x" data-sheet-close aria-label="${L.close}"><i></i><i></i></button>
   <div class="sheet-in" data-sheet-body></div>
 </dialog>
-<template id="sheets">${F.highlights.items.map(([v, k, , t, ps]) => `<article><p class="sheet-k">${k}</p><h2>${t}</h2><div class="sheet-v">${vid(v)}</div>${ps.map(x => `<p>${x}</p>`).join('')}<p class="ctas"><a class="pill" href="/start/?s=films">${F.cta}</a></p></article>`).join('')}</template>
-<dialog class="reel" data-reel-dlg aria-label="${H.a}">
+<template id="sheets">${F.highlights.items.map(([v, k, , t, ps]) => `<article><p class="sheet-k">${k}</p><h2>${t}</h2><div class="sheet-v">${media(v)}</div>${ps.map(x => `<p>${x}</p>`).join('')}<p class="ctas"><a class="pill" href="${go}">${F.cta}</a></p></article>`).join('')}</template>
+${F.reel ? `<dialog class="reel" data-reel-dlg aria-label="${H.a}">
   <button type="button" class="reel-x" data-reel-close aria-label="${L.close}"><i></i><i></i></button>
-  <div class="reel-in"><video playsinline controls preload="none" data-reel-v data-src="/media/r/films.mp4?v=${MV}"></video></div>
-</dialog>
+  <div class="reel-in"><video playsinline controls preload="none" data-reel-v data-src="/media/r/${F.reel}.mp4?v=${MV}"></video></div>
+</dialog>` : ''}
 <script type="module" src="/static/js/sub.js?v=${V}"></script>
 </body>
 </html>
@@ -301,12 +306,12 @@ writeFileSync(join(ROOT, 'index.html'), page());
 const old = [['/ru/', '/'], ['/services/', '/'], ['/approach/', '/'], ['/contact/', '/#contact'], ['/links/', '/#contact'], ['/archive/', '/'], ['/archive/qist/', '/'], ['/archive/qist/app/', '/'], ['/archive/use-5-now/', '/'], ['/archive/living-shapes/', '/'], ['/archive/lab/', '/'], ['/work/', '/'], ['/work/living-shapes/', '/'], ['/work/usefive/', '/'], ['/work/living-frame/', '/'], ['/practice/', '/'], ['/lab/', '/'], ['/about/', '/']];
 old.forEach(([a, b]) => { redirect(a, b); if (a !== '/ru/') redirect('/ru' + a, b); });
 writeFileSync(join(ROOT, '404.html'), notFound());
-for (const [d, html] of [['films', filmsPage()], ['start', startPage()]]) { mkdirSync(join(ROOT, d), { recursive: true }); writeFileSync(join(ROOT, d, 'index.html'), html); }
+for (const [d, html] of [...SERVICES.map(F => [F.slug, servicePage(F)]), ['start', startPage()]]) { mkdirSync(join(ROOT, d), { recursive: true }); writeFileSync(join(ROOT, d, 'index.html'), html); }
 writeFileSync(join(ROOT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>${SITE.url}/</loc><lastmod>${BUILD_DATE}</lastmod></url>
-  <url><loc>${SITE.url}/films/</loc><lastmod>${BUILD_DATE}</lastmod></url>
-  <url><loc>${SITE.url}/start/</loc><lastmod>${BUILD_DATE}</lastmod></url>
+${SERVICES.map(F => `  <url><loc>${SITE.url}/${F.slug}/</loc><lastmod>${BUILD_DATE}</lastmod></url>
+`).join('')}  <url><loc>${SITE.url}/start/</loc><lastmod>${BUILD_DATE}</lastmod></url>
 </urlset>
 `);
 writeFileSync(join(ROOT, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /tools/\n\nSitemap: ${SITE.url}/sitemap.xml\n`);

@@ -22,28 +22,28 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap">
-<link rel="stylesheet" href="/static/css/site.css?v=0cc7553d">
+<link rel="stylesheet" href="/static/css/site.css?v=9c276869">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <header class="gn" data-gn>
   <nav class="gn-in" aria-label="Main">
     <a class="wm" href="/" aria-label="VERGHÉTHORN home">VERGHÉTHORN</a>
-    <ul class="gn-l" id="gn-menu"><li><a href="/films/">Films</a></li><li><a href="#commercials">Commercials</a></li><li><a href="#agents">AI Agents</a></li><li><a href="#collab">Collaborations</a></li><li><a href="#lineup">Services</a></li><li><a href="#contact">Contact</a></li></ul>
+    <ul class="gn-l" id="gn-menu"><li><a href="/films/">Films</a></li><li><a href="/commercials/">Commercials</a></li><li><a href="/ai-agents/">AI Agents</a></li><li><a href="/collaborations/">Collaborations</a></li><li><a href="#lineup">Services</a></li><li><a href="#contact">Contact</a></li></ul>
     <button class="snd" type="button" data-sound aria-pressed="true" aria-label="Sound off" data-on="Sound off" data-off="Sound on"><svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg><svg class="off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5z"/><path d="m16 9.5 5 5M21 9.5l-5 5"/></svg></button>
     <button class="burger" type="button" data-burger aria-expanded="false" aria-controls="gn-menu" aria-label="Menu"><i></i><i></i></button>
   </nav>
 </header>
-<p class="ribbon">Now taking projects for 2027. <a href="#contact">Start a conversation ›</a></p>
+<p class="ribbon">Now taking projects for 2027. <a href="/start/">Start a conversation ›</a></p>
 
 <main id="main">
 <section class="tile hero dark" aria-labelledby="h1">
-  <div class="t-txt"><h1 id="h1">AI Cinema</h1><p class="sub">Films and commercials for brands.<br>Created with AI.</p><p class="ctas"><a class="pill" href="#reel" data-reel-open>Watch the reel</a><a class="pill ol" href="#contact">Start a project</a></p></div>
+  <div class="t-txt"><h1 id="h1">AI Cinema</h1><p class="sub">Films and commercials for brands.<br>Created with AI.</p><p class="ctas"><a class="pill" href="#reel" data-reel-open>Watch the reel</a><a class="pill ol" href="/start/">Start a project</a></p></div>
   <div class="t-media hero-media"><video poster="/media/v/reel.webp?v=4d34e03d" muted loop playsinline autoplay preload="auto" disablepictureinpicture data-auto><source src="/media/v/reel-m.mp4?v=4d34e03d" type="video/mp4" media="(max-width: 734px)"><source src="/media/v/reel.mp4?v=4d34e03d" type="video/mp4"></video></div>
 </section>
 
 <section class="tile agents gray" id="agents" aria-label="AI Agents">
-  <div class="t-txt"><h2>AI Agents</h2><p class="sub">Chat, voice and video. Always on.</p><p class="ctas"><button type="button" class="pill" data-agent-call>Talk to the agent</button><a class="pill ol" href="#contact">Request a demo</a></p></div>
+  <div class="t-txt"><h2>AI Agents</h2><p class="sub">Chat, voice and video. Always on.</p><p class="ctas"><button type="button" class="pill" data-agent-call>Talk to the agent</button><a class="pill ol" href="/start/?s=agents">Request a demo</a></p><p class="more"><a class="lnk" href="/ai-agents/">Learn more ›</a></p></div>
   <div class="t-media phone-wrap">
     <div class="phone" data-chat>
       <div class="ph-call"><img src="/media/agent-call.webp?v=4d34e03d" alt="The VERGHÉTHORN AI agent: a figure in a dark suit with a black helmet and a glowing blue visor" width="940" height="620"><span class="visor" aria-hidden="true"></span>
@@ -54,13 +54,13 @@
         <form class="ph-comp" data-agent-form><input type="text" data-agent-input placeholder="Message the agent…" aria-label="Message the agent…" maxlength="400" autocomplete="off" enterkeyhint="send"><button type="submit" class="ph-send" aria-label="Send"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></form>
         <button type="button" class="ph-mic" data-agent-call aria-label="Talk to the agent" data-on="Talk to the agent" data-off="End the call"><svg class="i-mic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><svg class="i-end" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 14.5c5-4.7 13-4.7 18 0l-2.4 2.6-3.6-1.6v-2.6a12 12 0 0 0-6 0v2.6l-3.6 1.6z" fill="currentColor"/></svg></button>
       </div>
-      <script type="application/json" id="agent-cfg">{"id":"agent_8301m6y0jvjce27are2pzqj9k34v","mail":"verghethorn@gmail.com","sdk":"/static/vendor/elevenlabs-client-1.30.0.js?v=0cc7553d","t":{"connecting":"Connecting…","listening":"Listening…","speaking":"Speaking…","online":"AI agent · online","ended":"Call ended · AI agent","mic":"Microphone access is off — you can type to me instead.","busy":"I can’t take calls right now. Please send your request by email — the director will reply personally:","hello":"Hi! I’m the VERGHÉTHORN agent. Connecting you now — when you hear me, just speak. Or type below."}}</script>
+      <script type="application/json" id="agent-cfg">{"id":"agent_8301m6y0jvjce27are2pzqj9k34v","mail":"verghethorn@gmail.com","sdk":"/static/vendor/elevenlabs-client-1.30.0.js?v=9c276869","t":{"connecting":"Connecting…","listening":"Listening…","speaking":"Speaking…","online":"AI agent · online","ended":"Call ended · AI agent","mic":"Microphone access is off — you can type to me instead.","busy":"I can’t take calls right now. Please send your request by email — the director will reply personally:","hello":"Hi! I’m the VERGHÉTHORN agent. Connecting you now — when you hear me, just speak. Or type below."}}</script>
     </div>
   </div>
 </section>
 
 <section class="tile ads" id="commercials" aria-label="Commercials">
-  <div class="t-txt"><h2>Commercials</h2><p class="sub">Make your brand unforgettable.</p><p class="ctas"><a class="pill" href="#lineup">Learn more</a><a class="pill ol" href="#contact">Start a project</a></p></div>
+  <div class="t-txt"><h2>Commercials</h2><p class="sub">Make your brand unforgettable.</p><p class="ctas"><a class="pill" href="/commercials/">Learn more</a><a class="pill ol" href="/start/?s=commercials">Start a project</a></p></div>
   <div class="t-media"><video class="" src="/media/v/s-ads.mp4?v=4d34e03d" poster="/media/v/s-ads.webp?v=4d34e03d" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div>
 </section>
 
@@ -68,13 +68,13 @@
   <div class="t-txt"><h2>Films</h2><p class="sub">Any world. Any era. Any light.</p><p class="ctas"><a class="pill" href="/films/">Learn more</a><a class="pill ol" href="/start/?s=films">Start a project</a></p></div>
   <div class="t-media"><video class="" src="/media/v/s-films.mp4?v=4d34e03d" poster="/media/v/s-films.webp?v=4d34e03d" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div>
 </section><section class="tile half dark" id="collab" aria-label="Collaborations">
-  <div class="t-txt"><h2>Collaborations</h2><p class="sub">Your brand inside our stories.</p><p class="ctas"><a class="pill" href="#lineup">Learn more</a><a class="pill ol" href="#contact">Start a project</a></p></div>
+  <div class="t-txt"><h2>Collaborations</h2><p class="sub">Your brand inside our stories.</p><p class="ctas"><a class="pill" href="/collaborations/">Learn more</a><a class="pill ol" href="/start/?s=collab">Start a project</a></p></div>
   <div class="t-media"><video class="" src="/media/v/s-collab.mp4?v=4d34e03d" poster="/media/v/s-collab.webp?v=4d34e03d" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div>
 </section><section class="tile half light" id="design" aria-label="Product design">
-  <div class="t-txt"><h2>Product design</h2><p class="sub">From first sketch to production.</p><p class="ctas"><a class="pill" href="#lineup">Learn more</a><a class="pill ol" href="#contact">Start a project</a></p></div>
+  <div class="t-txt"><h2>Product design</h2><p class="sub">From first sketch to production.</p><p class="ctas"><a class="pill" href="/product-design/">Learn more</a><a class="pill ol" href="/start/?s=design">Start a project</a></p></div>
   <div class="t-media"><video class="" src="/media/v/p-pottery.mp4?v=4d34e03d" poster="/media/v/p-pottery.webp?v=4d34e03d" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div>
 </section><section class="tile half light" id="nature" aria-label="Nature & travel">
-  <div class="t-txt"><h2>Nature & travel</h2><p class="sub">Every place on Earth. And beyond.</p><p class="ctas"><a class="pill" href="#lineup">Learn more</a><a class="pill ol" href="#contact">Start a project</a></p></div>
+  <div class="t-txt"><h2>Nature & travel</h2><p class="sub">Every place on Earth. And beyond.</p><p class="ctas"><a class="pill" href="/nature-travel/">Learn more</a><a class="pill ol" href="/start/?s=nature">Start a project</a></p></div>
   <div class="t-media"><video class="" src="/media/v/s-nature.mp4?v=4d34e03d" poster="/media/v/s-nature.webp?v=4d34e03d" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div>
 </section></div>
 
@@ -97,17 +97,17 @@
   </li><li class="rv">
     <div class="li-img"><img src="/media/v/s-ads.webp?v=4d34e03d" alt="" loading="lazy"></div>
     <h3>Commercial</h3><p class="li-d">Campaigns for brands</p>
-    <p class="ctas sm"><a class="pill" href="#contact">Request</a><a class="lnk" href="#contact">Learn more ›</a></p>
+    <p class="ctas sm"><a class="pill" href="/start/?s=commercials">Request</a><a class="lnk" href="/commercials/">Learn more ›</a></p>
     <ul class="li-pts"><li>Concept and storyboard</li><li>TV, web and social</li><li>Product scenes</li></ul>
   </li><li class="rv">
     <div class="li-img"><img src="/media/v/p-pottery.webp?v=4d34e03d" alt="" loading="lazy"></div>
     <h3>Product design</h3><p class="li-d">From idea to production</p>
-    <p class="ctas sm"><a class="pill" href="#contact">Request</a><a class="lnk" href="#contact">Learn more ›</a></p>
+    <p class="ctas sm"><a class="pill" href="/start/?s=design">Request</a><a class="lnk" href="/product-design/">Learn more ›</a></p>
     <ul class="li-pts"><li>Concept and 3D</li><li>Photoreal renders</li><li>Launch film</li></ul>
   </li><li class="rv">
     <div class="li-img"><img src="/media/agent-card.webp?v=4d34e03d" alt="" loading="lazy"></div>
     <h3>AI Agent</h3><p class="li-d">Assistants for brands</p>
-    <p class="ctas sm"><a class="pill" href="#contact">Request</a><a class="lnk" href="#contact">Learn more ›</a></p>
+    <p class="ctas sm"><a class="pill" href="/start/?s=agents">Request</a><a class="lnk" href="/ai-agents/">Learn more ›</a></p>
     <ul class="li-pts"><li>Answers 24/7</li><li>Your tone of voice</li><li>Web and messengers</li></ul>
   </li></ul>
 </section>
@@ -118,7 +118,7 @@
 </section>
 
 <section class="sec contact" id="contact" aria-labelledby="c-h">
-  <div class="sec-h wrap center"><h2 id="c-h">Let’s create together.</h2><p class="sub">Films, commercials, AI agents and collaborations.</p></div>
+  <div class="sec-h wrap center"><h2 id="c-h">Let’s create together.</h2><p class="sub">Films, commercials, AI agents and collaborations.</p><p class="ctas"><a class="pill" href="/start/">Start a project</a></p></div>
   <ul class="socials wrap"><li class="rv" style="--d:0ms"><a class="soc" href="https://www.instagram.com/verghethorn.studio" data-soc="instagram" style="--c:#d6249f" rel="me noopener"><span class="soc-i"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.5" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.3" cy="6.7" r="1.3" fill="#fff"/></svg></span><span class="soc-t"><b>Instagram</b><small>@verghethorn.studio</small></span><span class="soc-a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li><li class="rv" style="--d:70ms"><a class="soc" href="https://www.youtube.com/@verghethorn" data-soc="youtube" style="--c:#ff0033" rel="me noopener"><span class="soc-i"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4.5" fill="#fff"/><path d="M10 9v6l5.2-3z" fill="#ff0033"/></svg></span><span class="soc-t"><b>YouTube</b><small>@verghethorn</small></span><span class="soc-a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li><li class="rv" style="--d:140ms"><a class="soc" href="https://www.tiktok.com/@verghethorn_official" data-soc="tiktok" style="--c:#000000" rel="me noopener"><span class="soc-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 3v11.6a3.6 3.6 0 1 1-3.6-3.6M14.5 3c.5 2.7 2.4 4.4 5 4.6" fill="none" stroke="#25f4ee" stroke-width="2.4" stroke-linecap="round" transform="translate(-.8 -.6)"/><path d="M14.5 3v11.6a3.6 3.6 0 1 1-3.6-3.6M14.5 3c.5 2.7 2.4 4.4 5 4.6" fill="none" stroke="#fe2c55" stroke-width="2.4" stroke-linecap="round" transform="translate(.8 .6)"/><path d="M14.5 3v11.6a3.6 3.6 0 1 1-3.6-3.6M14.5 3c.5 2.7 2.4 4.4 5 4.6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></span><span class="soc-t"><b>TikTok</b><small>@verghethorn_official</small></span><span class="soc-a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li><li class="rv" style="--d:210ms"><a class="soc" href="mailto:verghethorn@gmail.com" data-soc="email" style="--c:#3d5afe"><span class="soc-i"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2.5" fill="none" stroke="#fff" stroke-width="1.8"/><path d="m3.8 7 8.2 6 8.2-6" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg></span><span class="soc-t"><b>Email</b><small>verghethorn@gmail.com</small></span><span class="soc-a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li></ul>
 </section>
 </main>
@@ -126,7 +126,7 @@
 <footer class="ft">
   <div class="wrap">
     <p class="ft-note">Demo footage, music and sound effects on this site: Mixkit. Brand names in examples are fictional.</p>
-    <div class="ft-cols"><div><h3>Create</h3><ul><li><a href="/films/">Films</a></li><li><a href="#commercials">Commercials</a></li><li><a href="#design">Product design</a></li><li><a href="#nature">Nature & travel</a></li></ul></div><div><h3>AI</h3><ul><li><a href="#agents">AI Agents</a></li><li><a href="#lineup">Concierge assistants</a></li><li><a href="#lineup">Customer support</a></li></ul></div><div><h3>Together</h3><ul><li><a href="#collab">Collaborations</a></li><li><a href="#lineup">Partnerships</a></li></ul></div>
+    <div class="ft-cols"><div><h3>Create</h3><ul><li><a href="/films/">Films</a></li><li><a href="/commercials/">Commercials</a></li><li><a href="/product-design/">Product design</a></li><li><a href="/nature-travel/">Nature & travel</a></li></ul></div><div><h3>AI</h3><ul><li><a href="/ai-agents/">AI Agents</a></li><li><a href="/ai-agents/">Concierge assistants</a></li><li><a href="/ai-agents/">Customer support</a></li></ul></div><div><h3>Together</h3><ul><li><a href="/collaborations/">Collaborations</a></li><li><a href="/collaborations/">Partnerships</a></li></ul></div>
       <div><h3>Contact</h3><ul><li><a href="/start/">Start a project</a></li><li><a href="https://www.instagram.com/verghethorn.studio" rel="me noopener">Instagram</a></li><li><a href="https://www.youtube.com/@verghethorn" rel="me noopener">YouTube</a></li><li><a href="https://www.tiktok.com/@verghethorn_official" rel="me noopener">TikTok</a></li><li><a href="mailto:verghethorn@gmail.com">Email</a></li></ul></div></div>
     <p class="ft-b"><span>Copyright © 2026 VERGHÉTHORN. All rights reserved.</span><a href="mailto:verghethorn@gmail.com">verghethorn@gmail.com</a></p>
   </div>
@@ -143,6 +143,6 @@
 <div class="warp" data-warp aria-hidden="true"><span class="warp-i"></span></div>
 
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"VERGHÉTHORN","url":"https://verghethorn.com","email":"verghethorn@gmail.com","sameAs":["https://www.instagram.com/verghethorn.studio","https://www.youtube.com/@verghethorn","https://www.tiktok.com/@verghethorn_official"],"description":"VERGHÉTHORN creates films, brand commercials and AI agents. Cinema, created with AI."}</script>
-<script type="module" src="/static/js/site.js?v=0cc7553d"></script>
+<script type="module" src="/static/js/site.js?v=9c276869"></script>
 </body>
 </html>
