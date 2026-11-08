@@ -1,10 +1,10 @@
-# verghethorn.com (v7)
+# verghethorn.com (v8)
 
-Static site for VERGHÉTHORN, a film studio: brand commercials and short films.
+Static site for VERGHÉTHORN — films for brands and product design.
 
-- First screen: a live 3D film set (three.js r180, vendored in `static/vendor/three`). Lamps, cameras and actors can be tapped; Camera A / Camera B show the shot through the lens.
-- Copy lives in `tools/content.mjs`. Run `node tools/build.mjs` to regenerate `index.html`, `404.html`, `sitemap.xml`, `robots.txt`.
-- Code: `static/js/set3d.js` (3D set), `static/js/site.js` (page logic), `static/js/sfx.js` (synthesized sounds), `static/css/site.css`.
-- Media: `media/3d/xbot.glb` (three.js / Mixamo actor), `media/v/*` (Mixkit stock clips, placeholders), `media/set-poster.webp`, `media/og.jpg`.
-- Contact form posts to Supabase table `inquiries` (insert-only publishable key).
+- Hero: long-exposure crowd film; press and hold to stop time (`static/js/site.js`).
+- Sections: statement → Films → Product design (sketch, 3D model, prototype, production) → "Then we film it" → Contact (Instagram, YouTube, TikTok, Email).
+- Copy lives in `tools/content.mjs`; run `node tools/build.mjs` to regenerate `index.html`, `404.html`, `sitemap.xml`, `robots.txt`.
+- Styles `static/css/site.css`, sounds `static/js/sfx.js` (synthesized, WebAudio).
+- Media `media/v/*` — Mixkit stock footage (free licence), re-graded; placeholders until our own films are ready.
 - Hosting: GitHub Pages from `main` (CNAME verghethorn.com).

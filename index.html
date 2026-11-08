@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>VERGHÉTHORN — brand commercials and short films</title>
-<meta name="description" content="VERGHÉTHORN is a film studio. We make brand commercials and short films, and design the products we film.">
+<title>VERGHÉTHORN — films for brands and product design</title>
+<meta name="description" content="VERGHÉTHORN is a studio for brand films and product design. We design the product, then make the film that makes people want it.">
 <link rel="canonical" href="https://verghethorn.com/">
-<meta name="theme-color" content="#0c0c0d">
+<meta name="theme-color" content="#0d0c0b">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="VERGHÉTHORN">
-<meta property="og:title" content="VERGHÉTHORN — brand commercials and short films">
-<meta property="og:description" content="VERGHÉTHORN is a film studio. We make brand commercials and short films, and design the products we film.">
+<meta property="og:title" content="VERGHÉTHORN — films for brands and product design">
+<meta property="og:description" content="VERGHÉTHORN is a studio for brand films and product design. We design the product, then make the film that makes people want it.">
 <meta property="og:url" content="https://verghethorn.com/">
 <meta property="og:image" content="https://verghethorn.com/media/og.jpg">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
@@ -21,84 +21,65 @@
 <script>document.documentElement.classList.add('js')</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="/static/css/site.css?v=6332d2a3">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,400..700;1,400..600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/static/css/site.css?v=7d6fe104">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <header class="hd" data-hd>
   <a class="wm" href="/" aria-label="VERGHÉTHORN home">VERGHÉTHORN</a>
+  <nav class="nav" aria-label="Sections"><a href="#films">Films</a><a href="#design">Design</a><a href="#contact">Contact</a></nav>
   <button class="snd" type="button" data-sound aria-pressed="true" aria-label="Sound off" data-on="Sound off" data-off="Sound on"><svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg><svg class="off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5z"/><path d="m16 9.5 5 5M21 9.5l-5 5"/></svg></button>
   <a class="hd-cta" href="#contact">Contact</a>
 </header>
 
 <main id="main">
-<section class="stage" aria-labelledby="h1" data-stage data-view="set">
-  <canvas class="set3d" data-set3d role="img" aria-label="A 3D film set: a presenter beside a product on a plinth, lit by a key light, a softbox and a back light, filmed by two cinema cameras."></canvas>
-  <img class="poster" src="/media/set-poster.webp" alt="" aria-hidden="true">
-  <p class="loading" data-loading aria-hidden="true">Building the set…</p>
-  <div class="labels" data-labels><button type="button" class="lbl" data-lbl="lamp:key"><i></i>Key light</button><button type="button" class="lbl" data-lbl="lamp:fill"><i></i>Fill light</button><button type="button" class="lbl" data-lbl="lamp:back"><i></i>Back light</button><button type="button" class="lbl" data-lbl="lamp:set"><i></i>Background</button><button type="button" class="lbl" data-lbl="cam:a"><i></i>Camera A</button><button type="button" class="lbl" data-lbl="cam:b"><i></i>Camera B · dolly</button><button type="button" class="lbl" data-lbl="actor:presenter"><i></i>Presenter</button><button type="button" class="lbl" data-lbl="actor:guest"><i></i>Actor</button></div>
-  <div class="pov" aria-hidden="true"><span class="lb t"></span><span class="lb b"></span><span class="pov-hud"><span class="rec"><i></i>REC</span><span data-povcam>CAMERA A</span><span data-tc>00:00:00:00</span></span><p class="subs" data-subs></p></div>
-  <div class="stage-top"><span class="slate"><i></i>Brand commercial · Scene 4 · Take 2</span></div>
-  <div class="stage-bottom">
-    <h1 id="h1">Brand commercials<br>and short films.</h1>
-    <p class="hint">Tap a light, a camera or an actor.</p>
-    <div class="views" role="tablist" aria-label="View"><button type="button" role="tab" aria-selected="true" data-view-btn="set">Set</button><button type="button" role="tab" aria-selected="false" data-view-btn="a">Camera A</button><button type="button" role="tab" aria-selected="false" data-view-btn="b">Camera B</button></div>
+<section class="hero" aria-labelledby="h1" data-hero>
+  <video class="hero-v" data-hero-v muted loop playsinline autoplay preload="auto" disablepictureinpicture poster="/media/v/hero.webp" data-src-d="/media/v/hero.mp4" data-src-m="/media/v/hero-m.mp4" data-poster-m="/media/v/hero-m.webp"></video>
+  <div class="hero-shade" aria-hidden="true"></div>
+  <p class="hero-tc" aria-hidden="true"><i></i><span data-held-l>REC</span> <span data-tc>00:00:00:00</span></p>
+  <div class="hero-in">
+    <p class="kicker">Film & product studio</p>
+    <h1 id="h1">Everyone is in a hurry.<br><em>Good films make them stop.</em></h1>
   </div>
-  <script type="application/json" id="hero-lines">{"lines":["Every brand has a story worth filming.","We write it, we light it, we shoot it.","This is VERGHÉTHORN."],"product":"Product shot · 85mm"}</script>
+  <button class="hold" type="button" data-hold aria-label="Hold to stop time"><span class="hold-ring" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="30"/></svg><i></i></span><span class="hold-t" data-hold-t data-a="Hold to stop time" data-b="Time stopped">Hold to stop time</span></button>
 </section>
 
-<section class="intro"><p class="rv">VERGHÉTHORN is a film studio. We make <b>brand commercials</b> and <b>short films</b> — and design the products we film.</p></section>
+<section class="statement wrap" aria-label="About"><p data-words>We are a studio with two crafts. We design products — and we make the films that make people want them.</p></section>
 
-<section class="sec services" aria-label="What we do">
-  <p class="eyebrow wrap">What we do</p>
-  <ul class="svc"><li class="svc-i rv"><div class="svc-v"><video class="" src="/media/v/s-camera.mp4" poster="/media/v/s-camera.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div><div class="svc-t"><h2>Brand commercials</h2><p>From the script to the final grade. One team, one standard — for brands that want to be remembered.</p></div></li><li class="svc-i rv"><div class="svc-v"><video class="" src="/media/v/s-film.mp4" poster="/media/v/s-film.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div><div class="svc-t"><h2>Short films</h2><p>Original stories made with the craft of cinema. Brands appear inside them naturally, as collaborations.</p></div></li><li class="svc-i rv"><div class="svc-v"><video class="" src="/media/v/s-design.mp4" poster="/media/v/s-design.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div><div class="svc-t"><h2>Product design</h2><p>We design the product, its colours and materials — then film it, and build its app or website.</p></div></li></ul>
+<section class="sec films" id="films" aria-labelledby="f-t">
+  <header class="sec-h wrap"><span class="num">01</span><h2 id="f-t">Films</h2><p class="lead">Commercials for premium brands and short films with a story. Script, cast, light, camera, edit, colour and sound — one team, one standard.</p></header>
+  <div class="reel wrap" data-rail><figure class="tile tall"><video class="" src="/media/v/f-watch.mp4" poster="/media/v/f-watch.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video><figcaption><i></i>Macro · 100mm</figcaption></figure><figure class="tile wide"><video class="" src="/media/v/f-perfume.mp4" poster="/media/v/f-perfume.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video><figcaption><i></i>Product · low key</figcaption></figure><figure class="tile "><video class="" src="/media/v/f-set.mp4" poster="/media/v/f-set.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video><figcaption><i></i>On set · Scene 9, take 3</figcaption></figure><figure class="tile "><video class="" src="/media/v/f-crane.mp4" poster="/media/v/f-crane.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video><figcaption><i></i>Crane shot · street</figcaption></figure></div>
+  <ul class="kinds wrap"><li class="rv"><h3>Brand commercials</h3><p>Watches, fragrance, cars, tech, hotels. Thirty to ninety seconds that people remember.</p></li><li class="rv"><h3>Short films</h3><p>Original stories made with the craft of cinema. Brands join as partners, naturally.</p></li><li class="rv"><h3>Product films</h3><p>Your product, lit and shot like the lead actor.</p></li></ul>
 </section>
 
-<section class="sec process" aria-labelledby="p-t">
-  <div class="wrap"><p class="eyebrow">How we work</p><h2 id="p-t" class="rv">From the first idea<br>to the first screening.</h2>
-  <ol class="steps"><li class="rv"><span>01</span><b>Script</b><p>One clear idea for one audience.</p></li><li class="rv"><span>02</span><b>Set & light</b><p>Locations, actors, cameras, light.</p></li><li class="rv"><span>03</span><b>Shoot</b><p>Shot on cinema cameras.</p></li><li class="rv"><span>04</span><b>Edit & release</b><p>Edit, colour, sound — then out into the world.</p></li></ol></div>
+<section class="sec design" id="design" aria-labelledby="d-t">
+  <header class="sec-h wrap"><span class="num">02</span><h2 id="d-t">Product design</h2>
+    <p class="lead big">Bring us an idea — <span class="swap" data-swap aria-live="off">a teapot.</span><span class="sp"> </span><br>We take it all the way to the real thing.</p></header>
+  <script type="application/json" id="words">["a teapot.","a pair of shoes.","a desk lamp.","a chair.","a bottle.","headphones.","a backpack.","a watch."]</script>
+  <ol class="steps wrap"><li class="step rv"><div class="step-v"><video class="" src="/media/v/d-sketch.mp4" poster="/media/v/d-sketch.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div><span class="num">01</span><h3>Sketch</h3><p>The idea on paper. Shape, purpose, feeling.</p></li><li class="step rv"><div class="step-v"><video class="" src="/media/v/d-model.mp4" poster="/media/v/d-model.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div><span class="num">02</span><h3>3D model</h3><p>Every millimetre on the computer. Colours and materials.</p></li><li class="step rv"><div class="step-v"><video class="" src="/media/v/d-print.mp4" poster="/media/v/d-print.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div><span class="num">03</span><h3>Prototype</h3><p>Printed, held in the hand, tested, improved.</p></li><li class="step rv"><div class="step-v"><video class="" src="/media/v/d-clay.mp4" poster="/media/v/d-clay.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div><span class="num">04</span><h3>Production</h3><p>Made for real — we see it through to the shelf.</p></li></ol>
 </section>
 
-<section class="sec story" id="story" aria-labelledby="st-t">
-  <div class="wrap"><p class="eyebrow">Script lab</p><h2 id="st-t" class="rv">Spin a story.</h2><p class="lead">Every commercial starts as an idea. Spin the reels — tap one to keep it.</p></div>
-  <div class="slot" data-slot>
-    <div class="slot-reels"><button class="sreel" type="button" data-reel="0" aria-pressed="false" aria-label="Hero: A night‑shift baker"><span class="sreel-l">Hero</span><span class="sreel-w"><span class="sreel-s" data-strip></span></span><span class="sreel-lock">Kept</span></button><button class="sreel" type="button" data-reel="1" aria-pressed="false" aria-label="Place: on the first snowy morning"><span class="sreel-l">Place</span><span class="sreel-w"><span class="sreel-s" data-strip></span></span><span class="sreel-lock">Kept</span></button><button class="sreel" type="button" data-reel="2" aria-pressed="false" aria-label="Twist: finds a letter written ten years ago"><span class="sreel-l">Twist</span><span class="sreel-w"><span class="sreel-s" data-strip></span></span><span class="sreel-lock">Kept</span></button></div>
-    <p class="logline" data-logline aria-live="polite"></p>
-    <div class="slot-row"><button class="btn dark" type="button" data-spin>Spin</button><a class="btn ghost" href="#contact" data-use>Pitch this idea <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a><span class="meta"><span data-spun>0</span> stories spun</span></div>
-  </div>
-  <script type="application/json" id="reels">[["A night‑shift baker","A retired racing driver","A young architect","A street musician","A lighthouse keeper","A watchmaker","A taxi driver","A football coach","A new pilot","A grandfather and his grandson"],["on the first snowy morning","in a city that never sleeps","on the last ferry home","in a quiet mountain village","at a sold‑out stadium","in an empty airport at dawn","on a long desert road","in a busy kitchen","on the roof of a skyscraper","at the edge of the sea"],["finds a letter written ten years ago","gets one minute to change everything","teaches a stranger something new","discovers the old family recipe","fixes something no one else could","keeps a promise against all odds","hears a song that brings back a memory","builds something with their own hands","meets the person who inspired them","chooses the harder, better road"]]</script>
+<section class="bridge" aria-labelledby="b-t">
+  <video class="bridge-v" src="/media/v/d-teapot.mp4" poster="/media/v/d-teapot.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video>
+  <div class="bridge-in wrap"><h2 id="b-t" class="rv">Then we film it.</h2><p class="rv">Design and film under one roof. The product is born ready for its close-up.</p></div>
 </section>
 
 <section class="sec contact" id="contact" aria-labelledby="c-t">
-  <div class="wrap"><p class="eyebrow">Contact</p><h2 id="c-t" class="rv">Let’s make<br>your film.</h2></div>
-  <ul class="socials wrap"><li><a class="soc" href="https://www.instagram.com/verghethorn.studio" data-soc="instagram" style="--c:#d6249f" rel="me noopener"><span class="soc-i"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.5" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.3" cy="6.7" r="1.3" fill="#fff"/></svg></span><span class="soc-t"><b>Instagram</b><small>@verghethorn.studio</small></span><span class="soc-a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li><li><a class="soc" href="https://www.youtube.com/@verghethorn" data-soc="youtube" style="--c:#ff0033" rel="me noopener"><span class="soc-i"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4.5" fill="#fff"/><path d="M10 9v6l5.2-3z" fill="#ff0033"/></svg></span><span class="soc-t"><b>YouTube</b><small>@verghethorn</small></span><span class="soc-a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li><li><a class="soc" href="https://www.tiktok.com/@verghethorn_official" data-soc="tiktok" style="--c:#111111" rel="me noopener"><span class="soc-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 3v11.6a3.6 3.6 0 1 1-3.6-3.6M14.5 3c.5 2.7 2.4 4.4 5 4.6" fill="none" stroke="#25f4ee" stroke-width="2.4" stroke-linecap="round" transform="translate(-.8 -.6)"/><path d="M14.5 3v11.6a3.6 3.6 0 1 1-3.6-3.6M14.5 3c.5 2.7 2.4 4.4 5 4.6" fill="none" stroke="#fe2c55" stroke-width="2.4" stroke-linecap="round" transform="translate(.8 .6)"/><path d="M14.5 3v11.6a3.6 3.6 0 1 1-3.6-3.6M14.5 3c.5 2.7 2.4 4.4 5 4.6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></span><span class="soc-t"><b>TikTok</b><small>@verghethorn_official</small></span><span class="soc-a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li><li><a class="soc" href="mailto:verghethorn@gmail.com" data-soc="email" style="--c:#3d5afe"><span class="soc-i"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2.5" fill="none" stroke="#fff" stroke-width="1.8"/><path d="m3.8 7 8.2 6 8.2-6" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg></span><span class="soc-t"><b>Email</b><small>verghethorn@gmail.com</small></span><span class="soc-a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li></ul>
-  <form class="form wrap" data-inquiry data-endpoint="https://vgotvplikubsncujcxmk.supabase.co/rest/v1/inquiries" data-key="sb_publishable_N2ea44ITl-54nQS16gD0NQ_O_ywKAmd" novalidate>
-    <h3>Tell us about your project</h3>
-    <fieldset class="kinds"><legend>Project</legend><label><input type="radio" name="category" value="campaign" checked><span>Brand commercial</span></label><label><input type="radio" name="category" value="film"><span>Short film</span></label><label><input type="radio" name="category" value="collaboration"><span>Collaboration</span></label><label><input type="radio" name="category" value="product"><span>Product design</span></label><label><input type="radio" name="category" value="interactive"><span>App / website</span></label><label><input type="radio" name="category" value="other"><span>Other</span></label></fieldset>
-    <div class="row2">
-      <div class="field"><label for="f-name">Name</label><input id="f-name" name="name" type="text" autocomplete="name" maxlength="120" required aria-describedby="e-name"><p class="error" id="e-name"></p></div>
-      <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="200" required aria-describedby="e-email"><p class="error" id="e-email"></p></div>
-    </div>
-    <div class="field"><label for="f-msg">Message</label><textarea id="f-msg" name="message" rows="4" maxlength="4000" required placeholder="A few lines are enough." aria-describedby="e-msg"></textarea><p class="error" id="e-msg"></p></div>
-    <div class="hp" aria-hidden="true"><label for="f-web">Website</label><input id="f-web" name="website" type="text" tabindex="-1" autocomplete="off"></div>
-    <p class="form-send"><button class="btn dark" type="submit">Send</button><small>We use your details only to reply.</small></p>
-    <div class="form-status" data-form-status role="status" tabindex="-1" hidden></div>
-  </form>
+  <header class="sec-h wrap"><span class="num">03</span><h2 id="c-t">Let’s make<br>something.</h2><p class="lead">Tell us what you want to make. We reply personally.</p></header>
+  <ul class="socials wrap"><li><a class="soc" href="https://www.instagram.com/verghethorn.studio" data-soc="instagram" style="--c:#d6249f" rel="me noopener"><span class="soc-i"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.5" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.3" cy="6.7" r="1.3" fill="#fff"/></svg></span><span class="soc-t"><b>Instagram</b><small>@verghethorn.studio</small></span><span class="soc-a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li><li><a class="soc" href="https://www.youtube.com/@verghethorn" data-soc="youtube" style="--c:#ff0033" rel="me noopener"><span class="soc-i"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4.5" fill="#fff"/><path d="M10 9v6l5.2-3z" fill="#ff0033"/></svg></span><span class="soc-t"><b>YouTube</b><small>@verghethorn</small></span><span class="soc-a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li><li><a class="soc" href="https://www.tiktok.com/@verghethorn_official" data-soc="tiktok" style="--c:#000000" rel="me noopener"><span class="soc-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 3v11.6a3.6 3.6 0 1 1-3.6-3.6M14.5 3c.5 2.7 2.4 4.4 5 4.6" fill="none" stroke="#25f4ee" stroke-width="2.4" stroke-linecap="round" transform="translate(-.8 -.6)"/><path d="M14.5 3v11.6a3.6 3.6 0 1 1-3.6-3.6M14.5 3c.5 2.7 2.4 4.4 5 4.6" fill="none" stroke="#fe2c55" stroke-width="2.4" stroke-linecap="round" transform="translate(.8 .6)"/><path d="M14.5 3v11.6a3.6 3.6 0 1 1-3.6-3.6M14.5 3c.5 2.7 2.4 4.4 5 4.6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></span><span class="soc-t"><b>TikTok</b><small>@verghethorn_official</small></span><span class="soc-a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li><li><a class="soc" href="mailto:verghethorn@gmail.com" data-soc="email" style="--c:#3d5afe"><span class="soc-i"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2.5" fill="none" stroke="#fff" stroke-width="1.8"/><path d="m3.8 7 8.2 6 8.2-6" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg></span><span class="soc-t"><b>Email</b><small>verghethorn@gmail.com</small></span><span class="soc-a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li></ul>
 </section>
 </main>
 
 <footer class="foot wrap">
   <p class="foot-wm">VERGHÉTHORN</p>
-  <p>Brand commercials · Short films · Product design</p>
-  <p class="foot-c">© 2026 VERGHÉTHORN · 3D actor: three.js / Mixamo · Footage: Mixkit</p>
+  <p>Films for brands · Short films · Product design</p>
+  <p class="foot-c">© 2026 VERGHÉTHORN · Footage: Mixkit</p>
 </footer>
 
 <div class="warp" data-warp aria-hidden="true"><span class="warp-i"></span></div>
 
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"VERGHÉTHORN","url":"https://verghethorn.com","email":"verghethorn@gmail.com","sameAs":["https://www.instagram.com/verghethorn.studio","https://www.youtube.com/@verghethorn","https://www.tiktok.com/@verghethorn_official"],"description":"VERGHÉTHORN is a film studio. We make brand commercials and short films, and design the products we film."}</script>
-<script type="application/json" id="i18n">{"form":{"sending":"Sending…","errName":"Please add your name.","errEmail":"Please check the email address.","errMessage":"A few more words, please — at least 10 characters.","okTitle":"Thank you. Message received.","okText":"We will reply to {email} personally.","errTitle":"The message wasn’t sent.","errNet":"Your text is still here. Try again in a moment, or write to verghethorn@gmail.com.","errBot":"That was a little too fast. Please wait a few seconds and send again."},"pitchPrefix":"Idea from the Script lab:"}</script>
-<script type="importmap">{"imports":{"three":"/static/vendor/three/build/three.module.min.js","three/addons/":"/static/vendor/three/jsm/"}}</script>
-<script type="module" src="/static/js/site.js?v=6332d2a3"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"VERGHÉTHORN","url":"https://verghethorn.com","email":"verghethorn@gmail.com","sameAs":["https://www.instagram.com/verghethorn.studio","https://www.youtube.com/@verghethorn","https://www.tiktok.com/@verghethorn_official"],"description":"VERGHÉTHORN is a studio for brand films and product design. We design the product, then make the film that makes people want it."}</script>
+<script type="module" src="/static/js/site.js?v=7d6fe104"></script>
 </body>
 </html>

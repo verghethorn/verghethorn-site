@@ -22,7 +22,7 @@ const GLYPH = {
   email: svg('<rect x="3" y="5.5" width="18" height="13" rx="2.5" fill="none" stroke="#fff" stroke-width="1.8"/><path d="m3.8 7 8.2 6 8.2-6" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/>'),
 };
 const V_ = id => `/media/v/${id}`;
-const vid = (id, cls = '', extra = '') => `<video class="${cls}" src="${V_(id)}.mp4" poster="${V_(id)}.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto${extra}></video>`;
+const vid = (id, cls = '') => `<video class="${cls}" src="${V_(id)}.mp4" poster="${V_(id)}.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video>`;
 
 function head({ title, desc, path, noindex = false, refresh = '' }) {
   return `<!doctype html>
@@ -33,7 +33,7 @@ function head({ title, desc, path, noindex = false, refresh = '' }) {
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 ${refresh}${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${SITE.url}${path}">`}
-<meta name="theme-color" content="#0c0c0d">
+<meta name="theme-color" content="#0d0c0b">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="VERGHÉTHORN">
 <meta property="og:title" content="${esc(title)}">
@@ -48,13 +48,13 @@ ${refresh}${noindex ? '<meta name="robots" content="noindex">' : `<link rel="can
 <script>document.documentElement.classList.add('js')</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,400..700;1,400..600&family=JetBrains+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="/static/css/site.css?v=${V}">
 </head>`;
 }
 
 function page() {
-  const H = L.hero, SV = L.services, P = L.process, ST = L.story, C = L.contact;
+  const H = L.hero, F = L.films, D = L.design, B = L.bridge, C = L.contact;
   const socials = [...Object.entries(SITE.social).map(([id, s]) => ({ id, ...s })), { id: 'email', name: C.emailName, handle: SITE.email, href: `mailto:${SITE.email}`, color: '#3d5afe' }];
   const jsonld = { '@context': 'https://schema.org', '@type': 'Organization', name: 'VERGHÉTHORN', url: SITE.url, email: SITE.email, sameAs: Object.values(SITE.social).map(s => s.href), description: L.desc };
   return `${head({ title: L.title, desc: L.desc, path: '/' })}
@@ -62,63 +62,46 @@ function page() {
 <a class="skip" href="#main">${L.skip}</a>
 <header class="hd" data-hd>
   <a class="wm" href="/" aria-label="VERGHÉTHORN home">VERGHÉTHORN</a>
+  <nav class="nav" aria-label="Sections">${L.nav.map(([h, t]) => `<a href="${h}">${t}</a>`).join('')}</nav>
   <button class="snd" type="button" data-sound aria-pressed="true" aria-label="${L.soundOff}" data-on="${L.soundOff}" data-off="${L.soundOn}">${SOUND}</button>
-  <a class="hd-cta" href="#contact">${L.contactBtn}</a>
+  <a class="hd-cta" href="#contact">${L.talk}</a>
 </header>
 
 <main id="main">
-<section class="stage" aria-labelledby="h1" data-stage data-view="set">
-  <canvas class="set3d" data-set3d role="img" aria-label="${esc(H.fallback)}"></canvas>
-  <img class="poster" src="/media/set-poster.webp" alt="" aria-hidden="true">
-  <p class="loading" data-loading aria-hidden="true">${H.loading}</p>
-  <div class="labels" data-labels>${Object.entries(H.labels).map(([id, t]) => `<button type="button" class="lbl" data-lbl="${id}"><i></i>${t}</button>`).join('')}</div>
-  <div class="pov" aria-hidden="true"><span class="lb t"></span><span class="lb b"></span><span class="pov-hud"><span class="rec"><i></i>REC</span><span data-povcam>CAMERA A</span><span data-tc>00:00:00:00</span></span><p class="subs" data-subs></p></div>
-  <div class="stage-top"><span class="slate"><i></i>${H.slate}</span></div>
-  <div class="stage-bottom">
+<section class="hero" aria-labelledby="h1" data-hero>
+  <video class="hero-v" data-hero-v muted loop playsinline autoplay preload="auto" disablepictureinpicture poster="${V_('hero')}.webp" data-src-d="${V_('hero')}.mp4" data-src-m="${V_('hero-m')}.mp4" data-poster-m="${V_('hero-m')}.webp"></video>
+  <div class="hero-shade" aria-hidden="true"></div>
+  <p class="hero-tc" aria-hidden="true"><i></i><span data-held-l>REC</span> <span data-tc>00:00:00:00</span></p>
+  <div class="hero-in">
+    <p class="kicker">${H.eyebrow}</p>
     <h1 id="h1">${H.h1}</h1>
-    <p class="hint">${H.hint}</p>
-    <div class="views" role="tablist" aria-label="View">${H.views.map(([id, t], i) => `<button type="button" role="tab" aria-selected="${i === 0}" data-view-btn="${id}">${t}</button>`).join('')}</div>
   </div>
-  <script type="application/json" id="hero-lines">${JSON.stringify({ lines: H.lines, product: H.productCard })}</script>
+  <button class="hold" type="button" data-hold aria-label="${H.hold}"><span class="hold-ring" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="30"/></svg><i></i></span><span class="hold-t" data-hold-t data-a="${H.hold}" data-b="${H.held}">${H.hold}</span></button>
 </section>
 
-<section class="intro"><p class="rv">${L.intro}</p></section>
+<section class="statement wrap" aria-label="About"><p data-words>${L.statement}</p></section>
 
-<section class="sec services" aria-label="${SV.eyebrow}">
-  <p class="eyebrow wrap">${SV.eyebrow}</p>
-  <ul class="svc">${SV.items.map(([v, t, d]) => `<li class="svc-i rv"><div class="svc-v">${vid(v)}</div><div class="svc-t"><h2>${t}</h2><p>${d}</p></div></li>`).join('')}</ul>
+<section class="sec films" id="films" aria-labelledby="f-t">
+  <header class="sec-h wrap"><span class="num">${F.num}</span><h2 id="f-t">${F.h2}</h2><p class="lead">${F.lead}</p></header>
+  <div class="reel wrap" data-rail>${F.tiles.map(([v, c, k]) => `<figure class="tile ${k}">${vid(v)}<figcaption><i></i>${c}</figcaption></figure>`).join('')}</div>
+  <ul class="kinds wrap">${F.list.map(([t, d]) => `<li class="rv"><h3>${t}</h3><p>${d}</p></li>`).join('')}</ul>
 </section>
 
-<section class="sec process" aria-labelledby="p-t">
-  <div class="wrap"><p class="eyebrow">${P.eyebrow}</p><h2 id="p-t" class="rv">${P.h2}</h2>
-  <ol class="steps">${P.steps.map(([t, d], i) => `<li class="rv"><span>0${i + 1}</span><b>${t}</b><p>${d}</p></li>`).join('')}</ol></div>
+<section class="sec design" id="design" aria-labelledby="d-t">
+  <header class="sec-h wrap"><span class="num">${D.num}</span><h2 id="d-t">${D.h2}</h2>
+    <p class="lead big">${D.leadA} <span class="swap" data-swap aria-live="off">${D.words[0]}</span><span class="sp"> </span><br>${D.leadB}</p></header>
+  <script type="application/json" id="words">${JSON.stringify(D.words)}</script>
+  <ol class="steps wrap">${D.steps.map(([v, t, d], i) => `<li class="step rv"><div class="step-v">${vid(v)}</div><span class="num">0${i + 1}</span><h3>${t}</h3><p>${d}</p></li>`).join('')}</ol>
 </section>
 
-<section class="sec story" id="story" aria-labelledby="st-t">
-  <div class="wrap"><p class="eyebrow">${ST.eyebrow}</p><h2 id="st-t" class="rv">${ST.h2}</h2><p class="lead">${ST.sub}</p></div>
-  <div class="slot" data-slot>
-    <div class="slot-reels">${ST.reels.map(([label, items], i) => `<button class="sreel" type="button" data-reel="${i}" aria-pressed="false" aria-label="${label}: ${esc(items[0])}"><span class="sreel-l">${label}</span><span class="sreel-w"><span class="sreel-s" data-strip></span></span><span class="sreel-lock">${ST.lock}</span></button>`).join('')}</div>
-    <p class="logline" data-logline aria-live="polite"></p>
-    <div class="slot-row"><button class="btn dark" type="button" data-spin>${ST.spin}</button><a class="btn ghost" href="#contact" data-use>${ST.use} ${ARROW}</a><span class="meta"><span data-spun>0</span> ${ST.count}</span></div>
-  </div>
-  <script type="application/json" id="reels">${JSON.stringify(ST.reels.map(r => r[1]))}</script>
+<section class="bridge" aria-labelledby="b-t">
+  ${vid('d-teapot', 'bridge-v')}
+  <div class="bridge-in wrap"><h2 id="b-t" class="rv">${B.h2}</h2><p class="rv">${B.p}</p></div>
 </section>
 
 <section class="sec contact" id="contact" aria-labelledby="c-t">
-  <div class="wrap"><p class="eyebrow">${C.eyebrow}</p><h2 id="c-t" class="rv">${C.h2}</h2></div>
+  <header class="sec-h wrap"><span class="num">${C.num}</span><h2 id="c-t">${C.h2}</h2><p class="lead">${C.lead}</p></header>
   <ul class="socials wrap">${socials.map(s => `<li><a class="soc" href="${s.href}" data-soc="${s.id}" style="--c:${s.color}"${s.id === 'email' ? '' : ' rel="me noopener"'}><span class="soc-i">${GLYPH[s.id]}</span><span class="soc-t"><b>${esc(s.name)}</b><small>${esc(s.handle)}</small></span><span class="soc-a">${ARROW}</span></a></li>`).join('')}</ul>
-  <form class="form wrap" data-inquiry data-endpoint="${SITE.inquiries.endpoint}" data-key="${SITE.inquiries.key}" novalidate>
-    <h3>${C.formTitle}</h3>
-    <fieldset class="kinds"><legend>${C.what}</legend>${C.kinds.map(([v, t], i) => `<label><input type="radio" name="category" value="${v}"${i === 0 ? ' checked' : ''}><span>${t}</span></label>`).join('')}</fieldset>
-    <div class="row2">
-      <div class="field"><label for="f-name">${C.name}</label><input id="f-name" name="name" type="text" autocomplete="name" maxlength="120" required aria-describedby="e-name"><p class="error" id="e-name"></p></div>
-      <div class="field"><label for="f-email">${C.mail}</label><input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="200" required aria-describedby="e-email"><p class="error" id="e-email"></p></div>
-    </div>
-    <div class="field"><label for="f-msg">${C.message}</label><textarea id="f-msg" name="message" rows="4" maxlength="4000" required placeholder="${esc(C.messageHint)}" aria-describedby="e-msg"></textarea><p class="error" id="e-msg"></p></div>
-    <div class="hp" aria-hidden="true"><label for="f-web">Website</label><input id="f-web" name="website" type="text" tabindex="-1" autocomplete="off"></div>
-    <p class="form-send"><button class="btn dark" type="submit">${C.send}</button><small>${C.privacy}</small></p>
-    <div class="form-status" data-form-status role="status" tabindex="-1" hidden></div>
-  </form>
 </section>
 </main>
 
@@ -131,8 +114,6 @@ function page() {
 <div class="warp" data-warp aria-hidden="true"><span class="warp-i"></span></div>
 
 <script type="application/ld+json">${JSON.stringify(jsonld)}</script>
-<script type="application/json" id="i18n">${JSON.stringify(L.js).replace(/</g, '\\u003c')}</script>
-<script type="importmap">{"imports":{"three":"/static/vendor/three/build/three.module.min.js","three/addons/":"/static/vendor/three/jsm/"}}</script>
 <script type="module" src="/static/js/site.js?v=${V}"></script>
 </body>
 </html>
@@ -142,7 +123,7 @@ function page() {
 function notFound() {
   const N = L.notFound;
   return `${head({ title: N.title, desc: N.text, path: '/404.html', noindex: true })}
-<body class="nf"><main class="nf-main"><p class="eyebrow">404</p><h1>${N.h1}</h1><p class="lead">${N.text}</p><p class="nf-cta"><a class="btn big" href="/">${N.home}</a></p></main></body></html>`;
+<body class="nf"><main class="nf-main"><p class="kicker">404</p><h1>${N.h1}</h1><p class="lead">${N.text}</p><p class="nf-cta"><a class="btn big" href="/">${N.home}</a></p></main></body></html>`;
 }
 
 function redirect(from, to) {
