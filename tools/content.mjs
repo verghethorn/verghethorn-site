@@ -18,9 +18,9 @@ export const L = {
   ribbon: ['Now taking projects for 2027.', 'Start a conversation'],
 
   hero: { h1: 'AI Cinema', sub: 'Films and commercials for brands.<br>Created with AI.', a: 'Watch the reel', b: 'Start a project' },
-  agents: { h2: 'AI Agents', sub: 'Your brand. Always on.', a: 'Learn more', b: 'Request a demo',
-    chat: { name: 'Lumière Concierge', status: 'AI agent · online',
-      msgs: [['u', 'Hi! Do you have a table for two tonight?'], ['a', 'Good evening. Yes — 8:30 pm by the window. Shall I book it?'], ['u', 'Perfect, please.'], ['a', 'Done. A confirmation is on its way. Anything else for your evening?']] } },
+  agents: { h2: 'AI Agents', sub: 'Chat, voice and video. Always on.', a: 'Learn more', b: 'Request a demo',
+    chat: { name: 'VERGHÉTHORN Agent', status: 'AI agent · online', live: 'Live', alt: 'The VERGHÉTHORN AI agent: a figure in a dark suit with a black helmet and a glowing blue visor',
+      msgs: [['u', 'Can you make a 30-second film for my coffee brand?'], ['a', 'Of course. Tell me about your brand and your audience — I’ll prepare a concept.'], ['u', 'Perfect. Let’s talk.']] } },
   ads: { h2: 'Commercials', sub: 'Make your brand unforgettable.', a: 'Learn more', b: 'Start a project' },
   tiles: [
     ['films', 'dark', 's-films', 'Films', 'Any world. Any era. Any light.'],

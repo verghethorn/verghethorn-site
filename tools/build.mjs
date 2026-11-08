@@ -60,7 +60,7 @@ function page() {
   const btns = (a, b, ha = '#contact', hb = '#contact', da = '') => `<p class="ctas"><a class="pill" href="${ha}"${da}>${a}</a><a class="pill ol" href="${hb}">${b}</a></p>`;
   const anchor = { Films: '#films', Commercials: '#commercials', 'Product design': '#design', 'Nature & travel': '#nature', 'AI Agents': '#agents', Collaborations: '#collab' };
   const chat = G.chat;
-  const agentIcon = `<span class="li-agent" aria-hidden="true"><i></i><i></i><i></i></span>`;
+  const agentIcon = `<img src="/media/agent-card.webp" alt="" loading="lazy">`;
   return `${head({ title: L.title, desc: L.desc, path: '/' })}
 <body>
 <a class="skip" href="#main">${L.skip}</a>
@@ -84,7 +84,9 @@ function page() {
   <div class="t-txt"><h2>${G.h2}</h2><p class="sub">${G.sub}</p>${btns(G.a, G.b, '#lineup')}</div>
   <div class="t-media phone-wrap">
     <div class="phone" data-chat>
-      <p class="ph-top"><span class="ph-av">L</span><span><b>${chat.name}</b><small>${chat.status}</small></span></p>
+      <div class="ph-call"><img src="/media/agent-call.webp" alt="${esc(chat.alt)}" width="940" height="620"><span class="visor" aria-hidden="true"></span>
+        <span class="live"><i></i>${chat.live}</span><span class="wave" aria-hidden="true">${'<i></i>'.repeat(14)}</span></div>
+      <p class="ph-top"><img class="ph-av" src="/media/agent-av.webp" alt="" width="36" height="36"><span><b>${chat.name}</b><small>${chat.status}</small></span></p>
       <ul class="ph-msgs">${chat.msgs.map(([w, t]) => `<li class="m ${w}">${esc(t)}</li>`).join('')}<li class="m a typing" aria-hidden="true"><i></i><i></i><i></i></li></ul>
     </div>
   </div>

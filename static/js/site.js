@@ -27,7 +27,7 @@ seen($$('.rv'), (e, io) => { if (e.isIntersecting) { e.target.classList.add('in'
 seen($$('video[data-auto]'), e => { const v = e.target; if (e.isIntersecting) { if (v.preload === 'none') v.preload = 'auto'; play(v); } else v.pause(); }, { threshold: .05 });
 
 /* AI agent chat plays when the phone comes into view */
-seen([$('[data-chat]')], (e, io) => { if (e.isIntersecting) { const ph = e.target; ph.classList.add('play'); io.unobserve(ph); if (!still) [0, 1100, 2300, 3300].forEach(t => setTimeout(() => sfx(t % 2200 ? 'pop' : 'tick'), t)); } }, { threshold: .35 });
+seen([$('[data-chat]')], (e, io) => { if (e.isIntersecting) { const ph = e.target; ph.classList.add('play'); io.unobserve(ph); if (!still) [0, 1200, 2600].forEach(t => setTimeout(() => sfx(t % 2200 ? 'pop' : 'tick'), t)); } }, { threshold: .35 });
 
 /* card carousel */
 {
