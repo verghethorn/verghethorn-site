@@ -127,3 +127,11 @@ if (form) {
     ev.currentTarget.textContent = cfg.copied; sfx('pop');
   });
 }
+
+/* article: YouTube video loads only on tap */
+document.querySelectorAll('[data-yt]').forEach(b => b.addEventListener('click', () => {
+  const f = document.createElement('iframe');
+  f.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(b.dataset.yt)}?autoplay=1&rel=0`;
+  f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen'; f.allowFullscreen = true; f.title = b.getAttribute('aria-label');
+  b.replaceWith(f);
+}));

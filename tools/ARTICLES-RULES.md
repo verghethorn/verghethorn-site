@@ -33,3 +33,8 @@ Owner's instruction: three articles a week, professional level, built on fresh w
 - Body HTML: `<p>`, `<h2>`, `<ul><li>`, `<b>`, `<a href="/...">` only. Escape backticks.
 - Then `node tools/build.mjs`, check the new pages exist in `articles/` and `ru/articles/`, check there are no errors, commit and push to `main`, and confirm the live URL returns 200.
 - After the article is live, notify search engines: `python3 tools/indexnow.py <EN url> <RU url> https://verghethorn.com/articles/ https://verghethorn.com/ru/articles/` (IndexNow → Bing, Yandex and others; 200/202 = OK). Google picks up new pages from sitemap.xml (listed in robots.txt) on its own.
+
+## 6. Send traffic to YouTube, TikTok and Instagram too
+- Owner's goal: people who find an article in Google, Yandex or Bing should also go to VERGHÉTHORN's YouTube, TikTok and Instagram, not only the site. The template already ends every article with links to all three.
+- In the body, where natural, add one sentence pointing to the channels (e.g. "We publish behind-the-scenes and new films on <a href="https://www.youtube.com/@verghethorn">YouTube</a>…"). Keep it to one mention; no spammy repetition.
+- Check the channel feed `https://www.youtube.com/feeds/videos.xml?channel_id=UClRT2z7M7oB6hF0LhWz5ibA`. If one of its videos clearly fits the article topic (judge by title/description, not by a date-only title), set `yt: '<videoId>'` on the article — the page then shows that video (loads only on tap). If none fits, leave `yt` out.

@@ -349,6 +349,7 @@ ${gnav(true)}
     <p class="art-lead">${T.desc}</p>
     <figure class="art-img"><img src="${AIMG(a)}" alt="" decoding="async" fetchpriority="high"></figure>
     <div class="art-body">${T.body}</div>
+    ${a.yt ? `<figure class="art-yt"><button type="button" class="yt" data-yt="${esc(a.yt)}" aria-label="${U.watch}"><img src="https://i.ytimg.com/vi/${esc(a.yt)}/hqdefault.jpg" alt="" loading="lazy"><span aria-hidden="true">▶</span></button><figcaption><a href="https://www.youtube.com/watch?v=${esc(a.yt)}" target="_blank" rel="noopener">${U.watch} — YouTube</a></figcaption></figure>` : ''}
     ${a.sources && a.sources.length ? `<aside class="art-src"><h2>${U.src}</h2><ul>${a.sources.map(([t, u]) => `<li><a href="${esc(u)}" rel="noopener nofollow" target="_blank">${t}</a></li>`).join('')}</ul></aside>` : ''}
     <p class="art-follow">${U.follow} ${Object.entries(SITE.social).filter(([k]) => ['instagram', 'youtube', 'tiktok'].includes(k)).map(([, s]) => `<a href="${s.href}" rel="noopener me" target="_blank">${s.name}</a>`).join(' · ')}</p>
     <aside class="art-cta"><h2>${U.cta.h}</h2><p>${U.cta.p}</p><p class="ctas"><a class="pill" href="/start/">${U.cta.a}</a><a class="lnk" href="${PAGE[svc]}">${U.cta.b} ›</a></p></aside>
