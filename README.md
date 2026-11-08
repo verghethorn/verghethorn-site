@@ -1,4 +1,4 @@
-# verghethorn.com (v9)
+# verghethorn.com (v10
 
 Static site for VERGHÉTHORN — AI filmmaker.
 

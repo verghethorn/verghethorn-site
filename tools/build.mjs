@@ -33,7 +33,7 @@ function head({ title, desc, path, noindex = false, refresh = '' }) {
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 ${refresh}${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${SITE.url}${path}">`}
-<meta name="theme-color" content="#08080a">
+<meta name="theme-color" content="#0a0a0a">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="VERGHÉTHORN">
 <meta property="og:title" content="${esc(title)}">
@@ -48,98 +48,80 @@ ${refresh}${noindex ? '<meta name="robots" content="noindex">' : `<link rel="can
 <script>document.documentElement.classList.add('js')</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400..700&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300..600&display=swap">
 <link rel="stylesheet" href="/static/css/site.css?v=${V}">
 </head>`;
 }
 
 function page() {
-  const H = L.hero, P = L.process, W = L.work, Y = L.why, B = L.lab, C = L.contact;
+  const H = L.hero, SV = L.services, W = L.work, K = L.craft, C = L.contact;
   const socials = [...Object.entries(SITE.social).map(([id, s]) => ({ id, ...s })), { id: 'email', name: C.emailName, handle: SITE.email, href: `mailto:${SITE.email}`, color: '#3d5afe' }];
   const jsonld = { '@context': 'https://schema.org', '@type': 'Organization', name: 'VERGHÉTHORN', url: SITE.url, email: SITE.email, sameAs: Object.values(SITE.social).map(s => s.href), description: L.desc };
-  const sh = (n, h, extra = '') => `<header class="sec-h wrap"><span class="num">${n}</span><h2>${h}</h2>${extra}</header>`;
-  const frames = H.scenes.map(([v]) => `<img src="${V_(v)}.webp" alt="" loading="lazy">`).join('');
+  const words = L.statement.split(' ').map(w => `<span>${esc(w)}</span>`).join(' ');
   return `${head({ title: L.title, desc: L.desc, path: '/' })}
-<body>
+<body data-theme="dark">
 <a class="skip" href="#main">${L.skip}</a>
 <header class="hd" data-hd>
   <a class="wm" href="/" aria-label="VERGHÉTHORN home">VERGHÉTHORN</a>
   <nav class="nav" aria-label="Sections">${L.nav.map(([h, t]) => `<a href="${h}">${t}</a>`).join('')}</nav>
   <button class="snd" type="button" data-sound aria-pressed="true" aria-label="${L.soundOff}" data-on="${L.soundOff}" data-off="${L.soundOn}">${SOUND}</button>
-  <a class="hd-cta" href="#contact">${L.talk}</a>
 </header>
 
 <main id="main">
-<section class="hero wrap" aria-labelledby="h1">
-  <div class="hero-txt">
-    <p class="kicker"><i></i>${H.kicker}</p>
-    <h1 id="h1">${H.h1}</h1>
-  </div>
-  <div class="gen" data-gen>
-    <div class="gen-bar"><span class="dots"><i></i><i></i><i></i></span><span class="gen-file">${H.file}_<b data-gen-n>01</b>.mp4</span><span class="gen-chips">${H.chips.map(c => `<em>${c}</em>`).join('')}</span></div>
-    <div class="gen-frame">
-      <video data-gen-v muted playsinline preload="auto" disablepictureinpicture poster="${V_(H.scenes[0][0])}.webp"></video>
-      <canvas class="gen-noise" data-gen-noise aria-hidden="true"></canvas>
-      <span class="gen-state" data-gen-state aria-live="polite"></span>
+<section class="hero" data-theme="dark" data-hero aria-label="VERGHÉTHORN — ${H.tag}">
+  <div class="hero-pin">
+    <div class="hero-film">
+      <video src="${V_('reel')}.mp4" poster="${V_('reel')}.webp" muted loop playsinline autoplay preload="auto" disablepictureinpicture data-reel></video>
     </div>
-    <div class="gen-prompt">
-      <p class="gen-text"><span class="gen-p">›</span><span data-gen-text></span><span class="cur"></span></p>
-      <button type="button" class="gen-go" data-gen-go>${H.gen}<span class="gen-prog" data-gen-prog></span></button>
+    <div class="hero-id">
+      <h1 class="hero-wm">VERGHÉTHORN</h1>
+      <p class="hero-tag">${H.tag}</p>
     </div>
-    <div class="gen-try"><span>${H.tryLabel}</span>${H.scenes.map(([v, t], i) => `<button type="button" data-scene="${i}">${t}</button>`).join('')}</div>
-    <script type="application/json" id="scenes">${JSON.stringify({ scenes: H.scenes.map(([v, , p]) => [V_(v), p]), t: { gen: H.generating, done: H.done } })}</script>
+    <p class="hero-over" aria-hidden="true">${H.over}</p>
+    <div class="hero-foot">
+      <p class="reel-l"><span>${H.reel}</span><b data-clip>${H.clips[0]}</b></p>
+      <p class="reel-bar" aria-hidden="true">${H.clips.map(() => '<i><em></em></i>').join('')}</p>
+      <p class="scroll-c" aria-hidden="true">${H.scroll}<i></i></p>
+    </div>
+    <script type="application/json" id="clips">${JSON.stringify(H.clips)}</script>
   </div>
-  <div class="hero-more">
-    <p class="hero-sub">${H.sub}</p>
-    <p class="hero-cta"><a class="btn" href="#contact">${H.cta}</a><a class="btn ghost" href="#process">${H.cta2}</a></p>
+</section>
+
+<section class="stmt" data-theme="light" aria-label="About">
+  <p class="stmt-t" data-words>${words}</p>
+</section>
+
+<section class="svc" id="services" data-theme="dark" aria-label="${SV.label}">
+  ${SV.items.map(([v, t, d], i) => `<article class="svc-c" data-card>
+    <div class="svc-v">${vid(v)}</div>
+    <div class="svc-t"><p class="lbl">${String(i + 1).padStart(2, '0')} — ${SV.label}</p><h2>${t}</h2><p>${d}</p></div>
+  </article>`).join('')}
+</section>
+
+<section class="work" id="work" data-theme="light" aria-label="${W.label}">
+  <header class="sh wrap rv"><p class="lbl">${W.label}</p><h2>${W.h2}</h2>
+    <p class="arrows"><button type="button" data-prev aria-label="${W.prev}">${ARROW}</button><button type="button" data-next aria-label="${W.next}">${ARROW}</button></p></header>
+  <ul class="rail" data-rail>${W.items.map(([v, t, c, fx]) => `<li class="tile rv"${fx ? ` style="--fx:${fx}"` : ''}><div class="tile-v">${vid(v)}</div><p class="tile-c"><b>${t}</b><span>${c}</span></p></li>`).join('')}</ul>
+</section>
+
+<section class="craft" data-theme="light" aria-label="${K.label}">
+  <div class="wrap">
+    <header class="sh rv"><p class="lbl">${K.label}</p><h2>${K.h2}</h2></header>
+    <ol class="steps">${K.steps.map((s, i) => `<li class="rv" style="--d:${i * 90}ms"><span>${String(i + 1).padStart(2, '0')}</span><b>${s}</b></li>`).join('')}</ol>
   </div>
 </section>
 
-<section class="sec process" id="process" aria-label="Process">
-  ${sh(P.num, P.h2, `<p class="lead">${P.lead}</p>`)}
-  <ol class="pipe wrap">
-    <li class="card rv"><span class="num">01</span><h3>${P.steps[0][0]}</h3><p>${P.steps[0][1]}</p>
-      <div class="ui ui-script"><p class="ui-h">script.fdx</p>${P.script.map((l, i) => `<p class="s${i}">${esc(l)}</p>`).join('')}</div></li>
-    <li class="card rv"><span class="num">02</span><h3>${P.steps[1][0]}</h3><p>${P.steps[1][1]}</p>
-      <div class="ui ui-frames"><p class="ui-h">style-frames</p><div class="fr">${frames}</div></div></li>
-    <li class="card rv"><span class="num">03</span><h3>${P.steps[2][0]}</h3><p>${P.steps[2][1]}</p>
-      <div class="ui ui-shots"><p class="ui-h">shots</p>${P.shots.map(([id, t, p]) => `<p class="shot"><b>${id}</b><span>${t}</span><em>${p === 100 ? '✓' : p ? p + '%' : '—'}</em><i style="--p:${p}%"></i></p>`).join('')}</div></li>
-    <li class="card rv"><span class="num">04</span><h3>${P.steps[3][0]}</h3><p>${P.steps[3][1]}</p>
-      <div class="ui ui-tl"><p class="ui-h">timeline</p>${P.tracks.map((t, i) => `<p class="trk t${i}"><b>${t}</b><span><i></i><i></i><i></i></span></p>`).join('')}<span class="ph" aria-hidden="true"></span></div></li>
-  </ol>
-</section>
-
-<section class="sec work" id="work" aria-label="What I make">
-  ${sh(W.num, W.h2)}
-  <ul class="work-l wrap">${W.items.map(([v, t, d]) => `<li class="wk rv"><div class="wk-v">${vid(v)}<span class="wk-tag">AI · ${t.replace('AI ', '')}</span></div><h3>${t}</h3><p>${d}</p></li>`).join('')}</ul>
-</section>
-
-<section class="sec why" aria-label="Why AI cinema">
-  ${sh(Y.num, Y.h2)}
-  <ul class="why-l wrap">${Y.items.map(([t, d]) => `<li class="rv"><h3>${t}</h3><p>${d}</p></li>`).join('')}</ul>
-</section>
-
-<section class="sec lab" id="lab" aria-label="Idea lab">
-  ${sh(B.num, B.h2, `<p class="lead">${B.sub}</p>`)}
-  <div class="slot wrap" data-slot>
-    <div class="slot-reels">${B.reels.map(([label, items], i) => `<button class="sreel" type="button" data-reel="${i}" aria-pressed="false" aria-label="${label}: ${esc(items[0])}"><span class="sreel-l">${label}</span><span class="sreel-w"><span class="sreel-s" data-strip></span></span><span class="sreel-lock">${B.lock}</span></button>`).join('')}</div>
-    <p class="logline" data-logline aria-live="polite"></p>
-    <div class="slot-row"><button class="btn" type="button" data-spin>${B.spin}</button><a class="btn ghost" href="mailto:${SITE.email}" data-use data-subject="${esc(B.subject)}">${B.use} ${ARROW}</a></div>
+<section class="contact" id="contact" data-theme="dark" aria-label="${C.label}">
+  <div class="wrap">
+    <header class="sh rv"><p class="lbl">${C.label}</p><h2 class="big">${C.h2}</h2><p class="lead">${C.lead}</p></header>
+    <ul class="socials">${socials.map((s, i) => `<li class="rv" style="--d:${i * 80}ms"><a class="soc" href="${s.href}" data-soc="${s.id}" style="--c:${s.color}"${s.id === 'email' ? '' : ' rel="me noopener"'}><span class="soc-i">${GLYPH[s.id]}</span><span class="soc-t"><b>${esc(s.name)}</b><small>${esc(s.handle)}</small></span><span class="soc-a">${ARROW}</span></a></li>`).join('')}</ul>
   </div>
-  <script type="application/json" id="reels">${JSON.stringify(B.reels.map(r => r[1]))}</script>
-</section>
-
-<section class="sec contact" id="contact" aria-label="Contact">
-  ${sh(C.num, C.h2, `<p class="lead">${C.lead}</p>`)}
-  <ul class="socials wrap">${socials.map(s => `<li><a class="soc" href="${s.href}" data-soc="${s.id}" style="--c:${s.color}"${s.id === 'email' ? '' : ' rel="me noopener"'}><span class="soc-i">${GLYPH[s.id]}</span><span class="soc-t"><b>${esc(s.name)}</b><small>${esc(s.handle)}</small></span><span class="soc-a">${ARROW}</span></a></li>`).join('')}</ul>
+  <footer class="foot wrap">
+    <p class="foot-wm">VERGHÉTHORN</p>
+    <p class="foot-row"><span>${L.footer}</span><span>© ${new Date().getFullYear()} VERGHÉTHORN · ${L.credits}</span></p>
+  </footer>
 </section>
 </main>
-
-<footer class="foot wrap">
-  <p class="foot-wm">VERGHÉTHORN</p>
-  <p>${L.footer}</p>
-  <p class="foot-c">© ${new Date().getFullYear()} VERGHÉTHORN · ${L.credits}</p>
-</footer>
 
 <div class="warp" data-warp aria-hidden="true"><span class="warp-i"></span></div>
 
@@ -153,7 +135,7 @@ function page() {
 function notFound() {
   const N = L.notFound;
   return `${head({ title: N.title, desc: N.text, path: '/404.html', noindex: true })}
-<body class="nf"><main class="nf-main"><p class="kicker">404</p><h1>${N.h1}</h1><p class="lead">${N.text}</p><p class="nf-cta"><a class="btn big" href="/">${N.home}</a></p></main></body></html>`;
+<body class="nf" data-theme="dark"><main class="nf-main"><p class="lbl">404</p><h1>${N.h1}</h1><p class="lead">${N.text}</p><p><a class="btn" href="/">${N.home}</a></p></main></body></html>`;
 }
 
 function redirect(from, to) {
