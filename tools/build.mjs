@@ -22,7 +22,7 @@ const GLYPH = {
   email: svg('<rect x="3" y="5.5" width="18" height="13" rx="2.5" fill="none" stroke="#fff" stroke-width="1.8"/><path d="m3.8 7 8.2 6 8.2-6" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/>'),
 };
 const V_ = id => `/media/v/${id}`;
-const vid = (id, cls = '') => `<video class="${cls}" src="${V_(id)}.mp4" poster="${V_(id)}.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video>`;
+const vid = (id, cls = '', pos = '') => `<video class="${cls}"${pos ? ` style="object-position:${pos}"` : ''} src="${V_(id)}.mp4" poster="${V_(id)}.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video>`;
 
 function head({ title, desc, path, noindex = false, refresh = '' }) {
   return `<!doctype html>
@@ -33,7 +33,7 @@ function head({ title, desc, path, noindex = false, refresh = '' }) {
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 ${refresh}${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${SITE.url}${path}">`}
-<meta name="theme-color" content="#0a0a0a">
+<meta name="theme-color" content="#ffffff">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="VERGHÉTHORN">
 <meta property="og:title" content="${esc(title)}">
@@ -48,81 +48,100 @@ ${refresh}${noindex ? '<meta name="robots" content="noindex">' : `<link rel="can
 <script>document.documentElement.classList.add('js')</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300..600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap">
 <link rel="stylesheet" href="/static/css/site.css?v=${V}">
 </head>`;
 }
 
 function page() {
-  const H = L.hero, SV = L.services, W = L.work, K = L.craft, C = L.contact;
+  const H = L.hero, G = L.agents, A = L.ads, K = L.know, LU = L.lineup, Y = L.why, C = L.contact;
   const socials = [...Object.entries(SITE.social).map(([id, s]) => ({ id, ...s })), { id: 'email', name: C.emailName, handle: SITE.email, href: `mailto:${SITE.email}`, color: '#3d5afe' }];
   const jsonld = { '@context': 'https://schema.org', '@type': 'Organization', name: 'VERGHÉTHORN', url: SITE.url, email: SITE.email, sameAs: Object.values(SITE.social).map(s => s.href), description: L.desc };
-  const words = L.statement.split(' ').map(w => `<span>${esc(w)}</span>`).join(' ');
+  const btns = (a, b, ha = '#contact', hb = '#contact', da = '') => `<p class="ctas"><a class="pill" href="${ha}"${da}>${a}</a><a class="pill ol" href="${hb}">${b}</a></p>`;
+  const anchor = { Films: '#films', Commercials: '#commercials', 'Product design': '#design', Automotive: '#auto', 'AI Agents': '#agents', Collaborations: '#collab' };
+  const chat = G.chat;
+  const agentIcon = `<span class="li-agent" aria-hidden="true"><i></i><i></i><i></i></span>`;
   return `${head({ title: L.title, desc: L.desc, path: '/' })}
-<body data-theme="dark">
+<body>
 <a class="skip" href="#main">${L.skip}</a>
-<header class="hd" data-hd>
-  <a class="wm" href="/" aria-label="VERGHÉTHORN home">VERGHÉTHORN</a>
-  <nav class="nav" aria-label="Sections">${L.nav.map(([h, t]) => `<a href="${h}">${t}</a>`).join('')}</nav>
-  <button class="snd" type="button" data-sound aria-pressed="true" aria-label="${L.soundOff}" data-on="${L.soundOff}" data-off="${L.soundOn}">${SOUND}</button>
+<header class="gn" data-gn>
+  <nav class="gn-in" aria-label="Main">
+    <a class="wm" href="/" aria-label="VERGHÉTHORN home">VERGHÉTHORN</a>
+    <ul class="gn-l" id="gn-menu">${L.nav.map(([h, t]) => `<li><a href="${h}">${t}</a></li>`).join('')}</ul>
+    <button class="snd" type="button" data-sound aria-pressed="true" aria-label="${L.soundOff}" data-on="${L.soundOff}" data-off="${L.soundOn}">${SOUND}</button>
+    <button class="burger" type="button" data-burger aria-expanded="false" aria-controls="gn-menu" aria-label="${L.menu}"><i></i><i></i></button>
+  </nav>
 </header>
+<p class="ribbon">${L.ribbon[0]} <a href="#contact">${L.ribbon[1]} ›</a></p>
 
 <main id="main">
-<section class="hero" data-theme="dark" data-hero aria-label="VERGHÉTHORN — ${H.tag}">
-  <div class="hero-pin">
-    <div class="hero-film">
-      <video src="${V_('reel')}.mp4" poster="${V_('reel')}.webp" muted loop playsinline autoplay preload="auto" disablepictureinpicture data-reel></video>
+<section class="tile hero dark" aria-labelledby="h1">
+  <div class="t-txt"><h1 id="h1">${H.h1}</h1><p class="sub">${H.sub}</p>${btns(H.a, H.b, '#reel', '#contact', ' data-reel-open')}</div>
+  <div class="t-media hero-media"><video src="${V_('reel')}.mp4" poster="${V_('reel')}.webp" muted loop playsinline autoplay preload="auto" disablepictureinpicture data-auto></video></div>
+</section>
+
+<section class="tile agents gray" id="agents" aria-label="${G.h2}">
+  <div class="t-txt"><h2>${G.h2}</h2><p class="sub">${G.sub}</p>${btns(G.a, G.b, '#lineup')}</div>
+  <div class="t-media phone-wrap">
+    <div class="phone" data-chat>
+      <p class="ph-top"><span class="ph-av">L</span><span><b>${chat.name}</b><small>${chat.status}</small></span></p>
+      <ul class="ph-msgs">${chat.msgs.map(([w, t]) => `<li class="m ${w}">${esc(t)}</li>`).join('')}<li class="m a typing" aria-hidden="true"><i></i><i></i><i></i></li></ul>
     </div>
-    <div class="hero-id">
-      <h1 class="hero-wm">VERGHÉTHORN</h1>
-      <p class="hero-tag">${H.tag}</p>
-    </div>
-    <p class="hero-over" aria-hidden="true">${H.over}</p>
-    <div class="hero-foot">
-      <p class="reel-l"><span>${H.reel}</span><b data-clip>${H.clips[0]}</b></p>
-      <p class="reel-bar" aria-hidden="true">${H.clips.map(() => '<i><em></em></i>').join('')}</p>
-      <p class="scroll-c" aria-hidden="true">${H.scroll}<i></i></p>
-    </div>
-    <script type="application/json" id="clips">${JSON.stringify(H.clips)}</script>
   </div>
 </section>
 
-<section class="stmt" data-theme="light" aria-label="About">
-  <p class="stmt-t" data-words>${words}</p>
+<section class="tile ads" id="commercials" aria-label="${A.h2}">
+  <div class="t-txt"><h2>${A.h2}</h2><p class="sub">${A.sub}</p>${btns(A.a, A.b, '#lineup')}</div>
+  <div class="t-media">${vid('s-ads')}</div>
 </section>
 
-<section class="svc" id="services" data-theme="dark" aria-label="${SV.label}">
-  ${SV.items.map(([v, t, d], i) => `<article class="svc-c" data-card>
-    <div class="svc-v">${vid(v)}</div>
-    <div class="svc-t"><p class="lbl">${String(i + 1).padStart(2, '0')} — ${SV.label}</p><h2>${t}</h2><p>${d}</p></div>
-  </article>`).join('')}
-</section>
+<div class="grid">${L.tiles.map(([id, th, v, t, d, pos]) => `<section class="tile half ${th}" id="${id}" aria-label="${t}">
+  <div class="t-txt"><h2>${t}</h2><p class="sub">${d}</p>${btns(L.tileA, L.tileB, '#lineup')}</div>
+  <div class="t-media">${vid(v, '', pos)}</div>
+</section>`).join('')}</div>
 
-<section class="work" id="work" data-theme="light" aria-label="${W.label}">
-  <header class="sh wrap rv"><p class="lbl">${W.label}</p><h2>${W.h2}</h2>
-    <p class="arrows"><button type="button" data-prev aria-label="${W.prev}">${ARROW}</button><button type="button" data-next aria-label="${W.next}">${ARROW}</button></p></header>
-  <ul class="rail" data-rail>${W.items.map(([v, t, c, fx]) => `<li class="tile rv"${fx ? ` style="--fx:${fx}"` : ''}><div class="tile-v">${vid(v)}</div><p class="tile-c"><b>${t}</b><span>${c}</span></p></li>`).join('')}</ul>
-</section>
-
-<section class="craft" data-theme="light" aria-label="${K.label}">
-  <div class="wrap">
-    <header class="sh rv"><p class="lbl">${K.label}</p><h2>${K.h2}</h2></header>
-    <ol class="steps">${K.steps.map((s, i) => `<li class="rv" style="--d:${i * 90}ms"><span>${String(i + 1).padStart(2, '0')}</span><b>${s}</b></li>`).join('')}</ol>
+<section class="sec gray" aria-labelledby="know-h">
+  <div class="sec-h wrap"><h2 id="know-h">${K.h2}</h2></div>
+  <div class="car-w">
+    <ul class="car" data-car>${K.items.map(([v, k, t, pos]) => `<li class="card">${vid(v, '', pos)}<p><span>${k}</span><b>${t}</b></p></li>`).join('')}</ul>
+    <p class="car-nav wrap"><button type="button" data-car-prev aria-label="Previous">${ARROW}</button><button type="button" data-car-next aria-label="Next">${ARROW}</button></p>
   </div>
 </section>
 
-<section class="contact" id="contact" data-theme="dark" aria-label="${C.label}">
-  <div class="wrap">
-    <header class="sh rv"><p class="lbl">${C.label}</p><h2 class="big">${C.h2}</h2><p class="lead">${C.lead}</p></header>
-    <ul class="socials">${socials.map((s, i) => `<li class="rv" style="--d:${i * 80}ms"><a class="soc" href="${s.href}" data-soc="${s.id}" style="--c:${s.color}"${s.id === 'email' ? '' : ' rel="me noopener"'}><span class="soc-i">${GLYPH[s.id]}</span><span class="soc-t"><b>${esc(s.name)}</b><small>${esc(s.handle)}</small></span><span class="soc-a">${ARROW}</span></a></li>`).join('')}</ul>
-  </div>
-  <footer class="foot wrap">
-    <p class="foot-wm">VERGHÉTHORN</p>
-    <p class="foot-row"><span>${L.footer}</span><span>© ${new Date().getFullYear()} VERGHÉTHORN · ${L.credits}</span></p>
-  </footer>
+<section class="sec" id="lineup" aria-labelledby="lu-h">
+  <div class="sec-h wrap"><h2 id="lu-h">${LU.h2}</h2></div>
+  <ul class="lineup wrap">${LU.items.map(([v, t, d, pts]) => `<li class="rv">
+    <div class="li-img">${v === 'agent' ? agentIcon : `<img src="${V_(v)}.webp" alt="" loading="lazy">`}</div>
+    <h3>${t}</h3><p class="li-d">${d}</p>
+    <p class="ctas sm"><a class="pill" href="#contact">${LU.b}</a><a class="lnk" href="#contact">${LU.a} ›</a></p>
+    <ul class="li-pts">${pts.map(x => `<li>${x}</li>`).join('')}</ul>
+  </li>`).join('')}</ul>
+</section>
+
+<section class="sec gray" aria-labelledby="why-h">
+  <div class="sec-h wrap"><h2 id="why-h">${Y.h2}</h2></div>
+  <ul class="why wrap">${Y.items.map(([i, t, d], k) => `<li class="rv" style="--d:${k * 80}ms"><span class="why-i" aria-hidden="true">${i}</span><h3>${t}</h3><p>${d}</p></li>`).join('')}</ul>
+</section>
+
+<section class="sec contact" id="contact" aria-labelledby="c-h">
+  <div class="sec-h wrap center"><h2 id="c-h">${C.h2}</h2><p class="sub">${C.sub}</p></div>
+  <ul class="socials wrap">${socials.map((s, i) => `<li class="rv" style="--d:${i * 70}ms"><a class="soc" href="${s.href}" data-soc="${s.id}" style="--c:${s.color}"${s.id === 'email' ? '' : ' rel="me noopener"'}><span class="soc-i">${GLYPH[s.id]}</span><span class="soc-t"><b>${esc(s.name)}</b><small>${esc(s.handle)}</small></span><span class="soc-a">${ARROW}</span></a></li>`).join('')}</ul>
 </section>
 </main>
 
+<footer class="ft">
+  <div class="wrap">
+    <p class="ft-note">${L.footNote}</p>
+    <div class="ft-cols">${L.footCols.map(([h, ls]) => `<div><h3>${h}</h3><ul>${ls.map(x => `<li><a href="${anchor[x] || '#lineup'}">${x}</a></li>`).join('')}</ul></div>`).join('')}
+      <div><h3>Contact</h3><ul>${socials.map(s => `<li><a href="${s.href}"${s.id === 'email' ? '' : ' rel="me noopener"'}>${s.name}</a></li>`).join('')}</ul></div></div>
+    <p class="ft-b"><span>Copyright © ${new Date().getFullYear()} VERGHÉTHORN. All rights reserved.</span><a href="mailto:${SITE.email}">${SITE.email}</a></p>
+  </div>
+</footer>
+
+<dialog class="reel" data-reel-dlg aria-label="Showreel">
+  <button type="button" class="reel-x" data-reel-close aria-label="${L.close}"><i></i><i></i></button>
+  <video src="${V_('reel')}.mp4" playsinline controls loop preload="none"></video>
+</dialog>
 <div class="warp" data-warp aria-hidden="true"><span class="warp-i"></span></div>
 
 <script type="application/ld+json">${JSON.stringify(jsonld)}</script>
@@ -135,7 +154,7 @@ function page() {
 function notFound() {
   const N = L.notFound;
   return `${head({ title: N.title, desc: N.text, path: '/404.html', noindex: true })}
-<body class="nf" data-theme="dark"><main class="nf-main"><p class="lbl">404</p><h1>${N.h1}</h1><p class="lead">${N.text}</p><p><a class="btn" href="/">${N.home}</a></p></main></body></html>`;
+<body class="nf"><main class="nf-main"><p class="lbl">404</p><h1>${N.h1}</h1><p class="lead">${N.text}</p><p><a class="btn" href="/">${N.home}</a></p></main></body></html>`;
 }
 
 function redirect(from, to) {

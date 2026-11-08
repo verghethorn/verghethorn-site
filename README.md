@@ -1,6 +1,6 @@
-# verghethorn.com (v10)
+# verghethorn.com (v11)
 
-Static site for VERGHÉTHORN — AI Cinema: films, commercials, collaborations.
+Static site for VERGHÉTHORN — AI Cinema, commercials and AI agents. Clean product-page layout: light tiles, centred headlines, pill buttons.
 
 - Copy: `tools/content.mjs`; build: `node tools/build.mjs` (writes index.html, 404, sitemap, redirects).
 - Hero: full-screen showreel (`media/v/reel.mp4`) that settles into a frame on scroll.

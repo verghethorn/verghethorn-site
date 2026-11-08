@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>VERGHÉTHORN — AI Cinema</title>
-<meta name="description" content="VERGHÉTHORN creates films, commercials and brand collaborations with AI — crafted like cinema.">
+<title>VERGHÉTHORN — AI Cinema, Commercials and AI Agents</title>
+<meta name="description" content="VERGHÉTHORN creates films, brand commercials and AI agents. Cinema, created with AI.">
 <link rel="canonical" href="https://verghethorn.com/">
-<meta name="theme-color" content="#0a0a0a">
+<meta name="theme-color" content="#ffffff">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="VERGHÉTHORN">
-<meta property="og:title" content="VERGHÉTHORN — AI Cinema">
-<meta property="og:description" content="VERGHÉTHORN creates films, commercials and brand collaborations with AI — crafted like cinema.">
+<meta property="og:title" content="VERGHÉTHORN — AI Cinema, Commercials and AI Agents">
+<meta property="og:description" content="VERGHÉTHORN creates films, brand commercials and AI agents. Cinema, created with AI.">
 <meta property="og:url" content="https://verghethorn.com/">
 <meta property="og:image" content="https://verghethorn.com/media/og.jpg">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
@@ -21,82 +21,116 @@
 <script>document.documentElement.classList.add('js')</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300..600&display=swap">
-<link rel="stylesheet" href="/static/css/site.css?v=1ee50b1f">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap">
+<link rel="stylesheet" href="/static/css/site.css?v=4e92da43">
 </head>
-<body data-theme="dark">
+<body>
 <a class="skip" href="#main">Skip to content</a>
-<header class="hd" data-hd>
-  <a class="wm" href="/" aria-label="VERGHÉTHORN home">VERGHÉTHORN</a>
-  <nav class="nav" aria-label="Sections"><a href="#work">Work</a><a href="#services">Services</a><a href="#contact">Contact</a></nav>
-  <button class="snd" type="button" data-sound aria-pressed="true" aria-label="Sound off" data-on="Sound off" data-off="Sound on"><svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg><svg class="off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5z"/><path d="m16 9.5 5 5M21 9.5l-5 5"/></svg></button>
+<header class="gn" data-gn>
+  <nav class="gn-in" aria-label="Main">
+    <a class="wm" href="/" aria-label="VERGHÉTHORN home">VERGHÉTHORN</a>
+    <ul class="gn-l" id="gn-menu"><li><a href="#films">Films</a></li><li><a href="#commercials">Commercials</a></li><li><a href="#agents">AI Agents</a></li><li><a href="#collab">Collaborations</a></li><li><a href="#lineup">Services</a></li><li><a href="#contact">Contact</a></li></ul>
+    <button class="snd" type="button" data-sound aria-pressed="true" aria-label="Sound off" data-on="Sound off" data-off="Sound on"><svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg><svg class="off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5z"/><path d="m16 9.5 5 5M21 9.5l-5 5"/></svg></button>
+    <button class="burger" type="button" data-burger aria-expanded="false" aria-controls="gn-menu" aria-label="Menu"><i></i><i></i></button>
+  </nav>
 </header>
+<p class="ribbon">Now taking projects for 2027. <a href="#contact">Start a conversation ›</a></p>
 
 <main id="main">
-<section class="hero" data-theme="dark" data-hero aria-label="VERGHÉTHORN — AI Cinema">
-  <div class="hero-pin">
-    <div class="hero-film">
-      <video src="/media/v/reel.mp4" poster="/media/v/reel.webp" muted loop playsinline autoplay preload="auto" disablepictureinpicture data-reel></video>
+<section class="tile hero dark" aria-labelledby="h1">
+  <div class="t-txt"><h1 id="h1">AI Cinema</h1><p class="sub">Films and commercials for brands.<br>Created with AI.</p><p class="ctas"><a class="pill" href="#reel" data-reel-open>Watch the reel</a><a class="pill ol" href="#contact">Start a project</a></p></div>
+  <div class="t-media hero-media"><video src="/media/v/reel.mp4" poster="/media/v/reel.webp" muted loop playsinline autoplay preload="auto" disablepictureinpicture data-auto></video></div>
+</section>
+
+<section class="tile agents gray" id="agents" aria-label="AI Agents">
+  <div class="t-txt"><h2>AI Agents</h2><p class="sub">Your brand. Always on.</p><p class="ctas"><a class="pill" href="#lineup">Learn more</a><a class="pill ol" href="#contact">Request a demo</a></p></div>
+  <div class="t-media phone-wrap">
+    <div class="phone" data-chat>
+      <p class="ph-top"><span class="ph-av">L</span><span><b>Lumière Concierge</b><small>AI agent · online</small></span></p>
+      <ul class="ph-msgs"><li class="m u">Hi! Do you have a table for two tonight?</li><li class="m a">Good evening. Yes — 8:30 pm by the window. Shall I book it?</li><li class="m u">Perfect, please.</li><li class="m a">Done. A confirmation is on its way. Anything else for your evening?</li><li class="m a typing" aria-hidden="true"><i></i><i></i><i></i></li></ul>
     </div>
-    <div class="hero-id">
-      <h1 class="hero-wm">VERGHÉTHORN</h1>
-      <p class="hero-tag">AI Cinema</p>
-    </div>
-    <p class="hero-over" aria-hidden="true">Cinema,<br>created with AI.</p>
-    <div class="hero-foot">
-      <p class="reel-l"><span>Showreel</span><b data-clip>Brilliance</b></p>
-      <p class="reel-bar" aria-hidden="true"><i><em></em></i><i><em></em></i><i><em></em></i><i><em></em></i><i><em></em></i><i><em></em></i></p>
-      <p class="scroll-c" aria-hidden="true">Scroll<i></i></p>
-    </div>
-    <script type="application/json" id="clips">["Brilliance","Tide","Orbit","Dawn","Movement","Horizon"]</script>
   </div>
 </section>
 
-<section class="stmt" data-theme="light" aria-label="About">
-  <p class="stmt-t" data-words><span>We</span> <span>create</span> <span>films</span> <span>and</span> <span>commercials</span> <span>for</span> <span>brands</span> <span>that</span> <span>want</span> <span>to</span> <span>be</span> <span>remembered.</span></p>
+<section class="tile ads" id="commercials" aria-label="Commercials">
+  <div class="t-txt"><h2>Commercials</h2><p class="sub">Make your brand unforgettable.</p><p class="ctas"><a class="pill" href="#lineup">Learn more</a><a class="pill ol" href="#contact">Start a project</a></p></div>
+  <div class="t-media"><video class="" src="/media/v/s-ads.mp4" poster="/media/v/s-ads.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div>
 </section>
 
-<section class="svc" id="services" data-theme="dark" aria-label="Services">
-  <article class="svc-c" data-card>
-    <div class="svc-v"><video class="" src="/media/v/s-films.mp4" poster="/media/v/s-films.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div>
-    <div class="svc-t"><p class="lbl">01 — Services</p><h2>Films</h2><p>Original short films. Any world, any era, any light.</p></div>
-  </article><article class="svc-c" data-card>
-    <div class="svc-v"><video class="" src="/media/v/s-ads.mp4" poster="/media/v/s-ads.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div>
-    <div class="svc-t"><p class="lbl">02 — Services</p><h2>Commercials</h2><p>Premium campaigns for brands — from one frame to the final cut.</p></div>
-  </article><article class="svc-c" data-card>
-    <div class="svc-v"><video class="" src="/media/v/s-collab.mp4" poster="/media/v/s-collab.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div>
-    <div class="svc-t"><p class="lbl">03 — Services</p><h2>Collaborations</h2><p>Your brand inside our stories. Created together.</p></div>
-  </article>
-</section>
+<div class="grid"><section class="tile half dark" id="films" aria-label="Films">
+  <div class="t-txt"><h2>Films</h2><p class="sub">Any world. Any era. Any light.</p><p class="ctas"><a class="pill" href="#lineup">Learn more</a><a class="pill ol" href="#contact">Start a project</a></p></div>
+  <div class="t-media"><video class="" src="/media/v/s-films.mp4" poster="/media/v/s-films.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div>
+</section><section class="tile half dark" id="collab" aria-label="Collaborations">
+  <div class="t-txt"><h2>Collaborations</h2><p class="sub">Your brand inside our stories.</p><p class="ctas"><a class="pill" href="#lineup">Learn more</a><a class="pill ol" href="#contact">Start a project</a></p></div>
+  <div class="t-media"><video class="" src="/media/v/s-collab.mp4" poster="/media/v/s-collab.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div>
+</section><section class="tile half light" id="design" aria-label="Product design">
+  <div class="t-txt"><h2>Product design</h2><p class="sub">From first sketch to production.</p><p class="ctas"><a class="pill" href="#lineup">Learn more</a><a class="pill ol" href="#contact">Start a project</a></p></div>
+  <div class="t-media"><video class="" style="object-position:50% 70%" src="/media/v/p-teapot.mp4" poster="/media/v/p-teapot.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div>
+</section><section class="tile half light" id="auto" aria-label="Automotive">
+  <div class="t-txt"><h2>Automotive</h2><p class="sub">Every road. Every light.</p><p class="ctas"><a class="pill" href="#lineup">Learn more</a><a class="pill ol" href="#contact">Start a project</a></p></div>
+  <div class="t-media"><video class="" style="object-position:40% 60%" src="/media/v/w-dawn.mp4" poster="/media/v/w-dawn.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div>
+</section></div>
 
-<section class="work" id="work" data-theme="light" aria-label="Selected work">
-  <header class="sh wrap rv"><p class="lbl">Selected work</p><h2>Concept films</h2>
-    <p class="arrows"><button type="button" data-prev aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" data-next aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p></header>
-  <ul class="rail" data-rail><li class="tile rv" style="--fx:70%"><div class="tile-v"><video class="" src="/media/v/w-orbit.mp4" poster="/media/v/w-orbit.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div><p class="tile-c"><b>Orbit</b><span>Short film</span></p></li><li class="tile rv" style="--fx:72%"><div class="tile-v"><video class="" src="/media/v/w-heirloom.mp4" poster="/media/v/w-heirloom.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div><p class="tile-c"><b>Heirloom</b><span>Jewelry</span></p></li><li class="tile rv"><div class="tile-v"><video class="" src="/media/v/w-tide.mp4" poster="/media/v/w-tide.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div><p class="tile-c"><b>Tide</b><span>Brand film</span></p></li><li class="tile rv" style="--fx:30%"><div class="tile-v"><video class="" src="/media/v/w-dawn.mp4" poster="/media/v/w-dawn.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div><p class="tile-c"><b>Dawn</b><span>Automotive</span></p></li><li class="tile rv"><div class="tile-v"><video class="" src="/media/v/w-sand.mp4" poster="/media/v/w-sand.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div><p class="tile-c"><b>Sand</b><span>Short film</span></p></li><li class="tile rv"><div class="tile-v"><video class="" src="/media/v/w-still.mp4" poster="/media/v/w-still.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div><p class="tile-c"><b>Stillness</b><span>Hospitality</span></p></li></ul>
-</section>
-
-<section class="craft" data-theme="light" aria-label="Process">
-  <div class="wrap">
-    <header class="sh rv"><p class="lbl">Process</p><h2>From idea<br>to final cut.</h2></header>
-    <ol class="steps"><li class="rv" style="--d:0ms"><span>01</span><b>Idea</b></li><li class="rv" style="--d:90ms"><span>02</span><b>Script</b></li><li class="rv" style="--d:180ms"><span>03</span><b>AI production</b></li><li class="rv" style="--d:270ms"><span>04</span><b>Final cut</b></li></ol>
+<section class="sec gray" aria-labelledby="know-h">
+  <div class="sec-h wrap"><h2 id="know-h">Get to know VERGHÉTHORN.</h2></div>
+  <div class="car-w">
+    <ul class="car" data-car><li class="card"><video class="" src="/media/v/w-orbit.mp4" poster="/media/v/w-orbit.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video><p><span>Worlds</span><b>Any world. No set.</b></p></li><li class="card"><video class="" style="object-position:72% 50%" src="/media/v/w-heirloom.mp4" poster="/media/v/w-heirloom.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video><p><span>Detail</span><b>Every frame, crafted like jewelry.</b></p></li><li class="card"><video class="" src="/media/v/w-sand.mp4" poster="/media/v/w-sand.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video><p><span>Speed</span><b>See your film before it is finished.</b></p></li><li class="card"><video class="" src="/media/v/w-tide.mp4" poster="/media/v/w-tide.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video><p><span>Nature</span><b>Oceans, deserts, skies — on demand.</b></p></li><li class="card"><video class="" src="/media/v/w-still.mp4" poster="/media/v/w-still.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video><p><span>Mood</span><b>Light and atmosphere on demand.</b></p></li></ul>
+    <p class="car-nav wrap"><button type="button" data-car-prev aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" data-car-next aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></p>
   </div>
 </section>
 
-<section class="contact" id="contact" data-theme="dark" aria-label="Contact">
-  <div class="wrap">
-    <header class="sh rv"><p class="lbl">Contact</p><h2 class="big">Let’s create<br>together.</h2><p class="lead">Films, commercials and collaborations.</p></header>
-    <ul class="socials"><li class="rv" style="--d:0ms"><a class="soc" href="https://www.instagram.com/verghethorn.studio" data-soc="instagram" style="--c:#d6249f" rel="me noopener"><span class="soc-i"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.5" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.3" cy="6.7" r="1.3" fill="#fff"/></svg></span><span class="soc-t"><b>Instagram</b><small>@verghethorn.studio</small></span><span class="soc-a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li><li class="rv" style="--d:80ms"><a class="soc" href="https://www.youtube.com/@verghethorn" data-soc="youtube" style="--c:#ff0033" rel="me noopener"><span class="soc-i"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4.5" fill="#fff"/><path d="M10 9v6l5.2-3z" fill="#ff0033"/></svg></span><span class="soc-t"><b>YouTube</b><small>@verghethorn</small></span><span class="soc-a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li><li class="rv" style="--d:160ms"><a class="soc" href="https://www.tiktok.com/@verghethorn_official" data-soc="tiktok" style="--c:#000000" rel="me noopener"><span class="soc-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 3v11.6a3.6 3.6 0 1 1-3.6-3.6M14.5 3c.5 2.7 2.4 4.4 5 4.6" fill="none" stroke="#25f4ee" stroke-width="2.4" stroke-linecap="round" transform="translate(-.8 -.6)"/><path d="M14.5 3v11.6a3.6 3.6 0 1 1-3.6-3.6M14.5 3c.5 2.7 2.4 4.4 5 4.6" fill="none" stroke="#fe2c55" stroke-width="2.4" stroke-linecap="round" transform="translate(.8 .6)"/><path d="M14.5 3v11.6a3.6 3.6 0 1 1-3.6-3.6M14.5 3c.5 2.7 2.4 4.4 5 4.6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></span><span class="soc-t"><b>TikTok</b><small>@verghethorn_official</small></span><span class="soc-a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li><li class="rv" style="--d:240ms"><a class="soc" href="mailto:verghethorn@gmail.com" data-soc="email" style="--c:#3d5afe"><span class="soc-i"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2.5" fill="none" stroke="#fff" stroke-width="1.8"/><path d="m3.8 7 8.2 6 8.2-6" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg></span><span class="soc-t"><b>Email</b><small>verghethorn@gmail.com</small></span><span class="soc-a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li></ul>
-  </div>
-  <footer class="foot wrap">
-    <p class="foot-wm">VERGHÉTHORN</p>
-    <p class="foot-row"><span>AI Cinema · Films · Commercials · Collaborations</span><span>© 2026 VERGHÉTHORN · Demo footage: Mixkit</span></p>
-  </footer>
+<section class="sec" id="lineup" aria-labelledby="lu-h">
+  <div class="sec-h wrap"><h2 id="lu-h">Explore the services.</h2></div>
+  <ul class="lineup wrap"><li class="rv">
+    <div class="li-img"><img src="/media/v/s-films.webp" alt="" loading="lazy"></div>
+    <h3>Film</h3><p class="li-d">Short films and series</p>
+    <p class="ctas sm"><a class="pill" href="#contact">Request</a><a class="lnk" href="#contact">Learn more ›</a></p>
+    <ul class="li-pts"><li>Script, characters, worlds</li><li>AI-generated scenes</li><li>Sound, music and colour</li></ul>
+  </li><li class="rv">
+    <div class="li-img"><img src="/media/v/s-ads.webp" alt="" loading="lazy"></div>
+    <h3>Commercial</h3><p class="li-d">Campaigns for brands</p>
+    <p class="ctas sm"><a class="pill" href="#contact">Request</a><a class="lnk" href="#contact">Learn more ›</a></p>
+    <ul class="li-pts"><li>Concept and storyboard</li><li>Every format: TV, web, social</li><li>Product and lifestyle scenes</li></ul>
+  </li><li class="rv">
+    <div class="li-img"><img src="/media/v/p-teapot.webp" alt="" loading="lazy"></div>
+    <h3>Product design</h3><p class="li-d">From idea to production</p>
+    <p class="ctas sm"><a class="pill" href="#contact">Request</a><a class="lnk" href="#contact">Learn more ›</a></p>
+    <ul class="li-pts"><li>Concept and 3D</li><li>Photoreal renders</li><li>Launch film</li></ul>
+  </li><li class="rv">
+    <div class="li-img"><span class="li-agent" aria-hidden="true"><i></i><i></i><i></i></span></div>
+    <h3>AI Agent</h3><p class="li-d">Assistants for your brand</p>
+    <p class="ctas sm"><a class="pill" href="#contact">Request</a><a class="lnk" href="#contact">Learn more ›</a></p>
+    <ul class="li-pts"><li>Answers clients 24/7</li><li>Your tone of voice</li><li>Website, Instagram, WhatsApp</li></ul>
+  </li></ul>
+</section>
+
+<section class="sec gray" aria-labelledby="why-h">
+  <div class="sec-h wrap"><h2 id="why-h">Why VERGHÉTHORN.</h2></div>
+  <ul class="why wrap"><li class="rv" style="--d:0ms"><span class="why-i" aria-hidden="true">✦</span><h3>A direct line to the director.</h3><p>You talk to the person who makes your film.</p></li><li class="rv" style="--d:80ms"><span class="why-i" aria-hidden="true">◐</span><h3>Style frames first.</h3><p>See the look of your film before production starts.</p></li><li class="rv" style="--d:160ms"><span class="why-i" aria-hidden="true">▭</span><h3>Ready for every screen.</h3><p>Cinema, TV, web, vertical — one project, every format.</p></li></ul>
+</section>
+
+<section class="sec contact" id="contact" aria-labelledby="c-h">
+  <div class="sec-h wrap center"><h2 id="c-h">Let’s create together.</h2><p class="sub">Films, commercials, AI agents and collaborations.</p></div>
+  <ul class="socials wrap"><li class="rv" style="--d:0ms"><a class="soc" href="https://www.instagram.com/verghethorn.studio" data-soc="instagram" style="--c:#d6249f" rel="me noopener"><span class="soc-i"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.5" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.3" cy="6.7" r="1.3" fill="#fff"/></svg></span><span class="soc-t"><b>Instagram</b><small>@verghethorn.studio</small></span><span class="soc-a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li><li class="rv" style="--d:70ms"><a class="soc" href="https://www.youtube.com/@verghethorn" data-soc="youtube" style="--c:#ff0033" rel="me noopener"><span class="soc-i"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4.5" fill="#fff"/><path d="M10 9v6l5.2-3z" fill="#ff0033"/></svg></span><span class="soc-t"><b>YouTube</b><small>@verghethorn</small></span><span class="soc-a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li><li class="rv" style="--d:140ms"><a class="soc" href="https://www.tiktok.com/@verghethorn_official" data-soc="tiktok" style="--c:#000000" rel="me noopener"><span class="soc-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 3v11.6a3.6 3.6 0 1 1-3.6-3.6M14.5 3c.5 2.7 2.4 4.4 5 4.6" fill="none" stroke="#25f4ee" stroke-width="2.4" stroke-linecap="round" transform="translate(-.8 -.6)"/><path d="M14.5 3v11.6a3.6 3.6 0 1 1-3.6-3.6M14.5 3c.5 2.7 2.4 4.4 5 4.6" fill="none" stroke="#fe2c55" stroke-width="2.4" stroke-linecap="round" transform="translate(.8 .6)"/><path d="M14.5 3v11.6a3.6 3.6 0 1 1-3.6-3.6M14.5 3c.5 2.7 2.4 4.4 5 4.6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></span><span class="soc-t"><b>TikTok</b><small>@verghethorn_official</small></span><span class="soc-a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li><li class="rv" style="--d:210ms"><a class="soc" href="mailto:verghethorn@gmail.com" data-soc="email" style="--c:#3d5afe"><span class="soc-i"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2.5" fill="none" stroke="#fff" stroke-width="1.8"/><path d="m3.8 7 8.2 6 8.2-6" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg></span><span class="soc-t"><b>Email</b><small>verghethorn@gmail.com</small></span><span class="soc-a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li></ul>
 </section>
 </main>
 
+<footer class="ft">
+  <div class="wrap">
+    <p class="ft-note">Demo footage on this site: Mixkit. Brand names in examples are fictional.</p>
+    <div class="ft-cols"><div><h3>Create</h3><ul><li><a href="#films">Films</a></li><li><a href="#commercials">Commercials</a></li><li><a href="#design">Product design</a></li><li><a href="#auto">Automotive</a></li></ul></div><div><h3>AI</h3><ul><li><a href="#agents">AI Agents</a></li><li><a href="#lineup">Concierge assistants</a></li><li><a href="#lineup">Customer support</a></li></ul></div><div><h3>Together</h3><ul><li><a href="#collab">Collaborations</a></li><li><a href="#lineup">Partnerships</a></li></ul></div>
+      <div><h3>Contact</h3><ul><li><a href="https://www.instagram.com/verghethorn.studio" rel="me noopener">Instagram</a></li><li><a href="https://www.youtube.com/@verghethorn" rel="me noopener">YouTube</a></li><li><a href="https://www.tiktok.com/@verghethorn_official" rel="me noopener">TikTok</a></li><li><a href="mailto:verghethorn@gmail.com">Email</a></li></ul></div></div>
+    <p class="ft-b"><span>Copyright © 2026 VERGHÉTHORN. All rights reserved.</span><a href="mailto:verghethorn@gmail.com">verghethorn@gmail.com</a></p>
+  </div>
+</footer>
+
+<dialog class="reel" data-reel-dlg aria-label="Showreel">
+  <button type="button" class="reel-x" data-reel-close aria-label="Close"><i></i><i></i></button>
+  <video src="/media/v/reel.mp4" playsinline controls loop preload="none"></video>
+</dialog>
 <div class="warp" data-warp aria-hidden="true"><span class="warp-i"></span></div>
 
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"VERGHÉTHORN","url":"https://verghethorn.com","email":"verghethorn@gmail.com","sameAs":["https://www.instagram.com/verghethorn.studio","https://www.youtube.com/@verghethorn","https://www.tiktok.com/@verghethorn_official"],"description":"VERGHÉTHORN creates films, commercials and brand collaborations with AI — crafted like cinema."}</script>
-<script type="module" src="/static/js/site.js?v=1ee50b1f"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"VERGHÉTHORN","url":"https://verghethorn.com","email":"verghethorn@gmail.com","sameAs":["https://www.instagram.com/verghethorn.studio","https://www.youtube.com/@verghethorn","https://www.tiktok.com/@verghethorn_official"],"description":"VERGHÉTHORN creates films, brand commercials and AI agents. Cinema, created with AI."}</script>
+<script type="module" src="/static/js/site.js?v=4e92da43"></script>
 </body>
 </html>
