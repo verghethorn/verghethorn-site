@@ -75,7 +75,7 @@ function head({ title, desc, path, noindex = false, refresh = '', og = '/media/o
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 ${refresh}${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${SITE.url}${path}">\n<!--ALT-->`}
-<script>try{var s=localStorage.getItem('vt-lang'),p=location.pathname,r=document.referrer,own=r&&r.indexOf(location.host)>-1;if(!own&&s==='ru'&&p.indexOf('/ru/')!==0)location.replace('/ru'+p+location.hash);else if(!own&&s==='en'&&p.indexOf('/ru/')===0)location.replace(p.slice(3)+location.hash)}catch(e){}</script>
+
 <meta name="theme-color" content="#ffffff">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="VERGHÉTHORN">

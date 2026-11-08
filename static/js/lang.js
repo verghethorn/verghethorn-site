@@ -1,10 +1,8 @@
-// Language switcher: same page in the other language; remembers the choice.
+// Language switcher: same page in the other language. Nothing is remembered — every new visit starts in English.
 const here = location.pathname.startsWith('/ru/') ? location.pathname.slice(3) : location.pathname;
 const target = code => (code === 'en' ? '' : `/${code}`) + here + location.hash;
-document.querySelectorAll('[data-lang]').forEach(a => {
-  a.href = target(a.dataset.lang);
-  a.addEventListener('click', () => { try { localStorage.setItem('vt-lang', a.dataset.lang); } catch {} });
-});
+document.querySelectorAll('[data-lang]').forEach(a => { a.href = target(a.dataset.lang); });
+try { localStorage.removeItem('vt-lang'); } catch {}
 const wrap = document.querySelector('[data-lang-wrap]');
 if (wrap) {
   const btn = wrap.querySelector('[data-lang-btn]'), menu = wrap.querySelector('[data-lang-menu]');
