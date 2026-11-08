@@ -32,3 +32,4 @@ Owner's instruction: three articles a week, professional level, built on fresh w
 - `img`: one of the existing posters (`s-ads`, `s-films`, `s-collab`, `s-nature`, `p-pottery`, `c-fire`, `c-forest`, `c-ink`, `c-smoke`, `c-stars`, `reel`) or `/media/agent-call.webp`; choose the one that fits the topic and was used least recently.
 - Body HTML: `<p>`, `<h2>`, `<ul><li>`, `<b>`, `<a href="/...">` only. Escape backticks.
 - Then `node tools/build.mjs`, check the new pages exist in `articles/` and `ru/articles/`, check there are no errors, commit and push to `main`, and confirm the live URL returns 200.
+- After the article is live, notify search engines: `python3 tools/indexnow.py <EN url> <RU url> https://verghethorn.com/articles/ https://verghethorn.com/ru/articles/` (IndexNow → Bing, Yandex and others; 200/202 = OK). Google picks up new pages from sitemap.xml (listed in robots.txt) on its own.
