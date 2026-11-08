@@ -10,6 +10,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const BUILD_DATE = new Date().toISOString().slice(0, 10);
 const hashDir = d => { const h = createHash('sha1'); const walk = p => { for (const f of readdirSync(p).sort()) { const q = join(p, f); statSync(q).isDirectory() ? walk(q) : h.update(readFileSync(q)); } }; walk(join(ROOT, d)); return h.digest('hex').slice(0, 8); };
 const V = hashDir('static');
+const MV = hashDir('media');
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const svg = (d, vb = '0 0 24 24') => `<svg viewBox="${vb}" aria-hidden="true">${d}</svg>`;
 
@@ -22,7 +23,7 @@ const GLYPH = {
   email: svg('<rect x="3" y="5.5" width="18" height="13" rx="2.5" fill="none" stroke="#fff" stroke-width="1.8"/><path d="m3.8 7 8.2 6 8.2-6" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/>'),
 };
 const V_ = id => `/media/v/${id}`;
-const vid = (id, cls = '', pos = '') => `<video class="${cls}"${pos ? ` style="object-position:${pos}"` : ''} src="${V_(id)}.mp4" poster="${V_(id)}.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video>`;
+const vid = (id, cls = '', pos = '') => `<video class="${cls}"${pos ? ` style="object-position:${pos}"` : ''} src="${V_(id)}.mp4?v=${MV}" poster="${V_(id)}.webp?v=${MV}" muted loop playsinline preload="none" disablepictureinpicture data-auto></video>`;
 
 function head({ title, desc, path, noindex = false, refresh = '' }) {
   return `<!doctype html>
@@ -60,7 +61,7 @@ function page() {
   const btns = (a, b, ha = '#contact', hb = '#contact', da = '') => `<p class="ctas"><a class="pill" href="${ha}"${da}>${a}</a><a class="pill ol" href="${hb}">${b}</a></p>`;
   const anchor = { Films: '#films', Commercials: '#commercials', 'Product design': '#design', 'Nature & travel': '#nature', 'AI Agents': '#agents', Collaborations: '#collab' };
   const chat = G.chat;
-  const agentIcon = `<img src="/media/agent-card.webp" alt="" loading="lazy">`;
+  const agentIcon = `<img src="/media/agent-card.webp?v=${MV}" alt="" loading="lazy">`;
   return `${head({ title: L.title, desc: L.desc, path: '/' })}
 <body>
 <a class="skip" href="#main">${L.skip}</a>
@@ -77,16 +78,16 @@ function page() {
 <main id="main">
 <section class="tile hero dark" aria-labelledby="h1">
   <div class="t-txt"><h1 id="h1">${H.h1}</h1><p class="sub">${H.sub}</p>${btns(H.a, H.b, '#reel', '#contact', ' data-reel-open')}</div>
-  <div class="t-media hero-media"><video poster="${V_('reel')}.webp" muted loop playsinline autoplay preload="auto" disablepictureinpicture data-auto><source src="${V_('reel-m')}.mp4" type="video/mp4" media="(max-width: 734px)"><source src="${V_('reel')}.mp4" type="video/mp4"></video></div>
+  <div class="t-media hero-media"><video poster="${V_('reel')}.webp?v=${MV}" muted loop playsinline autoplay preload="auto" disablepictureinpicture data-auto><source src="${V_('reel-m')}.mp4?v=${MV}" type="video/mp4" media="(max-width: 734px)"><source src="${V_('reel')}.mp4?v=${MV}" type="video/mp4"></video></div>
 </section>
 
 <section class="tile agents gray" id="agents" aria-label="${G.h2}">
   <div class="t-txt"><h2>${G.h2}</h2><p class="sub">${G.sub}</p>${btns(G.a, G.b, '#lineup')}</div>
   <div class="t-media phone-wrap">
     <div class="phone" data-chat>
-      <div class="ph-call"><img src="/media/agent-call.webp" alt="${esc(chat.alt)}" width="940" height="620"><span class="visor" aria-hidden="true"></span>
+      <div class="ph-call"><img src="/media/agent-call.webp?v=${MV}" alt="${esc(chat.alt)}" width="940" height="620"><span class="visor" aria-hidden="true"></span>
         <span class="live"><i></i>${chat.live}</span><span class="wave" aria-hidden="true">${'<i></i>'.repeat(14)}</span></div>
-      <p class="ph-top"><img class="ph-av" src="/media/agent-av.webp" alt="" width="36" height="36"><span><b>${chat.name}</b><small>${chat.status}</small></span></p>
+      <p class="ph-top"><img class="ph-av" src="/media/agent-av.webp?v=${MV}" alt="" width="36" height="36"><span><b>${chat.name}</b><small>${chat.status}</small></span></p>
       <ul class="ph-msgs">${chat.msgs.map(([w, t]) => `<li class="m ${w}">${esc(t)}</li>`).join('')}<li class="m a typing" aria-hidden="true"><i></i><i></i><i></i></li></ul>
     </div>
   </div>
@@ -114,7 +115,7 @@ function page() {
 <section class="sec" id="lineup" aria-labelledby="lu-h">
   <div class="sec-h wrap"><h2 id="lu-h">${LU.h2}</h2></div>
   <ul class="lineup wrap">${LU.items.map(([v, t, d, pts]) => `<li class="rv">
-    <div class="li-img">${v === 'agent' ? agentIcon : `<img src="${V_(v)}.webp" alt="" loading="lazy">`}</div>
+    <div class="li-img">${v === 'agent' ? agentIcon : `<img src="${V_(v)}.webp?v=${MV}" alt="" loading="lazy">`}</div>
     <h3>${t}</h3><p class="li-d">${d}</p>
     <p class="ctas sm"><a class="pill" href="#contact">${LU.b}</a><a class="lnk" href="#contact">${LU.a} ›</a></p>
     <ul class="li-pts">${pts.map(x => `<li>${x}</li>`).join('')}</ul>
@@ -143,7 +144,7 @@ function page() {
 
 <dialog class="reel" data-reel-dlg aria-label="Showreel">
   <button type="button" class="reel-x" data-reel-close aria-label="${L.close}"><i></i><i></i></button>
-  <video src="${V_('reel')}.mp4" playsinline controls loop preload="none"></video>
+  <video src="${V_('reel')}.mp4?v=${MV}" playsinline controls loop preload="none"></video>
 </dialog>
 <div class="warp" data-warp aria-hidden="true"><span class="warp-i"></span></div>
 
