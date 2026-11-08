@@ -25,24 +25,24 @@ export const L = {
   tiles: [
     ['films', 'dark', 's-films', 'Films', 'Any world. Any era. Any light.'],
     ['collab', 'dark', 's-collab', 'Collaborations', 'Your brand inside our stories.'],
-    ['design', 'light', 'p-teapot', 'Product design', 'From first sketch to production.', '50% 70%'],
-    ['auto', 'light', 'w-dawn', 'Automotive', 'Every road. Every light.', '40% 60%'],
+    ['design', 'light', 'p-pottery', 'Product design', 'From first sketch to production.'],
+    ['nature', 'light', 's-nature', 'Nature & travel', 'Every place on Earth. And beyond.'],
   ],
   tileA: 'Learn more', tileB: 'Start a project',
 
   know: { h2: 'Get to know VERGHÉTHORN.', items: [
-    ['w-orbit', 'Worlds', 'Any world. No set.'],
-    ['w-heirloom', 'Detail', 'Every frame, crafted like jewelry.', '72% 50%'],
-    ['w-sand', 'Speed', 'See your film before it is finished.'],
-    ['w-tide', 'Nature', 'Oceans, deserts, skies — on demand.'],
-    ['w-still', 'Mood', 'Light and atmosphere on demand.'],
+    ['c-stars', 'Worlds', 'Any world. No set.'],
+    ['c-fire', 'Emotion', 'Pictures you can feel.'],
+    ['c-forest', 'Atmosphere', 'Light, fog and rain — directed.'],
+    ['c-ink', 'Colour', 'Every frame, graded like cinema.'],
+    ['c-smoke', 'Detail', 'Crafted to the last frame.'],
   ] },
 
   lineup: { h2: 'Explore the services.', items: [
-    ['s-films', 'Film', 'Short films and series', ['Script, characters, worlds', 'AI-generated scenes', 'Sound, music and colour']],
-    ['s-ads', 'Commercial', 'Campaigns for brands', ['Concept and storyboard', 'Every format: TV, web, social', 'Product and lifestyle scenes']],
-    ['p-teapot', 'Product design', 'From idea to production', ['Concept and 3D', 'Photoreal renders', 'Launch film']],
-    ['agent', 'AI Agent', 'Assistants for your brand', ['Answers clients 24/7', 'Your tone of voice', 'Website, Instagram, WhatsApp']],
+    ['s-films', 'Film', 'Short films and series', ['Script and characters', 'AI-generated scenes', 'Sound and colour']],
+    ['s-ads', 'Commercial', 'Campaigns for brands', ['Concept and storyboard', 'TV, web and social', 'Product scenes']],
+    ['p-pottery', 'Product design', 'From idea to production', ['Concept and 3D', 'Photoreal renders', 'Launch film']],
+    ['agent', 'AI Agent', 'Assistants for brands', ['Answers 24/7', 'Your tone of voice', 'Web and messengers']],
   ], a: 'Learn more', b: 'Request' },
 
   why: { h2: 'Why VERGHÉTHORN.', items: [
@@ -54,7 +54,7 @@ export const L = {
   contact: { h2: 'Let’s create together.', sub: 'Films, commercials, AI agents and collaborations.', emailName: 'Email' },
 
   footNote: 'Demo footage on this site: Mixkit. Brand names in examples are fictional.',
-  footCols: [['Create', ['Films', 'Commercials', 'Product design', 'Automotive']], ['AI', ['AI Agents', 'Concierge assistants', 'Customer support']], ['Together', ['Collaborations', 'Partnerships']]],
+  footCols: [['Create', ['Films', 'Commercials', 'Product design', 'Nature & travel']], ['AI', ['AI Agents', 'Concierge assistants', 'Customer support']], ['Together', ['Collaborations', 'Partnerships']]],
   notFound: { title: 'Page not found — VERGHÉTHORN', h1: 'Wrong scene.', text: 'This page doesn’t exist.', home: 'Back to the start' },
   moved: 'This page has moved.',
 };

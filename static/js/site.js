@@ -36,7 +36,10 @@ seen([$('[data-chat]')], (e, io) => { if (e.isIntersecting) { const ph = e.targe
   const paint = () => { prev.disabled = car.scrollLeft < 8; next.disabled = car.scrollLeft + car.clientWidth > car.scrollWidth - 8; };
   prev.addEventListener('click', () => { sfx('swoosh'); car.scrollBy({ left: -step(), behavior: 'smooth' }); });
   next.addEventListener('click', () => { sfx('swoosh'); car.scrollBy({ left: step(), behavior: 'smooth' }); });
-  car.addEventListener('scroll', paint, { passive: true }); addEventListener('resize', paint); paint();
+  const dots = $$('[data-dots] button'); let cur = -1;
+  const paintDots = () => { const i = Math.round(car.scrollLeft / (car.clientWidth || 1)); if (i !== cur) { if (cur >= 0 && getComputedStyle(dots[0]).display !== 'none') sfx('tick'); cur = i; dots.forEach((d, k) => d.setAttribute('aria-current', String(k === i))); } };
+  dots.forEach((d, k) => d.addEventListener('click', () => car.scrollTo({ left: k * car.clientWidth, behavior: 'smooth' })));
+  car.addEventListener('scroll', () => { paint(); paintDots(); }, { passive: true }); addEventListener('resize', paint); paint(); paintDots();
 }
 
 /* showreel player */

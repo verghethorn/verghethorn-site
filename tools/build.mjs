@@ -58,7 +58,7 @@ function page() {
   const socials = [...Object.entries(SITE.social).map(([id, s]) => ({ id, ...s })), { id: 'email', name: C.emailName, handle: SITE.email, href: `mailto:${SITE.email}`, color: '#3d5afe' }];
   const jsonld = { '@context': 'https://schema.org', '@type': 'Organization', name: 'VERGHÉTHORN', url: SITE.url, email: SITE.email, sameAs: Object.values(SITE.social).map(s => s.href), description: L.desc };
   const btns = (a, b, ha = '#contact', hb = '#contact', da = '') => `<p class="ctas"><a class="pill" href="${ha}"${da}>${a}</a><a class="pill ol" href="${hb}">${b}</a></p>`;
-  const anchor = { Films: '#films', Commercials: '#commercials', 'Product design': '#design', Automotive: '#auto', 'AI Agents': '#agents', Collaborations: '#collab' };
+  const anchor = { Films: '#films', Commercials: '#commercials', 'Product design': '#design', 'Nature & travel': '#nature', 'AI Agents': '#agents', Collaborations: '#collab' };
   const chat = G.chat;
   const agentIcon = `<span class="li-agent" aria-hidden="true"><i></i><i></i><i></i></span>`;
   return `${head({ title: L.title, desc: L.desc, path: '/' })}
@@ -77,7 +77,7 @@ function page() {
 <main id="main">
 <section class="tile hero dark" aria-labelledby="h1">
   <div class="t-txt"><h1 id="h1">${H.h1}</h1><p class="sub">${H.sub}</p>${btns(H.a, H.b, '#reel', '#contact', ' data-reel-open')}</div>
-  <div class="t-media hero-media"><video src="${V_('reel')}.mp4" poster="${V_('reel')}.webp" muted loop playsinline autoplay preload="auto" disablepictureinpicture data-auto></video></div>
+  <div class="t-media hero-media"><video poster="${V_('reel')}.webp" muted loop playsinline autoplay preload="auto" disablepictureinpicture data-auto><source src="${V_('reel-m')}.mp4" type="video/mp4" media="(max-width: 734px)"><source src="${V_('reel')}.mp4" type="video/mp4"></video></div>
 </section>
 
 <section class="tile agents gray" id="agents" aria-label="${G.h2}">
@@ -104,6 +104,7 @@ function page() {
   <div class="sec-h wrap"><h2 id="know-h">${K.h2}</h2></div>
   <div class="car-w">
     <ul class="car" data-car>${K.items.map(([v, k, t, pos]) => `<li class="card">${vid(v, '', pos)}<p><span>${k}</span><b>${t}</b></p></li>`).join('')}</ul>
+    <p class="car-dots" data-dots>${K.items.map((_, i) => `<button type="button" aria-label="${i + 1} / ${K.items.length}"></button>`).join('')}</p>
     <p class="car-nav wrap"><button type="button" data-car-prev aria-label="Previous">${ARROW}</button><button type="button" data-car-next aria-label="Next">${ARROW}</button></p>
   </div>
 </section>
