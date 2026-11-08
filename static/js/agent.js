@@ -57,7 +57,7 @@ async function start(kind, firstText) {
       agentId: cfg.id,
       connectionType: kind === 'voice' ? 'webrtc' : 'websocket',
       textOnly: kind === 'text',
-      ...(kind === 'text' ? { overrides: { conversation: { textOnly: true } } } : {}),
+      overrides: { ...(kind === 'text' ? { conversation: { textOnly: true } } : {}), ...(cfg.lang && cfg.lang !== 'en' ? { agent: { language: cfg.lang, ...(cfg.first ? { firstMessage: cfg.first } : {}) } } : {}) },
       onConnect: () => { setStatus(kind === 'voice' ? cfg.t.listening : cfg.t.online); pending = firstText || null; },
       onMessage: m => { const who = (m.role || m.source) === 'user' ? 'u' : 'a'; if (kind === 'text' && who === 'u') return; add(who, m.message); if (who === 'a') { gotReply = true; sfx('pop'); if (pending) { const t = pending; pending = null; setTimeout(() => { conv?.sendUserMessage(t); typing(true); }, 300); } } },
       onModeChange: ({ mode: md }) => { if (kind !== 'voice') return; const sp = md === 'speaking'; phone.classList.toggle('speaking', sp); setStatus(sp ? cfg.t.speaking : cfg.t.listening); },

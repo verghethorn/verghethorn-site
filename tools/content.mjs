@@ -57,7 +57,8 @@ export const L = {
   contact: { h2: 'Let’s create together.', sub: 'Films, commercials, AI agents and collaborations.', emailName: 'Email' },
 
   footNote: 'Demo footage, music and sound effects on this site: Mixkit. Brand names in examples are fictional.',
-  footCols: [['Create', ['Films', 'Commercials', 'Product design', 'Nature & travel']], ['AI', ['AI Agents', 'Concierge assistants', 'Customer support']], ['Together', ['Collaborations', 'Partnerships']]],
+  footCols: [['Create', [['films', 'Films'], ['commercials', 'Commercials'], ['design', 'Product design'], ['nature', 'Nature & travel']]], ['AI', [['agents', 'AI Agents'], ['agents', 'Concierge assistants'], ['agents', 'Customer support']]], ['Together', [['collab', 'Collaborations'], ['collab', 'Partnerships']]]],
+  ui: { home: 'Home', back: 'Back', details: 'Details', prev: 'Previous', next: 'Next', more: 'More about', contact: 'Contact', start: 'Start a project', rights: 'All rights reserved.', main: 'Main', about: 'About', homeLabel: 'VERGHÉTHORN home', lang: 'Language', sections: 'Sections' },
   notFound: { title: 'Page not found — VERGHÉTHORN', h1: 'Wrong scene.', text: 'This page doesn’t exist.', home: 'Back to the start' },
   moved: 'This page has moved.',
 };

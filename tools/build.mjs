@@ -1,11 +1,16 @@
 // Static site generator for verghethorn.com — run: node tools/build.mjs
-// One interactive page (English). /ru/ and older URLs redirect to it.
+// English at /, Russian at /ru/. Copy: content.mjs (EN) and content.ru.mjs (RU).
 import { mkdirSync, writeFileSync, readFileSync, rmSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
-import { SITE, L, FILMS, START, COMMERCIALS, AGENTS, COLLAB, DESIGN, NATURE } from './content.mjs';
-const SERVICES = [FILMS, COMMERCIALS, AGENTS, COLLAB, DESIGN, NATURE];
+import * as EN from './content.mjs';
+import * as RU from './content.ru.mjs';
+const { SITE } = EN;
+const LANGS = [['en', 'English', EN], ['ru', 'Русский', RU]];
+let LANG = 'en', L, FILMS, START, COMMERCIALS, AGENTS, COLLAB, DESIGN, NATURE, SERVICES;
+const useLang = (code, C) => { LANG = code; ({ L, FILMS, START, COMMERCIALS, AGENTS, COLLAB, DESIGN, NATURE } = C); SERVICES = [FILMS, COMMERCIALS, AGENTS, COLLAB, DESIGN, NATURE]; };
+useLang('en', EN);
 const LUK = { 's-films': 'films', 's-ads': 'commercials', 'p-pottery': 'design', agent: 'agents' };
 const PAGE = { films: '/films/', commercials: '/commercials/', agents: '/ai-agents/', collab: '/collaborations/', design: '/product-design/', nature: '/nature-travel/' };
 
@@ -18,7 +23,7 @@ const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(
 const svg = (d, vb = '0 0 24 24') => `<svg viewBox="${vb}" aria-hidden="true">${d}</svg>`;
 
 const PLUS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
-const SHEET_DLG = `<dialog class="sheet" data-sheet-dlg aria-label="Details">\n  <button type="button" class="sheet-x" data-sheet-close aria-label="Close"><i></i><i></i></button>\n  <div class="sheet-in" data-sheet-body></div>\n</dialog>`;
+const SHEET_DLG = () => `<dialog class="sheet" data-sheet-dlg aria-label="${L.ui.details}">\n  <button type="button" class="sheet-x" data-sheet-close aria-label="${L.close}"><i></i><i></i></button>\n  <div class="sheet-in" data-sheet-body></div>\n</dialog>`;
 const ARROW = svg('<path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>');
 const SOUND = '<svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg><svg class="off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5z"/><path d="m16 9.5 5 5M21 9.5l-5 5"/></svg>';
 const GLYPH = {
@@ -34,41 +39,43 @@ const vid = (id, cls = '', pos = '') => `<video class="${cls}"${pos ? ` style="o
 const SOCIALS = () => [...Object.entries(SITE.social).map(([id, s]) => ({ id, ...s })), { id: 'email', name: L.contact.emailName, handle: SITE.email, href: `mailto:${SITE.email}`, color: '#3d5afe' }];
 const HOMEHREF = h => h.startsWith('#') ? `/${h}` : h;
 function gnav(sub = false) {
-  const NAVPAGE = { Films: PAGE.films, Commercials: PAGE.commercials, 'AI Agents': PAGE.agents, Collaborations: PAGE.collab };
-  const nav = L.nav.map(([h, t]) => [NAVPAGE[t] || (sub ? HOMEHREF(h) : h), t]);
+  const NAVPAGE = { '#films': PAGE.films, '#commercials': PAGE.commercials, '#agents': PAGE.agents, '#collab': PAGE.collab };
+  const nav = L.nav.map(([h, t]) => [NAVPAGE[h] || (sub ? HOMEHREF(h) : h), t]);
   return `<header class="gn${sub ? ' gn-sub' : ''}" data-gn>
-  <nav class="gn-in" aria-label="Main">
-    ${sub ? `<a class="back" href="/" data-back aria-label="Back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Back</span></a>` : ''}
-    <a class="wm" href="/" aria-label="VERGHÉTHORN home">VERGHÉTHORN</a>
-    <ul class="gn-l" id="gn-menu">${sub ? '<li class="gn-home"><a href="/">Home</a></li>' : ''}${nav.map(([h, t]) => `<li><a href="${h}">${t}</a></li>`).join('')}</ul>
+  <nav class="gn-in" aria-label="${L.ui.main}">
+    ${sub ? `<a class="back" href="/" data-back aria-label="${L.ui.back}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>${L.ui.back}</span></a>` : ''}
+    <a class="wm" href="/" aria-label="${L.ui.homeLabel}">VERGHÉTHORN</a>
+    <ul class="gn-l" id="gn-menu">${sub ? `<li class="gn-home"><a href="/">${L.ui.home}</a></li>` : ''}${nav.map(([h, t]) => `<li><a href="${h}">${t}</a></li>`).join('')}</ul>
+    <div class="lang" data-lang-wrap><button class="lang-b" type="button" data-lang-btn aria-haspopup="true" aria-expanded="false" aria-label="${L.ui.lang}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3 12h18M12 3c2.6 2.6 3.8 5.6 3.8 9s-1.2 6.4-3.8 9c-2.6-2.6-3.8-5.6-3.8-9S9.4 5.6 12 3z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span>${LANG.toUpperCase()}</span></button><div class="lang-m" data-lang-menu hidden>${LANGS.map(([c, n]) => `<a data-lang="${c}" lang="${c}"${c === LANG ? ' aria-current="true"' : ''}>${n}</a>`).join('')}</div></div>
     <button class="snd" type="button" data-sound aria-pressed="true" aria-label="${L.soundOff}" data-on="${L.soundOff}" data-off="${L.soundOn}">${SOUND}</button>
     <button class="burger" type="button" data-burger aria-expanded="false" aria-controls="gn-menu" aria-label="${L.menu}"><i></i><i></i></button>
   </nav>
 </header>`;
 }
 function footer(sub = false) {
-  const anchor = { Films: PAGE.films, Commercials: PAGE.commercials, 'Product design': PAGE.design, 'Nature & travel': PAGE.nature, 'AI Agents': PAGE.agents, 'Concierge assistants': PAGE.agents, 'Customer support': PAGE.agents, Collaborations: PAGE.collab, Partnerships: PAGE.collab };
-  const href = x => { const h = anchor[x] || '#lineup'; return sub ? HOMEHREF(h) : h; };
+  const href = k => PAGE[k];
   const socials = SOCIALS();
   return `<footer class="ft">
   <div class="wrap">
     <p class="ft-note">${L.footNote}</p>
-    <div class="ft-cols">${L.footCols.map(([h, ls]) => `<div><h3>${h}</h3><ul>${ls.map(x => `<li><a href="${href(x)}">${x}</a></li>`).join('')}</ul></div>`).join('')}
-      <div><h3>Contact</h3><ul><li><a href="/start/">Start a project</a></li>${socials.map(s => `<li><a href="${s.href}"${s.id === 'email' ? '' : ' rel="me noopener"'}>${s.name}</a></li>`).join('')}</ul></div></div>
-    <p class="ft-b"><span>Copyright © ${new Date().getFullYear()} VERGHÉTHORN. All rights reserved.</span><a href="mailto:${SITE.email}">${SITE.email}</a></p>
+    <div class="ft-cols">${L.footCols.map(([h, ls]) => `<div><h3>${h}</h3><ul>${ls.map(([k, x]) => `<li><a href="${href(k)}">${x}</a></li>`).join('')}</ul></div>`).join('')}
+      <div><h3>${L.ui.contact}</h3><ul><li><a href="/start/">${L.ui.start}</a></li>${socials.map(s => `<li><a href="${s.href}"${s.id === 'email' ? '' : ' rel="me noopener"'}>${s.name}</a></li>`).join('')}</ul></div></div>
+    <p class="ft-lang">${LANGS.map(([c, n]) => `<a data-lang="${c}" lang="${c}"${c === LANG ? ' aria-current="true"' : ''}>${n}</a>`).join('<span aria-hidden="true">·</span>')}</p>
+    <p class="ft-b"><span>Copyright © ${new Date().getFullYear()} VERGHÉTHORN. ${L.ui.rights}</span><a href="mailto:${SITE.email}">${SITE.email}</a></p>
   </div>
 </footer>`;
 }
 
 function head({ title, desc, path, noindex = false, refresh = '', og = '/media/og.jpg', ld = '' }) {
   return `<!doctype html>
-<html lang="en">
+<html lang="${LANG}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
-${refresh}${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${SITE.url}${path}">`}
+${refresh}${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${SITE.url}${path}">\n<!--ALT-->`}
+<script>try{var s=localStorage.getItem('vt-lang'),p=location.pathname,r=document.referrer,own=r&&r.indexOf(location.host)>-1;if(!own&&s==='ru'&&p.indexOf('/ru/')!==0)location.replace('/ru'+p+location.hash);else if(!own&&s==='en'&&p.indexOf('/ru/')===0)location.replace(p.slice(3)+location.hash)}catch(e){}</script>
 <meta name="theme-color" content="#ffffff">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="VERGHÉTHORN">
@@ -122,7 +129,7 @@ ${gnav()}
         <form class="ph-comp" data-agent-form><input type="text" data-agent-input placeholder="${esc(chat.type)}" aria-label="${esc(chat.type)}" maxlength="400" autocomplete="off" enterkeyhint="send"><button type="submit" class="ph-send" aria-label="${esc(chat.send)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></form>
         <button type="button" class="ph-mic" data-agent-call aria-label="${esc(chat.call)}" data-on="${esc(chat.call)}" data-off="${esc(chat.end)}"><svg class="i-mic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><svg class="i-end" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 14.5c5-4.7 13-4.7 18 0l-2.4 2.6-3.6-1.6v-2.6a12 12 0 0 0-6 0v2.6l-3.6 1.6z" fill="currentColor"/></svg></button>
       </div>
-      <script type="application/json" id="agent-cfg">${JSON.stringify({ id: chat.agentId, mail: SITE.email, sdk: `/static/vendor/elevenlabs-client-1.30.0.js?v=${V}`, t: chat.t })}</script>
+      <script type="application/json" id="agent-cfg">${JSON.stringify({ id: chat.agentId, lang: LANG, first: chat.first || '', mail: SITE.email, sdk: `/static/vendor/elevenlabs-client-1.30.0.js?v=${V}`, t: chat.t })}</script>
     </div>
   </div>
 </section>
@@ -140,9 +147,9 @@ ${gnav()}
 <section class="sec gray" aria-labelledby="know-h">
   <div class="sec-h wrap"><h2 id="know-h">${K.h2}</h2></div>
   <div class="car-w">
-    <ul class="car" data-car>${K.items.map(([v, k, t, pos], i) => `<li class="card">${vid(v, '', pos)}<p><span>${k}</span><b>${t}</b></p><button type="button" class="card-plus" data-sheet="${i}" aria-label="More about ${esc(k)}">${PLUS}</button></li>`).join('')}</ul>
+    <ul class="car" data-car>${K.items.map(([v, k, t, pos], i) => `<li class="card">${vid(v, '', pos)}<p><span>${k}</span><b>${t}</b></p><button type="button" class="card-plus" data-sheet="${i}" aria-label="${L.ui.more} ${esc(k)}">${PLUS}</button></li>`).join('')}</ul>
     <p class="car-dots" data-dots>${K.items.map((_, i) => `<button type="button" aria-label="${i + 1} / ${K.items.length}"></button>`).join('')}</p>
-    <p class="car-nav wrap"><button type="button" data-car-prev aria-label="Previous">${ARROW}</button><button type="button" data-car-next aria-label="Next">${ARROW}</button></p>
+    <p class="car-nav wrap"><button type="button" data-car-prev aria-label="${L.ui.prev}">${ARROW}</button><button type="button" data-car-next aria-label="${L.ui.next}">${ARROW}</button></p>
   </div>
 </section>
 
@@ -177,7 +184,7 @@ ${footer()}
     <ul class="reel-pick">${L.reels.items.map(([id, t, th], i) => `<li><button type="button" data-reel="/media/r/${id}.mp4?v=${MV}" aria-pressed="${i === 0}"><img src="${V_(th)}.webp?v=${MV}" alt="" loading="lazy"><span>${t}</span></button></li>`).join('')}</ul>
   </div>
 </dialog>
-${SHEET_DLG}
+${SHEET_DLG()}
 <template id="sheets">${K.items.map(([v, k, t, , ps, more]) => `<article><p class="sheet-k">${k}</p><h2>${t}</h2><div class="sheet-v">${vid(v)}</div>${ps.map(x => `<p>${x}</p>`).join('')}<p class="ctas"><a class="pill" href="${more}">${L.tileA}</a><a class="pill ol" href="/start/">${L.tileB}</a></p></article>`).join('')}</template>
 <div class="warp" data-warp aria-hidden="true"><span class="warp-i"></span></div>
 
@@ -216,16 +223,16 @@ ${gnav(true)}
   <div class="fh-media">${media(F.heroMedia)}</div>
 </section>
 
-<section class="fstmt" aria-label="About">
+<section class="fstmt" aria-label="${L.ui.about}">
   <p class="fstmt-t wrap" data-words>${F.statement.split(' ').map(w => `<span>${esc(w)}</span>`).join(' ')}</p>
 </section>
 
 <section class="sec gray" id="highlights" aria-labelledby="hl-h">
   <div class="sec-h wrap"><h2 id="hl-h">${F.highlights.h2}</h2></div>
   <div class="car-w">
-    <ul class="car" data-car>${F.highlights.items.map(([v, k, t], i) => `<li class="card">${media(v)}<p><span>${k}</span><b>${t}</b></p><button type="button" class="card-plus" data-sheet="${i}" aria-label="More about ${esc(k)}">${plus}</button></li>`).join('')}</ul>
+    <ul class="car" data-car>${F.highlights.items.map(([v, k, t], i) => `<li class="card">${media(v)}<p><span>${k}</span><b>${t}</b></p><button type="button" class="card-plus" data-sheet="${i}" aria-label="${L.ui.more} ${esc(k)}">${plus}</button></li>`).join('')}</ul>
     <p class="car-dots" data-dots>${F.highlights.items.map((_, i) => `<button type="button" aria-label="${i + 1} / ${F.highlights.items.length}"></button>`).join('')}</p>
-    <p class="car-nav wrap"><button type="button" data-car-prev aria-label="Previous">${ARROW}</button><button type="button" data-car-next aria-label="Next">${ARROW}</button></p>
+    <p class="car-nav wrap"><button type="button" data-car-prev aria-label="${L.ui.prev}">${ARROW}</button><button type="button" data-car-next aria-label="${L.ui.next}">${ARROW}</button></p>
   </div>
 </section>
 
@@ -310,16 +317,31 @@ function redirect(from, to) {
 }
 
 for (const d of ['work', 'practice', 'lab', 'about', 'services', 'approach', 'contact', 'archive', 'links', 'ru']) { const p = join(ROOT, d); if (existsSync(p)) rmSync(p, { recursive: true }); }
-writeFileSync(join(ROOT, 'index.html'), page());
-const old = [['/ru/', '/'], ['/services/', '/'], ['/approach/', '/'], ['/contact/', '/#contact'], ['/links/', '/#contact'], ['/archive/', '/'], ['/archive/qist/', '/'], ['/archive/qist/app/', '/'], ['/archive/use-5-now/', '/'], ['/archive/living-shapes/', '/'], ['/archive/lab/', '/'], ['/work/', '/'], ['/work/living-shapes/', '/'], ['/work/usefive/', '/'], ['/work/living-frame/', '/'], ['/practice/', '/'], ['/lab/', '/'], ['/about/', '/']];
-old.forEach(([a, b]) => { redirect(a, b); if (a !== '/ru/') redirect('/ru' + a, b); });
+const localize = html => html
+  .replace(/href="\/(?!media\/|static\/|ru\/|favicon)/g, 'href="/ru/')
+  .replace(/(content|href)="https:\/\/verghethorn\.com\/(?!media\/|static\/|ru\/)/g, '$1="https://verghethorn.com/ru/');
+const alt = path => LANGS.map(([c]) => `<link rel="alternate" hreflang="${c}" href="${SITE.url}${c === 'en' ? '' : '/' + c}${path}">`).join('\n') + `\n<link rel="alternate" hreflang="x-default" href="${SITE.url}${path}">`;
+const out = (path, html) => {
+  const dir = LANG === 'en' ? path : `/${LANG}${path}`;
+  if (LANG !== 'en') html = localize(html);
+  html = html.replace('<!--ALT-->', alt(path));
+  const file = join(ROOT, dir, 'index.html'); mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, html);
+};
+const urls = [];
+const old = [['/services/', '/'], ['/approach/', '/'], ['/contact/', '/#contact'], ['/links/', '/#contact'], ['/archive/', '/'], ['/archive/qist/', '/'], ['/archive/qist/app/', '/'], ['/archive/use-5-now/', '/'], ['/archive/living-shapes/', '/'], ['/archive/lab/', '/'], ['/work/', '/'], ['/work/living-shapes/', '/'], ['/work/usefive/', '/'], ['/work/living-frame/', '/'], ['/practice/', '/'], ['/lab/', '/'], ['/about/', '/']];
+for (const [code, , C] of LANGS) {
+  useLang(code, C);
+  out('/', page());
+  for (const F of SERVICES) out(`/${F.slug}/`, servicePage(F));
+  out('/start/', startPage());
+  for (const p of ['/', ...SERVICES.map(F => `/${F.slug}/`), '/start/']) urls.push(`${SITE.url}${code === 'en' ? '' : '/' + code}${p}`);
+}
+useLang('en', EN);
+old.forEach(([a, b]) => { redirect(a, b); redirect('/ru' + a, '/ru' + b); });
 writeFileSync(join(ROOT, '404.html'), notFound());
-for (const [d, html] of [...SERVICES.map(F => [F.slug, servicePage(F)]), ['start', startPage()]]) { mkdirSync(join(ROOT, d), { recursive: true }); writeFileSync(join(ROOT, d, 'index.html'), html); }
 writeFileSync(join(ROOT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>${SITE.url}/</loc><lastmod>${BUILD_DATE}</lastmod></url>
-${SERVICES.map(F => `  <url><loc>${SITE.url}/${F.slug}/</loc><lastmod>${BUILD_DATE}</lastmod></url>
-`).join('')}  <url><loc>${SITE.url}/start/</loc><lastmod>${BUILD_DATE}</lastmod></url>
+${urls.map(u => `  <url><loc>${u}</loc><lastmod>${BUILD_DATE}</lastmod></url>`).join('\n')}
 </urlset>
 `);
 writeFileSync(join(ROOT, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /tools/\n\nSitemap: ${SITE.url}/sitemap.xml\n`);

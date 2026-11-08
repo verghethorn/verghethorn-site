@@ -1,5 +1,6 @@
 // Inner pages (/films/, /start/): product-page behaviour. Nothing here blocks scrolling.
 import { sfx, isMuted, setMuted, unlock } from './sfx.js';
+import './lang.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
