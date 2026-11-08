@@ -7,6 +7,7 @@ const cfg = JSON.parse($('#agent-cfg').textContent);
 const log = $('[data-agent-log]', phone), status = $('[data-agent-status]', phone);
 const form = $('[data-agent-form]', phone), input = $('[data-agent-input]', phone);
 const mic = $('.ph-mic', phone), callBtns = document.querySelectorAll('[data-agent-call]');
+let userEnded = false, offShown = false;
 let sdk, conv = null, mode = null, starting = false, cleared = false, pending = null, gotReply = false;
 
 const clean = s => s.replace(/<\/?[A-Za-z][\w-]*>/g, '').replace(/\[[^\]]{1,24}\]/g, '').replace(/\s{2,}/g, ' ').trim();
@@ -32,14 +33,27 @@ const paintCall = () => {
 
 const end = async () => { const c = conv; conv = null; mode = null; paintCall(); phone.classList.remove('speaking'); try { await c?.endSession(); } catch {} };
 
+const offline = () => {
+  if (offShown || userEnded) return; offShown = true;
+  // credits finished or service down: ask for an email instead (the next tap simply tries again)
+  $('.typing', log)?.remove();
+  const li = document.createElement('li'); li.className = 'm a';
+  li.append(cfg.t.busy + ' ');
+  const a = document.createElement('a'); a.href = `mailto:${cfg.mail}`; a.textContent = cfg.mail; li.append(a);
+  log.append(li); scroll(); setStatus(cfg.t.online);
+};
+const withTimeout = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(Object.assign(new Error('timeout'), { name: 'Timeout' })), ms))]);
+
 async function start(kind, firstText) {
-  if (starting) return; starting = true;
+  if (starting) return; starting = true; gotReply = false; userEnded = false; offShown = false;
   clearDemo(); setStatus(cfg.t.connecting, true);
-  if (kind === 'text') typing(true);
+  if (kind === 'voice' && !firstText) add('a', cfg.t.hello);
+  typing(true);
+  let session = null;
   try {
     const { Conversation } = await loadSdk();
     if (kind === 'voice') await navigator.mediaDevices.getUserMedia({ audio: true }).then(s => s.getTracks().forEach(t => t.stop()));
-    conv = await Conversation.startSession({
+    session = Conversation.startSession({
       agentId: cfg.id,
       connectionType: kind === 'voice' ? 'webrtc' : 'websocket',
       textOnly: kind === 'text',
@@ -47,22 +61,26 @@ async function start(kind, firstText) {
       onConnect: () => { setStatus(kind === 'voice' ? cfg.t.listening : cfg.t.online); pending = firstText || null; },
       onMessage: m => { const who = (m.role || m.source) === 'user' ? 'u' : 'a'; if (kind === 'text' && who === 'u') return; add(who, m.message); if (who === 'a') { gotReply = true; sfx('pop'); if (pending) { const t = pending; pending = null; setTimeout(() => { conv?.sendUserMessage(t); typing(true); }, 300); } } },
       onModeChange: ({ mode: md }) => { if (kind !== 'voice') return; const sp = md === 'speaking'; phone.classList.toggle('speaking', sp); setStatus(sp ? cfg.t.speaking : cfg.t.listening); },
-      onDisconnect: () => { if (mode) { mode = null; conv = null; } paintCall(); phone.classList.remove('speaking'); setStatus(cfg.t.online); typing(false); },
-      onError: (msg, ctx) => { console.warn('agent error', msg, ctx); if (!gotReply) { add('a', cfg.t.busy); typing(false); } },
+      onDisconnect: () => { if (mode) { mode = null; conv = null; } paintCall(); phone.classList.remove('speaking'); setStatus(cfg.t.online); typing(false); if (!gotReply) offline(); },
+      onError: (msg, ctx) => { console.warn('agent error', msg, ctx); if (!gotReply) { end(); offline(); } },
     });
+    conv = await withTimeout(session, 12000);
     mode = kind; paintCall();
+    // connected but the greeting never comes → treat as unavailable
+    setTimeout(() => { if (conv && !gotReply && !firstText) { end(); offline(); } }, 9000);
   } catch (e) {
     console.warn('agent start failed', e && (e.message || e));
-    typing(false); setStatus(cfg.t.online);
-    add('a', e && (e.name === 'NotAllowedError' || e.name === 'NotFoundError') ? cfg.t.mic : cfg.t.busy);
-    conv = null; mode = null; paintCall();
+    if (session) session.then(c => c.endSession()).catch(() => {});
+    typing(false); conv = null; mode = null; paintCall(); phone.classList.remove('speaking');
+    if (e && (e.name === 'NotAllowedError' || e.name === 'NotFoundError')) { add('a', cfg.t.mic); setStatus(cfg.t.online); }
+    else offline();
   } finally { starting = false; }
 }
 
 callBtns.forEach(b => b.addEventListener('click', async () => {
   sfx('tick');
   if (b !== mic) phone.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  if (mode === 'voice') { await end(); setStatus(cfg.t.ended); return; }
+  if (mode === 'voice') { userEnded = true; await end(); setStatus(cfg.t.ended); return; }
   if (mode === 'text') await end();
   start('voice');
 }));

@@ -21,7 +21,7 @@ export const L = {
   hero: { h1: 'AI Cinema', sub: 'Films and commercials for brands.<br>Created with AI.', a: 'Watch the reel', b: 'Start a project' },
   agents: { h2: 'AI Agents', sub: 'Chat, voice and video. Always on.', a: 'Talk to the agent', b: 'Request a demo',
     chat: { agentId: 'agent_8301m6y0jvjce27are2pzqj9k34v', type: 'Message the agent…', send: 'Send', call: 'Talk to the agent', end: 'End the call',
-      t: { connecting: 'Connecting…', listening: 'Listening…', speaking: 'Speaking…', online: 'AI agent · online', ended: 'Call ended · AI agent', mic: 'Microphone access is off — you can type to me instead.', busy: 'I’m resting right now. Please write to verghethorn@gmail.com — the director replies personally.' },
+      t: { connecting: 'Connecting…', listening: 'Listening…', speaking: 'Speaking…', online: 'AI agent · online', ended: 'Call ended · AI agent', mic: 'Microphone access is off — you can type to me instead.', busy: 'I can’t take calls right now. Please send your request by email — the director will reply personally:', hello: 'Hi! I’m the VERGHÉTHORN agent. Connecting you now — when you hear me, just speak. Or type below.' },
       name: 'VERGHÉTHORN Agent', status: 'AI agent · online', live: 'Live', alt: 'The VERGHÉTHORN AI agent: a figure in a dark suit with a black helmet and a glowing blue visor',
       msgs: [['u', 'Can you make a 30-second film for my coffee brand?'], ['a', 'Of course. Tell me about your brand and your audience — I’ll prepare a concept.'], ['u', 'Perfect. Let’s talk.']] } },
   ads: { h2: 'Commercials', sub: 'Make your brand unforgettable.', a: 'Learn more', b: 'Start a project' },

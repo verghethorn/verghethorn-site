@@ -93,7 +93,7 @@ function page() {
         <form class="ph-comp" data-agent-form><input type="text" data-agent-input placeholder="${esc(chat.type)}" aria-label="${esc(chat.type)}" maxlength="400" autocomplete="off" enterkeyhint="send"><button type="submit" class="ph-send" aria-label="${esc(chat.send)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></form>
         <button type="button" class="ph-mic" data-agent-call aria-label="${esc(chat.call)}" data-on="${esc(chat.call)}" data-off="${esc(chat.end)}"><svg class="i-mic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><svg class="i-end" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 14.5c5-4.7 13-4.7 18 0l-2.4 2.6-3.6-1.6v-2.6a12 12 0 0 0-6 0v2.6l-3.6 1.6z" fill="currentColor"/></svg></button>
       </div>
-      <script type="application/json" id="agent-cfg">${JSON.stringify({ id: chat.agentId, sdk: `/static/vendor/elevenlabs-client-1.30.0.js?v=${V}`, t: chat.t })}</script>
+      <script type="application/json" id="agent-cfg">${JSON.stringify({ id: chat.agentId, mail: SITE.email, sdk: `/static/vendor/elevenlabs-client-1.30.0.js?v=${V}`, t: chat.t })}</script>
     </div>
   </div>
 </section>
