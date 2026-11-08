@@ -84,7 +84,7 @@ function page() {
   <div class="t-txt"><h2>${G.h2}</h2><p class="sub">${G.sub}</p>${btns(G.a, G.b, '#lineup')}</div>
   <div class="t-media phone-wrap">
     <div class="phone" data-chat>
-      <div class="ph-call"><img src="/media/agent-call.webp" alt="${esc(chat.alt)}" width="940" height="620"><span class="visor" aria-hidden="true"></span>
+      <div class="ph-call"><img src="/media/agent-call.webp" alt="${esc(chat.alt)}" width="800" height="800"><span class="visor" aria-hidden="true"></span>
         <span class="live"><i></i>${chat.live}</span><span class="wave" aria-hidden="true">${'<i></i>'.repeat(14)}</span></div>
       <p class="ph-top"><img class="ph-av" src="/media/agent-av.webp" alt="" width="36" height="36"><span><b>${chat.name}</b><small>${chat.status}</small></span></p>
       <ul class="ph-msgs">${chat.msgs.map(([w, t]) => `<li class="m ${w}">${esc(t)}</li>`).join('')}<li class="m a typing" aria-hidden="true"><i></i><i></i><i></i></li></ul>
