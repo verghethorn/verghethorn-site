@@ -117,7 +117,7 @@ export const START = {
   done: { h: 'Thank you. Your request is sent.', p: 'The director will read it and reply to you personally.', home: 'Back to VERGHÉTHORN' },
   fail: { h: 'Almost there.', p: 'We couldn’t send your request automatically. Open your email app with the request ready, or copy it and send it to verghethorn@gmail.com.', mail: 'Open email', copy: 'Copy request', copied: 'Copied' },
   need: 'Please choose what you would like to create and leave a way to reach you.',
-  subject: 'Project request',
+  subject: '⭐ New request',
 };
 
 // ---------- the other directions (same product-page template as Films) ----------
