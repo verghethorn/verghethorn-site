@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>VERGHÉTHORN — films for brands and product design</title>
-<meta name="description" content="VERGHÉTHORN is a studio for brand films and product design. We design the product, then make the film that makes people want it.">
+<title>VERGHÉTHORN — AI Filmmaker</title>
+<meta name="description" content="VERGHÉTHORN is an AI filmmaker. Brand commercials, short films and product design — written, directed and generated with AI, finished with the craft of cinema.">
 <link rel="canonical" href="https://verghethorn.com/">
-<meta name="theme-color" content="#0d0c0b">
+<meta name="theme-color" content="#08080a">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="VERGHÉTHORN">
-<meta property="og:title" content="VERGHÉTHORN — films for brands and product design">
-<meta property="og:description" content="VERGHÉTHORN is a studio for brand films and product design. We design the product, then make the film that makes people want it.">
+<meta property="og:title" content="VERGHÉTHORN — AI Filmmaker">
+<meta property="og:description" content="VERGHÉTHORN is an AI filmmaker. Brand commercials, short films and product design — written, directed and generated with AI, finished with the craft of cinema.">
 <meta property="og:url" content="https://verghethorn.com/">
 <meta property="og:image" content="https://verghethorn.com/media/og.jpg">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
@@ -21,65 +21,93 @@
 <script>document.documentElement.classList.add('js')</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,400..700;1,400..600&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="/static/css/site.css?v=7d6fe104">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400..700&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/static/css/site.css?v=91bb0cf7">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <header class="hd" data-hd>
   <a class="wm" href="/" aria-label="VERGHÉTHORN home">VERGHÉTHORN</a>
-  <nav class="nav" aria-label="Sections"><a href="#films">Films</a><a href="#design">Design</a><a href="#contact">Contact</a></nav>
+  <nav class="nav" aria-label="Sections"><a href="#process">Process</a><a href="#work">What I make</a><a href="#lab">Idea lab</a><a href="#contact">Contact</a></nav>
   <button class="snd" type="button" data-sound aria-pressed="true" aria-label="Sound off" data-on="Sound off" data-off="Sound on"><svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg><svg class="off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5z"/><path d="m16 9.5 5 5M21 9.5l-5 5"/></svg></button>
   <a class="hd-cta" href="#contact">Contact</a>
 </header>
 
 <main id="main">
-<section class="hero" aria-labelledby="h1" data-hero>
-  <video class="hero-v" data-hero-v muted loop playsinline autoplay preload="auto" disablepictureinpicture poster="/media/v/hero.webp" data-src-d="/media/v/hero.mp4" data-src-m="/media/v/hero-m.mp4" data-poster-m="/media/v/hero-m.webp"></video>
-  <div class="hero-shade" aria-hidden="true"></div>
-  <p class="hero-tc" aria-hidden="true"><i></i><span data-held-l>REC</span> <span data-tc>00:00:00:00</span></p>
-  <div class="hero-in">
-    <p class="kicker">Film & product studio</p>
-    <h1 id="h1">Everyone is in a hurry.<br><em>Good films make them stop.</em></h1>
+<section class="hero wrap" aria-labelledby="h1">
+  <div class="hero-txt">
+    <p class="kicker"><i></i>VERGHÉTHORN — AI Filmmaker</p>
+    <h1 id="h1">Films made<br>with AI.</h1>
   </div>
-  <button class="hold" type="button" data-hold aria-label="Hold to stop time"><span class="hold-ring" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="30"/></svg><i></i></span><span class="hold-t" data-hold-t data-a="Hold to stop time" data-b="Time stopped">Hold to stop time</span></button>
+  <div class="gen" data-gen>
+    <div class="gen-bar"><span class="dots"><i></i><i></i><i></i></span><span class="gen-file">verghethorn / scene_<b data-gen-n>01</b>.mp4</span><span class="gen-chips"><em>AI video</em><em>24 fps</em><em>4K master</em></span></div>
+    <div class="gen-frame">
+      <video data-gen-v muted playsinline preload="auto" disablepictureinpicture poster="/media/v/s-astro.webp"></video>
+      <canvas class="gen-noise" data-gen-noise aria-hidden="true"></canvas>
+      <span class="gen-state" data-gen-state aria-live="polite"></span>
+    </div>
+    <div class="gen-prompt">
+      <p class="gen-text"><span class="gen-p">›</span><span data-gen-text></span><span class="cur"></span></p>
+      <button type="button" class="gen-go" data-gen-go>Generate<span class="gen-prog" data-gen-prog></span></button>
+    </div>
+    <div class="gen-try"><span>Try a scene</span><button type="button" data-scene="0">Space</button><button type="button" data-scene="1">Watch</button><button type="button" data-scene="2">Desert</button><button type="button" data-scene="3">Product</button><button type="button" data-scene="4">Rider</button><button type="button" data-scene="5">Lake</button></div>
+    <script type="application/json" id="scenes">{"scenes":[["/media/v/s-astro","An astronaut drifts above Earth at sunrise. Slow push-in, anamorphic lens, 2.39:1."],["/media/v/s-watch","Macro shot of a watch movement. Gears breathing, warm key light, 100mm lens."],["/media/v/s-hourglass","An hourglass alone in the desert at dusk. Sand falling in slow motion."],["/media/v/s-teapot","A handmade blue ceramic teapot. Soft window light, product hero shot."],["/media/v/s-rider","A rider on the shore at sunset. Silhouette, wide lens, golden hour."],["/media/v/s-lake","A misty mountain lake at blue hour. Still water, drifting fog."]],"t":{"gen":"Generating","done":"Ready"}}</script>
+  </div>
+  <div class="hero-more">
+    <p class="hero-sub">Brand commercials, short films and product design — written, directed and generated with AI, finished with the craft of cinema.</p>
+    <p class="hero-cta"><a class="btn" href="#contact">Start a project</a><a class="btn ghost" href="#process">See the process</a></p>
+  </div>
 </section>
 
-<section class="statement wrap" aria-label="About"><p data-words>We are a studio with two crafts. We design products — and we make the films that make people want them.</p></section>
-
-<section class="sec films" id="films" aria-labelledby="f-t">
-  <header class="sec-h wrap"><span class="num">01</span><h2 id="f-t">Films</h2><p class="lead">Commercials for premium brands and short films with a story. Script, cast, light, camera, edit, colour and sound — one team, one standard.</p></header>
-  <div class="reel wrap" data-rail><figure class="tile tall"><video class="" src="/media/v/f-watch.mp4" poster="/media/v/f-watch.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video><figcaption><i></i>Macro · 100mm</figcaption></figure><figure class="tile wide"><video class="" src="/media/v/f-perfume.mp4" poster="/media/v/f-perfume.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video><figcaption><i></i>Product · low key</figcaption></figure><figure class="tile "><video class="" src="/media/v/f-set.mp4" poster="/media/v/f-set.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video><figcaption><i></i>On set · Scene 9, take 3</figcaption></figure><figure class="tile "><video class="" src="/media/v/f-crane.mp4" poster="/media/v/f-crane.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video><figcaption><i></i>Crane shot · street</figcaption></figure></div>
-  <ul class="kinds wrap"><li class="rv"><h3>Brand commercials</h3><p>Watches, fragrance, cars, tech, hotels. Thirty to ninety seconds that people remember.</p></li><li class="rv"><h3>Short films</h3><p>Original stories made with the craft of cinema. Brands join as partners, naturally.</p></li><li class="rv"><h3>Product films</h3><p>Your product, lit and shot like the lead actor.</p></li></ul>
+<section class="sec process" id="process" aria-label="Process">
+  <header class="sec-h wrap"><span class="num">01</span><h2>From prompt<br>to premiere.</h2><p class="lead">AI generates. A filmmaker directs. Every frame is chosen, every cut is intentional.</p></header>
+  <ol class="pipe wrap">
+    <li class="card rv"><span class="num">01</span><h3>Script</h3><p>One clear idea, written as a film: scenes, lines, rhythm.</p>
+      <div class="ui ui-script"><p class="ui-h">script.fdx</p><p class="s0">INT. WATCHMAKER’S WORKSHOP — NIGHT</p><p class="s1">A single lamp. Old hands open a watch for the last time.</p><p class="s2">WATCHMAKER (V.O.)</p><p class="s3">“Time is the only thing we cannot make.”</p></div></li>
+    <li class="card rv"><span class="num">02</span><h3>Look & characters</h3><p>Style frames, consistent characters and locations, the light of the film.</p>
+      <div class="ui ui-frames"><p class="ui-h">style-frames</p><div class="fr"><img src="/media/v/s-astro.webp" alt="" loading="lazy"><img src="/media/v/s-watch.webp" alt="" loading="lazy"><img src="/media/v/s-hourglass.webp" alt="" loading="lazy"><img src="/media/v/s-teapot.webp" alt="" loading="lazy"><img src="/media/v/s-rider.webp" alt="" loading="lazy"><img src="/media/v/s-lake.webp" alt="" loading="lazy"></div></div></li>
+    <li class="card rv"><span class="num">03</span><h3>Generate</h3><p>Every shot generated, reviewed and regenerated until it is right.</p>
+      <div class="ui ui-shots"><p class="ui-h">shots</p><p class="shot"><b>SH 012</b><span>Macro, gears</span><em>✓</em><i style="--p:100%"></i></p><p class="shot"><b>SH 013</b><span>Hands under the lamp</span><em>✓</em><i style="--p:100%"></i></p><p class="shot"><b>SH 014</b><span>Watch on the wrist</span><em>72%</em><i style="--p:72%"></i></p><p class="shot"><b>SH 015</b><span>Window, first snow</span><em>—</em><i style="--p:0%"></i></p></div></li>
+    <li class="card rv"><span class="num">04</span><h3>Finish</h3><p>Edit, voice, music, sound design and colour. Delivered for every screen.</p>
+      <div class="ui ui-tl"><p class="ui-h">timeline</p><p class="trk t0"><b>Video</b><span><i></i><i></i><i></i></span></p><p class="trk t1"><b>Voice</b><span><i></i><i></i><i></i></span></p><p class="trk t2"><b>Music</b><span><i></i><i></i><i></i></span></p><span class="ph" aria-hidden="true"></span></div></li>
+  </ol>
 </section>
 
-<section class="sec design" id="design" aria-labelledby="d-t">
-  <header class="sec-h wrap"><span class="num">02</span><h2 id="d-t">Product design</h2>
-    <p class="lead big">Bring us an idea — <span class="swap" data-swap aria-live="off">a teapot.</span><span class="sp"> </span><br>We take it all the way to the real thing.</p></header>
-  <script type="application/json" id="words">["a teapot.","a pair of shoes.","a desk lamp.","a chair.","a bottle.","headphones.","a backpack.","a watch."]</script>
-  <ol class="steps wrap"><li class="step rv"><div class="step-v"><video class="" src="/media/v/d-sketch.mp4" poster="/media/v/d-sketch.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div><span class="num">01</span><h3>Sketch</h3><p>The idea on paper. Shape, purpose, feeling.</p></li><li class="step rv"><div class="step-v"><video class="" src="/media/v/d-model.mp4" poster="/media/v/d-model.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div><span class="num">02</span><h3>3D model</h3><p>Every millimetre on the computer. Colours and materials.</p></li><li class="step rv"><div class="step-v"><video class="" src="/media/v/d-print.mp4" poster="/media/v/d-print.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div><span class="num">03</span><h3>Prototype</h3><p>Printed, held in the hand, tested, improved.</p></li><li class="step rv"><div class="step-v"><video class="" src="/media/v/d-clay.mp4" poster="/media/v/d-clay.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video></div><span class="num">04</span><h3>Production</h3><p>Made for real — we see it through to the shelf.</p></li></ol>
+<section class="sec work" id="work" aria-label="What I make">
+  <header class="sec-h wrap"><span class="num">02</span><h2>What I make.</h2></header>
+  <ul class="work-l wrap"><li class="wk rv"><div class="wk-v"><video class="" src="/media/v/s-watch.mp4" poster="/media/v/s-watch.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video><span class="wk-tag">AI · commercials</span></div><h3>AI commercials</h3><p>Premium commercials for brands — watches, fragrance, cars, tech, hotels. Any world, any light, without building a set.</p></li><li class="wk rv"><div class="wk-v"><video class="" src="/media/v/s-rider.mp4" poster="/media/v/s-rider.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video><span class="wk-tag">AI · short films</span></div><h3>AI short films</h3><p>Original stories with real characters and real emotion. Brands join as partners, inside the story.</p></li><li class="wk rv"><div class="wk-v"><video class="" src="/media/v/s-teapot.mp4" poster="/media/v/s-teapot.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video><span class="wk-tag">AI · product design</span></div><h3>AI product design</h3><p>A teapot, a pair of shoes, a lamp — designed with AI, modelled in 3D, ready for production. And for the camera.</p></li></ul>
 </section>
 
-<section class="bridge" aria-labelledby="b-t">
-  <video class="bridge-v" src="/media/v/d-teapot.mp4" poster="/media/v/d-teapot.webp" muted loop playsinline preload="none" disablepictureinpicture data-auto></video>
-  <div class="bridge-in wrap"><h2 id="b-t" class="rv">Then we film it.</h2><p class="rv">Design and film under one roof. The product is born ready for its close-up.</p></div>
+<section class="sec why" aria-label="Why AI cinema">
+  <header class="sec-h wrap"><span class="num">03</span><h2>Why AI cinema.</h2></header>
+  <ul class="why-l wrap"><li class="rv"><h3>Any world</h3><p>Space, the desert, the past, the future. No travel, no permits, no limits on the picture.</p></li><li class="rv"><h3>See it early</h3><p>Style frames and a first cut early on. You see your film before it is finished.</p></li><li class="rv"><h3>Directed, not generated</h3><p>AI is the camera. The taste, the story and the final cut stay human.</p></li></ul>
 </section>
 
-<section class="sec contact" id="contact" aria-labelledby="c-t">
-  <header class="sec-h wrap"><span class="num">03</span><h2 id="c-t">Let’s make<br>something.</h2><p class="lead">Tell us what you want to make. We reply personally.</p></header>
+<section class="sec lab" id="lab" aria-label="Idea lab">
+  <header class="sec-h wrap"><span class="num">04</span><h2>Idea lab.</h2><p class="lead">Every film starts as a prompt. Spin the reels — tap one to keep it.</p></header>
+  <div class="slot wrap" data-slot>
+    <div class="slot-reels"><button class="sreel" type="button" data-reel="0" aria-pressed="false" aria-label="Hero: A night‑shift baker"><span class="sreel-l">Hero</span><span class="sreel-w"><span class="sreel-s" data-strip></span></span><span class="sreel-lock">Kept</span></button><button class="sreel" type="button" data-reel="1" aria-pressed="false" aria-label="Place: on the first snowy morning"><span class="sreel-l">Place</span><span class="sreel-w"><span class="sreel-s" data-strip></span></span><span class="sreel-lock">Kept</span></button><button class="sreel" type="button" data-reel="2" aria-pressed="false" aria-label="Twist: finds a letter written ten years ago"><span class="sreel-l">Twist</span><span class="sreel-w"><span class="sreel-s" data-strip></span></span><span class="sreel-lock">Kept</span></button></div>
+    <p class="logline" data-logline aria-live="polite"></p>
+    <div class="slot-row"><button class="btn" type="button" data-spin>Spin</button><a class="btn ghost" href="mailto:verghethorn@gmail.com" data-use data-subject="Idea from the VERGHÉTHORN idea lab">Send me this idea <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+  </div>
+  <script type="application/json" id="reels">[["A night‑shift baker","A retired racing driver","A young architect","A street musician","A lighthouse keeper","A watchmaker","A taxi driver","A football coach","A new pilot","A grandfather and his grandson"],["on the first snowy morning","in a city that never sleeps","on the last ferry home","in a quiet mountain village","on the surface of the Moon","in an empty airport at dawn","on a long desert road","in a busy kitchen","on the roof of a skyscraper","at the edge of the sea"],["finds a letter written ten years ago","gets one minute to change everything","teaches a stranger something new","discovers the old family recipe","fixes something no one else could","keeps a promise against all odds","hears a song that brings back a memory","builds something with their own hands","meets the person who inspired them","chooses the harder, better road"]]</script>
+</section>
+
+<section class="sec contact" id="contact" aria-label="Contact">
+  <header class="sec-h wrap"><span class="num">05</span><h2>Let’s make<br>your film.</h2><p class="lead">Tell me what you want to make. I reply personally.</p></header>
   <ul class="socials wrap"><li><a class="soc" href="https://www.instagram.com/verghethorn.studio" data-soc="instagram" style="--c:#d6249f" rel="me noopener"><span class="soc-i"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.5" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.3" cy="6.7" r="1.3" fill="#fff"/></svg></span><span class="soc-t"><b>Instagram</b><small>@verghethorn.studio</small></span><span class="soc-a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li><li><a class="soc" href="https://www.youtube.com/@verghethorn" data-soc="youtube" style="--c:#ff0033" rel="me noopener"><span class="soc-i"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4.5" fill="#fff"/><path d="M10 9v6l5.2-3z" fill="#ff0033"/></svg></span><span class="soc-t"><b>YouTube</b><small>@verghethorn</small></span><span class="soc-a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li><li><a class="soc" href="https://www.tiktok.com/@verghethorn_official" data-soc="tiktok" style="--c:#000000" rel="me noopener"><span class="soc-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 3v11.6a3.6 3.6 0 1 1-3.6-3.6M14.5 3c.5 2.7 2.4 4.4 5 4.6" fill="none" stroke="#25f4ee" stroke-width="2.4" stroke-linecap="round" transform="translate(-.8 -.6)"/><path d="M14.5 3v11.6a3.6 3.6 0 1 1-3.6-3.6M14.5 3c.5 2.7 2.4 4.4 5 4.6" fill="none" stroke="#fe2c55" stroke-width="2.4" stroke-linecap="round" transform="translate(.8 .6)"/><path d="M14.5 3v11.6a3.6 3.6 0 1 1-3.6-3.6M14.5 3c.5 2.7 2.4 4.4 5 4.6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></span><span class="soc-t"><b>TikTok</b><small>@verghethorn_official</small></span><span class="soc-a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li><li><a class="soc" href="mailto:verghethorn@gmail.com" data-soc="email" style="--c:#3d5afe"><span class="soc-i"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2.5" fill="none" stroke="#fff" stroke-width="1.8"/><path d="m3.8 7 8.2 6 8.2-6" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg></span><span class="soc-t"><b>Email</b><small>verghethorn@gmail.com</small></span><span class="soc-a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li></ul>
 </section>
 </main>
 
 <footer class="foot wrap">
   <p class="foot-wm">VERGHÉTHORN</p>
-  <p>Films for brands · Short films · Product design</p>
-  <p class="foot-c">© 2026 VERGHÉTHORN · Footage: Mixkit</p>
+  <p>AI Filmmaker · Commercials · Short films · Product design</p>
+  <p class="foot-c">© 2026 VERGHÉTHORN · Demo footage on this page: Mixkit</p>
 </footer>
 
 <div class="warp" data-warp aria-hidden="true"><span class="warp-i"></span></div>
 
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"VERGHÉTHORN","url":"https://verghethorn.com","email":"verghethorn@gmail.com","sameAs":["https://www.instagram.com/verghethorn.studio","https://www.youtube.com/@verghethorn","https://www.tiktok.com/@verghethorn_official"],"description":"VERGHÉTHORN is a studio for brand films and product design. We design the product, then make the film that makes people want it."}</script>
-<script type="module" src="/static/js/site.js?v=7d6fe104"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"VERGHÉTHORN","url":"https://verghethorn.com","email":"verghethorn@gmail.com","sameAs":["https://www.instagram.com/verghethorn.studio","https://www.youtube.com/@verghethorn","https://www.tiktok.com/@verghethorn_official"],"description":"VERGHÉTHORN is an AI filmmaker. Brand commercials, short films and product design — written, directed and generated with AI, finished with the craft of cinema."}</script>
+<script type="module" src="/static/js/site.js?v=91bb0cf7"></script>
 </body>
 </html>

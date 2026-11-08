@@ -1,4 +1,4 @@
-// VERGHÉTHORN v8. Nothing here blocks page scrolling.
+// VERGHÉTHORN v9 — AI filmmaker. Nothing here blocks page scrolling.
 import { sfx, isMuted, setMuted, unlock } from './sfx.js';
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -7,6 +7,8 @@ const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const seen = (els, fn, opts = { threshold: .2 }) => { const io = new IntersectionObserver(es => es.forEach(e => fn(e, io)), opts); els.forEach(el => el && io.observe(el)); return io; };
 const buzz = ms => { try { navigator.vibrate?.(ms); } catch {} };
 const play = v => { const p = v.play(); if (p) p.catch(() => {}); };
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const store = { get: (k, d) => { try { return localStorage.getItem(k) ?? d; } catch { return d; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
 
 /* sound toggle */
 const sndBtn = $('[data-sound]');
@@ -14,85 +16,84 @@ const paintSnd = () => { const m = isMuted(); sndBtn.setAttribute('aria-pressed'
 paintSnd(); sndBtn.addEventListener('click', () => { setMuted(!isMuted()); paintSnd(); sfx('tick'); });
 addEventListener('pointerdown', unlock, { once: true, passive: true });
 
-/* header turns solid after the hero */
-const hd = $('[data-hd]'), hero = $('[data-hero]');
-seen([hero], e => hd.classList.toggle('solid', !e.isIntersecting), { rootMargin: '-80px 0px 0px 0px', threshold: 0 });
-
-/* reveal + autoplay videos only while visible */
+const hd = $('[data-hd]');
+addEventListener('scroll', () => hd.classList.toggle('solid', scrollY > 10), { passive: true });
 seen($$('.rv'), (e, io) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }, { threshold: .15 });
 seen($$('video[data-auto]'), e => { const v = e.target; if (e.isIntersecting) { if (v.preload === 'none') v.preload = 'auto'; play(v); } else v.pause(); }, { threshold: .2 });
 
-/* ---------- hero: hold to stop time ---------- */
+/* ---------- hero: prompt → generation → scene ---------- */
 {
-  const v = $('[data-hero-v]'), btn = $('[data-hold]'), label = $('[data-hold-t]'), tc = $('[data-tc]'), recL = $('[data-held-l]');
-  const portrait = matchMedia('(max-aspect-ratio: 1/1)').matches;
-  v.src = portrait ? v.dataset.srcM : v.dataset.srcD;
-  if (portrait) v.poster = v.dataset.posterM;
-  if (still) v.removeAttribute('autoplay'); else play(v);
-  seen([hero], e => { if (e.isIntersecting && !held && !still) play(v); else if (!e.isIntersecting) v.pause(); }, { threshold: 0 });
-
-  let held = false, raf = 0, rate = 1;
-  const ramp = to => {
-    cancelAnimationFrame(raf);
-    const step = () => {
-      rate += (to - rate) * .09;
-      if (to === 0 && rate < .08) { v.pause(); rate = 0; return; }
-      if (to === 1 && rate > .98) rate = 1;
-      if (rate > 0) { if (v.paused) play(v); v.playbackRate = Math.max(.0625, rate); }
-      if (rate !== to) raf = requestAnimationFrame(step);
-    };
-    if (to === 1 && rate === 0) rate = .07;
-    raf = requestAnimationFrame(step);
+  const gen = $('[data-gen]'), v = $('[data-gen-v]'), cv = $('[data-gen-noise]'), txt = $('[data-gen-text]'), go = $('[data-gen-go]'),
+    prog = $('[data-gen-prog]'), state = $('[data-gen-state]'), num = $('[data-gen-n]'), chips = $$('[data-scene]');
+  const { scenes, t } = JSON.parse($('#scenes').textContent);
+  const ctx = cv.getContext('2d'); cv.width = 64; cv.height = 36;
+  const img = ctx.createImageData(64, 36);
+  let noiseOn = false, run = 0, idx = -1, visible = true, timer = 0;
+  const noise = () => {
+    if (!noiseOn) return;
+    const d = img.data;
+    for (let i = 0; i < d.length; i += 4) { const n = Math.random() * 230, h = Math.random(); d[i] = n * (.55 + h * .45); d[i + 1] = n * .6; d[i + 2] = n * (1 - h * .35); d[i + 3] = 255; }
+    ctx.putImageData(img, 0, 0); requestAnimationFrame(noise);
   };
-  const down = e => {
-    if (held || e.button > 0) return; held = true;
-    hero.classList.add('stopped'); label.textContent = label.dataset.b; recL.textContent = 'HOLD';
-    sfx('slowmo'); buzz(20); ramp(0);
+  const type = async (str, id) => {
+    txt.textContent = '';
+    if (still) { txt.textContent = str; return; }
+    for (let k = 1; k <= str.length; k++) { if (id !== run) return; txt.textContent = str.slice(0, k); if (k % 4 === 0) sfx('key'); await wait(22); }
   };
-  const up = () => {
-    if (!held) return; held = false;
-    hero.classList.remove('stopped'); label.textContent = label.dataset.a; recL.textContent = 'REC';
-    sfx('whoosh'); ramp(1);
+  const show = async (i, manual = false) => {
+    const id = ++run; clearTimeout(timer); idx = i;
+    const [src, prompt] = scenes[i];
+    chips.forEach((c, k) => c.setAttribute('aria-current', String(k === i)));
+    num.textContent = String(i + 1).padStart(2, '0');
+    await type(prompt, id); if (id !== run) return;
+    if (manual) sfx('whoosh');
+    gen.classList.add('busy'); noiseOn = true; noise();
+    v.src = src + '.mp4'; v.load();
+    const dur = still ? 300 : 2300, t0 = performance.now();
+    await new Promise(res => { const step = () => { if (id !== run) return res(); const k = Math.min(1, (performance.now() - t0) / dur); prog.style.width = k * 100 + '%'; state.textContent = `${t.gen} · ${Math.floor(k * 100)}%`; k < 1 ? requestAnimationFrame(step) : res(); }; step(); });
+    if (id !== run) return;
+    play(v); gen.classList.remove('busy'); setTimeout(() => { noiseOn = false; }, 900);
+    prog.style.width = '0'; state.textContent = t.done; sfx('ding'); setTimeout(() => { if (id === run) state.textContent = ''; }, 1600);
+    timer = setTimeout(() => { if (visible) show((idx + 1) % scenes.length); }, 6500);
   };
-  // the button, or a long press anywhere on the picture
-  btn.addEventListener('pointerdown', e => { e.preventDefault(); down(e); });
-  let lp = 0;
-  hero.addEventListener('pointerdown', e => { if (e.target.closest('[data-hold]') || e.pointerType === 'mouse') return; lp = setTimeout(() => down(e), 260); }, { passive: true });
-  hero.addEventListener('mousedown', e => { if (!e.target.closest('[data-hold]') && e.button === 0) down(e); });
-  ['pointerup', 'pointercancel', 'pointerleave', 'blur'].forEach(t => (t === 'blur' ? window : hero).addEventListener(t, () => { clearTimeout(lp); up(); }));
-  addEventListener('scroll', () => { clearTimeout(lp); if (held) up(); }, { passive: true });
-  btn.addEventListener('keydown', e => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) { e.preventDefault(); down(e); } });
-  btn.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter') up(); });
-  btn.addEventListener('contextmenu', e => e.preventDefault());
-  hero.addEventListener('contextmenu', e => { if (e.pointerType !== 'mouse') e.preventDefault(); });
-
-  const pad = n => String(n).padStart(2, '0');
-  const tick = () => { const t = v.currentTime || 0, f = Math.floor(t * 24); tc.textContent = `00:00:${pad(Math.floor(t))}:${pad(f % 24)}`; requestAnimationFrame(tick); };
-  tick();
+  chips.forEach((c, i) => c.addEventListener('click', () => { buzz(8); show(i, true); }));
+  go.addEventListener('click', () => { buzz(8); show((idx + 1) % scenes.length, true); });
+  seen([gen], e => { visible = e.isIntersecting; if (visible) { if (idx < 0) show(0); else if (!gen.classList.contains('busy')) { play(v); clearTimeout(timer); timer = setTimeout(() => show((idx + 1) % scenes.length), 5000); } } else { v.pause(); clearTimeout(timer); } }, { threshold: .1 });
+  v.loop = true;
 }
 
-/* ---------- statement: words light up as you scroll ---------- */
-{
-  const p = $('[data-words]');
-  p.innerHTML = p.textContent.split(/(\s+)/).map(w => /\s/.test(w) ? w : `<span>${w}</span>`).join('');
-  const ws = $$('span', p);
-  let on = false;
-  const paint = () => {
-    const r = p.getBoundingClientRect(), vh = innerHeight;
-    const k = Math.min(1, Math.max(0, (vh * .85 - r.top) / (r.height + vh * .35)));
-    const n = Math.round(k * ws.length);
-    ws.forEach((w, i) => w.classList.toggle('lit', i < n));
-    if (on) requestAnimationFrame(paint);
-  };
-  seen([p], e => { on = e.isIntersecting; if (on) paint(); }, { threshold: 0 });
-}
+/* ---------- process: timeline playhead width ---------- */
+$$('.ui-tl').forEach(el => { const set = () => el.style.setProperty('--w', `${el.clientWidth - 92}px`); set(); addEventListener('resize', set); });
 
-/* ---------- design: "Bring us an idea — a teapot." ---------- */
+/* ---------- idea lab ---------- */
 {
-  const el = $('[data-swap]'), words = JSON.parse($('#words').textContent);
-  let i = 0, t = 0;
-  const next = () => { el.classList.add('out'); setTimeout(() => { i = (i + 1) % words.length; el.textContent = words[i]; el.classList.remove('out'); }, 350); };
-  if (!still) seen([el], e => { clearInterval(t); if (e.isIntersecting) t = setInterval(next, 2200); }, { threshold: 0 });
+  const slot = $('[data-slot]'), lists = JSON.parse($('#reels').textContent), reels = $$('[data-reel]', slot), spinBtn = $('[data-spin]'), out = $('[data-logline]'), use = $('[data-use]');
+  const pos = reels.map(() => 0); let busy = false, typer;
+  const escH = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  reels.forEach((r, i) => { $('[data-strip]', r).innerHTML = Array.from({ length: 6 }, () => lists[i].map(x => `<span>${escH(x)}</span>`).join('')).join(''); });
+  const ih = r => $('.sreel-w', r).offsetHeight;
+  const place = (i, n, ms) => { const s = $('[data-strip]', reels[i]); s.style.transition = ms ? `transform ${ms}ms cubic-bezier(.15,.85,.25,1.05)` : 'none'; s.style.transform = `translateY(${-n * ih(reels[i])}px)`; };
+  const text = () => pos.map((p, i) => lists[i][p % lists[i].length]).join(' ') + '.';
+  const type = str => { clearInterval(typer); out.innerHTML = ''; const sp = document.createElement('span'), cur = document.createElement('span'); cur.className = 'cur'; out.append(sp, cur); let k = 0; typer = setInterval(() => { sp.textContent = str.slice(0, ++k); if (k % 3 === 0) sfx('key'); if (k >= str.length) clearInterval(typer); }, still ? 0 : 24); };
+  const setMail = () => { use.href = `mailto:verghethorn@gmail.com?subject=${encodeURIComponent(use.dataset.subject)}&body=${encodeURIComponent(text() + '\n\n')}`; };
+  reels.forEach(r => r.addEventListener('click', () => { if (busy) return; const on = r.getAttribute('aria-pressed') !== 'true'; r.setAttribute('aria-pressed', String(on)); sfx(on ? 'pop' : 'tick'); }));
+  const finish = () => { busy = false; sfx('ding'); store.set('vt-spun', +store.get('vt-spun', 0) + 1); type(text()); setMail(); };
+  spinBtn.addEventListener('click', () => {
+    if (busy) return; busy = true; sfx('whoosh'); let done = 0;
+    reels.forEach((r, i) => {
+      if (r.getAttribute('aria-pressed') === 'true') { done++; return; }
+      const n = lists[i].length, target = Math.floor(Math.random() * n), cur = pos[i] % n;
+      place(i, cur, 0); void r.offsetWidth;
+      const dist = n * 3 + ((target - cur + n) % n || n), ms = 900 + i * 380; r.classList.add('spinning');
+      requestAnimationFrame(() => place(i, cur + dist, ms));
+      let k = 0; const tk = setInterval(() => { sfx('tick'); if (++k > ms / 80) clearInterval(tk); }, 80);
+      setTimeout(() => { r.classList.remove('spinning'); pos[i] = target; place(i, target, 0); r.setAttribute('aria-label', `${$('.sreel-l', r).textContent}: ${lists[i][target]}`); sfx('pop'); buzz(8); if (++done === reels.length) finish(); }, ms + 40);
+    });
+    if (done === reels.length) finish();
+  });
+  addEventListener('resize', () => reels.forEach((_, i) => place(i, pos[i] % lists[i].length, 0)));
+  reels.forEach((_, i) => { pos[i] = Math.floor(Math.random() * lists[i].length); place(i, pos[i], 0); });
+  type(text()); setMail();
 }
 
 /* ---------- social cards: the brand colour fills the screen, then we go ---------- */
