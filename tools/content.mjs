@@ -61,3 +61,58 @@ export const L = {
   notFound: { title: 'Page not found — VERGHÉTHORN', h1: 'Wrong scene.', text: 'This page doesn’t exist.', home: 'Back to the start' },
   moved: 'This page has moved.',
 };
+
+// ---------- Films page (Apple-style product page) ----------
+export const FILMS = {
+  title: 'VERGHÉTHORN Films — AI short films and series',
+  desc: 'Original short films and series created with AI and directed like cinema. Any world, any era, any light.',
+  name: 'Films',
+  local: [['#overview', 'Overview'], ['#highlights', 'Highlights'], ['#how', 'How it works'], ['#faq', 'FAQ']],
+  cta: 'Start a project',
+  hero: { eyebrow: 'VERGHÉTHORN Films', h1: 'Any world.<br>Any era.<br>Any light.', sub: 'Original short films and series — created with AI, directed like cinema.', a: 'Watch the film reel', b: 'Start a project' },
+  statement: 'Every frame is written, directed and finished by a filmmaker. AI is the camera.',
+  highlights: { h2: 'Get to know VERGHÉTHORN Films.', items: [
+    ['c-stars', 'Worlds', 'Any world.<br>No set.', 'Any world. No set.', ['Deserts, oceans, mountain tops, other planets — every location is created for your story, not found and rented.', 'No travel, no permits, no weather to wait for. The world of the film is designed once and stays consistent in every shot.']],
+    ['s-nature', 'Scale', 'Shots that used<br>to need a crew.', 'Shots that used to need a crew.', ['Aerial views, wide landscapes, crowds and journeys — the kind of shots that once needed helicopters, crews and weeks of travel.', 'Here they are generated, reviewed and regenerated until they serve the story.']],
+    ['c-forest', 'Atmosphere', 'Light, fog and rain —<br>directed.', 'Light, fog and rain — directed.', ['Golden hour that lasts as long as the scene needs. Fog that rolls in on cue. Rain only where the story asks for it.', 'Atmosphere is not luck anymore. It is a decision.']],
+    ['c-fire', 'Emotion', 'Pictures you<br>can feel.', 'Pictures you can feel.', ['Technology is only the tool. A film works when it moves someone.', 'Every shot is chosen for what it makes the viewer feel — then cut, scored and coloured with the same care as cinema.']],
+    ['s-collab', 'Cities', 'Every city.<br>Any hour.', 'Every city. Any hour.', ['Night trains, empty streets at dawn, rooftops above the lights — cities that feel real, at the exact hour your story needs.']],
+  ] },
+  how: { h2: 'How it works.', sub: 'From one sentence to a finished film.', steps: [
+    ['Idea', 'Tell us the story, the feeling or simply a sentence. That is enough to start.'],
+    ['Script & look', 'A script and style frames — you see the look of your film before production starts.'],
+    ['AI production', 'Every shot is generated, reviewed and refined until it serves the story.'],
+    ['Final cut', 'Edit, voice, music, sound design and colour. Delivered for every screen.'],
+  ] },
+  get: { h2: 'What you get.', items: [
+    ['A finished film', 'Edited, scored and colour-graded — ready to premiere.'],
+    ['Every format', 'Cinema and YouTube 16:9, Reels and TikTok 9:16, square 1:1.'],
+    ['Style frames first', 'You approve the look before the film is made.'],
+    ['A direct line to the director', 'You talk to the person who makes your film.'],
+  ] },
+  faq: { h2: 'Questions? Answers.', items: [
+    ['How long does a film take?', 'It depends on the length and the story. After a short conversation the director proposes a timeline for your project.'],
+    ['How much does it cost?', 'Every film is quoted individually. Start a project and you will receive a personal proposal.'],
+    ['What do you need from me?', 'An idea, a feeling or a brief. Even one sentence is enough to begin — the rest we shape together.'],
+    ['Is everything made by AI?', 'AI generates the footage. The story, direction, edit, sound and colour are made by a filmmaker.'],
+  ] },
+  end: { h2: 'Let’s make<br>your film.', a: 'Start a project', b: 'Talk on Instagram' },
+};
+
+// ---------- Start a project (the “Buy” flow) ----------
+export const START = {
+  title: 'Start a project — VERGHÉTHORN',
+  desc: 'Tell VERGHÉTHORN about your film, commercial, product or AI agent. A few quick steps — the director replies personally.',
+  h1: 'Start a project.',
+  sub: 'A few quick questions. The director replies personally.',
+  steps: [
+    { id: 'kind', h: 'What would you like to create?', opts: [['films', 'Film', 'Short film or series'], ['commercials', 'Commercial', 'Campaign for a brand'], ['design', 'Product design', 'From idea to production'], ['agents', 'AI agent', 'Assistant for your brand'], ['collab', 'Collaboration', 'Your brand in our story']] },
+    { id: 'length', h: 'How long should it be?', opts: [['15–30 seconds'], ['30–60 seconds'], ['1–5 minutes'], ['Longer'], ['Not sure yet']] },
+    { id: 'when', h: 'When do you need it?', opts: [['As soon as possible'], ['Within a month'], ['Within 3 months'], ['No rush']] },
+  ],
+  idea: { h: 'Tell us about your idea.', ph: 'A few sentences about the story, the brand, the feeling you want…' },
+  you: { h: 'How can we reach you?', name: 'Your name', contact: 'Email, phone or Instagram' },
+  send: 'Send request', note: 'Your email app will open with the request ready to send to verghethorn@gmail.com.',
+  need: 'Please choose what you would like to create and leave a way to reach you.',
+  subject: 'Project request',
+};
