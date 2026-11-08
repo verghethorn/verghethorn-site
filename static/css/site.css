@@ -302,3 +302,19 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .tile.agents { height: 880px; }
 @media (min-width: 735px) { .tile.agents { height: 940px; } }
 .m a[href] { color: var(--blue); text-decoration: underline; }
+
+/* messenger-style: who is talking */
+.ph-msgs { gap: 10px; }
+.m { position: relative; max-width: 74%; margin-top: 15px; }
+.m.a { margin-left: 32px; }
+.m.u { margin-right: 32px; }
+.m::before { content: ''; position: absolute; bottom: 0; width: 26px; height: 26px; border-radius: 50%; background-size: cover; background-position: center; }
+.m.a::before { left: -32px; background-image: url(/media/agent-av.webp); box-shadow: 0 0 0 1px rgba(0,0,0,.06); }
+.m.u::before { right: -32px; background-color: #d1d1d6; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='9' r='4' fill='%23fff'/%3E%3Cpath d='M4 21c1-4.5 4.4-6.5 8-6.5s7 2 8 6.5' fill='%23fff'/%3E%3C/svg%3E"); background-size: 70%; background-repeat: no-repeat; }
+.m::after { position: absolute; top: -15px; font-size: 10.5px; line-height: 1; letter-spacing: 0; color: #8e8e93; white-space: nowrap; }
+.m.a::after { content: 'VERGHÉTHORN Agent'; left: 4px; }
+.m.u::after { content: 'You'; right: 4px; }
+.m.a + .m.a, .m.u + .m.u { margin-top: 0; }
+.m.a + .m.a::after, .m.u + .m.u::after { content: none; }
+.m.a + .m.a::before, .m.u + .m.u::before { visibility: visible; }
+.ph-msgs { padding-top: 6px; }
