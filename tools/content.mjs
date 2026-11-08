@@ -113,7 +113,9 @@ export const START = {
   ],
   idea: { h: 'Tell us about your idea.', ph: 'A few sentences about the story, the brand, the feeling you want…' },
   you: { h: 'How can we reach you?', name: 'Your name', contact: 'Email, phone or Instagram' },
-  send: 'Send request', note: 'Your email app will open with the request ready to send to verghethorn@gmail.com.',
+  send: 'Send request', sending: 'Sending…', note: 'Your request goes straight to the director. No account needed.',
+  done: { h: 'Thank you. Your request is sent.', p: 'The director will read it and reply to you personally.', home: 'Back to VERGHÉTHORN' },
+  fail: { h: 'Almost there.', p: 'We couldn’t send your request automatically. Open your email app with the request ready, or copy it and send it to verghethorn@gmail.com.', mail: 'Open email', copy: 'Copy request', copied: 'Copied' },
   need: 'Please choose what you would like to create and leave a way to reach you.',
   subject: 'Project request',
 };

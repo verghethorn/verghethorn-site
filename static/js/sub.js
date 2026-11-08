@@ -87,20 +87,35 @@ if (form) {
   if (pre) pre.checked = true;
   $$('input[type="radio"]', form).forEach(r => r.addEventListener('change', () => sfx('pop')));
   const err = $('[data-err]', form);
-  form.addEventListener('submit', e => {
+  const sendBtn = $('[data-send]', form), done = $('[data-done]'), fail = $('[data-fail]');
+  const show = el => { form.hidden = true; el.hidden = false; el.focus(); scrollTo({ top: el.getBoundingClientRect().top + scrollY - 120, behavior: 'smooth' }); };
+  form.addEventListener('submit', async e => {
     e.preventDefault();
     const d = new FormData(form), kind = d.get('kind'), contact = (d.get('contact') || '').trim();
     if (!kind || !contact) { err.hidden = false; err.scrollIntoView({ behavior: 'smooth', block: 'center' }); sfx('tick'); return; }
     err.hidden = true;
-    const lines = [
-      `What: ${kind}`,
-      d.get('length') && `Length: ${d.get('length')}`,
-      d.get('when') && `When: ${d.get('when')}`,
-      '', 'Idea:', (d.get('idea') || '—').trim(), '',
-      `Name: ${(d.get('name') || '—').trim()}`,
-      `Contact: ${contact}`,
-    ].filter(x => x !== false && x !== null && x !== undefined);
-    sfx('ding');
-    location.href = `mailto:${cfg.mail}?subject=${encodeURIComponent(`${cfg.subject} — ${kind}`)}&body=${encodeURIComponent(lines.join('\n'))}`;
+    const f = { What: kind, Length: d.get('length') || '—', When: d.get('when') || '—', Idea: (d.get('idea') || '—').trim(), Name: (d.get('name') || '—').trim(), Contact: contact };
+    const subject = `${cfg.subject} — ${kind}`;
+    const text = Object.entries(f).map(([k, v]) => `${k}: ${v}`).join('\n');
+    sendBtn.disabled = true; const label = sendBtn.textContent; sendBtn.textContent = cfg.sending;
+    try {
+      const r = await fetch(`https://formsubmit.co/ajax/${cfg.mail}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ _subject: subject, _template: 'table', _captcha: 'false', ...(contact.includes('@') ? { _replyto: contact } : {}), ...f }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || String(j.success) !== 'true') throw new Error(j.message || 'send failed');
+      sfx('ding'); show(done);
+    } catch (x) {
+      console.warn('request not sent automatically', x);
+      $('[data-text]', fail).textContent = `${subject}\n\n${text}`;
+      $('[data-mail]', fail).href = `mailto:${cfg.mail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`;
+      show(fail);
+    } finally { sendBtn.disabled = false; sendBtn.textContent = label; }
+  });
+  $('[data-copy]', fail).addEventListener('click', async ev => {
+    const t = $('[data-text]', fail).textContent;
+    try { await navigator.clipboard.writeText(t); } catch { const r = document.createRange(); r.selectNodeContents($('[data-text]', fail)); getSelection().removeAllRanges(); getSelection().addRange(r); document.execCommand('copy'); }
+    ev.currentTarget.textContent = cfg.copied; sfx('pop');
   });
 }

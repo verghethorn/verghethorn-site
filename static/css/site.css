@@ -438,3 +438,11 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .fh-media img, .t-media > img, .sheet-v img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .card > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .fh-media img { object-position: 50% 35%; }
+.st-done { text-align: center; padding: 40px 0 20px; outline: none; }
+.st-done h2 { font-size: 32px; font-weight: 600; margin: 18px 0 10px; }
+.st-done p { color: var(--dim); font-size: 19px; max-width: 34ch; margin: 0 auto; }
+.st-ok { display: inline-grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: #1f9d55; color: #fff; animation: pop .5s var(--ease); }
+.st-ok svg { width: 32px; height: 32px; }
+@keyframes pop { from { transform: scale(.5); opacity: 0; } }
+.st-copy { text-align: left; white-space: pre-wrap; font: 14px/1.5 var(--font); background: var(--gray); border-radius: 14px; padding: 18px 20px; margin-top: 26px; color: var(--fg); }
+.pill[disabled] { opacity: .6; }

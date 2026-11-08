@@ -103,7 +103,7 @@ ${gnav()}
 <main id="main">
 <section class="tile hero dark" aria-labelledby="h1">
   <div class="t-txt"><h1 id="h1">${H.h1}</h1><p class="sub">${H.sub}</p>${btns(H.a, H.b, '#reel', '/start/', ' data-reel-open')}</div>
-  <div class="t-media hero-media"><video poster="${V_('reel')}.webp?v=${MV}" muted loop playsinline autoplay preload="auto" disablepictureinpicture data-auto><source src="${V_('reel-m')}.mp4?v=${MV}" type="video/mp4" media="(max-width: 734px)"><source src="${V_('reel')}.mp4?v=${MV}" type="video/mp4"></video></div>
+  <div class="t-media hero-media"><video src="${V_('reel')}.mp4?v=${MV}" poster="${V_('reel')}.webp?v=${MV}" muted loop playsinline autoplay preload="auto" disablepictureinpicture data-auto></video></div>
 </section>
 
 <section class="tile agents gray" id="agents" aria-label="${G.h2}">
@@ -277,11 +277,13 @@ ${gnav(true)}
       <label class="fld"><span>${S.you.name}</span><input name="name" autocomplete="name"></label>
       <label class="fld"><span>${S.you.contact}</span><input name="contact" autocomplete="email" required></label>
     </fieldset>
-    <div class="st-send"><p class="st-err" data-err hidden>${S.need}</p><button type="submit" class="pill big">${S.send}</button><p class="st-note">${S.note}</p></div>
+    <div class="st-send"><p class="st-err" data-err hidden>${S.need}</p><button type="submit" class="pill big" data-send>${S.send}</button><p class="st-note">${S.note}</p></div>
   </form>
+  <section class="st-done" data-done hidden tabindex="-1"><span class="st-ok" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h2>${S.done.h}</h2><p>${S.done.p}</p><p class="ctas"><a class="pill" href="/">${S.done.home}</a></p></section>
+  <section class="st-done" data-fail hidden tabindex="-1"><h2>${S.fail.h}</h2><p>${S.fail.p}</p><p class="ctas"><a class="pill" data-mail href="mailto:${SITE.email}">${S.fail.mail}</a><button type="button" class="pill ol" data-copy>${S.fail.copy}</button></p><pre class="st-copy" data-text></pre></section>
 </main>
 ${footer(true)}
-<script type="application/json" id="start-cfg">${JSON.stringify({ mail: SITE.email, subject: S.subject })}</script>
+<script type="application/json" id="start-cfg">${JSON.stringify({ mail: SITE.email, subject: S.subject, sending: S.sending, copied: S.fail.copied })}</script>
 <script type="module" src="/static/js/sub.js?v=${V}"></script>
 </body>
 </html>
