@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import * as EN from './content.mjs';
 import * as RU from './content.ru.mjs';
+import { ARTICLES, ARTICLES_UI } from './articles.mjs';
 const { SITE } = EN;
 const LANGS = [['en', 'English', EN], ['ru', 'Русский', RU]];
 let LANG = 'en', L, FILMS, START, COMMERCIALS, AGENTS, COLLAB, DESIGN, NATURE, SERVICES;
@@ -38,6 +39,9 @@ const vid = (id, cls = '', pos = '') => `<video class="${cls}"${pos ? ` style="o
 
 const SOCIALS = () => [...Object.entries(SITE.social).map(([id, s]) => ({ id, ...s })), { id: 'email', name: L.contact.emailName, handle: SITE.email, href: `mailto:${SITE.email}`, color: '#3d5afe' }];
 const HOMEHREF = h => h.startsWith('#') ? `/${h}` : h;
+const seoBlock = S => S ? `<section class="seo" aria-label="${esc(S.h)}"><div class="wrap"><h2>${S.h}</h2>${S.p.map(x => `<p>${x}</p>`).join('')}</div></section>` : '';
+const ORG = () => ({ '@type': 'Organization', name: 'VERGHÉTHORN', url: SITE.url + '/', email: SITE.email, logo: `${SITE.url}/static/apple-touch-icon.png`, sameAs: Object.values(SITE.social).map(s => s.href) });
+const crumbs = (...items) => ({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: items.map(([name, path], i) => ({ '@type': 'ListItem', position: i + 1, name, item: `${SITE.url}${path}` })) });
 function gnav(sub = false) {
   const NAVPAGE = { '#films': PAGE.films, '#commercials': PAGE.commercials, '#agents': PAGE.agents, '#collab': PAGE.collab };
   const nav = L.nav.map(([h, t]) => [NAVPAGE[h] || (sub ? HOMEHREF(h) : h), t]);
@@ -60,7 +64,7 @@ function footer(sub = false) {
     <p class="ft-note">${L.footNote}</p>
     <div class="ft-cols">${L.footCols.map(([h, ls]) => `<div><h3>${h}</h3><ul>${ls.map(([k, x]) => `<li><a href="${href(k)}">${x}</a></li>`).join('')}</ul></div>`).join('')}
       <div><h3>${L.ui.contact}</h3><ul><li><a href="/start/">${L.ui.start}</a></li>${socials.map(s => `<li><a href="${s.href}"${s.id === 'email' ? '' : ' rel="me noopener"'}>${s.name}</a></li>`).join('')}</ul></div></div>
-    <p class="ft-lang">${LANGS.map(([c, n]) => `<a data-lang="${c}" lang="${c}"${c === LANG ? ' aria-current="true"' : ''}>${n}</a>`).join('<span aria-hidden="true">·</span>')}</p>
+    <p class="ft-lang">${LANGS.map(([c, n]) => `<a data-lang="${c}" lang="${c}"${c === LANG ? ' aria-current="true"' : ''}>${n}</a>`).join('<span aria-hidden="true">·</span>')}<span class="ft-sep" aria-hidden="true"></span><a href="/articles/">${L.ui.articles}</a></p>
     <p class="ft-b"><span>Copyright © ${new Date().getFullYear()} VERGHÉTHORN. ${L.ui.rights}</span><a href="mailto:${SITE.email}">${SITE.email}</a></p>
   </div>
 </footer>`;
@@ -77,6 +81,7 @@ function head({ title, desc, path, noindex = false, refresh = '', og = '/media/o
 ${refresh}${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${SITE.url}${path}">\n<!--ALT-->`}
 
 <meta name="theme-color" content="#ffffff">
+${SITE.verify.google ? `<meta name="google-site-verification" content="${SITE.verify.google}">\n` : ''}${SITE.verify.yandex ? `<meta name="yandex-verification" content="${SITE.verify.yandex}">\n` : ''}${SITE.verify.bing ? `<meta name="msvalidate.01" content="${SITE.verify.bing}">\n` : ''}<meta property="og:locale" content="${LANG === 'ru' ? 'ru_RU' : 'en_US'}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="VERGHÉTHORN">
 <meta property="og:title" content="${esc(title)}">
@@ -93,14 +98,14 @@ ${refresh}${noindex ? '<meta name="robots" content="noindex">' : `<link rel="can
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap">
 <link rel="stylesheet" href="/static/css/site.css?v=${V}">
-${ld ? `<script type="application/ld+json">${JSON.stringify(ld)}</script>` : ''}
+${[].concat(ld || []).map(x => `<script type="application/ld+json">${JSON.stringify(x)}</script>`).join('\n')}
 </head>`;
 }
 
 function page() {
   const H = L.hero, G = L.agents, A = L.ads, K = L.know, LU = L.lineup, Y = L.why, C = L.contact;
   const socials = [...Object.entries(SITE.social).map(([id, s]) => ({ id, ...s })), { id: 'email', name: C.emailName, handle: SITE.email, href: `mailto:${SITE.email}`, color: '#3d5afe' }];
-  const jsonld = { '@context': 'https://schema.org', '@type': 'Organization', name: 'VERGHÉTHORN', url: SITE.url, email: SITE.email, sameAs: Object.values(SITE.social).map(s => s.href), description: L.desc };
+  const jsonld = { '@context': 'https://schema.org', ...ORG(), description: L.desc, areaServed: 'Worldwide', knowsLanguage: ['en', 'ru'], makesOffer: SERVICES.map(F => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name: F.name, description: F.desc, url: `${SITE.url}/${F.slug}/` } })) };
   const btns = (a, b, ha = '#contact', hb = '#contact', da = '') => `<p class="ctas"><a class="pill" href="${ha}"${da}>${a}</a><a class="pill ol" href="${hb}">${b}</a></p>`;
   const anchor = { Films: '#films', Commercials: '#commercials', 'Product design': '#design', 'Nature & travel': '#nature', 'AI Agents': '#agents', Collaborations: '#collab' };
   const chat = G.chat;
@@ -172,6 +177,7 @@ ${gnav()}
   <div class="sec-h wrap center"><h2 id="c-h">${C.h2}</h2><p class="sub">${C.sub}</p><p class="ctas"><a class="pill" href="/start/">${L.tileB}</a></p></div>
   <ul class="socials wrap">${socials.map((s, i) => `<li class="rv" style="--d:${i * 70}ms"><a class="soc" href="${s.href}" data-soc="${s.id}" style="--c:${s.color}"${s.id === 'email' ? '' : ' rel="me noopener"'}><span class="soc-i">${GLYPH[s.id]}</span><span class="soc-t"><b>${esc(s.name)}</b><small>${esc(s.handle)}</small></span><span class="soc-a">${ARROW}</span></a></li>`).join('')}</ul>
 </section>
+${seoBlock(L.seo)}
 </main>
 
 ${footer()}
@@ -200,7 +206,7 @@ function servicePage(F) {
   const H = F.hero, go = `/start/?s=${F.kind}`;
   const media = id => id.startsWith('img:') ? `<img src="${id.slice(4)}?v=${MV}" alt="" loading="lazy">` : vid(id);
   const plus = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
-  return `${head({ title: F.title, desc: F.desc, path: `/${F.slug}/`, og: `/media/og/${F.slug}.jpg`, ld: { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: F.faq.items.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) } })}
+  return `${head({ title: F.title, desc: F.desc, path: `/${F.slug}/`, og: `/media/og/${F.slug}.jpg`, ld: [{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: F.faq.items.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }, { '@context': 'https://schema.org', '@type': 'Service', name: F.name, serviceType: F.title.split(' | ')[0], description: F.desc, url: `${SITE.url}/${F.slug}/`, areaServed: 'Worldwide', provider: ORG() }, crumbs([L.ui.home, '/'], [F.name, `/${F.slug}/`])] })}
 <body class="sub">
 <a class="skip" href="#main">${L.skip}</a>
 ${gnav(true)}
@@ -250,6 +256,8 @@ ${gnav(true)}
   <div class="sec-h wrap"><h2 id="faq-h">${F.faq.h2}</h2></div>
   <div class="faq wrap">${F.faq.items.map(([q, a]) => `<details><summary>${q}<i aria-hidden="true"></i></summary><p>${a}</p></details>`).join('')}</div>
 </section>
+
+${seoBlock(F.seo)}
 
 <section class="tile hero dark fend" aria-labelledby="end-h">
   <div class="t-txt"><h2 id="end-h">${F.end.h2}</h2><p class="ctas"><a class="pill" href="${go}">${F.end.a}</a><a class="pill ol" href="${SITE.social.instagram.href}" rel="noopener">${F.end.b}</a></p></div>
@@ -303,6 +311,54 @@ ${footer(true)}
 `;
 }
 
+const AIMG = a => (a.img.startsWith('/') ? a.img : `${V_(a.img)}.webp`) + `?v=${MV}`;
+const words = h => h.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
+const fmtDate = d => new Date(d + 'T12:00:00Z').toLocaleDateString(LANG === 'ru' ? 'ru-RU' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+const acard = a => { const T = a[LANG]; return `<a class="ac rv" href="/articles/${a.slug}/"><span class="ac-img"><img src="${AIMG(a)}" alt="" loading="lazy" decoding="async"></span><span class="ac-t"><b>${T.title}</b><small>${T.desc}</small><em>${ARTICLES_UI[LANG].read} ${ARROW}</em></span></a>`; };
+function articlesIndex() {
+  const U = ARTICLES_UI[LANG];
+  const ld = [{ '@context': 'https://schema.org', '@type': 'CollectionPage', name: U.h1, url: `${SITE.url}/articles/`, inLanguage: LANG, hasPart: ARTICLES.map(a => ({ '@type': 'Article', headline: a[LANG].title, url: `${SITE.url}/articles/${a.slug}/` })) }, crumbs([L.ui.home, '/'], [U.h1, '/articles/'])];
+  return `${head({ title: U.title, desc: U.desc, path: '/articles/', ld })}
+<body class="sub arts">
+<a class="skip" href="#main">${L.skip}</a>
+${gnav(true)}
+<main id="main" class="art-list wrap">
+  <header class="st-h"><h1>${U.h1}</h1><p class="sub">${U.sub}</p></header>
+  <div class="ac-grid">${ARTICLES.map(acard).join('')}</div>
+</main>
+${footer(true)}
+<script type="module" src="/static/js/sub.js?v=${V}"></script>
+</body>
+</html>
+`;
+}
+function articlePage(a) {
+  const U = ARTICLES_UI[LANG], T = a[LANG], path = `/articles/${a.slug}/`, svc = Object.keys(PAGE).find(k => k === a.page);
+  const min = Math.max(2, Math.round(words(T.body) / 200));
+  const ld = [{ '@context': 'https://schema.org', '@type': 'Article', headline: T.title, description: T.desc, inLanguage: LANG, datePublished: a.date, dateModified: a.date, image: `${SITE.url}${AIMG(a).split('?')[0]}`, mainEntityOfPage: `${SITE.url}${path}`, url: `${SITE.url}${path}`, author: { '@type': 'Organization', name: 'VERGHÉTHORN', url: SITE.url + '/' }, publisher: ORG() }, crumbs([L.ui.home, '/'], [U.h1, '/articles/'], [T.title, path])];
+  const others = ARTICLES.filter(x => x !== a).slice(0, 3);
+  return `${head({ title: `${T.title} | VERGHÉTHORN`, desc: T.desc, path, og: `/media/og/${PAGE[svc].slice(1, -1)}.jpg`, ld })}
+<body class="sub arts">
+<a class="skip" href="#main">${L.skip}</a>
+${gnav(true)}
+<main id="main">
+  <article class="art wrap">
+    <p class="art-k"><a href="/articles/">${U.h1}</a> · <time datetime="${a.date}">${fmtDate(a.date)}</time> · ${min} ${U.min}</p>
+    <h1>${T.title}</h1>
+    <p class="art-lead">${T.desc}</p>
+    <figure class="art-img"><img src="${AIMG(a)}" alt="" decoding="async" fetchpriority="high"></figure>
+    <div class="art-body">${T.body}</div>
+    <aside class="art-cta"><h2>${U.cta.h}</h2><p>${U.cta.p}</p><p class="ctas"><a class="pill" href="/start/">${U.cta.a}</a><a class="lnk" href="${PAGE[svc]}">${U.cta.b} ›</a></p></aside>
+  </article>
+  <section class="art-more wrap"><h2>${U.more}</h2><div class="ac-grid">${others.map(acard).join('')}</div></section>
+</main>
+${footer(true)}
+<script type="module" src="/static/js/sub.js?v=${V}"></script>
+</body>
+</html>
+`;
+}
+
 function notFound() {
   const N = L.notFound;
   return `${head({ title: N.title, desc: N.text, path: '/404.html', noindex: true })}
@@ -319,7 +375,8 @@ function redirect(from, to) {
 for (const d of ['work', 'practice', 'lab', 'about', 'services', 'approach', 'contact', 'archive', 'links', 'ru']) { const p = join(ROOT, d); if (existsSync(p)) rmSync(p, { recursive: true }); }
 const localize = html => html
   .replace(/href="\/(?!media\/|static\/|ru\/|favicon)/g, 'href="/ru/')
-  .replace(/(content|href)="https:\/\/verghethorn\.com\/(?!media\/|static\/|ru\/)/g, '$1="https://verghethorn.com/ru/');
+  .replace(/(content|href)="https:\/\/verghethorn\.com\/(?!media\/|static\/|ru\/)/g, '$1="https://verghethorn.com/ru/')
+  .replace(/"(url|item)":"https:\/\/verghethorn\.com\/(?!media\/|static\/|ru\/)/g, '"$1":"https://verghethorn.com/ru/');
 const alt = path => LANGS.map(([c]) => `<link rel="alternate" hreflang="${c}" href="${SITE.url}${c === 'en' ? '' : '/' + c}${path}">`).join('\n') + `\n<link rel="alternate" hreflang="x-default" href="${SITE.url}${path}">`;
 const out = (path, html) => {
   const dir = LANG === 'en' ? path : `/${LANG}${path}`;
@@ -334,7 +391,9 @@ for (const [code, , C] of LANGS) {
   out('/', page());
   for (const F of SERVICES) out(`/${F.slug}/`, servicePage(F));
   out('/start/', startPage());
-  for (const p of ['/', ...SERVICES.map(F => `/${F.slug}/`), '/start/']) urls.push(`${SITE.url}${code === 'en' ? '' : '/' + code}${p}`);
+  out('/articles/', articlesIndex());
+  for (const a of ARTICLES) out(`/articles/${a.slug}/`, articlePage(a));
+  for (const p of ['/', ...SERVICES.map(F => `/${F.slug}/`), '/start/', '/articles/', ...ARTICLES.map(a => `/articles/${a.slug}/`)]) urls.push(`${SITE.url}${code === 'en' ? '' : '/' + code}${p}`);
 }
 useLang('en', EN);
 old.forEach(([a, b]) => { redirect(a, b); redirect('/ru' + a, '/ru' + b); });

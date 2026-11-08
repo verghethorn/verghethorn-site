@@ -3,6 +3,8 @@
 export const SITE = {
   url: 'https://verghethorn.com',
   email: 'verghethorn@gmail.com',
+  // search-engine ownership codes (Google Search Console, Yandex Webmaster, Bing Webmaster)
+  verify: { google: '', yandex: '', bing: '' },
   social: {
     instagram: { name: 'Instagram', handle: '@verghethorn.studio', href: 'https://www.instagram.com/verghethorn.studio', color: '#d6249f' },
     youtube: { name: 'YouTube', handle: '@verghethorn', href: 'https://www.youtube.com/@verghethorn', color: '#ff0033' },
@@ -290,3 +292,49 @@ export const NATURE = {
   ] },
   end: { h2: 'Let’s show<br>your place.', a: 'Start a project', b: 'Talk on Instagram' },
 };
+
+// ---------- SEO: search titles, descriptions and a calm text block per page ----------
+L.title = 'VERGHÉTHORN — Brand Commercials, Cinematic Advertising & AI Video Production';
+L.desc = 'Brand commercials, cinematic advertising and brand films — produced with AI and directed like cinema. Commercial production, product videos and AI agents for brands worldwide.';
+L.ui.articles = 'Articles';
+L.seo = { h: 'A commercial production studio — powered by AI.', p: [
+  'VERGHÉTHORN is a film and commercial production studio. We create brand commercials, cinematic advertising, brand films, product videos and short films — written, directed and finished by a filmmaker, with AI as the camera. That means any location, any light and any era, without building a set.',
+  'Brands come to us for TV and online commercials, social ads in every format, product launch films, brand collaborations and AI agents that talk to their clients. We work with companies worldwide, in English and Russian.',
+] };
+FILMS.title = 'Short Films & Brand Films — Film Production with AI | VERGHÉTHORN';
+FILMS.desc = 'Short films, brand films and series — cinematic film production created with AI and directed like cinema. Script, characters, worlds, sound and colour.';
+FILMS.seo = { h: 'Film production for brands and storytellers.', p: [
+  'We produce short films, brand films and series: from the first idea and script to characters, locations, sound, music and colour grading. AI generates the footage; a director shapes every scene, so the result feels like cinema, not like a template.',
+  'A brand film tells who you are without selling directly. A short film can launch a channel, a campaign or a festival run. Both are delivered in every format — 16:9 for cinema and YouTube, 9:16 for Reels and TikTok, 1:1 for feeds.',
+] };
+COMMERCIALS.title = 'Brand Commercials & Cinematic Advertising — Commercial Production | VERGHÉTHORN';
+COMMERCIALS.desc = 'Commercial production for brands: TV and online commercials, cinematic advertising, product videos and social ads — created with AI, finished like cinema.';
+COMMERCIALS.seo = { h: 'Commercial production, from brief to launch.', p: [
+  'VERGHÉTHORN produces brand commercials and advertising videos: TV spots, online and social ads, product videos and launch campaigns. Concept, storyboard, production, edit, sound design and colour are handled in one place.',
+  'Cinematic advertising means the commercial feels like a film — with a story, light and mood people remember. Because the footage is created with AI, there is no studio day, no travel and no limits on location, and every version is cut for TV, web and social.',
+] };
+AGENTS.title = 'AI Agents for Business — Chat & Voice Assistants for Brands | VERGHÉTHORN';
+AGENTS.desc = 'AI agents and AI assistants for business: a website chat and voice assistant that answers clients 24/7 in your brand’s tone, in many languages.';
+AGENTS.seo = { h: 'AI assistants that represent your brand.', p: [
+  'An AI agent is a virtual assistant for your business: it answers client questions on your website, by voice and in messengers, day and night. Unlike a simple chatbot, it holds a natural conversation, switches languages and follows your rules.',
+  'We design the agent like a character — its look, voice and manner — and set clear boundaries: what it knows, what it never discusses, and when it hands the client over to you.',
+] };
+COLLAB.title = 'Brand Collaborations & Product Placement in Films | VERGHÉTHORN';
+COLLAB.desc = 'Brand collaborations and branded content: your brand becomes part of an original film — natural product placement inside a story people want to watch.';
+COLLAB.seo = { h: 'Branded content and product placement, done naturally.', p: [
+  'A brand collaboration is branded content that people watch for the story: your product, place or values become part of an original film instead of an ad break. It is product placement that feels natural.',
+  'We propose the story, you approve it, and the film premieres on VERGHÉTHORN channels and yours — with versions for YouTube, Reels, TikTok and your website.',
+] };
+DESIGN.title = 'Product Design, 3D Renders & Product Videos | VERGHÉTHORN';
+DESIGN.desc = 'Product design from idea to production: concepts, 3D models, photoreal product renders and product launch videos — designed with AI.';
+DESIGN.seo = { h: 'Product design, 3D visualisation and product videos.', p: [
+  'We design physical products — tableware, shoes, lamps, accessories — from the first sketch to production files, with 3D models and photoreal renders you can use for presentations and pre-orders.',
+  'When the product is ready, the same team can produce the product video or launch commercial, so the design and the way it is shown to the world belong together.',
+] };
+NATURE.title = 'Travel, Hotel & Destination Videos | VERGHÉTHORN';
+NATURE.desc = 'Travel videos, hotel and resort videos, destination films for tourism brands and regions — cinematic landscapes created with AI.';
+NATURE.seo = { h: 'Destination marketing videos for travel, hotels and regions.', p: [
+  'We create travel videos and destination films for tourism brands, hotels, resorts and regions: landscapes, journeys and atmosphere that make people want to be there.',
+  'Aerial shots, golden hour and night skies are created without a crew or helicopter, built around the real character of the place from your photos and references.',
+] };
+START.title = 'Start a Project — Commercial & Film Production | VERGHÉTHORN';
