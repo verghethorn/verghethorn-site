@@ -1,10 +1,9 @@
-# verghethorn.com (v10
+# verghethorn.com (v10)
 
-Static site for VERGHÉTHORN — AI filmmaker.
+Static site for VERGHÉTHORN — AI Cinema: films, commercials, collaborations.
 
-- Hero: an AI generator window — a prompt types itself, the frame "denoises" and the scene plays; visitors can pick scenes.
-- Sections: Process (script → look & characters → generate → finish), What I make, Why AI cinema, Idea lab (slot machine), Contact.
-- Copy lives in `tools/content.mjs`; run `node tools/build.mjs` to regenerate `index.html`, `404.html`, `sitemap.xml`, `robots.txt`.
-- Styles `static/css/site.css`, sounds `static/js/sfx.js` (synthesized, WebAudio).
-- Media `media/v/*` — Mixkit stock footage (free licence), re-graded; placeholders until our own films are ready.
-- Hosting: GitHub Pages from `main` (CNAME verghethorn.com).
+- Copy: `tools/content.mjs`; build: `node tools/build.mjs` (writes index.html, 404, sitemap, redirects).
+- Hero: full-screen showreel (`media/v/reel.mp4`) that settles into a frame on scroll.
+- Sections: statement (words light up), stacked service films, concept-film rail, process, contacts.
+- Page colour switches dark/light with the section in view. Sounds: `static/js/sfx.js`.
+- Demo footage: Mixkit — replace files in `media/v/` with real work (same names).
