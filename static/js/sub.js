@@ -19,6 +19,13 @@ $$('.gn-l a').forEach(a => a.addEventListener('click', () => setMenu(false)));
 addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
 $$('.pill, .lnk, .ln a').forEach(a => a.addEventListener('click', () => sfx('tick')));
 
+/* back: previous page on this site, otherwise home */
+const back = $('[data-back]');
+if (back) back.addEventListener('click', e => {
+  let same = false; try { same = document.referrer && new URL(document.referrer).origin === location.origin; } catch {}
+  if (same && history.length > 1) { e.preventDefault(); sfx('tick'); history.back(); }
+});
+
 /* reveals + videos that play only while visible */
 seen($$('.rv'), (e, io) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }, { threshold: .12 });
 seen($$('video[data-auto]'), e => { const v = e.target; if (e.isIntersecting) { if (v.preload === 'none') v.preload = 'auto'; play(v); } else v.pause(); }, { threshold: .05 });

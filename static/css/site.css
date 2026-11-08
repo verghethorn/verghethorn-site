@@ -446,3 +446,13 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 @keyframes pop { from { transform: scale(.5); opacity: 0; } }
 .st-copy { text-align: left; white-space: pre-wrap; font: 14px/1.5 var(--font); background: var(--gray); border-radius: 14px; padding: 18px 20px; margin-top: 26px; color: var(--fg); }
 .pill[disabled] { opacity: .6; }
+
+/* back + home on inner pages */
+.back { display: inline-flex; align-items: center; gap: 2px; height: 44px; padding: 0 10px 0 0; margin-left: -6px; color: var(--link); font-size: 14px; }
+.back svg { width: 20px; height: 20px; }
+.back span { display: none; }
+@media (min-width: 834px) { .back { margin-right: 18px; } .back span { display: inline; } }
+.gn-sub .wm { margin-right: auto; }
+@media (min-width: 834px) { .gn-sub .wm { margin-right: 0; } }
+.wm { display: inline-flex; align-items: center; min-height: 44px; }
+.gn-home a { font-weight: 600; }

@@ -34,11 +34,11 @@ export const L = {
   tileA: 'Learn more', tileB: 'Start a project',
 
   know: { h2: 'Get to know VERGHÉTHORN.', items: [
-    ['c-stars', 'Worlds', 'Any world. No set.'],
-    ['c-fire', 'Emotion', 'Pictures you can feel.'],
-    ['c-forest', 'Atmosphere', 'Light, fog and rain — directed.'],
-    ['c-ink', 'Colour', 'Every frame, graded like cinema.'],
-    ['c-smoke', 'Detail', 'Crafted to the last frame.'],
+    ['c-stars', 'Worlds', 'Any world. No set.', '', ['Deserts, oceans, mountain tops, other planets — every location is created for the story, not found and rented.', 'No travel, no permits, no weather to wait for.'], '/films/'],
+    ['c-fire', 'Emotion', 'Pictures you can feel.', '', ['Technology is only the tool. A film works when it moves someone.', 'Every shot is chosen for what it makes the viewer feel — then cut, scored and coloured like cinema.'], '/films/'],
+    ['c-forest', 'Atmosphere', 'Light, fog and rain — directed.', '', ['Golden hour that lasts as long as the scene needs. Fog that rolls in on cue. Rain only where the story asks for it.'], '/nature-travel/'],
+    ['c-ink', 'Colour', 'Every frame, graded like cinema.', '', ['Colour carries mood and brand. Every film is graded shot by shot — including your brand palette for commercials.'], '/commercials/'],
+    ['c-smoke', 'Detail', 'Crafted to the last frame.', '', ['Every shot is generated, reviewed and refined until it is right — then edited, scored and finished by hand.'], '/films/'],
   ] },
 
   lineup: { h2: 'Explore the services.', items: [

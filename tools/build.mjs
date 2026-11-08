@@ -17,6 +17,8 @@ const MV = hashDir('media');
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const svg = (d, vb = '0 0 24 24') => `<svg viewBox="${vb}" aria-hidden="true">${d}</svg>`;
 
+const PLUS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
+const SHEET_DLG = `<dialog class="sheet" data-sheet-dlg aria-label="Details">\n  <button type="button" class="sheet-x" data-sheet-close aria-label="Close"><i></i><i></i></button>\n  <div class="sheet-in" data-sheet-body></div>\n</dialog>`;
 const ARROW = svg('<path d="M3 12h16M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>');
 const SOUND = '<svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg><svg class="off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18V6L7.5 9.5z"/><path d="m16 9.5 5 5M21 9.5l-5 5"/></svg>';
 const GLYPH = {
@@ -36,8 +38,9 @@ function gnav(sub = false) {
   const nav = L.nav.map(([h, t]) => [NAVPAGE[t] || (sub ? HOMEHREF(h) : h), t]);
   return `<header class="gn${sub ? ' gn-sub' : ''}" data-gn>
   <nav class="gn-in" aria-label="Main">
+    ${sub ? `<a class="back" href="/" data-back aria-label="Back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Back</span></a>` : ''}
     <a class="wm" href="/" aria-label="VERGHÉTHORN home">VERGHÉTHORN</a>
-    <ul class="gn-l" id="gn-menu">${nav.map(([h, t]) => `<li><a href="${h}">${t}</a></li>`).join('')}</ul>
+    <ul class="gn-l" id="gn-menu">${sub ? '<li class="gn-home"><a href="/">Home</a></li>' : ''}${nav.map(([h, t]) => `<li><a href="${h}">${t}</a></li>`).join('')}</ul>
     <button class="snd" type="button" data-sound aria-pressed="true" aria-label="${L.soundOff}" data-on="${L.soundOff}" data-off="${L.soundOn}">${SOUND}</button>
     <button class="burger" type="button" data-burger aria-expanded="false" aria-controls="gn-menu" aria-label="${L.menu}"><i></i><i></i></button>
   </nav>
@@ -57,7 +60,7 @@ function footer(sub = false) {
 </footer>`;
 }
 
-function head({ title, desc, path, noindex = false, refresh = '' }) {
+function head({ title, desc, path, noindex = false, refresh = '', og = '/media/og.jpg', ld = '' }) {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -72,7 +75,7 @@ ${refresh}${noindex ? '<meta name="robots" content="noindex">' : `<link rel="can
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${SITE.url}${path}">
-<meta property="og:image" content="${SITE.url}/media/og.jpg">
+<meta property="og:image" content="${SITE.url}${og}?v=${MV}">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
@@ -83,6 +86,7 @@ ${refresh}${noindex ? '<meta name="robots" content="noindex">' : `<link rel="can
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap">
 <link rel="stylesheet" href="/static/css/site.css?v=${V}">
+${ld ? `<script type="application/ld+json">${JSON.stringify(ld)}</script>` : ''}
 </head>`;
 }
 
@@ -136,7 +140,7 @@ ${gnav()}
 <section class="sec gray" aria-labelledby="know-h">
   <div class="sec-h wrap"><h2 id="know-h">${K.h2}</h2></div>
   <div class="car-w">
-    <ul class="car" data-car>${K.items.map(([v, k, t, pos]) => `<li class="card">${vid(v, '', pos)}<p><span>${k}</span><b>${t}</b></p></li>`).join('')}</ul>
+    <ul class="car" data-car>${K.items.map(([v, k, t, pos], i) => `<li class="card">${vid(v, '', pos)}<p><span>${k}</span><b>${t}</b></p><button type="button" class="card-plus" data-sheet="${i}" aria-label="More about ${esc(k)}">${PLUS}</button></li>`).join('')}</ul>
     <p class="car-dots" data-dots>${K.items.map((_, i) => `<button type="button" aria-label="${i + 1} / ${K.items.length}"></button>`).join('')}</p>
     <p class="car-nav wrap"><button type="button" data-car-prev aria-label="Previous">${ARROW}</button><button type="button" data-car-next aria-label="Next">${ARROW}</button></p>
   </div>
@@ -173,6 +177,8 @@ ${footer()}
     <ul class="reel-pick">${L.reels.items.map(([id, t, th], i) => `<li><button type="button" data-reel="/media/r/${id}.mp4?v=${MV}" aria-pressed="${i === 0}"><img src="${V_(th)}.webp?v=${MV}" alt="" loading="lazy"><span>${t}</span></button></li>`).join('')}</ul>
   </div>
 </dialog>
+${SHEET_DLG}
+<template id="sheets">${K.items.map(([v, k, t, , ps, more]) => `<article><p class="sheet-k">${k}</p><h2>${t}</h2><div class="sheet-v">${vid(v)}</div>${ps.map(x => `<p>${x}</p>`).join('')}<p class="ctas"><a class="pill" href="${more}">${L.tileA}</a><a class="pill ol" href="/start/">${L.tileB}</a></p></article>`).join('')}</template>
 <div class="warp" data-warp aria-hidden="true"><span class="warp-i"></span></div>
 
 <script type="application/ld+json">${JSON.stringify(jsonld)}</script>
@@ -187,7 +193,7 @@ function servicePage(F) {
   const H = F.hero, go = `/start/?s=${F.kind}`;
   const media = id => id.startsWith('img:') ? `<img src="${id.slice(4)}?v=${MV}" alt="" loading="lazy">` : vid(id);
   const plus = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
-  return `${head({ title: F.title, desc: F.desc, path: `/${F.slug}/` })}
+  return `${head({ title: F.title, desc: F.desc, path: `/${F.slug}/`, og: `/media/og/${F.slug}.jpg`, ld: { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: F.faq.items.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) } })}
 <body class="sub">
 <a class="skip" href="#main">${L.skip}</a>
 ${gnav(true)}
@@ -264,7 +270,7 @@ ${F.reel ? `<dialog class="reel" data-reel-dlg aria-label="${H.a}">
 function startPage() {
   const S = START;
   const opt = (step, [val, t, d]) => `<label class="opt"><input type="radio" name="${step}" value="${esc(t || val)}" data-key="${esc(val)}"><span><b>${t || val}</b>${d ? `<small>${d}</small>` : ''}</span></label>`;
-  return `${head({ title: S.title, desc: S.desc, path: '/start/' })}
+  return `${head({ title: S.title, desc: S.desc, path: '/start/', og: '/media/og/start.jpg' })}
 <body class="sub start">
 <a class="skip" href="#main">${L.skip}</a>
 ${gnav(true)}

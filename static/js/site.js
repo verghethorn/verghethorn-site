@@ -76,5 +76,22 @@ seen([$('[data-chat]')], (e, io) => { if (e.isIntersecting) { const ph = e.targe
   addEventListener('pageshow', reset);
 }
 
+/* "+" sheets on the cards */
+{
+  const sheet = $('[data-sheet-dlg]');
+  if (sheet) {
+    const body = $('[data-sheet-body]', sheet), tpl = $('#sheets').content.children;
+    const close = () => { sheet.classList.add('closing'); setTimeout(() => { sheet.close(); sheet.classList.remove('closing'); body.innerHTML = ''; }, 280); };
+    $$('[data-sheet]').forEach(b => b.addEventListener('click', () => {
+      body.innerHTML = ''; body.append(tpl[+b.dataset.sheet].cloneNode(true));
+      sfx('whoosh'); sheet.showModal(); sheet.scrollTop = 0;
+      const v = $('video', body); if (v) { v.preload = 'auto'; play(v); }
+    }));
+    $('[data-sheet-close]', sheet).addEventListener('click', close);
+    sheet.addEventListener('click', e => { if (e.target === sheet) close(); });
+    sheet.addEventListener('cancel', e => { e.preventDefault(); close(); });
+  }
+}
+
 /* live AI agent loads its own module (same cache-busting version as this file) */
 import(`./agent.js${new URL(import.meta.url).search}`);
