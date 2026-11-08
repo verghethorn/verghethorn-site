@@ -524,3 +524,9 @@ html:has(body.sub) { scroll-padding-top: 110px; }
 .art-cta .ctas { margin-top: 20px; display: flex; gap: 22px; justify-content: center; align-items: center; flex-wrap: wrap; color: inherit; }
 .art-more { padding-top: 72px; padding-bottom: 90px; }
 .art-more h2 { font-size: 28px; font-weight: 600; margin-bottom: 24px; }
+.art-src { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 14px; color: var(--dim); }
+.art-src h2 { font-size: 15px; font-weight: 600; color: var(--fg); }
+.art-src ul { margin: 8px 0 0; padding-left: 18px; }
+.art-src li { margin-top: 4px; overflow-wrap: anywhere; }
+.art-src a, .art-follow a { color: var(--link); }
+.art-follow { margin-top: 28px; font-size: 15px; color: var(--dim); }

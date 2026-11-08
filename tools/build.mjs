@@ -311,6 +311,7 @@ ${footer(true)}
 `;
 }
 
+const NEWEST = () => [...ARTICLES].sort((a, b) => b.date.localeCompare(a.date));
 const AIMG = a => (a.img.startsWith('/') ? a.img : `${V_(a.img)}.webp`) + `?v=${MV}`;
 const words = h => h.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
 const fmtDate = d => new Date(d + 'T12:00:00Z').toLocaleDateString(LANG === 'ru' ? 'ru-RU' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -324,7 +325,7 @@ function articlesIndex() {
 ${gnav(true)}
 <main id="main" class="art-list wrap">
   <header class="st-h"><h1>${U.h1}</h1><p class="sub">${U.sub}</p></header>
-  <div class="ac-grid">${ARTICLES.map(acard).join('')}</div>
+  <div class="ac-grid">${NEWEST().map(acard).join('')}</div>
 </main>
 ${footer(true)}
 <script type="module" src="/static/js/sub.js?v=${V}"></script>
@@ -336,7 +337,7 @@ function articlePage(a) {
   const U = ARTICLES_UI[LANG], T = a[LANG], path = `/articles/${a.slug}/`, svc = Object.keys(PAGE).find(k => k === a.page);
   const min = Math.max(2, Math.round(words(T.body) / 200));
   const ld = [{ '@context': 'https://schema.org', '@type': 'Article', headline: T.title, description: T.desc, inLanguage: LANG, datePublished: a.date, dateModified: a.date, image: `${SITE.url}${AIMG(a).split('?')[0]}`, mainEntityOfPage: `${SITE.url}${path}`, url: `${SITE.url}${path}`, author: { '@type': 'Organization', name: 'VERGHÉTHORN', url: SITE.url + '/' }, publisher: ORG() }, crumbs([L.ui.home, '/'], [U.h1, '/articles/'], [T.title, path])];
-  const others = ARTICLES.filter(x => x !== a).slice(0, 3);
+  const others = NEWEST().filter(x => x !== a).slice(0, 3);
   return `${head({ title: `${T.title} | VERGHÉTHORN`, desc: T.desc, path, og: `/media/og/${PAGE[svc].slice(1, -1)}.jpg`, ld })}
 <body class="sub arts">
 <a class="skip" href="#main">${L.skip}</a>
@@ -348,6 +349,8 @@ ${gnav(true)}
     <p class="art-lead">${T.desc}</p>
     <figure class="art-img"><img src="${AIMG(a)}" alt="" decoding="async" fetchpriority="high"></figure>
     <div class="art-body">${T.body}</div>
+    ${a.sources && a.sources.length ? `<aside class="art-src"><h2>${U.src}</h2><ul>${a.sources.map(([t, u]) => `<li><a href="${esc(u)}" rel="noopener nofollow" target="_blank">${t}</a></li>`).join('')}</ul></aside>` : ''}
+    <p class="art-follow">${U.follow} ${Object.entries(SITE.social).filter(([k]) => ['instagram', 'youtube', 'tiktok'].includes(k)).map(([, s]) => `<a href="${s.href}" rel="noopener me" target="_blank">${s.name}</a>`).join(' · ')}</p>
     <aside class="art-cta"><h2>${U.cta.h}</h2><p>${U.cta.p}</p><p class="ctas"><a class="pill" href="/start/">${U.cta.a}</a><a class="lnk" href="${PAGE[svc]}">${U.cta.b} ›</a></p></aside>
   </article>
   <section class="art-more wrap"><h2>${U.more}</h2><div class="ac-grid">${others.map(acard).join('')}</div></section>
