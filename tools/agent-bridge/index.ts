@@ -5,6 +5,7 @@ import postgres from 'npm:postgres@3.4.5';
 
 const ZAPIER = 'https://mcp.zapier.com/api/v1/connect';
 import { ZTOKEN, KEY, ANAM, XI } from './secrets.ts'; // not in the public repo
+import { more } from './more.ts';
 const sql = postgres(Deno.env.get('SUPABASE_DB_URL')!, { prepare: false, max: 2 });
 const TZ = 'Europe/Istanbul';
 
@@ -20,7 +21,7 @@ async function zap(name: string, args: Record<string, unknown>) {
   const j = JSON.parse(line ? line.slice(6) : t);
   const text = j?.result?.content?.[0]?.text ?? JSON.stringify(j.error ?? j);
   if (j.error || /validation error|^error/i.test(text)) return { error: text.slice(0, 300) }; // surface failures, never pretend success
-  try { const o = JSON.parse(text); delete o.billingTasksUsed; return o; } catch { return { result: text }; }
+  try { const o = JSON.parse(text); delete o.billingTasksUsed; delete o.generatedJqFilter; return o; } catch { return { result: text }; }
 }
 const list = (to: unknown) => to == null || to === '' ? undefined : (Array.isArray(to) ? to : String(to).split(',').map(s => s.trim()).filter(Boolean));
 async function cached<T>(key: string, ttlMin: number, fn: () => Promise<T>): Promise<[T, boolean]> {
@@ -139,10 +140,11 @@ const mail = (subject: string, body: string) => zap('gmail_send_email', { to: [O
 async function morning(dry = false) {
   const place = await city();
   const s = `${today()}T00:00:00+03:00`, e = `${today(1)}T00:00:00+03:00`;
-  const [wx, ev, due, leads] = await Promise.allSettled([
+  const [wx, ev, due, leads, waiting, coins] = await Promise.allSettled([
     weather(place, 1), findEvents(s, e),
     sql`select contact, subject from verghe.followups where status = 'open' and due_at < now() + interval '1 day'`,
     findEmails('subject:"New request" newer_than:1d'),
+    MORE.actions.needs_reply({ days: 3 }), MORE.actions.crypto_price({ coins: 'btc,eth' }),
   ]);
   const lines: string[] = [];
   const w: any = wx.status === 'fulfilled' ? wx.value : null, d = w?.days?.[0];
@@ -164,6 +166,12 @@ async function morning(dry = false) {
   const l: any = leads.status === 'fulfilled' ? leads.value : null;
   const ln = Array.isArray(l?.results) ? l.results.length : 0;
   if (ln) lines.push(`Новые заявки с сайта: ${ln}.`);
+  const wt: any = waiting.status === 'fulfilled' ? waiting.value : null;
+  const wn = Array.isArray(wt?.results) ? wt.results.length : 0;
+  if (wn) lines.push(`Ждут твоего ответа: ${wn} ${wn === 1 ? 'письмо' : wn < 5 ? 'письма' : 'писем'}.`);
+  const cs: any = coins.status === 'fulfilled' ? coins.value : null;
+  const moves = (cs?.coins || []).filter((c: any) => Math.abs(c.change_24h_pct) >= 5);
+  if (moves.length) lines.push(`Крипта: ${moves.map((c: any) => `${c.symbol} ${c.change_24h_pct > 0 ? '+' : ''}${c.change_24h_pct}% за сутки, $${Math.round(c.price).toLocaleString('ru-RU')}`).join('; ')}.`);
   if (!lines.length) return { sent: false, reason: 'nothing worth a message today' };
   const body = `Доброе утро.\n\n${lines.join('\n')}\n\n— VERGHE`;
   if (dry) return { sent: false, dry: true, body };
@@ -269,13 +277,14 @@ const ACTIONS: Record<string, (a: any) => Promise<unknown>> = {
   // one call instead of four
   briefing: async a => {
     const s = `${today()}T00:00:00+03:00`, e = `${today(1)}T00:00:00+03:00`;
-    const [wx, ev, mail, ai, ads] = await Promise.allSettled([
+    const [wx, ev, mail, ai, ads, waiting, crypto] = await Promise.allSettled([
       weather(a.place || await city(), 1).then(w => { delete (w as any)._cached; return w; }), findEvents(s, e),
       findEmails('in:inbox newer_than:1d -category:promotions -category:social -category:updates'),
       news('AI video', 'en', 3), news('advertising campaign', 'en', 2),
+      MORE.actions.needs_reply({ days: 5 }), MORE.actions.crypto_price({ coins: 'btc,eth' }),
     ]);
     const v = (p: PromiseSettledResult<unknown>) => p.status === 'fulfilled' ? p.value : { error: String((p as PromiseRejectedResult).reason) };
-    return { date: today(), weather: v(wx), today_events: v(ev), important_emails: v(mail), ai_news: v(ai), ad_news: v(ads) };
+    return { date: today(), weather: v(wx), today_events: v(ev), important_emails: v(mail), waiting_for_your_reply: v(waiting), crypto: v(crypto), ai_news: v(ai), ad_news: v(ads) };
   },
   // memory — layered (profile, preference, style, project, decision, episode, rule, state); state expires by itself
   remember: async a => {
@@ -369,6 +378,11 @@ const WRITE: Record<string, (a: any) => string> = {
   followup_add: a => `проследить ответ: ${a.contact}`, set_location: a => `локация: ${a.city}`,
 };
 const JOBS: Record<string, (dry: boolean) => Promise<unknown>> = { followup_check: () => followupCheck(), morning, weekly, wrapped: wrappedJob };
+
+/* markets & crypto, maps, music, unanswered mail (more.ts) */
+const MORE = more({ sql, cached, city, findEmails, zap, mail, convert });
+Object.assign(ACTIONS, MORE.actions); Object.assign(WRITE, MORE.write);
+Object.assign(JOBS, MORE.jobs);
 
 /* live face (Anam): the phone asks for a one-time session token; keys never leave the server */
 const AGENT_ID = 'agent_0301m6ye45t5fks83a75m7ayq0e6';
