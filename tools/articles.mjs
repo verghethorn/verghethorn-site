@@ -8,6 +8,85 @@ export const ARTICLES_UI = {
 
 export const ARTICLES = [
 {
+  slug: 'christmas-ads-2026', date: '2026-11-09', img: 'c-stars', page: 'commercials',
+  sources: [
+    ['John Lewis Partnership — Don’t give up on giving: John Lewis unveils its 2026 Christmas advert', 'https://www.johnlewispartnership.co.uk/media-centre/latest-news/2026/23969'],
+    ['OnePulse — Supermarket Christmas Ad Tracker 2026', 'https://www.onepulse.com/christmas-ad-tracker-2026/'],
+    ['Retail Gazette — Shoppers want lower prices, so why are retailers betting big on Christmas storytelling?', 'https://www.retailgazette.co.uk/blog/2026/11/christmas-campaigns-2026-shoppers-want-lower-prices-so-why-are-retailers-betting-big-on-festive-storytelling/'],
+    ['Creative Boom — Christmas adverts 2026: the best festive ads so far', 'https://www.creativeboom.com/news/christmas-adverts-of-2026/'],
+    ['BritBrief — Morrisons Christmas advert 2026: Goldilocks twist', 'https://britbrief.co.uk/entertainment/television/morrisons-christmas-ad-2026-goldilocks-twist-hailed.html'],
+    ['BritBrief — Christmas ads: M and S named viewers’ winner as Morrisons joins', 'https://britbrief.co.uk/business/retail/christmas-ads-ms-crowned-viewers-winner-as-morrisons-joins.html'],
+  ],
+  en: { title: 'Christmas ads 2026: what this year’s holiday commercials teach brands', desc: 'Christmas ads 2026 from John Lewis, M&S, Tesco, Sainsbury’s and Aldi: what audiences rated highest, which craft choices worked and what brands can learn.',
+    body: `<p>The Christmas ads of 2026 have arrived in a single rush. Between 1 and 9 November, almost every major UK retailer released its festive film, and audience panels rated them within hours. Together they form the clearest yearly snapshot of what holiday advertising looks like right now — and what any brand planning a seasonal commercial can learn from it.</p>
+<h2>The season in one week</h2>
+<p>Tesco and Sainsbury’s opened on 1 November. John Lewis followed on 3 November with its 20th Christmas advert, a three-minute film called <b>Gloria and Pickles</b>, made by Saatchi &amp; Saatchi and directed by Lucy Forbes. Dame Kristin Scott Thomas plays a grandmother who stops putting cash in envelopes after her childhood toy dog, voiced by Paul Whitehouse, comes to life. Sam Fender recorded a new cover of “You Can’t Always Get What You Want” for it.</p>
+<p>Aldi launched on 5 November, M&amp;S on 6 November with <b>The Home of Christmas</b> (agency Mother, director Shannon Murphy) starring James Norton as an undercover Santa, and Morrisons on 8 November with a 90-second Goldilocks story that debuts on TV on 9 November.</p>
+<h2>What audiences rated highest</h2>
+<p>OnePulse asks 500 UK adults to score each supermarket ad within hours of release, from 1 (“a total turkey”) to 5 (“an absolute cracker”). At the time of writing the ranking is:</p>
+<ul>
+<li><b>M&amp;S</b> — 4.0, with 74% saying they liked or loved it and 58% saying it made them more likely to shop there;</li>
+<li><b>Aldi</b> — 3.9, with support for bringing back Kevin the Carrot rising from 63% before launch to 73% after viewing;</li>
+<li><b>Sainsbury’s</b> — 3.8, voted the most festive;</li>
+<li><b>Morrisons</b> — 3.7, the funniest, with 45% saying it made them laugh;</li>
+<li><b>Tesco</b> — 3.6, the most emotional, with 28% saying they welled up;</li>
+<li><b>Lidl</b> — 3.5 and <b>Asda</b> — 3.3.</li>
+</ul>
+<p>The spread is narrow. Every film was watchable; the winners were the ones that gave people one clear feeling — warmth, laughter or a lump in the throat — and tied it to the brand.</p>
+<h2>Craft choices that stood out</h2>
+<p>Creative Boom’s round-up shows how varied the production methods are this year. Barbour went to Aardman for stop-motion with Wallace and Gromit. Prada blended hand-drawn animation by John Pomeroy with live action. Sainsbury’s brought back the BFG in a two-minute film with a VFX-built giant world by Electric Theatre Collective. Morrisons cast its Three Bears as animatronic figures, each with its own personality. Retail Gazette notes that Very’s new advert is AI-assisted.</p>
+<p>The lesson is not that one technique wins. It is that the method follows the idea: a tactile, handmade look signals care; a fantasy world needs VFX or AI; a comedy needs timing and faces. The audience judges the story, not the toolset.</p>
+<h2>Story versus price</h2>
+<p>There is a tension in the numbers. According to OnePulse data cited by Retail Gazette, 57% of shoppers would rather retailers spent less on Christmas advertising and cut prices, and 61% say a Christmas ad has never changed where they do their main festive food shop. Asda leaned into that with a direct value message — and scored lowest on likeability, though its own shoppers rated it more warmly than others did.</p>
+<p>Yet the top-rated films also had the strongest effect on intent. M&amp;S had both the highest score and the lowest share of viewers asking for price cuts instead (39%). John Lewis shows the other side: 36% said its advert made them more likely to shop there, but 48% named the dog as the standout element and only 12% mentioned the gifting message unprompted. A memorable film and a memorable reason to buy are not the same thing.</p>
+<h2>Built for every screen</h2>
+<p>None of these campaigns is a single TV spot. John Lewis launched first on social, YouTube, Instagram and its website, then on ITV and Channel 4, and runs across video on demand, connected TV, Meta, TikTok, Reddit, Pinterest and Snapchat. Asda’s campaign is four 30-second spots plus a social edit. Sports Direct and Nike paired a 60-second hero film with five 10-second films. Morrisons posted to Instagram three days before its TV debut and planned highlight clips for Instagram and TikTok.</p>
+<h2>What brands can take from Christmas 2026</h2>
+<ul>
+<li><b>Choose one emotion.</b> The best-rated ads were clearly funny, festive or moving — not all three at once.</li>
+<li><b>Recurring characters build value.</b> Kevin the Carrot and the BFG show that audiences ask for characters to return.</li>
+<li><b>Connect the story to a reason to buy.</b> Charm alone does not move people to the shop.</li>
+<li><b>Let the idea choose the craft</b> — live action, stop-motion, VFX or AI.</li>
+<li><b>Plan the cut-downs from day one:</b> hero film, 30-second spots, vertical 9:16 and 6–10 second clips.</li>
+</ul>
+<p>You do not need a supermarket budget to apply this. A smaller brand can build a seasonal film around one character and one feeling, then cut it for every platform. We wrote about the full process in <a href="/articles/brand-commercial-production/">how a brand commercial is made</a>, and we share new films and behind-the-scenes on <a href="https://www.youtube.com/@verghethorn">YouTube</a>.</p>
+<p>VERGHÉTHORN creates <a href="/commercials/">cinematic brand commercials</a> with AI — from the seasonal idea to every format your campaign needs.</p>` },
+  ru: { title: 'Рождественская реклама 2026: чему учат брендов праздничные ролики года', desc: 'Рождественская реклама 2026 от John Lewis, M&S, Tesco, Sainsbury’s и Aldi: какие ролики зрители оценили выше всего и что взять брендам для новогодней рекламы.',
+    body: `<p>Рождественская реклама 2026 года вышла почти одновременно. С 1 по 9 ноября крупнейшие британские ритейлеры показали свои праздничные ролики, а зрительские панели оценили их уже в первые часы. Британский рождественский сезон — главный ежегодный срез того, как бренды делают праздничную рекламу. И хороший ориентир для всех, кто готовит новогоднюю рекламу для бренда.</p>
+<h2>Сезон за одну неделю</h2>
+<p>Первыми 1 ноября вышли Tesco и Sainsbury’s. 3 ноября John Lewis показал свой 20-й рождественский ролик — трёхминутный фильм <b>Gloria and Pickles</b> от агентства Saatchi &amp; Saatchi, режиссёр — Люси Форбс. Кристин Скотт Томас играет бабушку, которая перестаёт дарить внукам деньги в конвертах, когда оживает её детская игрушечная собака (её озвучил Пол Уайтхаус). Сэм Фендер записал для ролика новый кавер на «You Can’t Always Get What You Want».</p>
+<p>5 ноября вышел ролик Aldi, 6 ноября — <b>The Home of Christmas</b> от M&amp;S (агентство Mother, режиссёр Шеннон Мерфи) с Джеймсом Нортоном в роли Санты под прикрытием, 8 ноября — 90-секундная история Morrisons по мотивам «Златовласки и трёх медведей», телепремьера которой назначена на 9 ноября.</p>
+<h2>Что зрители оценили выше всего</h2>
+<p>Сервис OnePulse опрашивает 500 взрослых британцев о каждом ролике супермаркетов в первые часы после выхода — по шкале от 1 до 5. На момент публикации рейтинг такой:</p>
+<ul>
+<li><b>M&amp;S</b> — 4,0: 74% ролик понравился, 58% сказали, что теперь скорее пойдут за покупками именно туда;</li>
+<li><b>Aldi</b> — 3,9: желающих снова видеть персонажа Kevin the Carrot стало 73% после просмотра против 63% до него;</li>
+<li><b>Sainsbury’s</b> — 3,8, самый праздничный по ощущениям;</li>
+<li><b>Morrisons</b> — 3,7, самый смешной: 45% зрителей рассмеялись;</li>
+<li><b>Tesco</b> — 3,6, самый трогательный: 28% признались, что прослезились;</li>
+<li><b>Lidl</b> — 3,5 и <b>Asda</b> — 3,3.</li>
+</ul>
+<p>Разрыв небольшой. Плохих роликов почти нет; выигрывают те, что дают зрителю одно ясное чувство — тепло, смех или слёзы — и связывают его с брендом.</p>
+<h2>Как это снято</h2>
+<p>Обзор Creative Boom показывает, насколько разными стали методы производства. Barbour заказал у студии Aardman кукольную анимацию с Уоллесом и Громитом. Prada соединила рисованную вручную анимацию Джона Помероя с живой съёмкой. Sainsbury’s вернул Большого доброго великана в двухминутном фильме, где мир великанов создан с помощью VFX студией Electric Theatre Collective. У Morrisons три медведя — аниматронные фигуры с собственными характерами. Retail Gazette отмечает, что новый ролик ритейлера Very сделан с участием AI.</p>
+<p>Вывод не в том, что побеждает одна технология. Метод следует за идеей: ручная фактура говорит о заботе, сказочный мир требует VFX или AI, комедии нужны тайминг и лица. Зритель оценивает историю, а не инструменты.</p>
+<h2>История или цена</h2>
+<p>В цифрах есть противоречие. По данным OnePulse, которые приводит Retail Gazette, 57% покупателей предпочли бы, чтобы ритейлеры тратили меньше на рождественскую рекламу и снижали цены, а 61% говорят, что такая реклама ни разу не меняла их выбор магазина для праздничных покупок. Asda сделала ставку на прямое сообщение о цене — и получила самую низкую оценку, хотя её собственные покупатели отнеслись к ролику теплее остальных.</p>
+<p>При этом лучшие по оценкам ролики сильнее всего влияют и на намерение купить. У M&amp;S — и самый высокий балл, и самая малая доля зрителей, которые просят вместо рекламы снизить цены (39%). John Lewis показывает обратную сторону: 36% стали охотнее думать о покупках там, но 48% главным в ролике назвали собаку, и лишь 12% сами вспомнили идею о подарках. Запоминающийся фильм и запоминающаяся причина купить — не одно и то же.</p>
+<h2>Ролик для каждого экрана</h2>
+<p>Ни одна из этих кампаний не ограничивается телевизионным роликом. John Lewis сначала запустился в соцсетях, на YouTube, в Instagram и на сайте, потом на ITV и Channel 4, а дальше — в видео по запросу, на Smart TV, в Meta, TikTok, Reddit, Pinterest и Snapchat. У Asda — четыре 30-секундных ролика плюс версия для соцсетей. Sports Direct и Nike выпустили 60-секундный основной фильм и пять 10-секундных. Morrisons опубликовал ролик в Instagram за три дня до телепремьеры и запланировал короткие фрагменты для Instagram и TikTok.</p>
+<h2>Что взять брендам для новогодней рекламы</h2>
+<ul>
+<li><b>Одна эмоция.</b> Лучшие ролики были явно смешными, праздничными или трогательными — а не всем сразу.</li>
+<li><b>Постоянные персонажи работают.</b> Kevin the Carrot и Большой добрый великан показывают, что зрители ждут их возвращения.</li>
+<li><b>Свяжите историю с причиной купить.</b> Одного обаяния мало, чтобы человек пришёл в магазин.</li>
+<li><b>Пусть идея выбирает технику</b> — живая съёмка, кукольная анимация, VFX или AI.</li>
+<li><b>Планируйте версии с самого начала:</b> основной фильм, 30-секундные ролики, вертикальные 9:16 и клипы на 6–10 секунд.</li>
+</ul>
+<p>Для этого не нужен бюджет супермаркета. Небольшой бренд может построить праздничный фильм вокруг одного персонажа и одного чувства и адаптировать его под все площадки. О процессе целиком мы писали в статье <a href="/articles/brand-commercial-production/">как создаётся рекламный ролик для бренда</a>, а новые фильмы и закулисье публикуем на <a href="https://www.youtube.com/@verghethorn">YouTube</a>.</p>
+<p>VERGHÉTHORN создаёт <a href="/commercials/">кинематографичную рекламу для брендов</a> с помощью AI — от праздничной идеи до всех форматов кампании.</p>` },
+},
+{
   slug: 'brand-commercial-production', date: '2026-11-08', img: 's-ads', page: 'commercials',
   en: { title: 'How a brand commercial is made: from brief to final cut', desc: 'A clear guide to commercial production for brands: brief, concept, storyboard, production, edit, sound and colour — classic and AI-powered.',
     body: `<p>A brand commercial looks simple on screen: thirty seconds, a few shots, a logo at the end. Behind it is a production process that decides whether people remember the brand or scroll past. Here is how a commercial is made, step by step — and what changes when the footage is created with AI.</p>
