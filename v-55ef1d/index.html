@@ -55,6 +55,8 @@ body.on .ui { opacity: 1; transform: none; pointer-events: auto; }
 .type.open { display: flex; }
 .type input { flex: 1; min-width: 0; height: 46px; border-radius: 23px; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.08); color: #fff; padding: 0 18px; font: inherit; outline: none; -webkit-user-select: text; user-select: text; }
 .type button { height: 46px; padding: 0 18px; border-radius: 23px; background: var(--blue); color: #000; font-weight: 600; }
+.link { justify-self: center; max-width: 100%; padding: 10px 16px; border-radius: 22px; background: rgba(74,168,255,.16); border: 1px solid rgba(74,168,255,.45); color: #cfe6ff; font-size: 15px; text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.link[hidden] { display: none; }
 .note { position: fixed; left: 20px; right: 20px; top: 40%; text-align: center; font-size: 16px; color: rgba(255,255,255,.85); display: none; }
 .note.show { display: block; }
 </style>
@@ -74,6 +76,7 @@ body.on .ui { opacity: 1; transform: none; pointer-events: auto; }
 <div class="ui">
   <p class="status" data-status></p>
   <p class="cap" data-cap aria-live="polite"></p>
+  <a class="link" data-link hidden target="_blank" rel="noopener"><span></span> ↗</a>
   <form class="type" data-type><input data-input placeholder="Написать…" enterkeyhint="send" autocomplete="off"><button>→</button></form>
   <div class="bar">
     <button class="round" data-mute aria-label="Выключить микрофон" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
@@ -83,6 +86,6 @@ body.on .ui { opacity: 1; transform: none; pointer-events: auto; }
 </div>
 
 <script src="/static/vendor/elevenlabs-client-1.30.0.js" defer></script>
-<script type="module" src="app.js?v=8"></script>
+<script type="module" src="app.js?v=9"></script>
 </body>
 </html>

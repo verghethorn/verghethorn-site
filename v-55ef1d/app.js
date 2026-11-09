@@ -41,6 +41,7 @@ async function summon() {
     conv = await Promise.race([
       Conversation.startSession({
         agentId: AGENT, connectionType: 'websocket',
+        clientTools: { open_link: ({ url, label }) => { showLink(url, label); return 'shown on screen'; } },
         onConnect: () => setState('listening'),
         onMessage: m => { const you = (m.role || m.source) === 'user'; if (!you) gotReply = true; say(m.message, you); },
         onModeChange: ({ mode }) => { speaking = mode === 'speaking'; setState(speaking ? 'speaking' : 'listening'); },
@@ -55,6 +56,13 @@ async function summon() {
   finally { starting = false; }
 }
 
+/* links the agent opens (flights, hotels, documents): a tappable card, since phones block pop-ups */
+function showLink(url, label) {
+  if (!/^https:\/\//.test(url || '')) return;
+  const a = $('[data-link]'); a.href = url; a.querySelector('span').textContent = label || url; a.hidden = false;
+  try { window.open(url, '_blank', 'noopener'); } catch {}
+}
+
 /* no voice (no credits / no mic): he still appears and stays until you send him away */
 function stay(text) { conv = null; speaking = false; setState('idle'); say(text); }
 
@@ -62,7 +70,7 @@ function finish(sound = true) {
   const was = B.classList.contains('on');
   conv = null; speaking = false; muted = false; paintMute();
   setState(null); B.classList.remove('on'); A.vanish(); say('');
-  $('[data-type]').classList.remove('open'); $('[data-kbd]').setAttribute('aria-pressed', 'false');
+  $('[data-link]').hidden = true; $('[data-type]').classList.remove('open'); $('[data-kbd]').setAttribute('aria-pressed', 'false');
   try { lock?.release(); } catch {} lock = null;
   if (was && sound) tone(false);
 }
