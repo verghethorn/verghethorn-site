@@ -207,9 +207,17 @@ export function crm(ctx: Ctx) {
     }
     return res;
   }
+  async function bing(q: string) { // Bing's public RSS output
+    const x = await (await fetch(`https://www.bing.com/search?format=rss&setlang=ru&q=${encodeURIComponent(q)}`, { headers: UA })).text(), res: any[] = [];
+    for (const m of x.matchAll(/<item>([\s\S]*?)<\/item>/g)) {
+      const g = (t: string) => clean(m[1].match(new RegExp(`<${t}>([\\s\\S]*?)<\/${t}>`))?.[1] ?? '');
+      res.push({ title: g('title'), snippet: g('description').slice(0, 240), url: g('link') }); if (res.length >= 6) break;
+    }
+    return res;
+  }
   async function webSearch(a: any) {
     const q = String(a.query || '').trim(); if (!q) return { error: 'need query' };
-    for (const [name, fn] of [['DuckDuckGo', ddg], ['Mojeek', mojeek]] as const) {
+    for (const [name, fn] of [['Bing', bing], ['DuckDuckGo', ddg], ['Mojeek', mojeek]] as const) {
       try { const r = await fn(q); if (r.length) return { query: q, source: name, results: r }; } catch { /* next */ }
     }
     const lang = /[а-яё]/i.test(q) ? 'ru' : 'en';
