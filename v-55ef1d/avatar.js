@@ -6,7 +6,6 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 const BLUE = new THREE.Color(0x3d9bff);
 const state = { reveal: 0, revealTo: 0, voice: 0, speaking: 0, listening: 0, ready: false };
@@ -27,7 +26,7 @@ function revealable(mat) {
         float edge = smoothstep(0.06, 0.0, line + n - vWPos.y) * step(uReveal, 0.999);
         gl_FragColor.rgb += vec3(0.25, 0.6, 1.0) * edge * 3.0;`);
   };
-  mat.customProgramCacheKey = () => 'reveal';
+  const key = 'reveal' + (revealable.n = (revealable.n || 0) + 1); mat.customProgramCacheKey = () => key;
   return mat;
 }
 
@@ -52,8 +51,8 @@ function floorTexture() {
 
 function helmet(headBone) {
   const grp = new THREE.Group();
-  const shell = new THREE.MeshPhysicalMaterial({ color: 0x010102, metalness: .5, roughness: .12, clearcoat: 1, clearcoatRoughness: .02, envMapIntensity: .7 });
-  const chrome = new THREE.MeshPhysicalMaterial({ color: 0x8d969f, metalness: 1, roughness: .2, envMapIntensity: .9 });
+  const shell = new THREE.MeshPhysicalMaterial({ color: 0x000000, metalness: 0, roughness: .14, clearcoat: 1, clearcoatRoughness: .02, envMapIntensity: 1 });
+  const chrome = new THREE.MeshPhysicalMaterial({ color: 0x9aa3ac, metalness: 1, roughness: .18, envMapIntensity: 2.2 });
   const dome = new THREE.Mesh(new THREE.SphereGeometry(.148, 64, 48), revealable(shell)); dome.scale.set(1, 1.1, 1.06);
   // chrome jaw: lower front shell
   const jaw = new THREE.Mesh(new THREE.SphereGeometry(.151, 64, 32, Math.PI * .14, Math.PI * .72, Math.PI * .6, Math.PI * .26), revealable(chrome));
@@ -70,12 +69,29 @@ function helmet(headBone) {
   const glassMat = revealable(new THREE.MeshPhysicalMaterial({ color: 0x02040a, roughness: .05, metalness: .1, clearcoat: 1 }));
   const glass = new THREE.Mesh(new THREE.CylinderGeometry(.151, .151, .058, 96, 1, true, -Math.PI * .38, Math.PI * .76), glassMat); glass.scale.set(1, 1, 1.06); glass.position.y = .012;
   visorLight = new THREE.PointLight(BLUE, 0, 1.4, 2); visorLight.position.set(0, -.25, .45);
-  grp.add(dome, jaw, glass, band, visorLight);
+  // fresnel rim so the black shell reads against the dark background
+  const rimMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, uniforms: { c: { value: new THREE.Color(0x4f9dff) }, k: U.uReveal },
+    vertexShader: 'varying vec3 vN; varying vec3 vV; void main(){ vec4 mv = modelViewMatrix * vec4(position,1.); vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }',
+    fragmentShader: 'uniform vec3 c; uniform float k; varying vec3 vN; varying vec3 vV; void main(){ float f = pow(1. - max(dot(vN, vV), 0.), 3.); gl_FragColor = vec4(c * f * .9 * step(.98, k), f); }' });
+  const rim = new THREE.Mesh(new THREE.SphereGeometry(.1495, 64, 48), rimMat); rim.scale.copy(dome.scale);
+  grp.add(dome, rim, jaw, glass, band, visorLight);
   // place on the head: bone space, so it follows every move
   const wp = new THREE.Vector3(); headBone.getWorldPosition(wp);
   grp.position.copy(wp).add(new THREE.Vector3(0, .1, .018));
   scene.add(grp); headBone.attach(grp);
   return grp;
+}
+
+// a dark studio for reflections: black room with a few softboxes, so glossy black stays black
+function studioEnv() {
+  const env = new THREE.Scene(); env.background = new THREE.Color(0x000000);
+  const box = (w, h, col, k, pos, look) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(col).multiplyScalar(k), side: THREE.DoubleSide })); m.position.set(...pos); m.lookAt(...look); env.add(m); };
+  box(4, .22, 0xffffff, 2.4, [0, 4, 1.2], [0, 0, 0]);      // overhead strip
+  box(.6, 3, 0x6fb2ff, 1.6, [-3, 1.5, -2], [0, 1, 0]);    // cool strip, back left
+  box(.6, 3, 0xa8d0ff, 1.2, [3, 1.5, -2], [0, 1, 0]);     // cool strip, back right
+  box(.3, 2.2, 0xffe2c4, 1.4, [2.2, 1.7, 3], [0, 1, 0]);    // warm strip, front right
+  box(.25, 2.4, 0xcfe4ff, 1.1, [-2.4, 1.7, 2.6], [0, 1, 0]); // cool strip, front left
+  return env;
 }
 
 export function init(canvas, ready) {
@@ -85,7 +101,7 @@ export function init(canvas, ready) {
   renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   scene = new THREE.Scene(); scene.background = new THREE.Color(0x020306); scene.fog = new THREE.Fog(0x020306, 5, 11);
-  const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(new RoomEnvironment(), .04).texture; scene.environmentIntensity = .35;
+  const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(studioEnv(), .02).texture; scene.environmentIntensity = 1;
   camera = new THREE.PerspectiveCamera(30, 1, .1, 50);
 
   // light: soft key from above-front, cool rims from behind, a pool of light on the floor
@@ -121,8 +137,8 @@ export function init(canvas, ready) {
       if (!o.isMesh) return; o.castShadow = true; o.frustumCulled = false;
       const joints = /001/.test(o.name);
       o.material = revealable(new THREE.MeshPhysicalMaterial(joints
-        ? { color: 0x3a4048, metalness: 1, roughness: .3, envMapIntensity: 1 }
-        : { color: 0x0b0d12, metalness: .15, roughness: .55, clearcoat: .2, clearcoatRoughness: .5, sheen: .6, sheenRoughness: .5, sheenColor: new THREE.Color(0x26324a) }));
+        ? { color: 0x5a626c, metalness: 1, roughness: .3, envMapIntensity: 1.8 }
+        : { color: 0x0b0d12, metalness: .15, roughness: .55, clearcoat: .2, clearcoatRoughness: .5, sheen: .8, sheenRoughness: .45, envMapIntensity: 1.5, sheenColor: new THREE.Color(0x26324a) }));
     });
     scene.add(model);
     const head = model.getObjectByName('mixamorigHead');
@@ -151,7 +167,7 @@ function size() {
   camera.updateProjectionMatrix();
 }
 
-let t = 0, sway = 0;
+let t = 0, sway = 0, frozen = null;
 function frame() {
   const dt = Math.min(clock.getDelta(), .05); t += dt; U.uTime.value = t;
   const sp = state.revealTo ? .5 : 1.4; state.reveal = state.revealTo > state.reveal ? Math.min(state.revealTo, state.reveal + dt * sp) : Math.max(state.revealTo, state.reveal - dt * sp);
@@ -169,7 +185,7 @@ function frame() {
     const k = on * v; visorMat.opacity = Math.min(1, k * 1.2); visorMat.color.copy(BLUE).multiplyScalar(1 + k * 1.4); visorLight.intensity = 0;
   }
   // slow cinematic drift of the camera
-  sway += dt * .12; camera.position.x = Math.sin(sway) * .22; camera.lookAt(0, camera.aspect < 1 ? .74 : .66, 0);
+  if (!frozen) { sway += dt * .12; camera.position.x = Math.sin(sway) * .22; camera.lookAt(0, camera.aspect < 1 ? .74 : .66, 0); }
   if (dust) { dust.rotation.y += dt * .015; dust.material.opacity = .15 + .3 * state.reveal; }
   const ring = scene.getObjectByName('ring'); if (ring) ring.material.opacity = .15 + .45 * state.reveal;
   rimL.intensity = 10 + 30 * state.reveal; rimR.intensity = 8 + 22 * state.reveal;
@@ -182,3 +198,4 @@ export const setMode = m => { state.speaking = m === 'speaking' ? 1 : 0; state.l
 export const setVoice = v => { state.voice = v; };
 export const isReady = () => state.ready;
 export const _now = r => { state.reveal = state.revealTo = r; };
+export const _cam = (p, l, fov) => { camera.fov = fov; camera.position.set(...p); camera.updateProjectionMatrix(); camera.lookAt(...l); frozen = l; };
