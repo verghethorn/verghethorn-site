@@ -1,4 +1,4 @@
-import * as A from './avatar.js?v=6';
+import * as A from './avatar.js?v=8';
 // VERGHE — personal assistant: tap to summon, talk, dismiss.
 const AGENT = 'agent_0301m6ye45t5fks83a75m7ayq0e6';
 const $ = s => document.querySelector(s);
@@ -76,6 +76,7 @@ $('[data-summon]').addEventListener('click', summon);
 $('[data-end]').addEventListener('click', dismiss);
 document.addEventListener('visibilitychange', async () => { if (document.visibilityState === 'visible' && conv && !lock) { try { lock = await navigator.wakeLock?.request('screen'); } catch {} } });
 
+window.__A = A;
 A.init(document.querySelector('[data-scene]'), () => B.classList.add('ready'));
 
 /* opened from the home-screen icon → summon straight away */

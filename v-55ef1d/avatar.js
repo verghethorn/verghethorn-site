@@ -9,11 +9,11 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
 const BLUE = new THREE.Color(0x3d9bff);
 const state = { reveal: 0, revealTo: 0, voice: 0, speaking: 0, listening: 0, ready: false };
-let helm, renderer, scene, camera, composer, mixer, clock, visorMat, visorLight, rimL, rimR, actions = {}, model, dust, floorMat, onReady;
+let head, visorMesh, helm, renderer, scene, camera, composer, mixer, clock, visorMat, visorLight, rimL, rimR, actions = {}, model, dust, floorMat, onReady;
 const U = { uReveal: { value: 0 }, uTime: { value: 0 } };
 
 /* materialise from the floor up: everything above the line is hidden, the edge glows */
-function revealable(mat) {
+function revealable(mat, rim = 0) {
   mat.onBeforeCompile = sh => {
     sh.uniforms.uReveal = U.uReveal; sh.uniforms.uTime = U.uTime;
     sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vWPos;')
@@ -24,9 +24,10 @@ function revealable(mat) {
         float n = fract(sin(dot(floor(vWPos.xz * 60.0), vec2(12.9898, 78.233))) * 43758.5453) * 0.04;
         if (vWPos.y > line + n) discard;
         float edge = smoothstep(0.06, 0.0, line + n - vWPos.y) * step(uReveal, 0.999);
-        gl_FragColor.rgb += vec3(0.25, 0.6, 1.0) * edge * 3.0;`);
+        gl_FragColor.rgb += vec3(0.25, 0.6, 1.0) * edge * 3.0;
+        ${rim ? `float fr = pow(1.0 - abs(dot(normalize(normal), normalize(vViewPosition))), 2.6); gl_FragColor.rgb += vec3(0.18, 0.5, 1.0) * fr * ${rim.toFixed(2)};` : ''}`);
   };
-  const key = 'reveal' + (revealable.n = (revealable.n || 0) + 1); mat.customProgramCacheKey = () => key;
+  const key = 'reveal' + rim + (revealable.n = (revealable.n || 0) + 1); mat.customProgramCacheKey = () => key;
   return mat;
 }
 
@@ -87,12 +88,24 @@ function studioEnv() {
   const env = new THREE.Scene(); env.background = new THREE.Color(0x000000);
   const box = (w, h, col, k, pos, look) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(col).multiplyScalar(k), side: THREE.DoubleSide })); m.position.set(...pos); m.lookAt(...look); env.add(m); };
   box(4, .22, 0xffffff, 2.4, [0, 4, 1.2], [0, 0, 0]);      // overhead strip
-  box(.6, 3, 0x6fb2ff, 1.6, [-3, 1.5, -2], [0, 1, 0]);    // cool strip, back left
-  box(.6, 3, 0xa8d0ff, 1.2, [3, 1.5, -2], [0, 1, 0]);     // cool strip, back right
+  box(.6, 3, 0x8cc0ff, 1.0, [-3, 1.5, -2], [0, 1, 0]);    // cool strip, back left
+  box(.6, 3, 0xd8e6ff, .9, [3, 1.5, -2], [0, 1, 0]);     // cool strip, back right
   box(.3, 2.2, 0xffe2c4, 1.4, [2.2, 1.7, 3], [0, 1, 0]);    // warm strip, front right
   box(.25, 2.4, 0xcfe4ff, 1.1, [-2.4, 1.7, 2.6], [0, 1, 0]); // cool strip, front left
   return env;
 }
+
+// the VERGHÉTHORN signature: an LED band across the visor, glowing with the voice
+function ledBand(headBone) {
+  const grp = new THREE.Group();
+  visorMat = new THREE.MeshBasicMaterial({ map: ledTexture(), color: BLUE.clone().multiplyScalar(1.6), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
+  const band = new THREE.Mesh(new THREE.CylinderGeometry(BAND.r, BAND.r, BAND.h, 96, 1, true, -Math.PI * BAND.arc, Math.PI * BAND.arc * 2), visorMat);
+  band.scale.set(1, 1, BAND.sz); grp.add(band);
+  const wp = new THREE.Vector3(); headBone.getWorldPosition(wp);
+  grp.position.copy(wp).add(new THREE.Vector3(0, BAND.y, BAND.z)); grp.rotation.x = BAND.tilt;
+  scene.add(grp); headBone.attach(grp); window.__band = grp; return grp;
+}
+const BAND = { r: .1, h: .026, arc: .22, sz: 1.0, y: .14, z: .072, tilt: 0 };
 
 export function init(canvas, ready) {
   onReady = ready;
@@ -105,7 +118,7 @@ export function init(canvas, ready) {
   camera = new THREE.PerspectiveCamera(30, 1, .1, 50);
 
   // light: soft key from above-front, cool rims from behind, a pool of light on the floor
-  const key = new THREE.SpotLight(0xfff1e0, 60, 9, .42, .7, 1.6); key.position.set(.9, 4.2, 2.4); key.target.position.set(0, .9, 0); key.castShadow = true; key.shadow.mapSize.set(1024, 1024); key.shadow.bias = -.0005;
+  const key = new THREE.SpotLight(0xffeedd, 85, 9, .42, .7, 1.6); key.position.set(.9, 4.2, 2.4); key.target.position.set(0, .9, 0); key.castShadow = true; key.shadow.mapSize.set(1024, 1024); key.shadow.bias = -.0005;
   scene.add(key, key.target);
   rimL = new THREE.SpotLight(0x5aa8ff, 40, 8, .5, .8, 1.5); rimL.position.set(-2.2, 2.6, -2.4); rimL.target.position.set(0, 1.2, 0);
   rimR = new THREE.SpotLight(0x8fc4ff, 30, 8, .5, .8, 1.5); rimR.position.set(2.4, 2.2, -2.2); rimR.target.position.set(0, 1.2, 0);
@@ -131,23 +144,24 @@ export function init(canvas, ready) {
   const bloom = new UnrealBloomPass(new THREE.Vector2(512, 512), .45, .4, .85); composer.addPass(bloom);
   composer.addPass(new OutputPass());
 
-  new GLTFLoader().load('/media/me/xbot.glb', gltf => {
+  new GLTFLoader().load('/media/me/vanguard.glb', gltf => {
     model = gltf.scene;
     model.traverse(o => {
       if (!o.isMesh) return; o.castShadow = true; o.frustumCulled = false;
-      const joints = /001/.test(o.name);
-      o.material = revealable(new THREE.MeshPhysicalMaterial(joints
-        ? { color: 0x5a626c, metalness: 1, roughness: .3, envMapIntensity: 1.8 }
-        : { color: 0x0b0d12, metalness: .15, roughness: .55, clearcoat: .2, clearcoatRoughness: .5, sheen: .8, sheenRoughness: .45, envMapIntensity: 1.5, sheenColor: new THREE.Color(0x26324a) }));
+      const src = o.material;
+      if (/visor/i.test(o.name)) {
+        visorMat = new THREE.MeshBasicMaterial({ color: BLUE.clone().multiplyScalar(1.6), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false });
+        o.material = revealable(new THREE.MeshPhysicalMaterial({ color: 0x000000, roughness: .08, metalness: .2, clearcoat: 1, clearcoatRoughness: .02, envMapIntensity: 1.4 }), .35); visorMesh = o;
+      } else {
+        o.material = revealable(new THREE.MeshPhysicalMaterial({ map: src.map, normalMap: src.normalMap, roughnessMap: src.roughnessMap, metalnessMap: src.metalnessMap,
+          color: 0x40454d, metalness: .85, roughness: .34, clearcoat: .5, clearcoatRoughness: .25, envMapIntensity: 1.1 }), .28);
+      }
     });
-    scene.add(model);
-    const head = model.getObjectByName('mixamorigHead');
-    model.updateMatrixWorld(true); window.__dbg = { model, head, THREE }; helm = helmet(head);
+    model.rotation.y = Math.PI; scene.add(model);
+    head = model.getObjectByName('mixamorigHead'); window.__dbg = { model, head, THREE };
+    model.updateMatrixWorld(true); helm = ledBand(head);
     mixer = new THREE.AnimationMixer(model);
-    const clip = name => gltf.animations.find(a => a.name === name);
-    actions.idle = mixer.clipAction(clip('idle')); actions.idle.play();
-    const agree = THREE.AnimationUtils.makeClipAdditive(clip('agree').clone());
-    actions.agree = mixer.clipAction(agree); actions.agree.blendMode = THREE.AdditiveAnimationBlendMode; actions.agree.setEffectiveWeight(0); actions.agree.play();
+    actions.idle = mixer.clipAction(gltf.animations.find(a => a.name === 'Idle')); actions.idle.play();
     state.ready = true; onReady && onReady();
   });
 
@@ -167,7 +181,7 @@ function size() {
   camera.updateProjectionMatrix();
 }
 
-let t = 0, sway = 0, frozen = null;
+let t = 0, sway = 0, frozen = null, nod = 0;
 function frame() {
   const dt = Math.min(clock.getDelta(), .05); t += dt; U.uTime.value = t;
   const sp = state.revealTo ? .5 : 1.4; state.reveal = state.revealTo > state.reveal ? Math.min(state.revealTo, state.reveal + dt * sp) : Math.max(state.revealTo, state.reveal - dt * sp);
@@ -175,20 +189,21 @@ function frame() {
   U.uReveal.value = state.reveal;
   if (mixer) {
     mixer.update(dt);
-    const w = actions.agree.getEffectiveWeight(); actions.agree.setEffectiveWeight(w + ((state.speaking ? .32 : 0) - w) * dt * 2.5);
+    nod += ((state.speaking ? 1 : 0) - nod) * dt * 3;
+    if (head) { head.rotation.x += Math.sin(t * 2.3) * .045 * nod + .03 * nod * Math.min(1, state.voice * 3); head.rotation.y += Math.sin(t * .7) * .05 * nod; }
   }
   // visor: off → idle glow → breathing while listening → pulses with the voice while speaking
   if (visorMat) {
     const on = Math.max(0, (state.reveal - .82) / .18);
     const breathe = state.listening ? .55 + .25 * Math.sin(t * 2) : .5;
     const v = state.speaking ? .55 + Math.min(1, state.voice * 2.4) * .95 : breathe;
-    const k = on * v; visorMat.opacity = Math.min(1, k * 1.2); visorMat.color.copy(BLUE).multiplyScalar(1 + k * 1.4); visorLight.intensity = 0;
+    const k = on * v; visorMat.opacity = Math.min(1, k * 1.2); visorMat.color.copy(BLUE).multiplyScalar(1 + k * 1.4); 
   }
   // slow cinematic drift of the camera
   if (!frozen) { sway += dt * .12; camera.position.x = Math.sin(sway) * .22; camera.lookAt(0, camera.aspect < 1 ? .74 : .66, 0); }
   if (dust) { dust.rotation.y += dt * .015; dust.material.opacity = .15 + .3 * state.reveal; }
   const ring = scene.getObjectByName('ring'); if (ring) ring.material.opacity = .15 + .45 * state.reveal;
-  rimL.intensity = 10 + 30 * state.reveal; rimR.intensity = 8 + 22 * state.reveal;
+  rimL.intensity = 6 + 18 * state.reveal; rimR.intensity = 5 + 13 * state.reveal;
   composer.render();
 }
 
