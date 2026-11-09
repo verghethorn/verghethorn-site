@@ -1,9 +1,9 @@
-import * as A from './avatar.js';
+import * as A from './avatar.js?v=6';
 // VERGHE — personal assistant: tap to summon, talk, dismiss.
 const AGENT = 'agent_0301m6ye45t5fks83a75m7ayq0e6';
 const $ = s => document.querySelector(s);
 const B = document.body, statusEl = $('[data-status]'), cap = $('[data-cap]'), note = $('[data-note]');
-const T = { connecting: 'Подключаюсь', listening: 'Слушаю', speaking: 'Говорит', muted: 'Микрофон выключен', offline: 'Голос сейчас недоступен. Скорее всего, на ElevenLabs закончились кредиты — пополни баланс, и я снова заговорю.', mic: 'Нужен доступ к микрофону. Разреши его в настройках браузера и позови снова.' };
+const T = { idle: 'Без голоса', connecting: 'Подключаюсь', listening: 'Слушаю', speaking: 'Говорит', muted: 'Микрофон выключен', offline: 'Я здесь, но пока без голоса: на ElevenLabs закончились кредиты. Пополни баланс — и я заговорю.', mic: 'Нужен доступ к микрофону. Разреши его в настройках браузера и позови снова.' };
 
 let conv = null, starting = false, speaking = false, muted = false, gotReply = false, raf = 0, lock = null, ac = null;
 const setState = s => { B.classList.remove('connecting', 'listening', 'speaking'); if (s) B.classList.add(s); A.setMode(s); statusEl.textContent = s === 'listening' && muted ? T.muted : (T[s] || ''); };
@@ -30,11 +30,12 @@ function loop() {
 }
 
 async function summon() {
+  raf = raf || requestAnimationFrame(loop);
   if (starting || conv) return; starting = true; gotReply = false; note.classList.remove('show');
   tone(true); B.classList.add('on'); A.appear(); setState('connecting'); say('');
   try { lock = await navigator.wakeLock?.request('screen'); } catch {}
   try { await navigator.mediaDevices.getUserMedia({ audio: true }).then(s => s.getTracks().forEach(t => t.stop())); }
-  catch { starting = false; setState(null); showNote(T.mic); return; }
+  catch { starting = false; stay(T.mic); return; }
   try {
     const { Conversation } = window.ElevenLabsClient;
     conv = await Promise.race([
@@ -43,16 +44,19 @@ async function summon() {
         onConnect: () => setState('listening'),
         onMessage: m => { const you = (m.role || m.source) === 'user'; if (!you) gotReply = true; say(m.message, you); },
         onModeChange: ({ mode }) => { speaking = mode === 'speaking'; setState(speaking ? 'speaking' : 'listening'); },
-        onDisconnect: () => { const failed = !gotReply && B.classList.contains('on'); finish(!failed); if (failed) showNote(T.offline); },
+        onDisconnect: () => { if (!B.classList.contains('on')) return; conv = null; speaking = false; if (!gotReply) stay(T.offline); else finish(true); },
         onError: (e, c) => console.warn('agent error', e, c),
       }),
       new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 14000)),
     ]);
     raf = raf || requestAnimationFrame(loop);
-    setTimeout(() => { if (conv && !gotReply) { dismiss(); showNote(T.offline); } }, 10000);
-  } catch (e) { console.warn(e); conv = null; finish(false); showNote(T.offline); }
+    setTimeout(async () => { if (conv && !gotReply) { const c = conv; conv = null; try { await c.endSession(); } catch {} stay(T.offline); } }, 10000);
+  } catch (e) { console.warn(e); conv = null; stay(T.offline); }
   finally { starting = false; }
 }
+
+/* no voice (no credits / no mic): he still appears and stays until you send him away */
+function stay(text) { conv = null; speaking = false; setState('idle'); say(text); }
 
 function finish(sound = true) {
   const was = B.classList.contains('on');
