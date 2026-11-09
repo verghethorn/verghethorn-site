@@ -41,11 +41,11 @@ async function summon() {
     const { Conversation } = window.ElevenLabsClient;
     conv = await Promise.race([
       Conversation.startSession({
-        agentId: AGENT, connectionType: 'webrtc',
+        agentId: AGENT, connectionType: 'websocket',
         onConnect: () => setState('listening'),
         onMessage: m => { const you = (m.role || m.source) === 'user'; if (!you) gotReply = true; say(m.message, you); },
         onModeChange: ({ mode }) => { speaking = mode === 'speaking'; setState(speaking ? 'speaking' : 'listening'); },
-        onDisconnect: () => finish(false),
+        onDisconnect: () => { const failed = !gotReply && B.classList.contains('on'); finish(!failed); if (failed) showNote(T.offline); },
         onError: (e, c) => console.warn('agent error', e, c),
       }),
       new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 14000)),

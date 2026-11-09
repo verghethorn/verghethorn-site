@@ -55,7 +55,7 @@ async function start(kind, firstText) {
     if (kind === 'voice') await navigator.mediaDevices.getUserMedia({ audio: true }).then(s => s.getTracks().forEach(t => t.stop()));
     session = Conversation.startSession({
       agentId: cfg.id,
-      connectionType: kind === 'voice' ? 'webrtc' : 'websocket',
+      connectionType: 'websocket',
       textOnly: kind === 'text',
       overrides: { ...(kind === 'text' ? { conversation: { textOnly: true } } : {}), ...(cfg.lang && cfg.lang !== 'en' ? { agent: { language: cfg.lang, ...(cfg.first ? { firstMessage: cfg.first } : {}) } } : {}) },
       onConnect: () => { setStatus(kind === 'voice' ? cfg.t.listening : cfg.t.online); pending = firstText || null; },
