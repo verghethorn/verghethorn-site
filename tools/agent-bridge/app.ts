@@ -1,11 +1,12 @@
-// VERGHE personal assistant — tool bridge (Supabase Edge Function "verghe-tools").
+// VERGHE personal assistant — tool bridge app (loaded by the edge function entry from this repo at a pinned commit) (Supabase Edge Function "verghe-tools").
 // Called by ElevenLabs webhook tools. Cost rules: deterministic code/APIs first, LLM never called here,
 // short answers only, TTL cache for public data, per-call log, simple rate limit.
-import postgres from 'npm:postgres@3.4.5';
 
 const ZAPIER = 'https://mcp.zapier.com/api/v1/connect';
-import { ZTOKEN, KEY, ANAM, XI } from './secrets.ts'; // not in the public repo
+// secrets and the postgres driver are handed in by the deployed entry (index.ts + setup.ts); nothing secret lives in this public file
+const { ZTOKEN, KEY, ANAM, XI, postgres } = (globalThis as any).__VERGHE__;
 import { more } from './more.ts';
+import { crm } from './crm.ts';
 const sql = postgres(Deno.env.get('SUPABASE_DB_URL')!, { prepare: false, max: 2 });
 const TZ = 'Europe/Istanbul';
 
@@ -140,11 +141,11 @@ const mail = (subject: string, body: string) => zap('gmail_send_email', { to: [O
 async function morning(dry = false) {
   const place = await city();
   const s = `${today()}T00:00:00+03:00`, e = `${today(1)}T00:00:00+03:00`;
-  const [wx, ev, due, leads, waiting, coins] = await Promise.allSettled([
+  const [wx, ev, due, leads, waiting, coins, office] = await Promise.allSettled([
     weather(place, 1), findEvents(s, e),
     sql`select contact, subject from verghe.followups where status = 'open' and due_at < now() + interval '1 day'`,
     findEmails('subject:"New request" newer_than:1d'),
-    MORE.actions.needs_reply({ days: 3 }), MORE.actions.crypto_price({ coins: 'btc,eth' }),
+    MORE.actions.needs_reply({ days: 3 }), MORE.actions.crypto_price({ coins: 'btc,eth' }), CRM.today(),
   ]);
   const lines: string[] = [];
   const w: any = wx.status === 'fulfilled' ? wx.value : null, d = w?.days?.[0];
@@ -172,6 +173,11 @@ async function morning(dry = false) {
   const cs: any = coins.status === 'fulfilled' ? coins.value : null;
   const moves = (cs?.coins || []).filter((c: any) => Math.abs(c.change_24h_pct) >= 5);
   if (moves.length) lines.push(`Крипта: ${moves.map((c: any) => `${c.symbol} ${c.change_24h_pct > 0 ? '+' : ''}${c.change_24h_pct}% за сутки, $${Math.round(c.price).toLocaleString('ru-RU')}`).join('; ')}.`);
+  const of: any = office.status === 'fulfilled' ? office.value : null;
+  if (of?.tasks_due?.length) lines.push(`Задачи на сегодня и просроченные: ${of.tasks_due.map((t: any) => t.title + (t.assignee ? ` (${t.assignee})` : '')).join('; ')}.`);
+  if (of?.deals_due?.length) lines.push(`Сделки, где пора действовать: ${of.deals_due.map((d: any) => `${d.client ?? d.title}${d.next_step ? ' — ' + d.next_step : ''}`).join('; ')}.`);
+  if (of?.overdue_invoices?.length) lines.push(`Просроченные счета: ${of.overdue_invoices.map((i: any) => `${i.number} ${i.client} ${i.total} ${i.currency}`).join('; ')}.`);
+  if (of?.contacts_to_reach?.length) lines.push(`Связаться сегодня: ${of.contacts_to_reach.map((c: any) => c.name + (c.next_action ? ` (${c.next_action})` : '')).join('; ')}.`);
   if (!lines.length) return { sent: false, reason: 'nothing worth a message today' };
   const body = `Доброе утро.\n\n${lines.join('\n')}\n\n— VERGHE`;
   if (dry) return { sent: false, dry: true, body };
@@ -277,14 +283,14 @@ const ACTIONS: Record<string, (a: any) => Promise<unknown>> = {
   // one call instead of four
   briefing: async a => {
     const s = `${today()}T00:00:00+03:00`, e = `${today(1)}T00:00:00+03:00`;
-    const [wx, ev, mail, ai, ads, waiting, crypto] = await Promise.allSettled([
+    const [wx, ev, mail, ai, ads, waiting, crypto, office] = await Promise.allSettled([
       weather(a.place || await city(), 1).then(w => { delete (w as any)._cached; return w; }), findEvents(s, e),
       findEmails('in:inbox newer_than:1d -category:promotions -category:social -category:updates'),
       news('AI video', 'en', 3), news('advertising campaign', 'en', 2),
-      MORE.actions.needs_reply({ days: 5 }), MORE.actions.crypto_price({ coins: 'btc,eth' }),
+      MORE.actions.needs_reply({ days: 5 }), MORE.actions.crypto_price({ coins: 'btc,eth' }), CRM.today(),
     ]);
     const v = (p: PromiseSettledResult<unknown>) => p.status === 'fulfilled' ? p.value : { error: String((p as PromiseRejectedResult).reason) };
-    return { date: today(), weather: v(wx), today_events: v(ev), important_emails: v(mail), waiting_for_your_reply: v(waiting), crypto: v(crypto), ai_news: v(ai), ad_news: v(ads) };
+    return { date: today(), weather: v(wx), today_events: v(ev), important_emails: v(mail), waiting_for_your_reply: v(waiting), office: v(office), crypto: v(crypto), ai_news: v(ai), ad_news: v(ads) };
   },
   // memory — layered (profile, preference, style, project, decision, episode, rule, state); state expires by itself
   remember: async a => {
@@ -383,6 +389,8 @@ const JOBS: Record<string, (dry: boolean) => Promise<unknown>> = { followup_chec
 const MORE = more({ sql, cached, city, findEmails, zap, mail, convert });
 Object.assign(ACTIONS, MORE.actions); Object.assign(WRITE, MORE.write);
 Object.assign(JOBS, MORE.jobs);
+const CRM = crm({ sql, zap, findEmails, findEvents, today });
+Object.assign(ACTIONS, CRM.actions); Object.assign(WRITE, CRM.write);
 
 /* live face (Anam): the phone asks for a one-time session token; keys never leave the server */
 const AGENT_ID = 'agent_0301m6ye45t5fks83a75m7ayq0e6';
