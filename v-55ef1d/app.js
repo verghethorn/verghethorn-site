@@ -1,11 +1,12 @@
+import * as A from './avatar.js';
 // VERGHE — personal assistant: tap to summon, talk, dismiss.
 const AGENT = 'agent_0301m6ye45t5fks83a75m7ayq0e6';
 const $ = s => document.querySelector(s);
-const B = document.body, visor = $('[data-visor]'), statusEl = $('[data-status]'), cap = $('[data-cap]'), note = $('[data-note]');
+const B = document.body, statusEl = $('[data-status]'), cap = $('[data-cap]'), note = $('[data-note]');
 const T = { connecting: 'Подключаюсь', listening: 'Слушаю', speaking: 'Говорит', muted: 'Микрофон выключен', offline: 'Голос сейчас недоступен. Скорее всего, на ElevenLabs закончились кредиты — пополни баланс, и я снова заговорю.', mic: 'Нужен доступ к микрофону. Разреши его в настройках браузера и позови снова.' };
 
 let conv = null, starting = false, speaking = false, muted = false, gotReply = false, raf = 0, lock = null, ac = null;
-const setState = s => { B.classList.remove('connecting', 'listening', 'speaking'); if (s) B.classList.add(s); statusEl.textContent = s === 'listening' && muted ? T.muted : (T[s] || ''); };
+const setState = s => { B.classList.remove('connecting', 'listening', 'speaking'); if (s) B.classList.add(s); A.setMode(s); statusEl.textContent = s === 'listening' && muted ? T.muted : (T[s] || ''); };
 const say = (text, you = false) => { cap.textContent = text; cap.classList.toggle('you', you); cap.scrollTop = 0; };
 const showNote = t => { note.textContent = t; note.classList.add('show'); };
 
@@ -24,16 +25,13 @@ function tone(up) {
 /* the visor follows the voice */
 function loop() {
   raf = requestAnimationFrame(loop);
-  if (!conv || !speaking) { visor.style.opacity = ''; visor.style.filter = ''; return; }
-  let v = 0; try { v = conv.getOutputVolume() || 0; } catch {}
-  const k = Math.min(1, v * 2.2);
-  visor.style.opacity = (.5 + k * .5).toFixed(3);
-  visor.style.filter = `brightness(${(1 + k * .9).toFixed(2)})`;
+  let v = 0; if (conv && speaking) { try { v = conv.getOutputVolume() || 0; } catch {} }
+  A.setVoice(v);
 }
 
 async function summon() {
   if (starting || conv) return; starting = true; gotReply = false; note.classList.remove('show');
-  tone(true); B.classList.add('on'); setState('connecting'); say('');
+  tone(true); B.classList.add('on'); A.appear(); setState('connecting'); say('');
   try { lock = await navigator.wakeLock?.request('screen'); } catch {}
   try { await navigator.mediaDevices.getUserMedia({ audio: true }).then(s => s.getTracks().forEach(t => t.stop())); }
   catch { starting = false; setState(null); showNote(T.mic); return; }
@@ -59,7 +57,7 @@ async function summon() {
 function finish(sound = true) {
   const was = B.classList.contains('on');
   conv = null; speaking = false; muted = false; paintMute();
-  setState(null); B.classList.remove('on'); say('');
+  setState(null); B.classList.remove('on'); A.vanish(); say('');
   $('[data-type]').classList.remove('open'); $('[data-kbd]').setAttribute('aria-pressed', 'false');
   try { lock?.release(); } catch {} lock = null;
   if (was && sound) tone(false);
@@ -73,6 +71,8 @@ $('[data-type]').addEventListener('submit', e => { e.preventDefault(); const i =
 $('[data-summon]').addEventListener('click', summon);
 $('[data-end]').addEventListener('click', dismiss);
 document.addEventListener('visibilitychange', async () => { if (document.visibilityState === 'visible' && conv && !lock) { try { lock = await navigator.wakeLock?.request('screen'); } catch {} } });
+
+A.init(document.querySelector('[data-scene]'), () => B.classList.add('ready'));
 
 /* opened from the home-screen icon → summon straight away */
 if (new URLSearchParams(location.search).has('go')) addEventListener('load', () => setTimeout(summon, 300), { once: true });
