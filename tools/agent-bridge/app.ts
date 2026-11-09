@@ -7,7 +7,7 @@ const ZAPIER = 'https://mcp.zapier.com/api/v1/connect';
 const { ZTOKEN, KEY, ANAM, XI, postgres } = (globalThis as any).__VERGHE__;
 import { more } from './more.ts';
 import { crm } from './crm.ts';
-const sql = postgres(Deno.env.get('SUPABASE_DB_URL')!, { prepare: false, max: 2 });
+const sql = postgres(Deno.env.get('SUPABASE_DB_URL')!, { prepare: false, max: 2, types: { date: { to: 1082, from: [1082], serialize: (x: unknown) => x, parse: (x: string) => x } } }); // dates stay 'YYYY-MM-DD'
 const TZ = 'Europe/Istanbul';
 
 /* ---------- helpers ---------- */

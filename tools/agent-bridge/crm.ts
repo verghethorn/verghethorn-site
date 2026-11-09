@@ -189,26 +189,32 @@ export function crm(ctx: Ctx) {
 
   /* ---------- web search (free: DuckDuckGo HTML, Wikipedia as fallback) ---------- */
   const clean = (x: string) => x.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#x27;|&#39;/g, "'").replace(/\s+/g, ' ').trim();
+  const UA = { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15', 'Accept-Language': 'ru,en;q=0.8' };
+  async function ddg(q: string) {
+    const r = await fetch('https://lite.duckduckgo.com/lite/', { method: 'POST', headers: { ...UA, 'Content-Type': 'application/x-www-form-urlencoded' }, body: `q=${encodeURIComponent(q)}` });
+    const h = await r.text(), res: any[] = [];
+    for (const m of h.matchAll(/<a[^>]+href="([^"]+)"[^>]*class=['"]result-link['"][^>]*>([\s\S]*?)<\/a>[\s\S]*?<td[^>]*class=['"]result-snippet['"][^>]*>([\s\S]*?)<\/td>/g)) {
+      let url = m[1]; const u = url.match(/uddg=([^&]+)/); if (u) url = decodeURIComponent(u[1]);
+      if (/duckduckgo\.com\/y\.js/.test(url)) continue;
+      res.push({ title: clean(m[2]), snippet: clean(m[3]).slice(0, 240), url }); if (res.length >= 6) break;
+    }
+    return res;
+  }
+  async function mojeek(q: string) {
+    const h = await (await fetch(`https://www.mojeek.com/search?q=${encodeURIComponent(q)}`, { headers: UA })).text(), res: any[] = [];
+    for (const m of h.matchAll(/<a class="title" href="([^"]+)"[^>]*>([\s\S]*?)<\/a>[\s\S]*?<p class="s">([\s\S]*?)<\/p>/g)) {
+      res.push({ title: clean(m[2]), snippet: clean(m[3]).slice(0, 240), url: m[1] }); if (res.length >= 6) break;
+    }
+    return res;
+  }
   async function webSearch(a: any) {
     const q = String(a.query || '').trim(); if (!q) return { error: 'need query' };
-    const out: any = { query: q, results: [] as any[] };
-    try {
-      const r = await fetch(`https://html.duckduckgo.com/html/?q=${encodeURIComponent(q)}`, { headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15', 'Accept-Language': 'ru,en;q=0.8' } });
-      const h = await r.text();
-      for (const m of h.matchAll(/<a[^>]+class="result__a"[^>]+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>[\s\S]*?<a[^>]+class="result__snippet"[^>]*>([\s\S]*?)<\/a>/g)) {
-        let url = m[1]; const u = url.match(/uddg=([^&]+)/); if (u) url = decodeURIComponent(u[1]);
-        if (/duckduckgo\.com\/y\.js/.test(url)) continue; // ads
-        out.results.push({ title: clean(m[2]), snippet: clean(m[3]).slice(0, 240), url });
-        if (out.results.length >= 6) break;
-      }
-    } catch { /* fallback below */ }
-    if (!out.results.length) {
-      const lang = /[а-яё]/i.test(q) ? 'ru' : 'en';
-      const w = await (await fetch(`https://${lang}.wikipedia.org/w/api.php?action=query&list=search&format=json&srlimit=5&srsearch=${encodeURIComponent(q)}`, { headers: { 'User-Agent': 'VERGHE-assistant/1.0 (verghethorn.com)' } })).json();
-      out.results = (w.query?.search || []).map((x: any) => ({ title: x.title, snippet: clean(x.snippet), url: `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(x.title.replace(/ /g, '_'))}` }));
-      out.source = 'Wikipedia';
-    } else out.source = 'DuckDuckGo';
-    return out;
+    for (const [name, fn] of [['DuckDuckGo', ddg], ['Mojeek', mojeek]] as const) {
+      try { const r = await fn(q); if (r.length) return { query: q, source: name, results: r }; } catch { /* next */ }
+    }
+    const lang = /[а-яё]/i.test(q) ? 'ru' : 'en';
+    const w = await (await fetch(`https://${lang}.wikipedia.org/w/api.php?action=query&list=search&format=json&srlimit=5&srsearch=${encodeURIComponent(q)}`, { headers: { 'User-Agent': 'VERGHE-assistant/1.0 (verghethorn.com)' } })).json();
+    return { query: q, source: 'Wikipedia (web search engines unavailable right now)', results: (w.query?.search || []).map((x: any) => ({ title: x.title, snippet: clean(x.snippet), url: `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(x.title.replace(/ /g, '_'))}` })) };
   }
 
   const actions: Record<string, (a: any) => Promise<unknown>> = {
