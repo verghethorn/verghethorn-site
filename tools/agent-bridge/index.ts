@@ -25,6 +25,7 @@ async function cached<T>(key: string, ttlMin: number, fn: () => Promise<T>): Pro
   const hit = await sql`select value from verghe.cache where key = ${key} and expires_at > now()`;
   if (hit.length) return [hit[0].value as T, true];
   const v = await fn();
+  if (Array.isArray(v) ? v.length === 0 : (v as any)?.error) return [v, false]; // never cache empty or failed results
   await sql`insert into verghe.cache (key, value, expires_at) values (${key}, ${sql.json(v as any)}, now() + ${ttlMin + ' minutes'}::interval)
             on conflict (key) do update set value = excluded.value, expires_at = excluded.expires_at`;
   return [v, false];
@@ -49,7 +50,7 @@ async function weather(place = 'Istanbul', days = 3) {
       days: d.time.map((t: string, i: number) => ({ date: t, sky: WMO[d.weather_code[i]] ?? d.weather_code[i], min_c: d.temperature_2m_min[i], max_c: d.temperature_2m_max[i], rain_chance_pct: d.precipitation_probability_max[i], rain_mm: d.precipitation_sum[i], snow_cm: d.snowfall_sum[i], wind_max_kmh: d.wind_speed_10m_max[i], uv_max: d.uv_index_max[i], sunrise: d.sunrise[i]?.slice(11), sunset: d.sunset[i]?.slice(11) })),
     };
   });
-  return { ...v as object, _cached: hit };
+  return { ...v as object, ...(hit ? { _cached: true } : {}) };
 }
 
 /* ---------- currency (open.er-api.com, free) ---------- */
@@ -115,9 +116,9 @@ const ACTIONS: Record<string, (a: any) => Promise<unknown>> = {
   briefing: async a => {
     const s = `${today()}T00:00:00+03:00`, e = `${today(1)}T00:00:00+03:00`;
     const [wx, ev, mail, ai, ads] = await Promise.allSettled([
-      weather(a.place || 'Istanbul', 1), findEvents(s, e),
+      weather(a.place || 'Istanbul', 1).then(w => { delete (w as any)._cached; return w; }), findEvents(s, e),
       findEmails('in:inbox newer_than:1d -category:promotions -category:social -category:updates'),
-      news('artificial intelligence video', 'en', 3), news('advertising campaign brand', 'en', 2),
+      news('AI video', 'en', 3), news('advertising campaign', 'en', 2),
     ]);
     const v = (p: PromiseSettledResult<unknown>) => p.status === 'fulfilled' ? p.value : { error: String((p as PromiseRejectedResult).reason) };
     return { date: today(), weather: v(wx), today_events: v(ev), important_emails: v(mail), ai_news: v(ai), ad_news: v(ads) };
