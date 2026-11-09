@@ -19,8 +19,10 @@ async function zap(name: string, args: Record<string, unknown>) {
   const line = t.split('\n').find(l => l.startsWith('data: '));
   const j = JSON.parse(line ? line.slice(6) : t);
   const text = j?.result?.content?.[0]?.text ?? JSON.stringify(j.error ?? j);
+  if (j.error || /validation error|^error/i.test(text)) return { error: text.slice(0, 300) }; // surface failures, never pretend success
   try { const o = JSON.parse(text); delete o.billingTasksUsed; return o; } catch { return { result: text }; }
 }
+const list = (to: unknown) => to == null || to === '' ? undefined : (Array.isArray(to) ? to : String(to).split(',').map(s => s.trim()).filter(Boolean));
 async function cached<T>(key: string, ttlMin: number, fn: () => Promise<T>): Promise<[T, boolean]> {
   const hit = await sql`select value from verghe.cache where key = ${key} and expires_at > now()`;
   if (hit.length) return [hit[0].value as T, true];
@@ -95,37 +97,155 @@ function travelLinks(a: any) {
   return Object.keys(out).length ? out : { error: 'need from/to/depart for flights or city/checkin/checkout for hotels' };
 }
 
+/* ---------- memory helpers ---------- */
+const KINDS = ['profile', 'preference', 'style', 'project', 'decision', 'episode', 'rule', 'state', 'fact'];
+async function city() {
+  const r = await sql`select note from verghe.memories where kind = 'state' and topic = 'location' and (expires_at is null or expires_at > now()) order by created_at desc limit 1`;
+  return r[0]?.note || 'Istanbul';
+}
+async function context() {
+  const rows = await sql`select kind, note from verghe.memories where (expires_at is null or expires_at > now())
+                         and kind in ('core','profile','preference','style','rule','project','state') and coalesce(topic, '') <> 'location' order by kind, updated_at desc`;
+  const by: Record<string, string[]> = {};
+  for (const r of rows) (by[r.kind] ??= []).length < 12 && by[r.kind].push(r.note);
+  return { location: await city(), ...by };
+}
+/* signed one-tap links in the weekly email ("delete this memory") */
+async function sign(id: string) {
+  const k = await crypto.subtle.importKey('raw', new TextEncoder().encode(KEY), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const b = new Uint8Array(await crypto.subtle.sign('HMAC', k, new TextEncoder().encode('forget:' + id)));
+  return [...b.slice(0, 12)].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+const SELF = 'https://vgotvplikubsncujcxmk.supabase.co/functions/v1/verghe-tools';
+const OWNER = 'verghethorn@gmail.com';
+const mail = (subject: string, body: string) => zap('gmail_send_email', { to: [OWNER], subject, body, output_hint: 'Only: sent true/false.' });
+
+/* ---------- proactive: morning note, only when there is something worth saying ---------- */
+async function morning(dry = false) {
+  const place = await city();
+  const s = `${today()}T00:00:00+03:00`, e = `${today(1)}T00:00:00+03:00`;
+  const [wx, ev, due, leads] = await Promise.allSettled([
+    weather(place, 1), findEvents(s, e),
+    sql`select contact, subject from verghe.followups where status = 'open' and due_at < now() + interval '1 day'`,
+    findEmails('subject:"New request" newer_than:1d'),
+  ]);
+  const lines: string[] = [];
+  const w: any = wx.status === 'fulfilled' ? wx.value : null, d = w?.days?.[0];
+  if (d) {
+    const alerts = [];
+    if (d.rain_chance_pct >= 60) alerts.push(`дождь ${d.rain_chance_pct}% — возьми зонт`);
+    if (d.snow_cm > 0) alerts.push(`снег ${d.snow_cm} см`);
+    if (d.max_c >= 35) alerts.push(`жара до ${d.max_c}°`);
+    if (d.min_c <= 0) alerts.push(`мороз до ${d.min_c}°`);
+    if (d.uv_max >= 8) alerts.push(`сильное солнце (UV ${d.uv_max})`);
+    if (d.wind_max_kmh >= 50) alerts.push(`сильный ветер ${d.wind_max_kmh} км/ч`);
+    if (alerts.length) lines.push(`Погода, ${w.place}: ${d.min_c}…${d.max_c}°, ${alerts.join(', ')}.`);
+  }
+  const evs: any = ev.status === 'fulfilled' ? ev.value : null;
+  const evList = Array.isArray(evs?.results) ? evs.results : [];
+  if (evList.length) lines.push(`Встречи сегодня: ${evList.map((x: any) => `${(x.start?.dateTime || x.start || '').toString().slice(11, 16)} ${x.title || x.summary || ''}`.trim()).join('; ')}.`);
+  const f: any = due.status === 'fulfilled' ? due.value : [];
+  if (f.length) lines.push(`Ждёшь ответа: ${f.map((x: any) => x.contact + (x.subject ? ` (${x.subject})` : '')).join(', ')}.`);
+  const l: any = leads.status === 'fulfilled' ? leads.value : null;
+  const ln = Array.isArray(l?.results) ? l.results.length : 0;
+  if (ln) lines.push(`Новые заявки с сайта: ${ln}.`);
+  if (!lines.length) return { sent: false, reason: 'nothing worth a message today' };
+  const body = `Доброе утро.\n\n${lines.join('\n')}\n\n— VERGHE`;
+  if (dry) return { sent: false, dry: true, body };
+  const r: any = await mail(`VERGHE · ${today()} · главное на сегодня`, body);
+  return { sent: !r?.error, error: r?.error, body };
+}
+
+/* ---------- weekly summary (Sunday evening) + memory review with one-tap delete ---------- */
+async function weekly(dry = false) {
+  const [exp, fu, yt, mem, leads, acts] = await Promise.allSettled([
+    sql`select category, round(sum(amount_usd)::numeric,2) usd from verghe.expenses where spent_on > current_date - 7 group by 1 order by 2 desc`,
+    sql`select contact, subject, status from verghe.followups where status in ('open','reminded')`,
+    ACTIONS.youtube_stats({}),
+    sql`select id, kind, note from verghe.memories where created_at > now() - interval '7 days' and kind <> 'state' order by created_at`,
+    findEmails('subject:"New request" newer_than:7d'),
+    sql`select count(*)::int n, count(*) filter (where cached)::int c from verghe.tool_log where at > now() - interval '7 days'`,
+  ]);
+  const v = (p: PromiseSettledResult<any>) => p.status === 'fulfilled' ? p.value : null;
+  const out: string[] = [];
+  const e = v(exp) || []; const tot = e.reduce((s: number, r: any) => s + Number(r.usd || 0), 0);
+  out.push(e.length ? `Расходы за неделю: $${tot.toFixed(2)} (${e.map((r: any) => `${r.category} $${r.usd}`).join(', ')}).` : 'Расходов за неделю не записано.');
+  const f = v(fu) || []; if (f.length) out.push(`Клиенты без ответа: ${f.map((x: any) => x.contact).join(', ')}.`);
+  const l = v(leads); out.push(`Заявки с сайта за неделю: ${Array.isArray(l?.results) ? l.results.length : 0}.`);
+  const y = v(yt)?.results; if (y?.subscribers !== undefined) out.push(`YouTube «${y.channel_title}»: ${y.subscribers} подписчиков, ${y.total_views} просмотров, ${y.video_count} видео.`);
+  const a = v(acts)?.[0]; if (a) out.push(`Агент за неделю: ${a.n} вызовов инструментов, из них ${a.c} бесплатно из кэша.`);
+  const m = v(mem) || [];
+  if (m.length) {
+    out.push('\nЧто я запомнил за неделю (нажми ссылку, чтобы удалить):');
+    for (const r of m) out.push(`• [${r.kind}] ${r.note}\n  удалить: ${SELF}?action=forget_link&id=${r.id}&sig=${await sign(String(r.id))}`);
+  }
+  const body = `Итоги недели.\n\n${out.join('\n')}\n\n— VERGHE`;
+  if (dry) return { dry: true, body };
+  const r: any = await mail(`VERGHE · итоги недели · ${today()}`, body);
+  return { sent: !r?.error, error: r?.error };
+}
+
 /* ---------- actions ---------- */
 const ACTIONS: Record<string, (a: any) => Promise<unknown>> = {
   // mail
   find_emails: a => findEmails(a.query || 'in:inbox newer_than:2d'),
   read_email: a => zap('gmail_get_conversation', { thread_id: a.thread_id, format: 'full', output_hint: 'Sender, subject, date and the plain-text body of each message, quoted replies and signatures removed. Max 1500 characters.' }),
-  send_email: a => zap('gmail_send_email', { to: a.to, subject: a.subject, body: a.body, output_hint: 'Only: sent true/false and message id.' }),
-  draft_email: a => zap('gmail_create_draft', { to: a.to || 'verghethorn@gmail.com', subject: a.subject, body: a.body, output_hint: 'Only: draft created true/false.' }),
-  reply_email: a => zap('gmail_reply_to_email', { thread_id: a.thread_id, body: a.body, to: a.to, output_hint: 'Only: sent true/false.' }),
+  send_email: a => zap('gmail_send_email', { to: list(a.to), subject: a.subject, body: a.body, output_hint: 'Only: sent true/false and message id.' }),
+  draft_email: a => zap('gmail_create_draft', { to: list(a.to || 'verghethorn@gmail.com'), subject: a.subject, body: a.body, output_hint: 'Only: draft created true/false.' }),
+  reply_email: a => zap('gmail_reply_to_email', { thread_id: a.thread_id, body: a.body, to: list(a.to), output_hint: 'Only: sent true/false.' }),
   site_leads: a => findEmails(`subject:"New request" newer_than:${a.days || 7}d`),
   // calendar & reminders
   find_events: a => findEvents(a.start_time, a.end_time, a.search),
   add_event: a => addEvent(a.text),
   delete_event: a => zap('google_calendar_delete_event', { calendarid: 'primary', eventid: a.event_id, send_notifications: 'false', output_hint: 'Only: deleted true/false.' }),
   // public info (code only, cached)
-  weather: a => weather(a.place || 'Istanbul', a.days || 3),
+  weather: async a => weather(a.place || await city(), a.days || 3),
   currency: a => convert(Number(a.amount) || 1, a.from || 'USD', a.to || 'TRY'),
   news: a => news(a.topic || 'AI advertising', a.lang || 'en', 5),
   // one call instead of four
   briefing: async a => {
     const s = `${today()}T00:00:00+03:00`, e = `${today(1)}T00:00:00+03:00`;
     const [wx, ev, mail, ai, ads] = await Promise.allSettled([
-      weather(a.place || 'Istanbul', 1).then(w => { delete (w as any)._cached; return w; }), findEvents(s, e),
+      weather(a.place || await city(), 1).then(w => { delete (w as any)._cached; return w; }), findEvents(s, e),
       findEmails('in:inbox newer_than:1d -category:promotions -category:social -category:updates'),
       news('AI video', 'en', 3), news('advertising campaign', 'en', 2),
     ]);
     const v = (p: PromiseSettledResult<unknown>) => p.status === 'fulfilled' ? p.value : { error: String((p as PromiseRejectedResult).reason) };
     return { date: today(), weather: v(wx), today_events: v(ev), important_emails: v(mail), ai_news: v(ai), ad_news: v(ads) };
   },
-  // memory
-  remember: async a => { const r = await sql`insert into verghe.memories (topic, person, note) values (${a.topic ?? null}, ${a.person ?? null}, ${a.note}) returning id`; return { saved: true, id: r[0].id }; },
-  recall: async a => ({ results: await sql`select created_at::date as date, topic, person, note from verghe.recall(${a.query}, 8)` }),
+  // memory — layered (profile, preference, style, project, decision, episode, rule, state); state expires by itself
+  remember: async a => {
+    const kind = KINDS.includes(a.kind) ? a.kind : 'fact';
+    const days = Number(a.expires_in_days) || (kind === 'state' ? 3 : 0);
+    const exp = days ? new Date(Date.now() + days * 864e5).toISOString() : null;
+    // no duplicates: a near-identical note of the same kind is updated instead of added
+    const dup = await sql`select id from verghe.memories where kind = ${kind} and (expires_at is null or expires_at > now())
+                          and extensions.similarity(note, ${a.note}) > 0.6 order by extensions.similarity(note, ${a.note}) desc limit 1`;
+    if (dup.length) { await sql`update verghe.memories set note = ${a.note}, topic = coalesce(${a.topic ?? null}, topic), person = coalesce(${a.person ?? null}, person), expires_at = ${exp}, updated_at = now() where id = ${dup[0].id}`; return { saved: true, updated_existing: true, id: dup[0].id }; }
+    const r = await sql`insert into verghe.memories (kind, topic, person, note, expires_at) values (${kind}, ${a.topic ?? null}, ${a.person ?? null}, ${a.note}, ${exp}) returning id`;
+    return { saved: true, id: r[0].id, kind };
+  },
+  recall: async a => ({ results: await sql`select id, created_at::date as date, kind, topic, person, note from verghe.recall(${a.query}, 8)` }),
+  // what the agent should know at the start of a talk: small, stable, cheap (one DB read)
+  get_context: async () => ({ ...(await context()), now_istanbul: new Date().toLocaleString('ru-RU', { timeZone: TZ }) }),
+  memory_list: async a => {
+    const rows = await sql`select id, kind, topic, person, note, created_at::date as date from verghe.memories
+                           where (expires_at is null or expires_at > now()) ${a.kind ? sql`and kind = ${a.kind}` : sql``} order by kind, created_at desc limit 60`;
+    return { count: rows.length, items: rows };
+  },
+  forget: async a => {
+    const rows = a.id ? await sql`delete from verghe.memories where id = ${a.id} returning id, note`
+                      : await sql`delete from verghe.memories where id in (select id from verghe.recall(${a.query}, 3)) returning id, note`;
+    return { deleted: rows.length, items: rows };
+  },
+  set_location: async a => {
+    await sql`delete from verghe.memories where kind = 'state' and topic = 'location'`;
+    await sql`insert into verghe.memories (kind, topic, note, expires_at) values ('state', 'location', ${a.city}, now() + interval '30 days')`;
+    return { saved: true, city: a.city };
+  },
+  // journal of what was done on his behalf
+  actions_log: async a => ({ actions: await sql`select to_char(at at time zone 'Europe/Istanbul', 'DD.MM HH24:MI') as at, action, summary, ok
+      from verghe.tool_log where summary is not null order by at desc limit ${Math.min(30, Number(a.limit) || 10)}` }),
   // expenses
   log_expense: async a => {
     const cur = (a.currency || 'USD').toUpperCase(); let usd = Number(a.amount);
@@ -172,19 +292,43 @@ async function followupCheck() {
   return { checked: done };
 }
 
+const WRITE: Record<string, (a: any) => string> = {
+  send_email: a => `письмо → ${a.to}: ${a.subject}`, reply_email: a => `ответ в переписке ${a.to ?? ''}`.trim(),
+  draft_email: a => `черновик: ${a.subject}`, add_event: a => `в календарь: ${a.text}`, delete_event: a => `удалено событие ${a.event_id}`,
+  save_doc: a => `документ: ${a.title}`, log_expense: a => `расход ${a.amount} ${a.currency ?? 'USD'} ${a.category ?? ''}`.trim(),
+  remember: a => `запомнил [${a.kind ?? 'fact'}]: ${String(a.note).slice(0, 80)}`, forget: a => `удалил из памяти: ${a.id ?? a.query}`,
+  followup_add: a => `проследить ответ: ${a.contact}`, set_location: a => `локация: ${a.city}`,
+};
+const JOBS: Record<string, (dry: boolean) => Promise<unknown>> = { followup_check: () => followupCheck(), morning, weekly };
+
 Deno.serve(async req => {
+  const url = new URL(req.url), action = url.searchParams.get('action') || '';
+  // one-tap delete from the weekly email (signed, no key needed)
+  if (action === 'forget_link') {
+    const id = url.searchParams.get('id') || '';
+    const txt = (t: string, status = 200) => new Response(t, { status, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+    if (!id || url.searchParams.get('sig') !== await sign(id)) return txt('Ссылка недействительна.', 403);
+    // two steps, so mail link scanners can't delete anything by just opening the link
+    if (!url.searchParams.has('confirm')) {
+      const m = await sql`select note from verghe.memories where id = ${id}`;
+      return txt(m.length ? `Удалить из памяти VERGHE:\n«${m[0].note}»\n\nПодтвердить удаление:\n${SELF}${url.search}&confirm=1` : 'Уже удалено.');
+    }
+    const r = await sql`delete from verghe.memories where id = ${id} returning note`;
+    await sql`insert into verghe.tool_log (action, ms, ok, cached, summary) values ('forget', 0, true, false, ${'удалил по ссылке: ' + (r[0]?.note ?? id)})`;
+    return txt(r.length ? 'Готово: удалено из памяти VERGHE.' : 'Уже удалено.');
+  }
   if (req.headers.get('x-verghe-key') !== KEY) return j({ error: 'forbidden' }, 403);
-  const action = new URL(req.url).searchParams.get('action') || '';
   const t0 = Date.now();
-  if (action === 'followup_check') return j(await followupCheck());
+  if (JOBS[action]) return j(await JOBS[action](url.searchParams.has('dry')));
   const fn = ACTIONS[action]; if (!fn) return j({ error: 'unknown action' }, 400);
   // rate limit: protects credits from loops (max 30 calls / 10 min)
   const [{ n }] = await sql`select count(*)::int as n from verghe.tool_log where at > now() - interval '10 minutes'`;
   if (n > 30) return j({ error: 'too many tool calls in a short time — pause and ask the owner' }, 429);
-  let args = {}; try { args = await req.json(); } catch { /* no body */ }
+  let args: any = {}; try { args = await req.json(); } catch { /* no body */ }
   let ok = true, out: unknown;
-  try { out = await fn(args); } catch (e) { ok = false; out = { error: String(e) }; }
+  try { out = await fn(args); if ((out as any)?.error) ok = false; } catch (e) { ok = false; out = { error: String(e) }; }
   const isCached = !!(out as any)?._cached; if (out && typeof out === 'object') delete (out as any)._cached;
-  sql`insert into verghe.tool_log (action, ms, ok, cached) values (${action}, ${Date.now() - t0}, ${ok}, ${isCached})`.catch(() => {});
-  return j(out, ok ? 200 : 502);
+  const summary = WRITE[action] ? WRITE[action](args) : null;
+  sql`insert into verghe.tool_log (action, ms, ok, cached, summary) values (${action}, ${Date.now() - t0}, ${ok}, ${isCached}, ${summary})`.catch(() => {});
+  return j(out); // errors go back as {error} with 200, so the agent can tell him plainly
 });

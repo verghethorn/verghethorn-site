@@ -50,6 +50,9 @@ body.on .ui { opacity: 1; transform: none; pointer-events: auto; }
 .round svg { width: 24px; height: 24px; fill: none; stroke: #fff; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .round.end { width: 72px; height: 72px; background: rgba(255,59,48,.88); border-color: transparent; }
 .round.end svg { width: 28px; height: 28px; }
+.round.ask { animation: ask 1s ease-in-out infinite; border-color: var(--blue); }
+@keyframes ask { 50% { box-shadow: 0 0 0 8px rgba(74,168,255,.25); } }
+.bar { gap: 16px; }
 .round[aria-pressed="true"] { background: #fff; } .round[aria-pressed="true"] svg { stroke: #000; }
 .type { display: none; gap: 8px; }
 .type.open { display: flex; }
@@ -77,15 +80,17 @@ body.on .ui { opacity: 1; transform: none; pointer-events: auto; }
   <p class="status" data-status></p>
   <p class="cap" data-cap aria-live="polite"></p>
   <a class="link" data-link hidden target="_blank" rel="noopener"><span></span> ↗</a>
+  <input type="file" accept="image/*" capture="environment" data-photo hidden>
   <form class="type" data-type><input data-input placeholder="Написать…" enterkeyhint="send" autocomplete="off"><button>→</button></form>
   <div class="bar">
     <button class="round" data-mute aria-label="Выключить микрофон" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+    <button class="round" data-eye aria-label="Показать фото"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
     <button class="round end" data-end aria-label="Отпустить"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     <button class="round" data-kbd aria-label="Написать текстом" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10"/></svg></button>
   </div>
 </div>
 
-<script src="/static/vendor/elevenlabs-client-1.30.0.js" defer></script>
-<script type="module" src="app.js?v=9"></script>
+<script src="/static/vendor/elevenlabs-client-1.32.1.js" defer></script>
+<script type="module" src="app.js?v=10"></script>
 </body>
 </html>

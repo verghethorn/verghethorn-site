@@ -41,7 +41,10 @@ async function summon() {
     conv = await Promise.race([
       Conversation.startSession({
         agentId: AGENT, connectionType: 'websocket',
-        clientTools: { open_link: ({ url, label }) => { showLink(url, label); return 'shown on screen'; } },
+        clientTools: {
+          open_link: ({ url, label }) => { showLink(url, label); return 'shown on screen'; },
+          ask_photo: () => { $('[data-eye]').classList.add('ask'); return 'the eye button is glowing — ask him to tap it and take the photo'; },
+        },
         onConnect: () => setState('listening'),
         onMessage: m => { const you = (m.role || m.source) === 'user'; if (!you) gotReply = true; say(m.message, you); },
         onModeChange: ({ mode }) => { speaking = mode === 'speaking'; setState(speaking ? 'speaking' : 'listening'); },
@@ -63,6 +66,25 @@ function showLink(url, label) {
   try { window.open(url, '_blank', 'noopener'); } catch {}
 }
 
+/* vision: he taps the eye, takes a photo, the agent sees it (image is shrunk first: faster and cheaper, still sharp) */
+async function shrink(file, max = 1600) {
+  const img = await createImageBitmap(file);
+  const k = Math.min(1, max / Math.max(img.width, img.height));
+  const c = Object.assign(document.createElement('canvas'), { width: Math.round(img.width * k), height: Math.round(img.height * k) });
+  c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+  return await new Promise(r => c.toBlob(r, 'image/jpeg', .88));
+}
+$('[data-eye]').addEventListener('click', () => { if (!conv) return say('Сначала позови меня — потом покажешь фото.'); $('[data-photo]').click(); });
+$('[data-photo]').addEventListener('change', async e => {
+  const f = e.target.files?.[0]; e.target.value = ''; $('[data-eye]').classList.remove('ask');
+  if (!f || !conv) return;
+  statusEl.textContent = 'Смотрю'; say('📷', true);
+  try {
+    const { fileId } = await conv.uploadFile(await shrink(f));
+    conv.sendMultimodalMessage({ text: 'Посмотри на это фото и помоги мне с тем, о чём я спрашивал. Если я ничего не спрашивал — коротко скажи, что видишь важного.', fileIds: [fileId] });
+  } catch (err) { console.warn(err); say('Не получилось отправить фото. Попробуй ещё раз.'); setState(speaking ? 'speaking' : 'listening'); }
+});
+
 /* no voice (no credits / no mic): he still appears and stays until you send him away */
 function stay(text) { conv = null; speaking = false; setState('idle'); say(text); }
 
@@ -70,7 +92,7 @@ function finish(sound = true) {
   const was = B.classList.contains('on');
   conv = null; speaking = false; muted = false; paintMute();
   setState(null); B.classList.remove('on'); A.vanish(); say('');
-  $('[data-link]').hidden = true; $('[data-type]').classList.remove('open'); $('[data-kbd]').setAttribute('aria-pressed', 'false');
+  $('[data-link]').hidden = true; $('[data-eye]').classList.remove('ask'); $('[data-type]').classList.remove('open'); $('[data-kbd]').setAttribute('aria-pressed', 'false');
   try { lock?.release(); } catch {} lock = null;
   if (was && sound) tone(false);
 }
