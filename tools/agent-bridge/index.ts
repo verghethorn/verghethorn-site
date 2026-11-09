@@ -185,6 +185,55 @@ async function weekly(dry = false) {
   return { sent: !r?.error, error: r?.error };
 }
 
+/* ---------- month recap ("Wrapped"): numbers only from real logs, never invented ---------- */
+const prevMonth = () => { const d = new Date(Date.now() - 5 * 864e5); d.setUTCDate(1); return d.toISOString().slice(0, 7); };
+const monthRange = (m: string) => { const a = new Date(`${m}-01T00:00:00+03:00`); const b = new Date(a); b.setMonth(b.getMonth() + 1); return [a, b]; };
+async function signM(m: string) { return (await sign('wrapped:' + m)); }
+const recapUrl = async (m: string) => `https://verghethorn.com/v-55ef1d/wrapped.html?m=${m}&s=${await signM(m)}`;
+async function talks(from: Date, to: Date) {
+  const out: any[] = []; let cursor = '';
+  for (let i = 0; i < 10; i++) {
+    const r = await fetch(`https://api.elevenlabs.io/v1/convai/conversations?agent_id=agent_0301m6ye45t5fks83a75m7ayq0e6&page_size=100&call_start_after_unix=${Math.floor(+from / 1000)}&call_start_before_unix=${Math.floor(+to / 1000)}${cursor ? '&cursor=' + cursor : ''}`, { headers: { 'xi-api-key': XI } });
+    if (!r.ok) break; const j = await r.json(); out.push(...(j.conversations || []).filter((c: any) => (c.call_duration_secs || 0) >= 5)); // skip failed / empty calls
+    if (!j.has_more || !j.next_cursor) break; cursor = j.next_cursor;
+  }
+  return out;
+}
+async function recapData(m: string) {
+  const [from, to] = monthRange(m);
+  const [conv, acts, exp, places, mem, saved] = await Promise.all([
+    talks(from, to).catch(() => []),
+    sql`select action, count(*)::int n from verghe.tool_log where at >= ${from} and at < ${to} and ok group by action`,
+    sql`select category, round(sum(amount_usd)::numeric, 2)::float usd, count(*)::int n from verghe.expenses where spent_on >= ${from}::date and spent_on < ${to}::date group by category order by usd desc`,
+    sql`select city, min(at) first from verghe.places where at >= ${from} and at < ${to} group by city order by first`,
+    sql`select kind, note from verghe.memories where created_at >= ${from} and created_at < ${to} and kind in ('decision','project','episode') order by created_at desc limit 3`,
+    sql`select count(*) filter (where cached)::int c from verghe.tool_log where at >= ${from} and at < ${to}`,
+  ]);
+  const A: Record<string, number> = Object.fromEntries(acts.map((r: any) => [r.action, r.n]));
+  const secs = conv.reduce((s: number, c: any) => s + (c.call_duration_secs || 0), 0);
+  const hours = conv.map((c: any) => new Date(c.start_time_unix_secs * 1000).toLocaleString('en-GB', { timeZone: TZ, hour: '2-digit', hour12: false }));
+  const top = (arr: string[]) => { const f: Record<string, number> = {}; arr.forEach(x => f[x] = (f[x] || 0) + 1); return Object.entries(f).sort((a, b) => b[1] - a[1])[0]?.[0]; };
+  const days = conv.map((c: any) => new Date(c.start_time_unix_secs * 1000).toLocaleDateString('ru-RU', { timeZone: TZ, weekday: 'long' }));
+  const docs = await sql`select summary from verghe.tool_log where action = 'save_doc' and ok and at >= ${from} and at < ${to} order by at desc limit 3`;
+  return {
+    month: m,
+    talks: conv.length, minutes: Math.round(secs / 60), longest_min: Math.round(Math.max(0, ...conv.map((c: any) => c.call_duration_secs || 0)) / 60),
+    favorite_hour: top(hours) ?? null, favorite_day: top(days) ?? null,
+    emails_sent: (A.send_email || 0) + (A.reply_email || 0), drafts: A.draft_email || 0, docs: A.save_doc || 0,
+    doc_titles: docs.map((d: any) => String(d.summary).replace(/^документ: /, '')),
+    events: A.add_event || 0, memories: A.remember || 0, briefings: A.briefing || 0, trips_searched: A.travel_links || 0,
+    expenses: { total_usd: Math.round(exp.reduce((s: number, r: any) => s + r.usd, 0) * 100) / 100, top: exp[0] ?? null, count: exp.reduce((s: number, r: any) => s + r.n, 0) },
+    cities: places.map((p: any) => p.city), highlights: mem.map((r: any) => r.note), free_from_cache: saved[0]?.c ?? 0,
+  };
+}
+async function wrappedJob(dry = false) {
+  const m = prevMonth(), d = await recapData(m), url = await recapUrl(m);
+  const body = `Твои итоги ${m}: ${d.talks} разговоров, ${d.minutes} минут вместе${d.cities.length ? ', города: ' + d.cities.join(' → ') : ''}.\n\nОткрой карточки и сохрани для сторис:\n${url}\n\n— VERGHE`;
+  if (dry) return { dry: true, body, data: d };
+  const r: any = await mail(`VERGHE · твой месяц ${m} ✦`, body);
+  return { sent: !r?.error, error: r?.error };
+}
+
 /* ---------- actions ---------- */
 const ACTIONS: Record<string, (a: any) => Promise<unknown>> = {
   // mail
@@ -241,6 +290,7 @@ const ACTIONS: Record<string, (a: any) => Promise<unknown>> = {
   set_location: async a => {
     await sql`delete from verghe.memories where kind = 'state' and topic = 'location'`;
     await sql`insert into verghe.memories (kind, topic, note, expires_at) values ('state', 'location', ${a.city}, now() + interval '30 days')`;
+    await sql`insert into verghe.places (city) values (${a.city})`;
     return { saved: true, city: a.city };
   },
   // journal of what was done on his behalf
@@ -272,6 +322,8 @@ const ACTIONS: Record<string, (a: any) => Promise<unknown>> = {
   youtube_stats: () => zap('youtube_make_api_get_request', { url: 'https://www.googleapis.com/youtube/v3/channels', querystring: { part: 'statistics,snippet', mine: 'true' }, output_hint: 'Only: channel title, subscribers, total views, video count.' }),
   // travel
   travel_links: async a => travelLinks(a),
+  // month recap: key numbers + the card link to open on his screen
+  month_recap: async a => { const m = /^\d{4}-\d{2}$/.test(a.month || '') ? a.month : today().slice(0, 7); const d = await recapData(m); return { ...d, card_url: await recapUrl(m) }; },
 };
 
 /* daily job: check follow-ups, remind via calendar if no reply */
@@ -299,11 +351,11 @@ const WRITE: Record<string, (a: any) => string> = {
   remember: a => `запомнил [${a.kind ?? 'fact'}]: ${String(a.note).slice(0, 80)}`, forget: a => `удалил из памяти: ${a.id ?? a.query}`,
   followup_add: a => `проследить ответ: ${a.contact}`, set_location: a => `локация: ${a.city}`,
 };
-const JOBS: Record<string, (dry: boolean) => Promise<unknown>> = { followup_check: () => followupCheck(), morning, weekly };
+const JOBS: Record<string, (dry: boolean) => Promise<unknown>> = { followup_check: () => followupCheck(), morning, weekly, wrapped: wrappedJob };
 
 /* live face (Anam): the phone asks for a one-time session token; keys never leave the server */
 const AGENT_ID = 'agent_0301m6ye45t5fks83a75m7ayq0e6';
-const CORS = { 'Access-Control-Allow-Origin': 'https://verghethorn.com', 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Access-Control-Allow-Headers': 'content-type', 'Vary': 'Origin' };
+const CORS = { 'Access-Control-Allow-Origin': 'https://verghethorn.com', 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 'Access-Control-Allow-Headers': 'content-type', 'Vary': 'Origin' };
 async function faceSession(req: Request) {
   const res = (v: unknown, status = 200) => new Response(JSON.stringify(v), { status, headers: { 'Content-Type': 'application/json', ...CORS } });
   if (req.headers.get('origin') !== 'https://verghethorn.com') return res({ error: 'forbidden' }, 403);
@@ -331,6 +383,14 @@ async function faceSession(req: Request) {
 
 Deno.serve(async req => {
   const url = new URL(req.url), action = url.searchParams.get('action') || '';
+  if (action === 'wrapped_data') {
+    const m = url.searchParams.get('m') || '';
+    if (!/^\d{4}-\d{2}$/.test(m) || url.searchParams.get('s') !== await signM(m)) return new Response(JSON.stringify({ error: 'forbidden' }), { status: 403, headers: { 'Content-Type': 'application/json', ...CORS } });
+    const [hit] = await sql`select value from verghe.cache where key = ${'wrapped:' + m} and expires_at > now()`;
+    const d = hit?.value ?? await recapData(m);
+    if (!hit) await sql`insert into verghe.cache (key, value, expires_at) values (${'wrapped:' + m}, ${sql.json(d)}, now() + interval '30 minutes') on conflict (key) do update set value = excluded.value, expires_at = excluded.expires_at`;
+    return new Response(JSON.stringify(d), { headers: { 'Content-Type': 'application/json', ...CORS } });
+  }
   if (action === 'face_session') return req.method === 'OPTIONS' ? new Response(null, { headers: CORS }) : faceSession(req);
   // one-tap delete from the weekly email (signed, no key needed)
   if (action === 'forget_link') {

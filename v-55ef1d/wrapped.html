@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Твой месяц · VERGHE</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#07060b">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root { --bg: #07060b; --ink: #f6f2ea; --dim: rgba(246,242,234,.6); --gold: #f2c46b; --ease: cubic-bezier(.2,.7,.2,1); }
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; background: var(--bg); color: var(--ink); font: 400 16px/1.4 Inter, -apple-system, system-ui, sans-serif; overflow: hidden; }
+.stage { position: fixed; inset: 0; display: grid; place-items: center; }
+.card { position: relative; width: min(100vw, calc(100svh * 9 / 16)); height: min(100svh, calc(100vw * 16 / 9)); overflow: hidden; border-radius: 0; }
+@media (min-width: 600px) { .card { border-radius: 28px; height: min(92svh, 860px); width: calc(min(92svh, 860px) * 9 / 16); box-shadow: 0 40px 120px rgba(0,0,0,.6); } }
+.slide { position: absolute; inset: 0; padding: 72px 28px 56px; display: flex; flex-direction: column; justify-content: center; gap: 18px; opacity: 0; transform: scale(1.03); transition: opacity .6s var(--ease), transform .8s var(--ease); pointer-events: none; }
+.slide.on { opacity: 1; transform: none; }
+.slide::before { content: ''; position: absolute; inset: -20%; z-index: -1; background: var(--g); filter: blur(40px); animation: drift 14s ease-in-out infinite alternate; }
+@keyframes drift { to { transform: translate(6%, -4%) rotate(8deg) scale(1.08); } }
+.k { font: 600 12px/1 Inter; letter-spacing: .32em; text-transform: uppercase; color: var(--dim); }
+.big { font: 800 clamp(64px, 24vw, 120px)/.92 Unbounded, sans-serif; letter-spacing: -.03em; }
+.mid { font: 600 clamp(26px, 8vw, 40px)/1.08 Unbounded, sans-serif; letter-spacing: -.01em; }
+.txt { font-size: 18px; color: var(--dim); max-width: 22ch; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.tile { padding: 18px 16px; border-radius: 20px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.tile b { display: block; font: 800 34px/1 Unbounded, sans-serif; margin-bottom: 6px; }
+.tile span { font-size: 13px; color: var(--dim); }
+.route { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; font: 600 24px/1.2 Unbounded, sans-serif; }
+.route i { font-style: normal; color: var(--gold); font-size: 18px; }
+.list { display: grid; gap: 10px; }
+.list p { padding: 14px 16px; border-radius: 16px; background: rgba(255,255,255,.07); font-size: 16px; line-height: 1.35; }
+.brand { position: absolute; left: 0; right: 0; bottom: 22px; text-align: center; font: 600 11px/1 Inter; letter-spacing: .5em; color: rgba(246,242,234,.45); }
+.bars { position: absolute; top: max(14px, env(safe-area-inset-top)); left: 14px; right: 14px; display: flex; gap: 5px; z-index: 3; }
+.bars span { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,.22); overflow: hidden; }
+.bars span i { display: block; height: 100%; width: 0; background: #fff; }
+.bars span.done i { width: 100%; }
+.bars span.now i { animation: fill var(--t) linear forwards; }
+@keyframes fill { to { width: 100%; } }
+.tap { position: absolute; inset: 0; z-index: 2; display: grid; grid-template-columns: 1fr 2fr; }
+.private { align-self: flex-start; font-size: 12px; color: var(--dim); border: 1px solid rgba(255,255,255,.18); border-radius: 12px; padding: 4px 10px; }
+.msg { position: fixed; inset: 0; display: grid; place-items: center; padding: 32px; text-align: center; color: var(--dim); }
+@media (prefers-reduced-motion: reduce) { .slide, .slide::before { transition: none; animation: none; } .bars span.now i { animation: none; width: 100%; } }
+</style>
+</head>
+<body>
+<div class="stage"><div class="card" id="card"><div class="bars" id="bars"></div><div class="tap"><button aria-label="Назад" id="prev" style="all:unset"></button><button aria-label="Дальше" id="next" style="all:unset"></button></div><p class="brand">VERGHÉTHORN</p></div></div>
+<p class="msg" id="msg">Собираю твой месяц…</p>
+<script>
+const P = new URLSearchParams(location.search), M = P.get('m'), S = P.get('s');
+const API = `https://vgotvplikubsncujcxmk.supabase.co/functions/v1/verghe-tools?action=wrapped_data&m=${encodeURIComponent(M || '')}&s=${encodeURIComponent(S || '')}`;
+const G = ['radial-gradient(60% 50% at 30% 20%, #6b3cff 0, transparent 70%), radial-gradient(50% 40% at 80% 80%, #ff5e8a 0, transparent 70%)',
+  'radial-gradient(60% 50% at 70% 20%, #ff7a2f 0, transparent 70%), radial-gradient(50% 50% at 20% 80%, #c0247a 0, transparent 70%)',
+  'radial-gradient(60% 50% at 30% 30%, #0fb5a6 0, transparent 70%), radial-gradient(50% 40% at 80% 85%, #2f5bff 0, transparent 70%)',
+  'radial-gradient(60% 50% at 75% 25%, #f2c46b 0, transparent 65%), radial-gradient(50% 50% at 20% 80%, #8a3cff 0, transparent 70%)',
+  'radial-gradient(60% 50% at 25% 25%, #ff3d6e 0, transparent 70%), radial-gradient(55% 45% at 80% 80%, #ffb03a 0, transparent 70%)',
+  'radial-gradient(60% 50% at 50% 30%, #3a7bff 0, transparent 70%), radial-gradient(55% 45% at 50% 90%, #20d0a0 0, transparent 70%)'];
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const plural = (n, a, b, c) => { const m10 = n % 10, m100 = n % 100; return m10 === 1 && m100 !== 11 ? a : m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20) ? b : c; };
+const monthName = m => new Date(m + '-15').toLocaleDateString('ru-RU', { month: 'long' });
+
+function build(d) {
+  const mon = monthName(d.month), s = [];
+  s.push(`<p class="k">${d.month.slice(0, 4)}</p><p class="big">${esc(mon)}</p><p class="txt">Твой месяц с VERGHE. Листай →</p>`);
+  if (d.talks) s.push(`<p class="k">Мы говорили</p><p class="big">${d.talks}</p><p class="mid">${plural(d.talks, 'разговор', 'разговора', 'разговоров')}</p><p class="txt">${d.minutes} ${plural(d.minutes, 'минута', 'минуты', 'минут')} вместе${d.longest_min ? `, самый долгий — ${d.longest_min} мин` : ''}</p>`);
+  if (d.favorite_hour) s.push(`<p class="k">Твой ритм</p><p class="big">${esc(d.favorite_hour)}:00</p><p class="txt">Чаще всего ты звал меня в это время${d.favorite_day ? `, а любимый день — ${esc(d.favorite_day)}` : ''}.</p>`);
+  const work = [[d.emails_sent, 'писем отправлено'], [d.docs, 'документов и раскадровок'], [d.drafts, 'черновиков и КП'], [d.events, 'событий в календаре'], [d.briefings, 'утренних брифингов'], [d.memories, 'вещей запомнил']].filter(x => x[0]);
+  if (work.length) s.push(`<p class="k">Сделано вместе</p><p class="mid">Работа кипела</p><div class="grid">${work.slice(0, 6).map(([n, t]) => `<div class="tile"><b>${n}</b><span>${t}</span></div>`).join('')}</div>`);
+  const ideas = [...(d.doc_titles || []), ...(d.highlights || [])].slice(0, 3);
+  if (ideas.length) s.push(`<p class="k">Главное за месяц</p><p class="mid">Идеи и решения</p><div class="list">${ideas.map(t => `<p>${esc(t)}</p>`).join('')}</div>`);
+  if ((d.cities || []).length) s.push(`<p class="k">Маршрут</p><p class="mid">${d.cities.length} ${plural(d.cities.length, 'город', 'города', 'городов')}</p><div class="route">${d.cities.map(esc).join('<i>→</i>')}</div>`);
+  if (d.expenses?.count) s.push(`<span class="private">приватно · не для сторис</span><p class="k">Расходы</p><p class="big">$${Math.round(d.expenses.total_usd)}</p><p class="txt">${d.expenses.count} ${plural(d.expenses.count, 'запись', 'записи', 'записей')}${d.expenses.top ? `, больше всего — ${esc(d.expenses.top.category)}` : ''}.</p>`);
+  s.push(`<p class="k">${esc(mon)} в цифрах</p><div class="grid"><div class="tile"><b>${d.talks}</b><span>разговоров</span></div><div class="tile"><b>${d.minutes}</b><span>минут</span></div><div class="tile"><b>${(d.emails_sent || 0) + (d.docs || 0) + (d.drafts || 0) + (d.events || 0)}</b><span>дел сделано</span></div><div class="tile"><b>${(d.cities || []).length || '—'}</b><span>городов</span></div></div><p class="txt">Сделай скрин и выложи в сторис ✦</p>`);
+  return s;
+}
+
+let i = 0, slides = [], timer = 0;
+const T = 5200;
+function show(n) {
+  i = Math.max(0, Math.min(slides.length - 1, n));
+  slides.forEach((el, k) => el.classList.toggle('on', k === i));
+  [...document.querySelectorAll('.bars span')].forEach((b, k) => { b.className = k < i ? 'done' : k === i ? 'now' : ''; b.style.setProperty('--t', T + 'ms'); const x = b.firstChild; x.style.animation = 'none'; x.offsetWidth; x.style.animation = ''; });
+  clearTimeout(timer); if (i < slides.length - 1) timer = setTimeout(() => show(i + 1), T);
+}
+fetch(API).then(r => r.json()).then(d => {
+  if (d.error) throw new Error(d.error);
+  const card = document.getElementById('card'), bars = document.getElementById('bars');
+  build(d).forEach((html, k) => { const el = document.createElement('section'); el.className = 'slide'; el.style.setProperty('--g', G[k % G.length]); el.innerHTML = html; card.insertBefore(el, card.querySelector('.tap')); bars.insertAdjacentHTML('beforeend', '<span><i></i></span>'); });
+  slides = [...document.querySelectorAll('.slide')];
+  document.getElementById('msg').remove();
+  document.getElementById('next').onclick = () => show(i + 1);
+  document.getElementById('prev').onclick = () => show(i - 1);
+  addEventListener('keydown', e => { if (e.key === 'ArrowRight') show(i + 1); if (e.key === 'ArrowLeft') show(i - 1); });
+  show(0);
+}).catch(() => { document.getElementById('msg').textContent = 'Ссылка устарела или неверна. Попроси VERGHE: «покажи итоги месяца».'; });
+</script>
+</body>
+</html>
