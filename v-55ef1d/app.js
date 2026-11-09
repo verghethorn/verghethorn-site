@@ -45,12 +45,12 @@ async function summon() {
         onMessage: m => { const you = (m.role || m.source) === 'user'; if (!you) gotReply = true; say(m.message, you); },
         onModeChange: ({ mode }) => { speaking = mode === 'speaking'; setState(speaking ? 'speaking' : 'listening'); },
         onDisconnect: () => { if (!B.classList.contains('on')) return; conv = null; speaking = false; if (!gotReply) stay(T.offline); else finish(true); },
-        onError: (e, c) => console.warn('agent error', e, c),
+        onError: (e, c) => { console.warn('agent error', e, c); if (!gotReply && B.classList.contains('on')) stay(T.offline); },
       }),
-      new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 14000)),
+      new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 9000)),
     ]);
     raf = raf || requestAnimationFrame(loop);
-    setTimeout(async () => { if (conv && !gotReply) { const c = conv; conv = null; try { await c.endSession(); } catch {} stay(T.offline); } }, 10000);
+    setTimeout(async () => { if (conv && !gotReply) { const c = conv; conv = null; try { await c.endSession(); } catch {} stay(T.offline); } }, 7000);
   } catch (e) { console.warn(e); conv = null; stay(T.offline); }
   finally { starting = false; }
 }
