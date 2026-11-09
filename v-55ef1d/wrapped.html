@@ -14,7 +14,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; background: var(--bg); color: var(--ink); font: 400 16px/1.4 Inter, -apple-system, system-ui, sans-serif; overflow: hidden; }
 .stage { position: fixed; inset: 0; display: grid; place-items: center; }
-.card { position: relative; width: min(100vw, calc(100svh * 9 / 16)); height: min(100svh, calc(100vw * 16 / 9)); overflow: hidden; border-radius: 0; }
+.card { position: relative; width: 100vw; height: 100svh; overflow: hidden; border-radius: 0; }
 @media (min-width: 600px) { .card { border-radius: 28px; height: min(92svh, 860px); width: calc(min(92svh, 860px) * 9 / 16); box-shadow: 0 40px 120px rgba(0,0,0,.6); } }
 .slide { position: absolute; inset: 0; padding: 72px 28px 56px; display: flex; flex-direction: column; justify-content: center; gap: 18px; opacity: 0; transform: scale(1.03); transition: opacity .6s var(--ease), transform .8s var(--ease); pointer-events: none; }
 .slide.on { opacity: 1; transform: none; }
@@ -61,18 +61,23 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '
 const plural = (n, a, b, c) => { const m10 = n % 10, m100 = n % 100; return m10 === 1 && m100 !== 11 ? a : m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20) ? b : c; };
 const monthName = m => new Date(m + '-15').toLocaleDateString('ru-RU', { month: 'long' });
 
+const big = t => { t = String(t); return `<p class="big" style="font-size:min(120px, ${Math.min(24, Math.floor(84 / (t.length * 0.74)))}vw)">${esc(t)}</p>`; };
 function build(d) {
   const mon = monthName(d.month), s = [];
-  s.push(`<p class="k">${d.month.slice(0, 4)}</p><p class="big">${esc(mon)}</p><p class="txt">Твой месяц с VERGHE. Листай →</p>`);
-  if (d.talks) s.push(`<p class="k">Мы говорили</p><p class="big">${d.talks}</p><p class="mid">${plural(d.talks, 'разговор', 'разговора', 'разговоров')}</p><p class="txt">${d.minutes} ${plural(d.minutes, 'минута', 'минуты', 'минут')} вместе${d.longest_min ? `, самый долгий — ${d.longest_min} мин` : ''}</p>`);
-  if (d.favorite_hour) s.push(`<p class="k">Твой ритм</p><p class="big">${esc(d.favorite_hour)}:00</p><p class="txt">Чаще всего ты звал меня в это время${d.favorite_day ? `, а любимый день — ${esc(d.favorite_day)}` : ''}.</p>`);
+  s.push(`<p class="k">${d.month.slice(0, 4)}</p>${big(mon)}<p class="txt">Твой месяц с VERGHE. Листай →</p>`);
+  if (d.talks) s.push(`<p class="k">Мы говорили</p>${big(d.talks)}<p class="mid">${plural(d.talks, 'разговор', 'разговора', 'разговоров')}</p><p class="txt">${d.minutes} ${plural(d.minutes, 'минута', 'минуты', 'минут')} вместе${d.longest_min ? `, самый долгий — ${d.longest_min} мин` : ''}</p>`);
+  if (d.favorite_hour) s.push(`<p class="k">Твой ритм</p>${big(d.favorite_hour + ':00')}<p class="txt">Чаще всего ты звал меня в это время${d.favorite_day ? `, а любимый день — ${esc(d.favorite_day)}` : ''}.</p>`);
   const work = [[d.emails_sent, 'писем отправлено'], [d.docs, 'документов и раскадровок'], [d.drafts, 'черновиков и КП'], [d.events, 'событий в календаре'], [d.briefings, 'утренних брифингов'], [d.memories, 'вещей запомнил']].filter(x => x[0]);
   if (work.length) s.push(`<p class="k">Сделано вместе</p><p class="mid">Работа кипела</p><div class="grid">${work.slice(0, 6).map(([n, t]) => `<div class="tile"><b>${n}</b><span>${t}</span></div>`).join('')}</div>`);
   const ideas = [...(d.doc_titles || []), ...(d.highlights || [])].slice(0, 3);
   if (ideas.length) s.push(`<p class="k">Главное за месяц</p><p class="mid">Идеи и решения</p><div class="list">${ideas.map(t => `<p>${esc(t)}</p>`).join('')}</div>`);
   if ((d.cities || []).length) s.push(`<p class="k">Маршрут</p><p class="mid">${d.cities.length} ${plural(d.cities.length, 'город', 'города', 'городов')}</p><div class="route">${d.cities.map(esc).join('<i>→</i>')}</div>`);
-  if (d.expenses?.count) s.push(`<span class="private">приватно · не для сторис</span><p class="k">Расходы</p><p class="big">$${Math.round(d.expenses.total_usd)}</p><p class="txt">${d.expenses.count} ${plural(d.expenses.count, 'запись', 'записи', 'записей')}${d.expenses.top ? `, больше всего — ${esc(d.expenses.top.category)}` : ''}.</p>`);
-  s.push(`<p class="k">${esc(mon)} в цифрах</p><div class="grid"><div class="tile"><b>${d.talks}</b><span>разговоров</span></div><div class="tile"><b>${d.minutes}</b><span>минут</span></div><div class="tile"><b>${(d.emails_sent || 0) + (d.docs || 0) + (d.drafts || 0) + (d.events || 0)}</b><span>дел сделано</span></div><div class="tile"><b>${(d.cities || []).length || '—'}</b><span>городов</span></div></div><p class="txt">Сделай скрин и выложи в сторис ✦</p>`);
+  if (d.expenses?.count) s.push(`<span class="private">приватно · не для сторис</span><p class="k">Расходы</p>${big('$' + Math.round(d.expenses.total_usd))}<p class="txt">${d.expenses.count} ${plural(d.expenses.count, 'запись', 'записи', 'записей')}${d.expenses.top ? `, больше всего — ${esc(d.expenses.top.category)}` : ''}.</p>`);
+  const done = (d.emails_sent || 0) + (d.docs || 0) + (d.drafts || 0) + (d.events || 0);
+  const sum = [[d.talks, plural(d.talks, 'разговор', 'разговора', 'разговоров')], [d.minutes, plural(d.minutes, 'минута', 'минуты', 'минут')], [done, 'дел сделано'], [(d.cities || []).length, plural((d.cities || []).length, 'город', 'города', 'городов')]].filter(x => x[0]);
+  s.push(sum.length >= 2
+    ? `<p class="k">${esc(mon)} в цифрах</p><div class="grid">${sum.map(([n, t]) => `<div class="tile"><b>${n}</b><span>${t}</span></div>`).join('')}</div><p class="txt">Сделай скрин и выложи в сторис ✦</p>`
+    : `<p class="k">${esc(mon)}</p><p class="mid">Месяц только набирает обороты</p><p class="txt">Говори со мной чаще — и в конце месяца здесь будет твоя история ✦</p>`);
   return s;
 }
 
