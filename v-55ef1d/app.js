@@ -1,6 +1,8 @@
 import * as A from './avatar.js?v=8';
 // VERGHE — personal assistant: tap to summon, talk, dismiss.
 const AGENT = 'agent_0301m6ye45t5fks83a75m7ayq0e6';
+const FACE_URL = 'https://vgotvplikubsncujcxmk.supabase.co/functions/v1/verghe-tools?action=face_session';
+let face = null; // Anam live-face client when that mode is on
 const $ = s => document.querySelector(s);
 const B = document.body, statusEl = $('[data-status]'), cap = $('[data-cap]'), note = $('[data-note]');
 const T = { idle: 'Без голоса', connecting: 'Подключаюсь', listening: 'Слушаю', speaking: 'Говорит', muted: 'Микрофон выключен', offline: 'Я здесь, но пока без голоса: на ElevenLabs закончились кредиты. Пополни баланс — и я заговорю.', mic: 'Нужен доступ к микрофону. Разреши его в настройках браузера и позови снова.' };
@@ -31,11 +33,13 @@ function loop() {
 
 async function summon() {
   raf = raf || requestAnimationFrame(loop);
-  if (starting || conv) return; starting = true; gotReply = false; note.classList.remove('show');
+  if (starting || conv || face) return; starting = true; gotReply = false; note.classList.remove('show');
   tone(true); B.classList.add('on'); A.appear(); setState('connecting'); say('');
   try { lock = await navigator.wakeLock?.request('screen'); } catch {}
   try { await navigator.mediaDevices.getUserMedia({ audio: true }).then(s => s.getTracks().forEach(t => t.stop())); }
   catch { starting = false; stay(T.mic); return; }
+  if (!noFaceOnce && await startFace()) { starting = false; return; }
+  noFaceOnce = false;
   try {
     const { Conversation } = window.ElevenLabsClient;
     conv = await Promise.race([
@@ -59,6 +63,29 @@ async function summon() {
   finally { starting = false; }
 }
 
+/* live face (Anam): a real-time video face speaking with the same agent, tools and memory.
+   Used only when the server says it's switched on; otherwise the 3D figure appears as before. */
+async function startFace() {
+  if (!window.anam) return false;
+  let r; try { r = await (await fetch(FACE_URL, { method: 'POST' })).json(); } catch { return false; }
+  if (!r?.face || !r.sessionToken) return false;
+  try {
+    const { createClient, AnamEvent } = window.anam;
+    face = createClient(r.sessionToken);
+    face.registerToolCallHandler?.('open_link', { onStart: async ({ arguments: a }) => { showLink(a.url, a.label); return 'shown on screen'; } });
+    face.registerToolCallHandler?.('ask_photo', { onStart: async () => { $('[data-eye]').classList.add('ask'); return 'The eye button is glowing: tell him to tap it — the screen switches to camera mode, then he taps the eye again and takes the photo.'; } });
+    const msgs = {};
+    face.addListener(AnamEvent.MESSAGE_STREAM_EVENT_RECEIVED, e => {
+      msgs[e.id] = (msgs[e.id] || '') + e.content; const you = e.role === 'user';
+      if (!you) gotReply = true; say(msgs[e.id], you); setState(you ? 'listening' : 'speaking');
+    });
+    face.addListener(AnamEvent.CONNECTION_CLOSED, () => { if (face) { face = null; B.classList.remove('facing'); finish(true); } });
+    await face.streamToVideoElement('face');
+    B.classList.add('facing'); setState('listening'); gotReply = true;
+    return true;
+  } catch (e) { console.warn('face failed, using 3D', e); try { await face?.stopStreaming(); } catch {} face = null; B.classList.remove('facing'); return false; }
+}
+
 /* links the agent opens (flights, hotels, documents): a tappable card, since phones block pop-ups */
 function showLink(url, label) {
   if (!/^https:\/\//.test(url || '')) return;
@@ -74,7 +101,10 @@ async function shrink(file, max = 1600) {
   c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
   return await new Promise(r => c.toBlob(r, 'image/jpeg', .88));
 }
-$('[data-eye]').addEventListener('click', () => { if (!conv) return say('Сначала позови меня — потом покажешь фото.'); $('[data-photo]').click(); });
+let noFaceOnce = false;
+$('[data-eye]').addEventListener('click', async () => {
+  // photos go through the regular voice mode: switch over seamlessly, then open the camera on the next tap
+  if (face) { noFaceOnce = true; await dismiss(); summon(); return; } if (!conv) return say('Сначала позови меня — потом покажешь фото.'); $('[data-photo]').click(); });
 $('[data-photo]').addEventListener('change', async e => {
   const f = e.target.files?.[0]; e.target.value = ''; $('[data-eye]').classList.remove('ask');
   if (!f || !conv) return;
@@ -96,12 +126,12 @@ function finish(sound = true) {
   try { lock?.release(); } catch {} lock = null;
   if (was && sound) tone(false);
 }
-async function dismiss() { const c = conv; finish(true); try { await c?.endSession(); } catch {} }
+async function dismiss() { const c = conv, f = face; face = null; B.classList.remove('facing'); finish(true); try { await c?.endSession(); } catch {} try { await f?.stopStreaming(); } catch {} }
 
 const paintMute = () => { const b = $('[data-mute]'); b.setAttribute('aria-pressed', String(muted)); b.setAttribute('aria-label', muted ? 'Включить микрофон' : 'Выключить микрофон'); };
-$('[data-mute]').addEventListener('click', () => { if (!conv) return; muted = !muted; try { conv.setMicMuted(muted); } catch {} paintMute(); setState(speaking ? 'speaking' : 'listening'); });
+$('[data-mute]').addEventListener('click', () => { if (!conv && !face) return; muted = !muted; try { face ? (muted ? face.muteInputAudio() : face.unmuteInputAudio()) : conv.setMicMuted(muted); } catch {} paintMute(); setState(speaking ? 'speaking' : 'listening'); });
 $('[data-kbd]').addEventListener('click', e => { const f = $('[data-type]'), on = !f.classList.contains('open'); f.classList.toggle('open', on); e.currentTarget.setAttribute('aria-pressed', String(on)); if (on) $('[data-input]').focus(); });
-$('[data-type]').addEventListener('submit', e => { e.preventDefault(); const i = $('[data-input]'), t = i.value.trim(); if (!t || !conv) return; conv.sendUserMessage(t); say(t, true); i.value = ''; });
+$('[data-type]').addEventListener('submit', e => { e.preventDefault(); const i = $('[data-input]'), t = i.value.trim(); if (!t || (!conv && !face)) return; try { face ? face.sendUserMessage(t) : conv.sendUserMessage(t); } catch {} say(t, true); i.value = ''; });
 $('[data-summon]').addEventListener('click', summon);
 $('[data-end]').addEventListener('click', dismiss);
 document.addEventListener('visibilitychange', async () => { if (document.visibilityState === 'visible' && conv && !lock) { try { lock = await navigator.wakeLock?.request('screen'); } catch {} } });

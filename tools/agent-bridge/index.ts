@@ -4,7 +4,7 @@
 import postgres from 'npm:postgres@3.4.5';
 
 const ZAPIER = 'https://mcp.zapier.com/api/v1/connect';
-import { ZTOKEN, KEY } from './secrets.ts'; // not in the public repo
+import { ZTOKEN, KEY, ANAM, XI } from './secrets.ts'; // not in the public repo
 const sql = postgres(Deno.env.get('SUPABASE_DB_URL')!, { prepare: false, max: 2 });
 const TZ = 'Europe/Istanbul';
 
@@ -301,8 +301,37 @@ const WRITE: Record<string, (a: any) => string> = {
 };
 const JOBS: Record<string, (dry: boolean) => Promise<unknown>> = { followup_check: () => followupCheck(), morning, weekly };
 
+/* live face (Anam): the phone asks for a one-time session token; keys never leave the server */
+const AGENT_ID = 'agent_0301m6ye45t5fks83a75m7ayq0e6';
+const CORS = { 'Access-Control-Allow-Origin': 'https://verghethorn.com', 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Access-Control-Allow-Headers': 'content-type', 'Vary': 'Origin' };
+async function faceSession(req: Request) {
+  const res = (v: unknown, status = 200) => new Response(JSON.stringify(v), { status, headers: { 'Content-Type': 'application/json', ...CORS } });
+  if (req.headers.get('origin') !== 'https://verghethorn.com') return res({ error: 'forbidden' }, 403);
+  const [cfg] = await sql`select value from verghe.kv where key = 'face'`;
+  const face = cfg?.value as any;
+  if (!face?.enabled || !face?.avatarId) return res({ face: false });
+  // protects Anam minutes and ElevenLabs credits: at most 8 face sessions per hour
+  const [{ n }] = await sql`select count(*)::int n from verghe.tool_log where action = 'face_session' and at > now() - interval '1 hour'`;
+  if (n >= 8) return res({ face: false, error: 'rate limit' });
+  const el = await fetch(`https://api.elevenlabs.io/v1/convai/conversation/get-signed-url?agent_id=${AGENT_ID}`, { headers: { 'xi-api-key': XI } });
+  if (!el.ok) return res({ face: false, error: `elevenlabs ${el.status}` });
+  const { signed_url } = await el.json();
+  const an = await fetch('https://api.anam.ai/v1/auth/session-token', {
+    method: 'POST', headers: { Authorization: `Bearer ${ANAM}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      personaConfig: { avatarId: face.avatarId, avatarModel: face.model || 'cara-4', directorNotes: { presetStyle: 'warm', expressivity: 0.5 } },
+      environment: { elevenLabsAgentSettings: { signedUrl: signed_url, agentId: AGENT_ID } },
+      maxSessions: 3, expiresInSeconds: 300,
+    }),
+  });
+  const out = await an.json().catch(() => ({}));
+  sql`insert into verghe.tool_log (action, ms, ok, cached) values ('face_session', 0, ${an.ok}, false)`.catch(() => {});
+  return an.ok ? res({ face: true, sessionToken: out.sessionToken }) : res({ face: false, error: `anam ${an.status}` });
+}
+
 Deno.serve(async req => {
   const url = new URL(req.url), action = url.searchParams.get('action') || '';
+  if (action === 'face_session') return req.method === 'OPTIONS' ? new Response(null, { headers: CORS }) : faceSession(req);
   // one-tap delete from the weekly email (signed, no key needed)
   if (action === 'forget_link') {
     const id = url.searchParams.get('id') || '';
