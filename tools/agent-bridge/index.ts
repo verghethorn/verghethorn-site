@@ -97,6 +97,21 @@ function travelLinks(a: any) {
   return Object.keys(out).length ? out : { error: 'need from/to/depart for flights or city/checkin/checkout for hotels' };
 }
 
+/* ---------- shopping links: stores that ship where he is now (no paid API, he buys himself) ---------- */
+const COUNTRY_OF: Record<string, string> = { istanbul: 'TR', ankara: 'TR', antalya: 'TR', izmir: 'TR', bodrum: 'TR', dubai: 'AE', 'abu dhabi': 'AE', sharjah: 'AE', cairo: 'EG', hurghada: 'EG', 'sharm el sheikh': 'EG', alexandria: 'EG', moscow: 'RU', 'saint petersburg': 'RU' };
+async function shopLinks(a: any) {
+  const q = String(a.query || '').trim(); if (!q) return { error: 'need query: what to search, e.g. "white leather sneakers Nike Air Force 1"' };
+  const e = encodeURIComponent(q), c = (a.country || COUNTRY_OF[(await city()).toLowerCase()] || 'TR').toUpperCase();
+  const out: Record<string, string> = { google_shopping: `https://www.google.com/search?tbm=shop&q=${e}` };
+  if (c === 'TR') Object.assign(out, { trendyol: `https://www.trendyol.com/sr?q=${e}`, amazon_tr: `https://www.amazon.com.tr/s?k=${e}`, hepsiburada: `https://www.hepsiburada.com/ara?q=${e}` });
+  if (c === 'AE') Object.assign(out, { amazon_ae: `https://www.amazon.ae/s?k=${e}`, noon: `https://www.noon.com/uae-en/search/?q=${e}` });
+  if (c === 'EG') Object.assign(out, { amazon_eg: `https://www.amazon.eg/s?k=${e}`, noon_eg: `https://www.noon.com/egypt-en/search/?q=${e}` });
+  if (c === 'RU') Object.assign(out, { ozon: `https://www.ozon.ru/search/?text=${e}`, wildberries: `https://www.wildberries.ru/catalog/0/search.aspx?search=${e}` });
+  if (a.fashion) out.farfetch = `https://www.farfetch.com/shopping/search/items.aspx?q=${e}`;
+  if (a.cheap) out.aliexpress = `https://www.aliexpress.com/w/wholesale-${encodeURIComponent(q.replace(/\s+/g, '-'))}.html`;
+  return { country: c, query: q, links: out };
+}
+
 /* ---------- memory helpers ---------- */
 const KINDS = ['profile', 'preference', 'style', 'project', 'decision', 'episode', 'rule', 'state', 'fact'];
 async function city() {
@@ -322,6 +337,8 @@ const ACTIONS: Record<string, (a: any) => Promise<unknown>> = {
   youtube_stats: () => zap('youtube_make_api_get_request', { url: 'https://www.googleapis.com/youtube/v3/channels', querystring: { part: 'statistics,snippet', mine: 'true' }, output_hint: 'Only: channel title, subscribers, total views, video count.' }),
   // travel
   travel_links: async a => travelLinks(a),
+  // shopping (from a photo or a description)
+  shop_links: a => shopLinks(a),
   // month recap: key numbers + the card link to open on his screen
   month_recap: async a => { const m = /^\d{4}-\d{2}$/.test(a.month || '') ? a.month : today().slice(0, 7); const d = await recapData(m); return { ...d, card_url: await recapUrl(m) }; },
 };
