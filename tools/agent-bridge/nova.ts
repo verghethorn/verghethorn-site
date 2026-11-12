@@ -205,12 +205,24 @@ export function nova(ctx: Ctx) {
     return { id: c.id, box, next_in_days: STEP[box] };
   }
 
+  // Schedules are OFF by default; the owner turns each one on by voice (verghe.schedules + security-definer cron wrappers).
+  const scheduleList = async () => ({ schedules: await sql`select key, title, what, costs, on_ as "on", time_istanbul, day from verghe.schedule_list()` });
+  async function scheduleSet(a: any) {
+    const key = String(a?.key ?? '').trim(), on = a?.on === undefined || a?.on === null || a?.on === '' ? null : (a.on === true || a.on === 'true' || a.on === 1);
+    const time = a?.time ? String(a.time).trim() : null;
+    if (!key) return { error: 'key required', ...(await scheduleList()) };
+    const [r] = await sql`select verghe.schedule_set(${key}, ${on}, ${time}) r`;
+    return r.r;
+  }
+
   const actions: Record<string, (a: any) => Promise<unknown>> = {
+    schedule_list: () => scheduleList(), schedule_set: scheduleSet,
     close_day: () => closeDay(), undo_last: undoLast, rules_list: () => rulesList(), trip_plan: tripPlan,
     bg_task_add: bgTaskAdd, bg_task_list: () => bgTaskList(), exchange_portfolio: () => exchangePortfolio(),
     card_add: cardAdd, cards_due: cardsDue, card_grade: cardGrade,
   };
   const write: Record<string, (a: any) => string> = {
+    schedule_set: a => `расписание ${a.key}: ${a.on === false || a.on === 'false' ? 'выкл' : a.on ? 'вкл' : ''}${a.time ? ' ' + a.time : ''}`,
     trip_plan: a => `документ: поездка ${a.to} ${a.depart}`,
     bg_task_add: a => `фоновая задача: ${a.title}`, card_add: a => `карточки: ${a.deck ?? 'general'}`,
   };
