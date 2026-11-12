@@ -38,7 +38,7 @@ const app = $('#app');
 /* ---------- state ---------- */
 const S = { uid:null, me:null, priv:null, members:new Map(), last:new Map(), unread:new Map(), online:new Set(),
   typing:new Map(), thread:[], threadWith:null, posts:new Map(), phone:'', pres:null, view:'', prevView:'' };
-try { S.phone = sessionStorage.getItem('magaam-phone') || ''; } catch {}
+try { S.phone = localStorage.getItem('magaam-phone') || ''; } catch {}
 const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
 
 /* ---------- helpers ---------- */
@@ -66,6 +66,11 @@ function statusOf(id) {
 function thumbHTML(p, withDot = true) {
   const on = withDot && S.online.has(p.id);
   return `<span class="thumb">${p.photo_path ? `<img src="${esc(thumb(p.photo_path))}" alt="" loading="lazy" onerror="this.src='${esc(url(p.photo_path))}'">` : `<span class="ini">${initial(p.name)}</span>`}${on ? '<i class="dot on"></i>' : ''}</span>`;
+}
+function bgMedia(p) {
+  if (p.video_path) return `<video class="bg" src="${esc(url(p.video_path))}" ${p.photo_path ? `poster="${esc(url(p.photo_path))}"` : ''} autoplay muted loop playsinline preload="auto"></video>`;
+  if (p.photo_path) return `<img class="bg" src="${esc(url(p.photo_path))}" alt="">`;
+  return `<div class="bg-blur" style="background-image:url('${sceneImg(p.scene)}')"></div>`;
 }
 async function resize(file, max, q = 0.86) {
   const src = URL.createObjectURL(file);
@@ -252,7 +257,7 @@ V.signin.after = () => {
   const p = $('#phone'), f = $('#f'); setTimeout(() => p.focus(), 350);
   f.onsubmit = (e) => { e.preventDefault(); const d = p.value.replace(/\D/g, '');
     if (d.length < 8 || d.length > 15) { $('#err').textContent = 'Enter the full number with the country code.'; return; }
-    S.phone = '+' + d; try { sessionStorage.setItem('magaam-phone', S.phone); } catch {} go('code'); };
+    S.phone = '+' + d; try { localStorage.setItem('magaam-phone', S.phone); } catch {} go('code'); };
 };
 
 V.code = () => {
@@ -366,22 +371,21 @@ V.me = () => {
   if (!posts) loadPosts(S.uid).then(() => route().name === 'me' && V.me.update());
   const sc = SCENES.find((s) => s[0] === m.scene)?.[1] || 'City plaza';
   return `<div class="dark" style="position:absolute;inset:0">
-  <img class="bg" src="${esc(url(m.photo_path))}" alt="">
+  ${bgMedia(m)}
   <div class="shade"></div>
-  <div class="hdr"><div class="leftname"><b>${esc(m.name)}</b><span class="pill glass"><i class="dot on"></i>${esc(sc)}</span></div><button class="iconbtn" data-act="settings" aria-label="Settings">${ic('gear')}</button></div>
-  <div class="rail" id="rail"></div>
+  <div class="hdr"><div class="leftname"><b>${esc(m.name)}</b><span class="pill glass">${ic('pin').replace('<svg', '<svg style="width:15px;height:15px"')}${esc(sc)}</span></div><button class="iconbtn" data-act="settings" aria-label="Settings">${ic('gear')}</button></div>
   <div class="dock">
     ${installBanner()}
-    <div class="card glass"><div class="t" id="meline"></div>
+    <div class="card glass"><button class="photos-btn" data-go="gallery/${S.uid}"><span class="pt" id="pthumbs"></span><span class="pl"><b>My photos</b><span id="pcount">Open your gallery</span></span><span class="chev">${ic('back')}</span></button>
       <div class="chips"><button class="chip" data-go="look">${ic('swap')}Change look</button><button class="chip" data-go="scene">${ic('pin')}Scene</button><button class="chip" data-act="addpost">${ic('plus')}Add photo</button></div></div>
     <div id="tabs">${tabbar('me')}</div>
   </div></div>`;
 };
 V.me.cls = '';
 V.me.update = () => {
-  const posts = S.posts.get(S.uid) || []; const n = totalUnread(); const chats = [...S.last.keys()].length;
-  const rail = $('#rail'); if (rail) rail.innerHTML = `<button data-go="gallery/${S.uid}" aria-label="Gallery">${ic('grid')}${posts.length}</button><button data-tab="chats" aria-label="Chats">${ic('chat')}${chats}</button>`;
-  const ml = $('#meline'); if (ml) ml.innerHTML = n ? `${ic('chat', 2).replace('<svg', '<svg style="width:20px;height:20px;color:#7E9BFF"')}${n} new message${n > 1 ? 's' : ''}` : `<span style="opacity:.9">${S.online.size ? `${S.online.size} friend${S.online.size > 1 ? 's' : ''} online now` : 'Your page is live'}</span>`;
+  const posts = S.posts.get(S.uid) || [];
+  const th = $('#pthumbs'); if (th) th.innerHTML = posts.length ? posts.slice(0, 3).map((x) => `<img src="${esc(thumb(x.path))}" alt="">`).join('') : `<i>${ic('image')}</i>`;
+  const pc = $('#pcount'); if (pc) pc.textContent = posts.length ? `${posts.length} photo${posts.length > 1 ? 's' : ''}` : 'No photos yet. Add your first one';
   const t = $('#tabs'); if (t) t.innerHTML = tabbar('me');
 };
 V.me.after = () => V.me.update();
@@ -419,7 +423,7 @@ V.chat = async (id) => {
   if (S.threadWith !== id) { S.thread = []; S.threadWith = id; }
   const p = S.members.get(id);
   return `<div class="dark" style="position:absolute;inset:0">
-  ${p.photo_path ? `<img class="bg" src="${esc(url(p.photo_path))}" alt="">` : `<div class="bg-blur" style="background-image:url('${sceneImg(p.scene)}')"></div>`}
+  ${bgMedia(p)}
   <div class="shade"></div>
   <div class="hdr"><button class="iconbtn" data-back="chats" aria-label="Back">${ic('back')}</button>
     <button class="hname" data-go="u/${id}"><b>${esc(p.name)}</b><span class="pill glass" id="st"></span></button>
@@ -473,7 +477,7 @@ V.u = async (id) => {
   const p = S.members.get(id);
   loadPosts(id).then(() => route().name === 'u' && V.u.update(id));
   return `<div class="dark" style="position:absolute;inset:0">
-  ${p.photo_path ? `<img class="bg" src="${esc(url(p.photo_path))}" alt="">` : `<div class="bg-blur" style="background-image:url('${sceneImg(p.scene)}')"></div>`}
+  ${bgMedia(p)}
   <div class="shade"></div>
   <div class="hdr"><button class="iconbtn" data-back="chats" aria-label="Back">${ic('back')}</button>
     <div class="hname"><b>${esc(p.name)}</b><span class="pill glass" id="st"></span></div><span style="width:44px"></span></div>
@@ -522,6 +526,20 @@ function openViewer(id, i) {
     if (e.target.tagName === 'IMG' && posts.length > 1) { i = (i + 1) % posts.length; paint(); }
   });
 }
+async function uploadVideo() {
+  const f = await new Promise((res) => { const i = document.createElement('input'); i.type = 'file'; i.accept = 'video/mp4,video/quicktime,video/webm,video/*';
+    i.style.cssText = 'position:fixed;left:-9999px;opacity:0'; document.body.appendChild(i); i.onchange = () => { res(i.files && i.files[0]); i.remove(); }; i.addEventListener('cancel', () => { res(null); i.remove(); }); i.click(); });
+  if (!f) return;
+  if (f.size > 50 * 1024 * 1024) return toast('This video is larger than 50 MB. Use a shorter clip.', 4000);
+  toast('Uploading your living video…', 120000);
+  try {
+    const ext = /quicktime|mov/i.test(f.type) ? 'mov' : /webm/.test(f.type) ? 'webm' : 'mp4';
+    const path = `${S.uid}/video-${Date.now()}.${ext}`;
+    const { error } = await sb.storage.from('media').upload(path, f, { contentType: f.type || 'video/mp4', cacheControl: '31536000' }); if (error) throw error;
+    const { data, error: e2 } = await sb.from('profiles').update({ video_path: path }).eq('id', S.uid).select().single(); if (e2) throw e2;
+    S.me = data; toast('Your page is alive now'); show();
+  } catch (e) { toast(e.message || 'Upload failed. Try again.', 4000); }
+}
 async function addPost() {
   const f = await pickFile(false); if (!f) return;
   toast('Uploading…', 20000);
@@ -544,6 +562,8 @@ app.addEventListener('click', (e) => {
     { icon: 'edit', label: 'Edit name and birthday', run: () => go('about') },
     { icon: 'camera', label: 'Change photo', run: () => go('look') },
     { icon: 'pin', label: 'Change scene', run: () => go('scene') },
+    { icon: 'video', label: S.me?.video_path ? 'Replace living video' : 'Add living video', run: () => uploadVideo() },
+    ...(S.me?.video_path ? [{ icon: 'trash', label: 'Remove living video', run: async () => { const { data } = await sb.from('profiles').update({ video_path: null }).eq('id', S.uid).select().single(); if (data) S.me = data; show(); toast('Living video removed'); } }] : []),
     { icon: 'share', label: 'Copy invite link', run: async () => { try { await navigator.clipboard.writeText(location.origin + location.pathname); toast('Link copied'); } catch { toast(location.origin + location.pathname, 5000); } } },
     { icon: 'out', label: 'Sign out', red: true, run: async () => { await sb.auth.signOut(); location.hash = '#/welcome'; location.reload(); } }
   ]);
