@@ -48,6 +48,8 @@ async function summon() {
         clientTools: {
           open_link: ({ url, label }) => { showLink(url, label); return 'shown on screen'; },
           ask_photo: () => { $('[data-eye]').classList.add('ask'); return 'the eye button is glowing — ask him to tap it and take the photo'; },
+          confirm_card: a => showConfirm(a),
+          look_screen: () => askScreen(),
         },
         onConnect: () => setState('listening'),
         onMessage: m => { const you = (m.role || m.source) === 'user'; if (!you) gotReply = true; say(m.message, you); },
@@ -73,6 +75,8 @@ async function startFace() {
     const { createClient, AnamEvent } = window.anam;
     face = createClient(r.sessionToken);
     face.registerToolCallHandler?.('open_link', { onStart: async ({ arguments: a }) => { showLink(a.url, a.label); return 'shown on screen'; } });
+    face.registerToolCallHandler?.('confirm_card', { onStart: async ({ arguments: a }) => showConfirm(a) });
+    face.registerToolCallHandler?.('look_screen', { onStart: async () => 'In live-face mode the screen cannot be shared. Tell him to tap the eye button: the app switches to voice mode, then he can show the screen.' });
     face.registerToolCallHandler?.('ask_photo', { onStart: async () => { $('[data-eye]').classList.add('ask'); return 'The eye button is glowing: tell him to tap it — the screen switches to camera mode, then he taps the eye again and takes the photo.'; } });
     const msgs = {};
     face.addListener(AnamEvent.MESSAGE_STREAM_EVENT_RECEIVED, e => {
@@ -115,6 +119,48 @@ $('[data-photo]').addEventListener('change', async e => {
   } catch (err) { console.warn(err); say('Не получилось отправить фото. Попробуй ещё раз.'); setState(speaking ? 'speaking' : 'listening'); }
 });
 
+/* confirmation card (from NOVA): before anything goes outside he sees what, to whom, how much and the risks, and taps */
+function showConfirm(a = {}) {
+  const c = $('[data-confirm]'), title = String(a.title || 'Подтвердить действие');
+  c.querySelector('[data-c-title]').textContent = title;
+  const rows = [['Что', a.action], ['Кому', a.to], ['Сумма', a.amount], ['Когда', a.when], ['Риски', a.risks]].filter(r => r[1]);
+  c.querySelector('[data-c-rows]').replaceChildren(...rows.map(([k, v]) => { const d = document.createElement('div'); const b = document.createElement('b'); b.textContent = k; d.append(b, ' ' + String(v)); return d; }));
+  c.querySelector('[data-c-text]').textContent = a.preview ? String(a.preview).slice(0, 900) : '';
+  c.hidden = false; c.dataset.title = title;
+  return 'The card is on his screen with buttons Yes / Change / No. Read the key point in one sentence and wait: his tap arrives as a message (or he answers by voice). Act only on a clear yes for THIS card.';
+}
+function answerConfirm(kind) {
+  const c = $('[data-confirm]'), t = c.dataset.title || ''; c.hidden = true;
+  const msg = { yes: `Да, подтверждаю: ${t}`, edit: `Нужно изменить: ${t}. Спроси, что поменять.`, no: `Нет, не надо: ${t}` }[kind];
+  try { face ? face.sendUserMessage(msg) : conv?.sendUserMessage(msg); } catch {} say(msg, true);
+}
+document.querySelectorAll('[data-c-btn]').forEach(b => b.addEventListener('click', () => answerConfirm(b.dataset.cBtn)));
+
+/* screen (from NOVA): on a computer he shares the screen once, the agent sees one frame. iPhone Safari can't share the screen. */
+function askScreen() {
+  if (!navigator.mediaDevices?.getDisplayMedia) return 'Screen sharing is not supported on this device (iPhone or Android browser). Ask him to take a screenshot and show it with the eye button, or to open VERGHE on a computer.';
+  $('[data-screen]').hidden = false; $('[data-screen]').classList.add('ask');
+  return 'A "Показать экран" button is glowing: ask him to tap it and choose the window or screen. You will get one frame.';
+}
+async function shareScreen() {
+  const btn = $('[data-screen]'); btn.classList.remove('ask'); btn.hidden = true;
+  if (!conv) return say('Сначала позови меня — потом покажешь экран.');
+  let stream; try { stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false }); } catch { return say('Показ экрана отменён.'); }
+  try {
+    const v = Object.assign(document.createElement('video'), { srcObject: stream, muted: true, playsInline: true }); await v.play();
+    await new Promise(r => setTimeout(r, 300));
+    const k = Math.min(1, 1600 / Math.max(v.videoWidth, v.videoHeight));
+    const cv = Object.assign(document.createElement('canvas'), { width: Math.round(v.videoWidth * k), height: Math.round(v.videoHeight * k) });
+    cv.getContext('2d').drawImage(v, 0, 0, cv.width, cv.height);
+    const blob = await new Promise(r => cv.toBlob(r, 'image/jpeg', .88));
+    statusEl.textContent = 'Смотрю'; say('🖥', true);
+    const { fileId } = await conv.uploadFile(blob);
+    conv.sendMultimodalMessage({ text: 'Это мой экран. Объясни, что я вижу, и подскажи следующий шаг для того, о чём я спрашивал.', fileIds: [fileId] });
+  } catch (err) { console.warn(err); say('Не получилось показать экран. Попробуй ещё раз.'); }
+  finally { stream.getTracks().forEach(t => t.stop()); }
+}
+$('[data-screen]').addEventListener('click', shareScreen);
+
 /* no voice (no credits / no mic): he still appears and stays until you send him away */
 function stay(text) { conv = null; speaking = false; setState('idle'); say(text); }
 
@@ -122,7 +168,7 @@ function finish(sound = true) {
   const was = B.classList.contains('on');
   conv = null; speaking = false; muted = false; paintMute();
   setState(null); B.classList.remove('on'); A.vanish(); say('');
-  $('[data-link]').hidden = true; $('[data-eye]').classList.remove('ask'); $('[data-type]').classList.remove('open'); $('[data-kbd]').setAttribute('aria-pressed', 'false');
+  $('[data-link]').hidden = true; $('[data-confirm]').hidden = true; $('[data-screen]').hidden = true; $('[data-eye]').classList.remove('ask'); $('[data-type]').classList.remove('open'); $('[data-kbd]').setAttribute('aria-pressed', 'false');
   try { lock?.release(); } catch {} lock = null;
   if (was && sound) tone(false);
 }

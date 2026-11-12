@@ -63,6 +63,18 @@ body.on .ui { opacity: 1; transform: none; pointer-events: auto; }
 .type button { height: 46px; padding: 0 18px; border-radius: 23px; background: var(--blue); color: #000; font-weight: 600; }
 .link { justify-self: center; max-width: 100%; padding: 10px 16px; border-radius: 22px; background: rgba(74,168,255,.16); border: 1px solid rgba(74,168,255,.45); color: #cfe6ff; font-size: 15px; text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .link[hidden] { display: none; }
+.confirm { justify-self: center; width: min(100%, 420px); padding: 14px 16px; border-radius: 18px; background: rgba(10,18,30,.82); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(74,168,255,.45); display: grid; gap: 8px; font-size: 15px; -webkit-user-select: text; user-select: text; }
+.confirm[hidden], .screen[hidden] { display: none; }
+.confirm h3 { font-size: 16px; font-weight: 600; }
+.confirm [data-c-rows] { display: grid; gap: 3px; color: rgba(255,255,255,.88); }
+.confirm [data-c-rows] b { color: rgba(160,205,255,.9); font-weight: 500; }
+.confirm [data-c-text] { max-height: 18svh; overflow-y: auto; color: rgba(255,255,255,.7); font-size: 14px; white-space: pre-wrap; }
+.confirm [data-c-text]:empty { display: none; }
+.confirm .row { display: flex; gap: 8px; }
+.confirm .row button { flex: 1; min-height: 44px; border-radius: 22px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.16); }
+.confirm .row button.yes { background: var(--blue); color: #000; font-weight: 600; border-color: transparent; }
+.screen { justify-self: center; padding: 10px 18px; border-radius: 22px; background: rgba(74,168,255,.16); border: 1px solid rgba(74,168,255,.45); color: #cfe6ff; font-size: 15px; min-height: 44px; }
+.screen.ask { animation: ask 1s ease-in-out infinite; }
 .note { position: fixed; left: 20px; right: 20px; top: 40%; text-align: center; font-size: 16px; color: rgba(255,255,255,.85); display: none; }
 .note.show { display: block; }
 </style>
@@ -83,6 +95,11 @@ body.on .ui { opacity: 1; transform: none; pointer-events: auto; }
 <div class="ui">
   <p class="status" data-status></p>
   <p class="cap" data-cap aria-live="polite"></p>
+  <div class="confirm" data-confirm hidden role="dialog" aria-label="Подтверждение">
+    <h3 data-c-title></h3><div data-c-rows></div><p data-c-text></p>
+    <div class="row"><button class="yes" data-c-btn="yes">Да</button><button data-c-btn="edit">Изменить</button><button data-c-btn="no">Нет</button></div>
+  </div>
+  <button class="screen" data-screen hidden>Показать экран</button>
   <a class="link" data-link hidden target="_blank" rel="noopener"><span></span> ↗</a>
   <input type="file" accept="image/*" capture="environment" data-photo hidden>
   <form class="type" data-type><input data-input placeholder="Написать…" enterkeyhint="send" autocomplete="off"><button>→</button></form>
@@ -96,6 +113,6 @@ body.on .ui { opacity: 1; transform: none; pointer-events: auto; }
 
 <script src="/static/vendor/elevenlabs-client-1.32.1.js" defer></script>
 <script src="/static/vendor/anam-js-sdk-4.29.1.js" defer></script>
-<script type="module" src="app.js?v=11"></script>
+<script type="module" src="app.js?v=12"></script>
 </body>
 </html>
