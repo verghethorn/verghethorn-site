@@ -90,6 +90,7 @@ export function nova(ctx: Ctx) {
     else if (u.kind === 'cancel_bg') await sql`update verghe.bg_tasks set status = 'cancelled' where id = ${u.id} and status in ('queued','running')`;
     if (res?.error) return { undone: false, action: last.summary, error: res.error };
     await sql`update verghe.tool_log set undone = true where id = ${last.id}`;
+    await sql`insert into verghe.tool_log (action, ms, ok, cached, summary) values ('undo_last', 0, true, false, ${'отменила: ' + u.label})`;
     return { undone: true, what: u.label, action: last.summary };
   }
 
@@ -210,7 +211,7 @@ export function nova(ctx: Ctx) {
     card_add: cardAdd, cards_due: cardsDue, card_grade: cardGrade,
   };
   const write: Record<string, (a: any) => string> = {
-    undo_last: () => 'отмена последнего действия', trip_plan: a => `документ: поездка ${a.to} ${a.depart}`,
+    trip_plan: a => `документ: поездка ${a.to} ${a.depart}`,
     bg_task_add: a => `фоновая задача: ${a.title}`, card_add: a => `карточки: ${a.deck ?? 'general'}`,
   };
   return { actions, write };
