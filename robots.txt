@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /tools/
+Disallow: /magaam/
 
 Sitemap: https://verghethorn.com/sitemap.xml
