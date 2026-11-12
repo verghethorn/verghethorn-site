@@ -7,6 +7,7 @@ const ZAPIER = 'https://mcp.zapier.com/api/v1/connect';
 const { ZTOKEN, KEY, ANAM, XI, postgres } = (globalThis as any).__VERGHE__;
 import { more } from './more.ts';
 import { crm } from './crm.ts';
+import { nova, undoSpec } from './nova.ts';
 const sql = postgres(Deno.env.get('SUPABASE_DB_URL')!, { prepare: false, max: 2, types: { date: { to: 1082, from: [1082], serialize: (x: unknown) => x, parse: (x: string) => x } } }); // dates stay 'YYYY-MM-DD'
 const TZ = 'Europe/Istanbul';
 
@@ -330,8 +331,8 @@ const ACTIONS: Record<string, (a: any) => Promise<unknown>> = {
   log_expense: async a => {
     const cur = (a.currency || 'USD').toUpperCase(); let usd = Number(a.amount);
     if (cur !== 'USD') { const c = await convert(Number(a.amount), cur, 'USD') as any; usd = c.result ?? null; }
-    await sql`insert into verghe.expenses (spent_on, amount, currency, amount_usd, category, note) values (${a.date || today()}, ${a.amount}, ${cur}, ${usd}, ${a.category ?? 'other'}, ${a.note ?? null})`;
-    return { saved: true, amount: a.amount, currency: cur, amount_usd: usd };
+    const [r] = await sql`insert into verghe.expenses (spent_on, amount, currency, amount_usd, category, note) values (${a.date || today()}, ${a.amount}, ${cur}, ${usd}, ${a.category ?? 'other'}, ${a.note ?? null}) returning id`;
+    return { saved: true, id: r.id, amount: a.amount, currency: cur, amount_usd: usd };
   },
   expenses_summary: async a => {
     const m = a.month || today().slice(0, 7);
@@ -342,8 +343,8 @@ const ACTIONS: Record<string, (a: any) => Promise<unknown>> = {
   // follow-ups: reminder if the contact hasn't replied by the due date (checked daily)
   followup_add: async a => {
     const due = new Date(Date.now() + (Number(a.days) || 3) * 864e5).toISOString();
-    await sql`insert into verghe.followups (contact, subject, due_at) values (${a.contact}, ${a.subject ?? null}, ${due})`;
-    return { saved: true, contact: a.contact, due: due.slice(0, 10) };
+    const [r] = await sql`insert into verghe.followups (contact, subject, due_at) values (${a.contact}, ${a.subject ?? null}, ${due}) returning id`;
+    return { saved: true, id: r.id, contact: a.contact, due: due.slice(0, 10) };
   },
   followup_list: async () => ({ open: await sql`select contact, subject, due_at::date as due from verghe.followups where status = 'open' order by due_at` }),
   // documents
@@ -391,6 +392,9 @@ Object.assign(ACTIONS, MORE.actions); Object.assign(WRITE, MORE.write);
 Object.assign(JOBS, MORE.jobs);
 const CRM = crm({ sql, zap, findEmails, findEvents, today });
 Object.assign(ACTIONS, CRM.actions); Object.assign(WRITE, CRM.write);
+/* NOVA ideas: close the day, undo, rules, trip plan, background tasks, exchanges read-only, flashcards (nova.ts) */
+const NOVA = nova({ sql, zap, today, findEvents, needsReply: MORE.actions.needs_reply, travelLinks, weather, convert, secrets: (globalThis as any).__VERGHE__ });
+Object.assign(ACTIONS, NOVA.actions); Object.assign(WRITE, NOVA.write);
 
 /* live face (Anam): the phone asks for a one-time session token; keys never leave the server */
 const AGENT_ID = 'agent_0301m6ye45t5fks83a75m7ayq0e6';
@@ -457,6 +461,7 @@ Deno.serve(async req => {
   try { out = await fn(args); if ((out as any)?.error) ok = false; } catch (e) { ok = false; out = { error: String(e) }; }
   const isCached = !!(out as any)?._cached; if (out && typeof out === 'object') delete (out as any)._cached;
   const summary = WRITE[action] ? WRITE[action](args) : null;
-  sql`insert into verghe.tool_log (action, ms, ok, cached, summary) values (${action}, ${Date.now() - t0}, ${ok}, ${isCached}, ${summary})`.catch(() => {});
+  let undo: unknown = null; try { undo = ok ? undoSpec(action, args, out) : null; } catch { /* nothing to undo */ }
+  sql`insert into verghe.tool_log (action, ms, ok, cached, summary, undo) values (${action}, ${Date.now() - t0}, ${ok}, ${isCached}, ${summary}, ${undo ? sql.json(undo as any) : null})`.catch(() => {});
   return j(out); // errors go back as {error} with 200, so the agent can tell him plainly
 });
