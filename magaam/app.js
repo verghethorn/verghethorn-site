@@ -37,7 +37,7 @@ const app = $('#app');
 
 /* ---------- state ---------- */
 const S = { uid:null, me:null, priv:null, members:new Map(), last:new Map(), unread:new Map(), online:new Set(),
-  typing:new Map(), thread:[], threadWith:null, posts:new Map(), phone:'', pres:null, view:'', prevView:'' };
+  typing:new Map(), thread:[], threadWith:null, posts:new Map(), jobs:[], phone:'', pres:null, view:'', prevView:'' };
 try { S.phone = localStorage.getItem('magaam-phone') || ''; } catch {}
 const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
 
@@ -68,9 +68,9 @@ function thumbHTML(p, withDot = true) {
   return `<span class="thumb">${p.photo_path ? `<img src="${esc(thumb(p.photo_path))}" alt="" loading="lazy" onerror="this.src='${esc(url(p.photo_path))}'">` : `<span class="ini">${initial(p.name)}</span>`}${on ? '<i class="dot on"></i>' : ''}</span>`;
 }
 function bgMedia(p) {
-  if (p.video_path) return `<video class="bg" src="${esc(url(p.video_path))}" ${p.photo_path ? `poster="${esc(url(p.photo_path))}"` : ''} autoplay muted loop playsinline preload="auto"></video>`;
-  if (p.photo_path) return `<img class="bg" src="${esc(url(p.photo_path))}" alt="">`;
-  return `<div class="bg-blur" style="background-image:url('${sceneImg(p.scene)}')"></div>`;
+  if (p.video_path) return `<video class="bg" data-bgfor="${p.id}" src="${esc(url(p.video_path))}" ${p.photo_path ? `poster="${esc(url(p.photo_path))}"` : ''} autoplay muted loop playsinline preload="auto"></video>`;
+  if (p.photo_path) return `<img class="bg" data-bgfor="${p.id}" src="${esc(url(p.photo_path))}" alt="">`;
+  return `<div class="bg-blur" data-bgfor="${p.id}" style="background-image:url('${sceneImg(p.scene)}')"></div>`;
 }
 async function resize(file, max, q = 0.86) {
   const src = URL.createObjectURL(file);
@@ -130,6 +130,23 @@ async function loadPosts(u) {
   S.posts.set(u, data || []); return data || [];
 }
 async function markRead(o) { if ((S.unread.get(o) || 0) > 0) { S.unread.set(o, 0); await sb.rpc('mark_read', { p_other: o }); } }
+const JOBCOLS = 'id,user_id,kind,src_path,scene,status,result_path,error,created_at,updated_at';
+async function loadJobs() {
+  const { data } = await sb.from('ai_jobs').select(JOBCOLS).gte('created_at', new Date(Date.now() - 86400_000).toISOString()).order('created_at', { ascending: false });
+  S.jobs = data || [];
+}
+const avatarJob = () => S.jobs.find((j) => j.kind === 'avatar');
+const pendingPostJobs = () => S.jobs.filter((j) => j.kind !== 'avatar' && ['editing', 'video', 'queued'].includes(j.status));
+async function startAI(kind, path, scene) {
+  const { data: { session } } = await sb.auth.getSession(); if (!session) return null;
+  try {
+    const r = await fetch(SB_URL + '/functions/v1/animate', { method: 'POST', headers: { 'content-type': 'application/json', apikey: SB_KEY, Authorization: 'Bearer ' + session.access_token }, body: JSON.stringify({ kind, path, scene }) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) { toast(j.error === 'daily_limit' ? 'You have used today’s AI limit. Try again tomorrow.' : 'AI is not available right now. Try again later.', 4000); return null; }
+    await loadJobs(); refresh(); return j.job;
+  } catch { toast('AI is not available right now. Check your connection.', 4000); return null; }
+}
+function swapBg(p) { const el = app.querySelector(`[data-bgfor="${p.id}"]`); if (!el) return; const t = document.createElement('div'); t.innerHTML = bgMedia(p); el.replaceWith(t.firstElementChild); }
 const totalUnread = () => [...S.unread.values()].reduce((a, b) => a + b, 0);
 
 /* ---------- realtime ---------- */
@@ -157,8 +174,21 @@ function startRealtime() {
     })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, ({ new: p }) => {
       if (!p || !p.id) return;
+      const old = p.id === S.uid ? S.me : S.members.get(p.id);
       if (p.id === S.uid) S.me = p; else if (p.name) S.members.set(p.id, p);
+      if (old && (old.photo_path !== p.photo_path || old.video_path !== p.video_path)) swapBg(p);
       refresh();
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'ai_jobs' }, ({ new: j }) => {
+      if (!j?.id) return; const i = S.jobs.findIndex((x) => x.id === j.id); if (i >= 0) S.jobs[i] = { ...S.jobs[i], ...j }; else S.jobs.unshift(j);
+      if (j.status === 'done' && j.kind === 'avatar') toast('Your page is alive now');
+      if (j.status === 'done' && j.kind !== 'avatar') toast('AI added a new item to your gallery');
+      if (j.status === 'error') toast('AI could not finish this one. Try another photo.', 4000);
+      refresh();
+    })
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, ({ new: x }) => {
+      const arr = S.posts.get(x.user_id); if (arr && !arr.some((y) => y.id === x.id)) arr.unshift(x);
+      if (route().name === 'gallery' && route().id === x.user_id) show(); else refresh();
     })
     .subscribe();
   S.pres = sb.channel('presence', { config: { presence: { key: S.uid } } });
@@ -340,8 +370,10 @@ V.look.after = () => {
     $('#go').disabled = true; $('#go').textContent = 'Uploading…';
     try {
       const path = await uploadPhoto(pendingPhoto.file, 'avatar');
-      const { data, error } = await sb.from('profiles').update({ photo_path: path }).eq('id', S.uid).select().single(); if (error) throw error;
-      S.me = data; pendingPhoto = null; go(editing ? 'me' : 'scene');
+      const { data, error } = await sb.from('profiles').update({ photo_path: path, orig_path: path, video_path: null }).eq('id', S.uid).select().single(); if (error) throw error;
+      S.me = data; pendingPhoto = null;
+      if (editing) startAI('avatar', path, S.me.scene || 'plaza');
+      go(editing ? 'me' : 'scene');
     } catch (e) { $('#err').textContent = e.message || 'Upload failed. Try again.'; $('#go').disabled = false; $('#go').textContent = editing ? 'Save' : 'Next'; }
   };
 };
@@ -360,8 +392,12 @@ V.scene.after = () => {
   app.querySelectorAll('[data-scene]').forEach((b) => (b.onclick = () => { pick = b.dataset.scene; app.querySelectorAll('[data-scene]').forEach((x) => x.setAttribute('aria-pressed', x === b)); }));
   $('#go').onclick = async () => {
     $('#go').disabled = true;
+    const changed = pick !== (S.me?.scene || 'plaza') || !S.me?.video_path;
     const { data } = await sb.from('profiles').update({ scene: pick }).eq('id', S.uid).select().single();
-    if (data) S.me = data; store.set('magaam-scene-done-' + S.uid, '1'); go('me');
+    if (data) S.me = data; store.set('magaam-scene-done-' + S.uid, '1');
+    const src = S.me?.orig_path || S.me?.photo_path;
+    if (changed && src) startAI('avatar', src, pick);
+    go('me');
   };
 };
 
@@ -376,7 +412,7 @@ V.me = () => {
   <div class="hdr"><div class="leftname"><b>${esc(m.name)}</b><span class="pill glass">${ic('pin').replace('<svg', '<svg style="width:15px;height:15px"')}${esc(sc)}</span></div><button class="iconbtn" data-act="settings" aria-label="Settings">${ic('gear')}</button></div>
   <div class="dock">
     ${installBanner()}
-    <div class="card glass"><button class="photos-btn" data-go="gallery/${S.uid}"><span class="pt" id="pthumbs"></span><span class="pl"><b>My photos</b><span id="pcount">Open your gallery</span></span><span class="chev">${ic('back')}</span></button>
+    <div class="card glass"><div class="ailine" id="ailine" hidden></div><button class="photos-btn" data-go="gallery/${S.uid}"><span class="pt" id="pthumbs"></span><span class="pl"><b>My photos</b><span id="pcount">Open your gallery</span></span><span class="chev">${ic('back')}</span></button>
       <div class="chips"><button class="chip" data-go="look">${ic('swap')}Change look</button><button class="chip" data-go="scene">${ic('pin')}Scene</button><button class="chip" data-act="addpost">${ic('plus')}Add photo</button></div></div>
     <div id="tabs">${tabbar('me')}</div>
   </div></div>`;
@@ -386,6 +422,13 @@ V.me.update = () => {
   const posts = S.posts.get(S.uid) || [];
   const th = $('#pthumbs'); if (th) th.innerHTML = posts.length ? posts.slice(0, 3).map((x) => `<img src="${esc(thumb(x.path))}" alt="">`).join('') : `<i>${ic('image')}</i>`;
   const pc = $('#pcount'); if (pc) pc.textContent = posts.length ? `${posts.length} photo${posts.length > 1 ? 's' : ''}` : 'No photos yet. Add your first one';
+  const al = $('#ailine'); const j = avatarJob();
+  if (al) {
+    if (j && ['editing', 'video', 'queued'].includes(j.status)) { al.hidden = false; al.innerHTML = `<span class="spinner sm"></span><span><b>Your page is coming to life</b>${j.status === 'editing' ? 'Placing you into your scene…' : 'Making your video, about 2 minutes…'}</span>`; }
+    else if (j && j.status === 'error' && !S.me.video_path) { al.hidden = false; al.innerHTML = `<span>${ic('spark')}</span><span><b>AI could not finish your page</b><button data-act="retryai">Try again</button></span>`; }
+    else if (!S.me.video_path) { al.hidden = false; al.innerHTML = `<span>${ic('spark')}</span><span><b>Bring your page to life</b><button data-act="retryai">Let AI make your living video</button></span>`; }
+    else al.hidden = true;
+  }
   const t = $('#tabs'); if (t) t.innerHTML = tabbar('me');
 };
 V.me.after = () => V.me.update();
@@ -501,7 +544,8 @@ V.gallery = async (id) => {
       <div class="hname"><b>${esc(p.name)}</b><span style="font-size:13.5px;opacity:.85">${posts.length} photo${posts.length === 1 ? '' : 's'}</span></div><span style="width:44px"></span></div>
     <div class="scroll" style="padding-bottom:calc(var(--sb) + 20px)"><div class="grid">
       ${mine ? `<button class="tile add" data-act="addpost" aria-label="Add photo">${ic('plus')}</button>` : ''}
-      ${posts.map((x, i) => `<button class="tile" data-view="${i}"><img src="${esc(thumb(x.path))}" alt="" loading="lazy"></button>`).join('')}
+      ${mine ? pendingPostJobs().map(() => `<div class="tile wait"><span class="spinner sm"></span><span>AI is working…</span></div>`).join('') : ''}
+      ${posts.map((x, i) => `<button class="tile" data-view="${i}"><img src="${esc(thumb(x.path))}" alt="" loading="lazy">${x.video_path ? `<i class="play">${ic('video')}</i>` : ''}</button>`).join('')}
     </div>${!posts.length && !mine ? `<div class="empty"><b>No photos yet</b></div>` : ''}</div>
   </div></div>`;
 };
@@ -511,7 +555,7 @@ V.gallery.after = (id) => {
 function openViewer(id, i) {
   const posts = S.posts.get(id) || []; if (!posts[i]) return;
   const mine = id === S.uid; const v = document.createElement('div'); v.className = 'viewer';
-  const paint = () => { v.innerHTML = `<img src="${esc(url(posts[i].path))}" alt=""><div class="hdr"><button class="iconbtn" data-x aria-label="Close">${ic('x')}</button><span style="color:#fff;padding-top:12px;font-size:14px">${i + 1} / ${posts.length}</span>${mine ? `<button class="iconbtn" data-del aria-label="Delete">${ic('trash')}</button>` : '<span style="width:44px"></span>'}</div>`; };
+  const paint = () => { const x = posts[i]; v.innerHTML = `${x.video_path ? `<video src="${esc(url(x.video_path))}" poster="${esc(url(x.path))}" autoplay loop playsinline controls></video>` : `<img src="${esc(url(x.path))}" alt="">`}<div class="hdr"><button class="iconbtn" data-x aria-label="Close">${ic('x')}</button><span style="color:#fff;padding-top:12px;font-size:14px">${i + 1} / ${posts.length}</span>${mine ? `<button class="iconbtn" data-del aria-label="Delete">${ic('trash')}</button>` : '<span style="width:44px"></span>'}</div>`; };
   paint(); app.appendChild(v);
   let sx = 0;
   v.addEventListener('touchstart', (e) => (sx = e.touches[0].clientX), { passive: true });
@@ -520,7 +564,7 @@ function openViewer(id, i) {
     if (e.target.closest('[data-x]')) return v.remove();
     if (e.target.closest('[data-del]')) {
       const x = posts[i]; await sb.from('posts').delete().eq('id', x.id);
-      sb.storage.from('media').remove([x.path, x.path.replace(/\.jpg$/, '-t.jpg')]);
+      sb.storage.from('media').remove([x.path, x.path.replace(/\.jpg$/, '-t.jpg'), ...(x.video_path ? [x.video_path] : [])]);
       v.remove(); toast('Photo deleted'); show(); return;
     }
     if (e.target.tagName === 'IMG' && posts.length > 1) { i = (i + 1) % posts.length; paint(); }
@@ -542,10 +586,15 @@ async function uploadVideo() {
 }
 async function addPost() {
   const f = await pickFile(false); if (!f) return;
-  toast('Uploading…', 20000);
-  try { const path = await uploadPhoto(f, 'post'); const { error } = await sb.from('posts').insert({ path }); if (error) throw error;
-    await loadPosts(S.uid); toast('Added to your gallery'); show(); }
-  catch (e) { toast(e.message || 'Upload failed. Try again.'); }
+  toast('Uploading…', 30000);
+  let path;
+  try { path = await uploadPhoto(f, 'post'); } catch (e) { toast(e.message || 'Upload failed. Try again.'); return; }
+  $('#toast').hidden = true;
+  sheet('What should AI do with this photo?', [
+    { icon: 'spark', label: 'Make it move', run: async () => { if (await startAI('post_video', path)) toast('AI is bringing your photo to life. About 2 minutes.', 4000); } },
+    { icon: 'pin', label: 'Put me in a new place', run: () => sheet('Choose a place', SCENES.map(([k, l]) => ({ icon: 'pin', label: l, run: async () => { if (await startAI('post_scene', path, k)) toast(`AI is placing you: ${l}. About 30 seconds.`, 4000); } }))) },
+    { icon: 'image', label: 'Keep as is', run: async () => { const { error } = await sb.from('posts').insert({ path }); if (error) return toast('Could not save. Try again.'); await loadPosts(S.uid); toast('Added to your gallery'); refresh(); if (route().name === 'gallery') show(); } }
+  ]);
 }
 
 /* ---------- global clicks ---------- */
@@ -556,6 +605,7 @@ app.addEventListener('click', (e) => {
   if (t.dataset.tab) { if (t.dataset.tab === 'soon') return toast('Coming soon'); return go(t.dataset.tab); }
   const a = t.dataset.act;
   if (a === 'addpost') return addPost();
+  if (a === 'retryai') { const src = S.me?.orig_path || S.me?.photo_path; if (src) startAI('avatar', src, S.me.scene || 'plaza'); return; }
   if (a === 'hideinstall') { store.set('magaam-install-hide', '1'); $('#install')?.remove(); return; }
   if (a === 'install' && deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.finally(() => { deferredPrompt = null; $('#install')?.remove(); }); return; }
   if (a === 'settings') return sheet('Settings', [
@@ -573,7 +623,7 @@ app.addEventListener('click', (e) => {
 async function afterAuth() {
   const { data: { session } } = await sb.auth.getSession();
   S.uid = session?.user?.id || null; if (!S.uid) return;
-  await loadMe(); await loadAll(); startRealtime();
+  await loadMe(); await loadAll(); await loadJobs(); startRealtime();
 }
 (async function boot() {
   app.innerHTML = '<div class="center" style="background:var(--paper)"><div class="spinner"></div></div>';
