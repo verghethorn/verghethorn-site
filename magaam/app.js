@@ -9,6 +9,7 @@ const SCENES = [['plaza','City plaza'],['library','Library'],['tennis','Tennis c
 
 /* ---------- icons ---------- */
 const I = {
+  lock: '<rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/>',
   bell: '<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/>',
   useradd: '<circle cx="10" cy="8" r="4"/><path d="M3 21c1-4 3.6-6 7-6 1.4 0 2.6.3 3.6.9M19 14v6M16 17h6"/>',
   qr: '<rect x="3.5" y="3.5" width="6" height="6" rx="1"/><rect x="14.5" y="3.5" width="6" height="6" rx="1"/><rect x="3.5" y="14.5" width="6" height="6" rx="1"/><path d="M14.5 14.5h2.5v2.5h-2.5zM18.5 18.5h2v2h-2zM14.5 19.5h1.5M19.5 14.5v2"/>',
@@ -52,7 +53,7 @@ const $ = (s, r = document) => r.querySelector(s);
 const app = $('#app');
 
 /* ---------- state ---------- */
-const S = { streaks: new Map(), reqIn: [], reqOut: new Set(), blocked: [], uid:null, me:null, priv:null, members:new Map(), last:new Map(), unread:new Map(), online:new Set(),
+const S = { extra: new Map(), streaks: new Map(), reqIn: [], reqOut: new Set(), blocked: [], uid:null, me:null, priv:null, members:new Map(), last:new Map(), unread:new Map(), online:new Set(),
   typing:new Map(), thread:[], threadWith:null, posts:new Map(), jobs:[], rx:new Map(), phone:'', pres:null, view:'', prevView:'' };
 try { S.phone = localStorage.getItem('magaam-phone') || ''; } catch {}
 const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
@@ -63,7 +64,7 @@ function toast(t, ms = 2400) { const n = $('#toast'); n.textContent = T(t); n.hi
 const url = (p) => (p ? MEDIA + p : '');
 const thumb = (p) => (p ? MEDIA + p.replace(/\.jpg$/, '-t.jpg') : '');
 const sceneImg = (k) => `img/scene-${SCENES.some((s) => s[0] === k) ? k : 'plaza'}.jpg`;
-const nameOf = (id) => (id === S.uid ? S.me?.name : S.members.get(id)?.name) || 'Someone';
+const nameOf = (id) => (id === S.uid ? S.me?.name : S.members.get(id)?.name || S.extra?.get(id)?.name || S.people?.get(id)?.name) || 'Someone';
 const initial = (n) => esc((n || '?').trim().charAt(0).toUpperCase());
 function hm(d) { return new Date(d).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }); }
 function when(d) {
@@ -74,7 +75,7 @@ function when(d) {
 }
 function statusOf(id) {
   if (S.online.has(id)) return { on: true, text: 'Online' };
-  const p = S.members.get(id); if (!p?.last_seen) return { on: false, text: 'Away' };
+  const p = S.members.get(id) || S.extra.get(id); if (!p?.last_seen) return { on: false, text: 'Away' };
   const t = new Date(p.last_seen), now = new Date();
   if (now - t < 90_000) return { on: false, text: 'Last seen just now' };
   return { on: false, text: 'Last seen ' + (t.toDateString() === now.toDateString() ? hm(t) : when(t)) };
@@ -389,7 +390,7 @@ async function show() {
     else if (S.me?.name && S.me?.ai_name && !hasPhoto && !['about', 'assistant', 'look'].includes(name)) name = 'look';
     const pend = store.get('magaam-addfriend');
     if (pend && name === 'me' && S.me?.username && S.me?.ai_name && hasPhoto) { store.set('magaam-addfriend', ''); name = 'add'; id = pend; }
-    if (location.hash.replace(/^#\/?/, '').split('/')[0] !== name) history.replaceState(null, '', '#/' + name + (id && ['chat','u','gallery','add'].includes(name) ? '/' + id : ''));
+    if (location.hash.replace(/^#\/?/, '').split('/')[0] !== name) history.replaceState(null, '', '#/' + name + (id && ['chat','u','gallery','add','p'].includes(name) ? '/' + id : ''));
   }
   S.prevView = S.view; S.view = name;
   const fn = V[name] || V.me;
@@ -506,6 +507,8 @@ V.about = () => `<div class="light">
     <label class="fl" for="nm">Name<input class="field" id="nm" maxlength="40" autocomplete="given-name" value="${esc(S.me?.name || '')}" placeholder="Your name"></label>
     <label class="fl" for="un">Username<span class="unwrap"><span class="at" data-notr>@</span><input class="field" id="un" maxlength="20" autocapitalize="none" autocorrect="off" spellcheck="false" value="${esc(S.me?.username || '')}" placeholder="yourname"></span></label>
     <p class="fine" style="margin-top:-4px">Friends find you by this name. Letters a–z, numbers, dot and _.</p>
+    <div class="fl"><span>Profile</span><div class="seg" id="pv" role="radiogroup"><button type="button" role="radio" data-pv="0" aria-checked="${!S.me?.is_public}">${ic('lock', 2)}Closed</button><button type="button" role="radio" data-pv="1" aria-checked="${!!S.me?.is_public}">${ic('globe', 2)}Open</button></div></div>
+    <p class="fine" style="margin-top:-4px" id="pvh">${S.me?.is_public ? 'Everyone sees your gallery and stories.' : 'Only friends see your gallery and stories.'}</p>
     <label class="fl" for="bd">Date of birth<input class="field" id="bd" type="date" value="${esc(S.priv?.birthdate || '')}" max="${new Date().toISOString().slice(0, 10)}"></label>
     <p class="fine" style="margin-top:2px">Your age keeps the right protections on for you. Only you see it.</p>
     <p class="err" id="err"></p>
@@ -518,6 +521,8 @@ V.about.after = () => {
   const nm = $('#nm'), un = $('#un'); let touched = !!S.me?.username;
   const suggest = () => { if (!touched) { const b = cleanUser(nm.value); un.value = b.length >= 3 ? b : b ? b + Math.floor(100 + Math.random() * 900) : ''; } };
   nm.addEventListener('input', suggest); suggest();
+  let pub = !!S.me?.is_public;
+  app.querySelectorAll('[data-pv]').forEach((b) => (b.onclick = () => { pub = b.dataset.pv === '1'; app.querySelectorAll('[data-pv]').forEach((x) => x.setAttribute('aria-checked', String(x === b))); $('#pvh').textContent = T(pub ? 'Everyone sees your gallery and stories.' : 'Only friends see your gallery and stories.'); }));
   un.addEventListener('input', () => { touched = true; const c = cleanUser(un.value); if (c !== un.value) un.value = c; });
   $('#go').onclick = async () => {
     const name = nm.value.trim(), bd = $('#bd').value, username = cleanUser(un.value);
@@ -525,7 +530,7 @@ V.about.after = () => {
     if (username.length < 3) { $('#err').textContent = 'The username needs at least 3 letters or numbers.'; return; }
     if (!bd) { $('#err').textContent = 'Choose your date of birth.'; return; }
     $('#go').disabled = true;
-    const [a, b] = await Promise.all([sb.from('profiles').update({ name, username }).eq('id', S.uid).select().single(), sb.from('profiles_private').update({ birthdate: bd }).eq('id', S.uid)]);
+    const [a, b] = await Promise.all([sb.from('profiles').update({ name, username, is_public: pub }).eq('id', S.uid).select().single(), sb.from('profiles_private').update({ birthdate: bd }).eq('id', S.uid)]);
     if (a.error?.code === '23505') { $('#err').textContent = 'This username is taken. Try another one.'; $('#go').disabled = false; return; }
     if (a.error || b.error) { $('#err').textContent = 'Could not save. Try again.'; $('#go').disabled = false; return; }
     S.me = a.data; go(!S.me.ai_name ? 'assistant' : (S.me.orig_path || S.me.photo_path) ? 'me' : 'look');
@@ -747,7 +752,14 @@ V.chats.after = () => {
 const myLink = () => location.origin + location.pathname + '#/add/' + (S.me?.username || '');
 let qrLoad = null;
 function loadQR() { return qrLoad ||= new Promise((res, rej) => { if (window.qrcode) return res(); const sc = document.createElement('script'); sc.src = 'qrcode.js?v=1'; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); }); }
-const personRow = (p, right) => `<div class="crow">${thumbHTML(p)}<span class="cmid"><b data-notr>${esc(p.name)}</b><span data-notr>@${esc(p.username || '')}</span></span><span class="cend fbtns">${right}</span></div>`;
+const mutualTxt = (n) => (n ? ' · ' + T(n === 1 ? '1 mutual friend' : '{n} mutual friends').replace('{n}', n) : '');
+const personRow = (p, right) => `<div class="crow"><button class="prow" data-go="p/${p.id}">${thumbHTML(p)}<span class="cmid"><b data-notr>${esc(p.name)}</b><span data-notr>@${esc(p.username || '')}${esc(mutualTxt(p.mutual))}</span></span></button><span class="cend fbtns">${right}</span></div>`;
+const relBtn = (id, big) => { const c = big ? 'pbtn' : 'pbtn sm';
+  return id === S.uid ? `<span class="tag">This is you</span>`
+    : S.members.has(id) ? `<button class="${c} blue" data-go="chat/${id}">${ic('chat')}Message</button>`
+    : S.reqOut.has(id) ? `<button class="${c} glass" data-fr="cancel" data-uid="${id}">${big ? ic('check') : ''}Request sent</button>`
+    : S.reqIn.some((x) => x.id === id) ? `<button class="${c} blue" data-fr="accept" data-uid="${id}">${ic('check')}Accept</button>`
+    : `<button class="${c} blue" data-fr="add" data-uid="${id}">${ic('useradd')}${big ? 'Add friend' : 'Add'}</button>`; };
 async function shareLink() {
   const url = myLink();
   if (navigator.share) { try { await navigator.share({ title: 'MAGAAM', text: T('Add me on MAGAAM'), url }); return; } catch (e) { if (e?.name === 'AbortError') return; } }
@@ -764,17 +776,17 @@ async function friendAct(kind, uid) {
   else if (out === 'limit') toast('Too many requests today. Try again tomorrow.');
   else if (kind === 'add' && out === 'sent') toast('Friend request sent');
   else if (out === 'friends') toast('You are friends now');
-  await loadAll(); if (route().name === 'add') V.add.update(); else refresh();
+  await loadAll(); if (route().name === 'add') V.add.update(); else if (route().name === 'p') show(); else refresh();
 }
-let addFound = null, addMsg = '';
+let addList = null, addMsg = '';
 V.add = (id) => {
-  addFound = null; addMsg = '';
+  addList = null; addMsg = '';
   return `<div class="dark" style="position:absolute;inset:0">
   <div class="bg-blur" style="background-image:url('${sceneImg(S.me?.scene)}')"></div>
   <div class="listwrap">
     <div class="ltitle"><span class="hright"><button class="iconbtn" data-back="chats" aria-label="Back">${ic('back')}</button><h2>Add friends</h2></span></div>
     <div class="scroll"><div class="addwrap">
-      <form class="findrow" id="ff"><span class="unwrap dark"><span class="at" data-notr>@</span><input class="search glass" id="fu" maxlength="24" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Friend's username" aria-label="Friend's username" value="${esc(id && id !== S.me?.username ? id : '')}"></span><button class="send" aria-label="Find">${ic('search', 2)}</button></form>
+      <form class="findrow" id="ff"><span class="unwrap dark srch"><span class="at">${ic('search', 2)}</span><input class="search glass" id="fu" maxlength="40" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Name or @username" aria-label="Name or @username" value="${esc(id && id !== S.me?.username ? id : '')}"></span></form>
       <div id="found"></div>
       <div id="reqs"></div>
       <div class="mycard glass"><div class="qr" id="qr" aria-label="My QR code"></div><b data-notr>@${esc(S.me?.username || '')}</b><span>Friends scan this code with the camera or open your link to add you.</span>
@@ -788,15 +800,8 @@ V.add.update = () => {
   const f = $('#found');
   if (f) {
     if (addMsg) f.innerHTML = `<div class="rows glass"><div class="empty sm"><span>${esc(addMsg)}</span></div></div>`;
-    else if (addFound) {
-      const p = addFound, id = p.id;
-      const right = id === S.uid ? `<span class="tag">This is you</span>`
-        : S.members.has(id) ? `<button class="pbtn blue sm" data-go="chat/${id}">${ic('chat')}Message</button>`
-        : S.reqOut.has(id) ? `<button class="pbtn glass sm" data-fr="cancel" data-uid="${id}">Request sent</button>`
-        : S.reqIn.some((x) => x.id === id) ? `<button class="pbtn blue sm" data-fr="accept" data-uid="${id}">${ic('check')}Accept</button>`
-        : `<button class="pbtn blue sm" data-fr="add" data-uid="${id}">${ic('useradd')}Add</button>`;
-      f.innerHTML = `<div class="rows glass">${personRow(p, right)}</div>`;
-    } else f.innerHTML = '';
+    else if (addList) f.innerHTML = `<div class="rows glass">${addList.map((p) => personRow(p, relBtn(p.id))).join('')}</div>`;
+    else f.innerHTML = '';
   }
   const r = $('#reqs');
   if (r) r.innerHTML = S.reqIn.length ? `<h3 class="sech">Friend requests</h3><div class="rows glass">${S.reqIn.map((p) => personRow(p, `<button class="pbtn blue sm" data-fr="accept" data-uid="${p.id}">${ic('check')}Accept</button><button class="iconbtn sm" data-fr="decline" data-uid="${p.id}" aria-label="Decline">${ic('x')}</button>`)).join('')}</div>` : '';
@@ -807,18 +812,26 @@ V.add.update = () => {
 V.add.after = (id) => {
   V.add.update();
   const fu = $('#fu');
-  const find = async () => {
-    const q = cleanUser(fu.value); if (q !== fu.value) fu.value = q;
-    if (q.length < 3) { addFound = null; addMsg = 'Type at least 3 letters of the username.'; V.add.update(); return; }
-    addMsg = ''; $('#found').innerHTML = '<div class="center" style="padding:14px"><span class="spinner sm"></span></div>';
-    const { data } = await sb.rpc('find_user', { p_username: q });
-    const p = data?.[0];
-    if (p) { addFound = { ...p, still_path: p.photo }; addMsg = ''; } else { addFound = null; addMsg = `No one with the username @${q}. Check the spelling.`; }
+  let seq = 0, tmr = 0;
+  const find = async (fromLink) => {
+    const q = fu.value.trim().replace(/^@+/, '');
+    if (q.length < 2) { addList = null; addMsg = ''; V.add.update(); return; }
+    const my = ++seq;
+    // Also search the Latin spelling: "Амина" finds "Amina".
+    const lat = cleanUser(q), qs = [q, ...(lat.length >= 2 && lat !== q.toLowerCase() ? [lat] : [])];
+    const res = await Promise.all(qs.map((x) => sb.rpc('search_users', { p_q: x })));
+    if (my !== seq) return;
+    const seen = new Set(); addList = res.flatMap((r) => r.data || []).filter((p) => !seen.has(p.id) && seen.add(p.id)).map((p) => ({ ...p, still_path: p.photo }));
+    addList.forEach((p) => S.extra.set(p.id, { ...(S.extra.get(p.id) || {}), ...p }));
+    addMsg = addList.length ? '' : T('No one found for “{q}”.').replace('{q}', q);
+    // An "add me" link opens that person's page right away.
+    if (fromLink === true) { const hit = addList.find((p) => p.username === cleanUser(q)); if (hit) return go('p/' + hit.id, true); }
     V.add.update();
   };
+  fu.addEventListener('input', () => { clearTimeout(tmr); tmr = setTimeout(find, 280); });
   $('#ff').onsubmit = (e) => { e.preventDefault(); fu.blur(); find(); };
   app.querySelector('.addwrap').addEventListener('click', (e) => { const b = e.target.closest('[data-fr]'); if (b) { b.disabled = true; friendAct(b.dataset.fr, b.dataset.uid); } });
-  if (fu.value) find();
+  if (fu.value) find(true);
   loadQR().then(() => {
     const q = qrcode(0, 'M'); q.addData(myLink()); q.make();
     const box = $('#qr'); if (box) box.innerHTML = q.createSvgTag({ cellSize: 6, margin: 2, scalable: true });
@@ -1751,6 +1764,31 @@ V.chat.after = async (id) => {
 window.addEventListener('hashchange', () => { if (player) stopPlayer(); if (rec) stopRec(false); });
 
 /* Someone's page */
+/* A person's page before you are friends: open or closed profile */
+V.p = async (id) => {
+  if (id === S.uid) { go('me', true); return; }
+  if (S.members.has(id)) { go('u/' + id, true); return; }
+  const { data } = await sb.rpc('person_card', { p_id: id });
+  const c = data?.[0]; if (!c) { toast('This profile is not available'); go('add', true); return; }
+  S.extra.set(id, c);
+  const stats = [`<span><b data-notr>${c.friends}</b> ${esc(T(c.friends === 1 ? 'friend' : 'friends'))}</span>`, `<span><b data-notr>${c.posts}</b> ${esc(T(c.posts === 1 ? 'photo' : 'photos'))}</span>`, c.mutual ? `<span><b data-notr>${c.mutual}</b> ${esc(T('mutual'))}</span>` : ''].join('');
+  return `<div class="dark" style="position:absolute;inset:0">
+  ${bgMedia(c)}
+  <div class="shade"></div>
+  <div class="hdr"><button class="iconbtn" data-back="add" aria-label="Back">${ic('back')}</button>
+    <div class="hname"><b data-notr>${esc(c.name)}</b>${c.is_public ? `<span class="pill glass" id="st"></span>` : ''}</div><button class="iconbtn" data-act="umore" data-uid="${id}" aria-label="More">${ic('more', 2.4)}</button></div>
+  <div class="dock"><div class="card glass pcard">
+    <div class="phead"><span class="puser" data-notr>@${esc(c.username || '')}</span><span class="ptype ${c.is_public ? 'open' : ''}">${ic(c.is_public ? 'globe' : 'lock', 2)}${esc(T(c.is_public ? 'Open profile' : 'Closed profile'))}</span></div>
+    <div class="pstats">${stats}</div>
+    ${c.is_public ? `<div class="cta2">${relBtn(id, true)}<button class="pbtn glass" data-go="gallery/${id}">${ic('grid')}Gallery</button></div>`
+      : `<div class="plock">${ic('lock', 2)}<span>Gallery and stories are only for friends.</span></div>${relBtn(id, true)}`}
+  </div></div></div>`;
+};
+V.p.after = (id) => {
+  const s = $('#st'); if (s) { const st = statusOf(id); s.innerHTML = `<i class="dot ${st.on ? 'on' : ''}"></i>${esc(T(st.text))}`; }
+  app.querySelectorAll('[data-fr]').forEach((b) => (b.onclick = () => { b.disabled = true; friendAct(b.dataset.fr, b.dataset.uid); }));
+};
+
 V.u = async (id) => {
   if (id === S.uid) { go('me', true); return; }
   if (!S.members.has(id)) { await loadAll(); if (!S.members.has(id)) { go('chats', true); return; } }
@@ -1771,7 +1809,7 @@ V.u.after = (id) => V.u.update(id);
 
 /* Gallery */
 V.gallery = async (id) => {
-  const mine = id === S.uid; const p = mine ? S.me : S.members.get(id);
+  const mine = id === S.uid; const p = mine ? S.me : S.members.get(id) || (S.extra.get(id)?.is_public ? S.extra.get(id) : null);
   if (!p) { go('chats', true); return; }
   const posts = await loadPosts(id);
   return `<div class="dark" style="position:absolute;inset:0">
@@ -1952,6 +1990,7 @@ app.addEventListener('click', (e) => {
     { icon: 'globe', label: `App language: ${I18N.label}`, run: pickUiLang },
     { icon: 'globe', label: `Translation language: ${langLabel(myLang())}`, run: pickLang },
     { icon: 'bell', label: soundOn() ? 'Message sound: on' : 'Message sound: off', run: () => { store.set('magaam-sound', soundOn() ? 'off' : 'on'); unlockAudio(); if (soundOn()) setTimeout(() => chime(false, true), 60); toast(soundOn() ? 'Message sound is on' : 'Message sound is off'); } },
+    { icon: S.me?.is_public ? 'globe' : 'lock', label: S.me?.is_public ? 'Profile: open' : 'Profile: closed', run: pickPrivacy },
     { icon: 'useradd', label: 'Add friends', run: () => go('add') },
     { icon: 'share', label: 'Share my friend link', run: shareLink },
     { icon: 'edit', label: `My username: @${S.me?.username || ''}`, notr: false, run: () => go('about') },
@@ -1963,6 +2002,15 @@ app.addEventListener('click', (e) => {
 /* ---------- interface language ---------- */
 new MutationObserver((ms) => { if (I18N.lang === 'en') return; for (const m of ms) { if (m.type === 'characterData') { if (m.target.parentElement) I18N.apply(m.target.parentElement); } else m.addedNodes.forEach((n) => { if (n.nodeType === 1) I18N.apply(n); else if (n.nodeType === 3 && n.parentElement) I18N.apply(n.parentElement); }); } })
   .observe(app, { childList: true, subtree: true, characterData: true });
+async function pickPrivacy() {
+  const k = await dialog(`<h3 class="dh">Who can see your profile?</h3>`, [
+    { k: 'open', icon: 'globe', label: 'Open — everyone sees my gallery and stories', style: S.me?.is_public ? '' : 'out' },
+    { k: 'closed', icon: 'lock', label: 'Closed — only friends', style: S.me?.is_public ? 'out' : '' }]);
+  if (!k) return;
+  const { data, error } = await sb.from('profiles').update({ is_public: k === 'open' }).eq('id', S.uid).select().single();
+  if (error) return toast('Could not save. Try again.');
+  S.me = data; toast(k === 'open' ? 'Your profile is open' : 'Your profile is closed. Only friends see it');
+}
 function pickUiLang() {
   sheet('Choose your language', I18N.LANGS.map(([code, label]) => ({ icon: code === I18N.lang ? 'check' : 'globe', label, notr: true, run: async () => {
     I18N.set(code); if (!store.get('magaam-lang')) TR.clear();

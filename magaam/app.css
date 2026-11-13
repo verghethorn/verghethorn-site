@@ -734,3 +734,30 @@ h1{font-weight:700;font-size:38px;letter-spacing:-.035em;line-height:1.05}
 .dock .chips.two .chip svg{width:34px;height:34px;padding:7px}
 .dock .chips.two .chip .cl{white-space:normal;text-align:center;overflow:visible}
 .stit{width:80px}.stn{max-width:80px;font-size:11.5px}
+/* person page before friendship */
+.prow{display:flex;gap:14px;align-items:center;flex:1;min-width:0;text-align:left;color:#fff}
+.prow .cmid{min-width:0}
+.pcard{gap:14px;padding:18px 16px 16px}
+.phead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.puser{font-size:17px;font-weight:600;color:#fff;letter-spacing:-.01em}
+.ptype{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:999px;font-size:13px;font-weight:600;color:#fff;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22)}
+.ptype svg{width:15px;height:15px}
+.ptype.open{background:var(--grad-soft);border-color:rgba(229,92,255,.45)}
+.pstats{display:flex;gap:22px;color:rgba(255,255,255,.82);font-size:14px}
+.pstats b{display:block;color:#fff;font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.plock{display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.85);font-size:14.5px;padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.08);border:1px dashed rgba(255,255,255,.25)}
+.plock svg{width:20px;height:20px;flex:none}
+.pcard>.pbtn{width:100%}
+.unwrap.srch .at{display:grid;place-items:center;left:13px}
+.unwrap.srch .at svg{width:19px;height:19px}
+/* segmented choice */
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;border-radius:18px;background:rgba(255,255,255,.7);border:1.5px solid rgba(11,20,48,.08)}
+.seg button{height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:7px;font-size:15.5px;font-weight:600;color:var(--grey)}
+.seg button svg{width:18px;height:18px}
+.seg button[aria-checked="true"]{background:var(--grad);color:#fff;box-shadow:var(--glow)}
+.mycard .chips.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mycard .chips.two .chip{flex-direction:column;justify-content:center;height:78px;border-radius:24px;gap:6px;padding:8px 6px;font-size:14px;line-height:1.15;white-space:normal;text-align:center}
+.mycard .chips.two .chip svg{width:34px;height:34px;padding:7px}
+.findrow .unwrap .search{background:rgba(255,255,255,.14)}
+.pcard .cta2 .pbtn{font-size:14.5px;gap:6px;padding:0 10px;white-space:nowrap}
+.pcard .cta2 .pbtn svg{width:18px;height:18px}
