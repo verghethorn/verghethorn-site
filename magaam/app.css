@@ -1044,3 +1044,16 @@ h1{font-weight:700;font-size:38px;letter-spacing:-.035em;line-height:1.05}
 .aiov.out .aiov-veil{animation:veilIn .35s reverse both}
 .aiov.out .aiov-in{transition:transform .35s cubic-bezier(.5,0,.7,.4),opacity .35s,filter .35s;transform:scale(.4) rotate(160deg);opacity:0;filter:blur(10px)}
 @media (prefers-reduced-motion:reduce){.aiov-face,.aiov-face .ring,.aiov-say span,.aiov-wave.on i{animation:none}}
+
+/* profile: the friend's assistant waits in a small glowing bubble; tap to let it out */
+.ubub{position:absolute;z-index:6;transition:opacity .3s,transform .3s;top:calc(var(--st) + 64px);right:max(14px,var(--sr));display:flex;align-items:center;gap:9px;padding:5px 14px 5px 5px;border-radius:999px;color:#fff;text-align:start;
+  background:linear-gradient(135deg,rgba(255,255,255,.22),rgba(106,92,255,.22));-webkit-backdrop-filter:blur(20px) saturate(1.5);backdrop-filter:blur(20px) saturate(1.5);
+  border:1px solid rgba(255,255,255,.34);box-shadow:0 10px 26px -12px rgba(0,0,0,.7);animation:fadeUp .5s .6s both,aifloat 4.5s ease-in-out 1.1s infinite}
+.ubub .aiface{width:40px;height:40px;border-radius:50%;object-fit:cover;flex:none;box-shadow:0 0 0 2px rgba(255,255,255,.5),0 0 18px 4px rgba(229,92,255,.55);animation:ubglow 2.4s ease-in-out infinite}
+@keyframes ubglow{0%,100%{box-shadow:0 0 0 2px rgba(255,255,255,.5),0 0 10px 2px rgba(229,92,255,.35)}50%{box-shadow:0 0 0 2px rgba(255,255,255,.7),0 0 24px 6px rgba(229,92,255,.7)}}
+.ubub span{display:flex;flex-direction:column;line-height:1.15}
+.ubub b{font-size:13.5px;font-weight:700}
+.ubub small{font-size:11px;opacity:.8}
+.view.aimode .ubub{display:none}
+.ubub.away{opacity:0;transform:translateY(-10px) scale(.9);pointer-events:none}
+@media (prefers-reduced-motion:reduce){.ubub,.ubub .aiface{animation:none}}

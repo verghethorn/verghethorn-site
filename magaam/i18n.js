@@ -367,6 +367,12 @@ window.I18N = (() => {
     Object.assign(D.ru, {"Tell {ai} what to pass on…": "Напиши {ai}, что передать…", "{n} was here at {t}": "{n}: последний раз в сети в {t}", "{n} will see it": "{n} увидит", "sending…": "отправляю…"});
   Object.assign(D.ar, {"Tell {ai} what to pass on…": "اكتب لـ{ai} ما تريد إيصاله…", "{n} was here at {t}": "كان {n} متصلًا في {t}", "{n} will see it": "سيراها {n}", "sending…": "جارٍ الإرسال…"});
   Object.assign(D.tr, {"Tell {ai} what to pass on…": "{ai}'ya ne iletmesini istediğini yaz…", "{n} was here at {t}": "{n} en son {t}'de buradaydı", "{n} will see it": "{n} görecek", "sending…": "gönderiliyor…"});
+  Object.assign(D.ru, {"{ai} is here": "{ai} здесь", "{n} is offline": "{n} не в сети"});
+  Object.assign(D.ar, {"{ai} is here": "{ai} هنا", "{n} is offline": "{n} غير متصل"});
+  Object.assign(D.tr, {"{ai} is here": "{ai} burada", "{n} is offline": "{n} çevrimdışı"});
+  Object.assign(D.ru, {"Back to {n}'s profile": "Вернуться в профиль {n}"});
+  Object.assign(D.ar, {"Back to {n}'s profile": "العودة إلى ملف {n}"});
+  Object.assign(D.tr, {"Back to {n}'s profile": "{n} profiline dön"});
 const tpl = {};
   for (const l of Object.keys(D)) {
     tpl[l] = Object.entries(D[l]).filter(([k]) => /\{\w+\}/.test(k)).map(([k, v]) => {

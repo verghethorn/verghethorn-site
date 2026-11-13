@@ -1796,10 +1796,13 @@ function whirl(then) {
 }
 // The friend's assistant steps out onto their page: the chat stays behind, softly blurred.
 const aiSince = (id) => { const p = S.members.get(id); return p?.last_seen ? new Date(p.last_seen).getTime() : 0; };
-function enterAi(id) {
+const onPageOf = (id) => ['chat', 'u'].includes(route().name) && route().id === id;
+const aiRefresh = (id) => { if (!onPageOf(id)) return; if (route().name === 'chat') V.chat.update(id); else { paintAiOv(id); V.u.update(id); } };
+async function enterAi(id) {
   const p = S.members.get(id); if (!p || S.aiMode === id) return;
+  if (S.threadWith !== id) { await loadThread(id); if (!onPageOf(id)) return; }
   whirl(() => {
-    if (route().name !== 'chat' || route().id !== id) return;
+    if (!onPageOf(id)) return;
     S.aiMode = id; const v = app.querySelector('.view'); if (!v) return; v.classList.add('aimode');
     const t = p.last_seen ? (new Date(p.last_seen).toDateString() === new Date().toDateString() ? hm(p.last_seen) : when(p.last_seen)) : '';
     const ov = document.createElement('div'); ov.className = 'aiov'; ov.id = 'aiov';
@@ -1811,7 +1814,7 @@ function enterAi(id) {
         <p class="aiov-say" id="aisay" data-notr></p>
         <div class="aiov-log" id="ailog"></div>
         <form class="aiov-form" id="aiform"><input id="aitx" maxlength="2000" autocomplete="off" placeholder="${esc(T('Tell {ai} what to pass on…').replace('{ai}', p.ai_name))}" aria-label="${esc(T('Message'))}"><button class="send" aria-label="Send">${ic('send', 2)}</button></form>
-        <button class="aiov-x" id="aix" type="button">${thumbHTML(p, false)}<span>${esc(T('Back to the chat with {n}').replace('{n}', p.name))}</span></button>
+        <button class="aiov-x" id="aix" type="button">${thumbHTML(p, false)}<span>${esc(T(route().name === 'u' ? 'Back to {n}\'s profile' : 'Back to the chat with {n}').replace('{n}', p.name))}</span></button>
         ${t ? `<small class="aiov-since" data-notr>${esc(T('{n} was here at {t}').replace('{n}', p.name).replace('{t}', t))}</small>` : ''}
       </div>`;
     v.appendChild(ov);
@@ -1820,7 +1823,7 @@ function enterAi(id) {
     $('#aiform').onsubmit = (e) => { e.preventDefault(); const tx = $('#aitx'); const text = tx.value.trim(); if (!text) return; tx.value = ''; sendToAway(id, text); };
     chime(true);
     aiSay(T("Oh, hi {me}! I'm {ai}, {n}'s assistant. {n} is away right now. What should I pass on?").replace('{me}', S.me?.name || '').replace('{ai}', p.ai_name).replaceAll('{n}', p.name), 'hello');
-    V.chat.update(id);
+    aiRefresh(id);
   });
 }
 // The assistant "speaks": words appear one by one, softly, while a little voice wave moves.
@@ -1844,18 +1847,18 @@ function paintAiOv(id) {
 // A message written to the assistant still reaches the friend; the assistant answers in the meantime.
 async function sendToAway(id, text) {
   const tmp = { id: 'tmp' + Date.now(), tmp: true, sender: S.uid, recipient: id, body: text, created_at: new Date().toISOString() };
-  S.thread.push(tmp); V.chat.update(id);
+  S.thread.push(tmp); aiRefresh(id);
   const { data, error } = await sb.from('messages').insert({ recipient: id, body: text }).select().single();
   S.thread = S.thread.filter((x) => x !== tmp);
-  if (error) { toast('Message not sent. Check your connection.'); const tx = $('#aitx'); if (tx) tx.value = text; V.chat.update(id); return; }
+  if (error) { toast('Message not sent. Check your connection.'); const tx = $('#aitx'); if (tx) tx.value = text; aiRefresh(id); return; }
   if (!S.thread.some((x) => x.id === data.id)) { S.thread.push(data); S.last.set(id, data); }
   askAway(id);
 }
 function askAway(id) {
   if (!awayOn(id)) return;
-  S.aiTyping.add(id); V.chat.update(id);
+  S.aiTyping.add(id); aiRefresh(id);
   aiCall({ op: 'away', to: id }).then((j) => { const m = j?.message; if (m && !S.thread.some((x) => x.id === m.id) && S.threadWith === id) { S.thread.push(m); S.last.set(id, m); chime(true); } })
-    .catch(() => {}).finally(() => { S.aiTyping.delete(id); if (route().name === 'chat' && route().id === id) V.chat.update(id); });
+    .catch(() => {}).finally(() => { S.aiTyping.delete(id); aiRefresh(id); });
 }
 function exitAi(id, why) {
   if (S.aiMode !== id) return; S.aiSkip.add(id);
@@ -1863,7 +1866,7 @@ function exitAi(id, why) {
   setTimeout(() => {
     S.aiMode = null; app.querySelector('.view')?.classList.remove('aimode'); $('#aiov')?.remove();
     if (why === 'online') toast(T('{n} is online').replace('{n}', S.members.get(id)?.name || ''), 3000);
-    if (route().name === 'chat' && route().id === id) V.chat.update(id);
+    aiRefresh(id);
   }, reduceMotion() ? 0 : 380);
 }
 // The assistant's panel at the top of a chat: the friend's assistant while they are away, or yours after it spoke for you.
@@ -2043,6 +2046,7 @@ V.u = async (id) => {
   <div class="shade"></div>
   <div class="hdr"><button class="iconbtn" data-back="${self ? 'me' : 'chats'}" aria-label="Back">${ic('back')}</button><span></span>
     ${self ? `<button class="iconbtn" data-go="edit" aria-label="Edit">${ic('edit')}</button>` : `<button class="iconbtn" data-act="umore" data-uid="${id}" aria-label="More">${ic('more', 2.4)}</button>`}</div>
+  ${self ? '' : `<button class="ubub" id="ubub" hidden>${aiFace(p)}<span><b data-notr>${esc(T('{ai} is here').replace('{ai}', p.ai_name || ''))}</b><small data-notr>${esc(T('{n} is offline').replace('{n}', p.name))}</small></span></button>`}
   <div class="pscroll" id="ps"><div class="pspacer" id="pspacer"></div>
     <div class="psheet glass"><div class="grab"></div>
       <div class="ptop"><h1 data-notr>${esc(p.name)}</h1>${self ? `<span class="pill glass">${esc(T('This is how friends see you'))}</span>` : `<span class="pill glass" id="st"></span>`}</div>
@@ -2060,7 +2064,10 @@ V.u = async (id) => {
     </div></div></div>`;
 };
 V.u.cls = 'darkv';
-V.u.update = (id) => { const st = statusOf(id), s = $('#st'); if (s) s.innerHTML = `<i class="dot ${st.on ? 'on' : ''}"></i>${esc(T(st.text))}`; };
+V.u.update = (id) => {
+  const st = statusOf(id), s = $('#st'); if (s) s.innerHTML = `<i class="dot ${st.on ? 'on' : ''}"></i>${esc(T(st.text))}`;
+  const bb = $('#ubub'); if (bb) { bb.hidden = !(id !== S.uid && awayOn(id) && S.aiMode !== id); bb.onclick = () => { $('#greetv')?.pause(); enterAi(id); }; const ps = $('#ps'); if (ps && !ps.dataset.bub) { ps.dataset.bub = '1'; ps.addEventListener('scroll', () => bb.classList.toggle('away', ps.scrollTop > 140), { passive: true }); } }
+};
 V.u.after = async (id) => {
   V.u.update(id);
   const self = id === S.uid, p = self ? S.me : S.members.get(id);
