@@ -360,7 +360,7 @@ function startRealtime() {
     })
     .subscribe();
   S.pres = sb.channel('presence', { config: { presence: { key: S.uid } } });
-  S.pres.on('presence', { event: 'sync' }, () => { S.online = new Set(Object.keys(S.pres.presenceState()).filter((k) => k !== S.uid)); refresh(); })
+  S.pres.on('presence', { event: 'sync' }, () => { S.online = new Set(Object.keys(S.pres.presenceState()).filter((k) => k !== S.uid)); if (S.aiMode && S.online.has(S.aiMode)) exitAi(S.aiMode, 'online'); refresh(); })
     .on('broadcast', { event: 'typing' }, ({ payload }) => {
       if (payload?.to !== S.uid) return; S.typing.set(payload.from, Date.now()); refresh();
       setTimeout(() => { if (Date.now() - (S.typing.get(payload.from) || 0) >= 3500) { S.typing.delete(payload.from); refresh(); } }, 3600);
@@ -1727,10 +1727,47 @@ V.chat = async (id) => {
     <button type="button" class="send" id="recsend" aria-label="Send voice message">${ic('send', 2)}</button></div>
   </div>`;
 };
+/* ---------- assistant mode: when a friend is away, a whirl brings their AI assistant into the chat ---------- */
+S.aiMode = null; S.aiSkip = new Set();
+const aiFace = (p) => (p?.ai_photo ? `<img class="aiface" src="${esc(url(p.ai_photo))}" alt="">` : `<span class="aiface orbbig">${ic('spark', 1.4)}</span>`);
+function whirl(then) {
+  const v = app.querySelector('.view'); if (!v) return then();
+  if (reduceMotion()) return then();
+  const w = document.createElement('div'); w.className = 'whirl'; w.innerHTML = '<i></i><i></i><i></i>'; v.appendChild(w);
+  v.classList.add('swirl'); navigator.vibrate?.(20);
+  setTimeout(() => { then(); v.classList.remove('swirl'); }, 620);
+  setTimeout(() => w.remove(), 1300);
+}
+function enterAi(id) {
+  const p = S.members.get(id); if (!p || S.aiMode === id) return;
+  whirl(() => {
+    S.aiMode = id; const v = app.querySelector('.view'); v?.classList.add('aimode');
+    const st = document.createElement('div'); st.className = 'aistage'; st.id = 'aistage';
+    st.innerHTML = `<div class="aura"></div><div class="sparks">${'<i></i>'.repeat(14)}</div><div class="aiwrap">${aiFace(p)}</div>`;
+    app.querySelector(`.view [data-bgfor="${id}"]`)?.after(st);
+    const hb = app.querySelector('.hname b'); if (hb) hb.textContent = p.ai_name;
+    chime(true); V.chat.update(id);
+  });
+}
+function exitAi(id, why) {
+  if (S.aiMode !== id) return; S.aiSkip.add(id);
+  whirl(() => {
+    S.aiMode = null; app.querySelector('.view')?.classList.remove('aimode'); $('#aistage')?.remove();
+    const hb = app.querySelector('.hname b'); if (hb) hb.textContent = S.members.get(id)?.name || '';
+    if (why === 'online') toast(T('{n} is online').replace('{n}', S.members.get(id)?.name || ''), 3000);
+    V.chat.update(id);
+  });
+}
 // The assistant's panel at the top of a chat: the friend's assistant while they are away, or yours after it spoke for you.
 function paintAiDock(id) {
   const el = $('#aidock'); if (!el) return;
   const p = S.members.get(id); if (!p) { el.hidden = true; return; }
+  if (S.aiMode === id) {
+    el.hidden = false; el.dataset.k = 'back'; el.classList.add('back');
+    el.innerHTML = `${thumbHTML(p)}<span class="adt"><b data-notr>${esc(p.name)}</b><span>${esc(T('Back to the chat with {n}').replace('{n}', p.name))}</span></span><i class="chev">${ic('back')}</i>`;
+    el.onclick = () => exitAi(id); return;
+  }
+  el.classList.remove('back');
   const theirs = S.thread.filter((m) => m.ai && m.sender === id), mineAi = S.thread.filter((m) => m.ai && m.sender === S.uid);
   const recent = (a) => a.filter((m) => Date.now() - new Date(m.created_at) < 12 * 3600_000);
   let who = '', text = '', n = 0;
@@ -1744,7 +1781,7 @@ function paintAiDock(id) {
   const key = who + text; if (el.dataset.k !== key) { el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); el.dataset.k = key; }
   el.hidden = false;
   el.innerHTML = `<span class="aiorb">${ic('spark')}</span><span class="adt"><b data-notr>${esc(who)}</b><span data-notr>${esc(text)}</span></span>${n ? `<span class="badge">${n}</span>` : ''}${theirs.length || mineAi.length ? `<i class="chev">${ic('back')}</i>` : ''}`;
-  el.onclick = () => (theirs.length || mineAi.length) && openAiTalk(id);
+  el.onclick = () => (awayOn(id) ? enterAi(id) : (theirs.length || mineAi.length) && openAiTalk(id));
 }
 function openAiTalk(id) {
   const p = S.members.get(id), list = [];
@@ -1763,7 +1800,9 @@ V.chat.update = (id) => {
   const nearBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 80;
   let html = '', lastDay = '';
   // Talk with the assistant lives in its own little panel, not in the chat with the friend.
-  const vis = S.thread.filter((m) => !m.ai);
+  const fp = S.members.get(id), away0 = fp?.last_seen ? new Date(fp.last_seen).getTime() : 0;
+  const inAi = S.aiMode === id;
+  const vis = inAi ? S.thread.filter((m) => (m.ai && m.sender === id) || (m.sender === S.uid && !m.ai && new Date(m.created_at).getTime() > away0)) : S.thread.filter((m) => !m.ai);
   const lastMine = [...vis].reverse().find((m) => m.sender === S.uid);
   vis.forEach((m) => {
     const d = new Date(m.created_at).toDateString();
@@ -1771,7 +1810,11 @@ V.chat.update = (id) => {
     html += msgHTML(m);
     if (lastMine && m === lastMine) html += `<div class="meta">${m.tmp ? 'Sending…' : m.read_at ? 'Read ' + hm(m.read_at) : 'Sent ' + hm(m.created_at)}</div>`;
   });
-  if (!vis.length) html = `<div class="day">Say hello to ${esc(S.members.get(id)?.name)}</div>`;
+  if (inAi) {
+    const hello = T("Oh, hi {me}! I'm {ai}, {n}'s assistant. {n} is away right now. What should I pass on?").replace('{me}', S.me?.name || '').replace('{ai}', fp.ai_name).replaceAll('{n}', fp.name);
+    html = `<div class="b them ai aihello"><span class="ailbl">${ic('spark', 2)}<span data-notr>${esc(T('{ai} · assistant of {n}').replace('{ai}', fp.ai_name).replace('{n}', fp.name))}</span></span><span class="tx" data-notr>${esc(hello)}</span></div>` + html.replace(/<div class="day">[^<]*<\/div>/g, '');
+    if (S.aiTyping.has(id)) html += `<div class="typing aity"><span data-notr>${esc(fp.ai_name)}</span><i></i><i></i><i></i></div>`;
+  } else if (!vis.length) html = `<div class="day">Say hello to ${esc(S.members.get(id)?.name)}</div>`;
   paintAiDock(id);
   if (S.typing.has(id)) html += '<div class="typing"><i></i><i></i><i></i></div>';
   box.innerHTML = html;
@@ -1784,7 +1827,9 @@ V.chat.update = (id) => {
 };
 V.chat.after = async (id) => {
   V.chat.update(id);
+  S.aiMode = null; S.aiSkip.delete(id);
   await loadThread(id); await loadRx(); markRead(id); V.chat.update(id);
+  setTimeout(() => { if (route().name === 'chat' && route().id === id && awayOn(id) && !S.aiSkip.has(id) && !player) enterAi(id); }, 2600);
   const tx = $('#tx'), f = $('#cf'), box = $('#msgs');
   if (!tx || !f || route().name !== 'chat' || route().id !== id) return; // left the chat while it was loading
   const slKey = 'magaam-sl-' + id; let sendIn = store.get(slKey) || '';
@@ -1853,7 +1898,7 @@ V.chat.after = async (id) => {
     V.chat.update(id);
   };
 };
-window.addEventListener('hashchange', () => { if (player) stopPlayer(); if (rec) stopRec(false); });
+window.addEventListener('hashchange', () => { if (player) stopPlayer(); if (rec) stopRec(false); S.aiMode = null; });
 
 /* Someone's page */
 /* A person's page before you are friends: open or closed profile */
@@ -1960,6 +2005,10 @@ V.edit = () => {
   <div class="topbar"><button class="iconbtn" data-back="me" aria-label="Back">${ic('back')}</button><span class="word">MAGAAM</span><button class="iconbtn" data-go="u/${S.uid}" aria-label="Preview">${ic('me')}</button></div>
   <div class="lhead" style="margin-top:8px"><h1>My profile</h1><p class="sub">This is what friends see when they open your page.</p></div>
   <div class="stack">
+    <div class="ecard aicard"><div class="aiprev" id="aiprev">${aiFace(m)}</div><div class="aicol"><b>${ic('spark', 2)} ${esc(T('How {ai} looks').replace('{ai}', aiName()))}</b>
+      <p class="fine" style="text-align:left;margin:0">${esc(T('Friends see {ai} when you are away. Send any picture or describe it, and AI will draw a clean avatar.').replace('{ai}', aiName()))}</p>
+      <div class="erow"><button class="pbtn sm blue" id="aipic">${ic('image', 2)}<span>From a picture</span></button><button class="pbtn sm out" id="aitxt">${ic('edit', 2)}<span>Describe</span></button></div>
+      <div class="erow" id="aidesc" hidden><input class="field" id="aidt" maxlength="300" placeholder="a small glowing fox made of light"><button class="pbtn sm blue" id="aigo">${ic('spark', 2)}</button></div></div></div>
     <div class="ecard"><b>${ic('mic', 2)} Voice greeting</b><p class="fine" style="text-align:left;margin:0">Your living photo says it in your voice when friends open your page. Up to 6 seconds, for example: “Hi, I’m ${esc(m.name)}!”</p>
       <div class="erow" id="grow">${greetState()}</div></div>
     <label class="fl">Vibe for today<input class="field" id="evibe" maxlength="60" placeholder="🎧 learning Turkish" value="${esc(vibeOf(m))}"></label>
@@ -1985,6 +2034,15 @@ function greetState() {
 V.edit.after = () => {
   const paintG = () => { const r = $('#grow'); if (r) { r.innerHTML = greetState(); const b = $('#grec'); if (b) b.onclick = toggleGreet; } };
   V.edit._paint = paintG; paintG();
+  const makeFace = async (body) => {
+    const pv = $('#aiprev'); pv.innerHTML = `<span class="aiface orbbig loading"><span class="spinner"></span></span>`;
+    try { const j = await aiCall({ op: 'aiface', ...body }); S.me.ai_photo = j.ai_photo; toast(T('{ai} has a new look').replace('{ai}', aiName())); }
+    catch (e) { toast(e.message === 'daily_limit' ? 'You have used today’s AI limit. Try again tomorrow.' : 'AI is not available right now. Try again later.', 4000); }
+    const p2 = $('#aiprev'); if (p2) p2.innerHTML = aiFace(S.me);
+  };
+  $('#aipic').onclick = async () => { const f = await pickFile(false); if (!f) return; let path; try { path = await uploadPhoto(f, 'aisrc'); } catch (e) { return toast(e.message || 'Upload failed. Try again.'); } makeFace({ path, prompt: $('#aidt').value.trim() }); };
+  $('#aitxt').onclick = () => { $('#aidesc').hidden = false; $('#aidt').focus(); };
+  $('#aigo').onclick = () => { const t = $('#aidt').value.trim(); if (t.length < 3) return $('#aidt').focus(); makeFace({ prompt: t }); };
   async function toggleGreet() {
     if (greetRec) { const r = greetRec; greetRec = null; clearInterval(r.timer); r.mr.stop(); return; }
     let stream; try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch { return toast('Allow microphone access to record a voice message.', 4000); }
