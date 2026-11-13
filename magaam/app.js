@@ -91,10 +91,10 @@ function thumbHTML(p, withDot = true) {
 function bgMedia(p) {
   const still = p.still_path || p.photo_path;
   // Two copies of the living video crossfade at the end, so the loop never jumps.
-  if (p.video_path) { const v = esc(url(p.video_path)), si = still ? `<img class="lvstill" src="${esc(url(still))}" alt="">` : ''; return `<div class="bg loopbox" data-bgfor="${p.id}">${si}<video class="lv on" src="${v}" autoplay muted playsinline webkit-playsinline disablepictureinpicture disableremoteplayback preload="auto"></video><video class="lv" src="${v}" muted playsinline webkit-playsinline disablepictureinpicture disableremoteplayback preload="auto"></video></div>`; }
+  if (p.video_path) { const v = esc(url(p.video_path)), si = still ? `<img class="lvstill" crossorigin="anonymous" src="${esc(url(still))}" alt="">` : ''; return `<div class="bg loopbox" data-bgfor="${p.id}">${si}<video class="lv on" crossorigin="anonymous" src="${v}" autoplay muted playsinline webkit-playsinline disablepictureinpicture disableremoteplayback preload="auto"></video><video class="lv" crossorigin="anonymous" src="${v}" muted playsinline webkit-playsinline disablepictureinpicture disableremoteplayback preload="auto"></video></div>`; }
   // The AI photo shows right away and gently "breathes" while its living video is being made.
-  if (p.still_path) return `<div class="bg stillbox" data-bgfor="${p.id}"><img src="${esc(url(p.still_path))}" alt=""></div>`;
-  if (p.photo_path) return `<div class="bg rawbox" data-bgfor="${p.id}"><img src="${esc(url(p.photo_path))}" alt=""><span class="alive">${ic('spark')}Not alive yet</span></div>`;
+  if (p.still_path) return `<div class="bg stillbox" data-bgfor="${p.id}"><img crossorigin="anonymous" src="${esc(url(p.still_path))}" alt=""></div>`;
+  if (p.photo_path) return `<div class="bg rawbox" data-bgfor="${p.id}"><img crossorigin="anonymous" src="${esc(url(p.photo_path))}" alt=""><span class="alive">${ic('spark')}Not alive yet</span></div>`;
   return `<div class="bg-blur" data-bgfor="${p.id}" style="background-image:url('${sceneImg(p.scene)}')"></div>`;
 }
 // Crossfade loop for living videos, and a light check on living photos still being made.
@@ -287,6 +287,8 @@ function swapBg(p) { const el = app.querySelector(`[data-bgfor="${p.id}"]`); if 
 function previewOf(m) {
   if (m.body) return m.body;
   if (m.sticker === 'x|poke') return T('👉 Poke!');
+  if (m.sticker?.startsWith('x|cmp|')) return '✨ ' + T(CMPS[+m.sticker.split('|')[2]] || CMPS[0]);
+  if (m.sticker === 'x|fill') return T('📝 Asked you to fill in your profile');
   if (m.sticker) return T('Sticker');
   if (m.media_kind === 'circle') return T('⭕ Video message');
   if (m.media_path) return T(m.media_fx === 'once' ? '🔥 View-once photo' : m.media_kind === 'video' ? '🎬 Video' : '📷 Photo');
@@ -766,9 +768,9 @@ V.me.after = () => {
   if (seen < 3) { store.set('magaam-peek', String(seen + 1)); setTimeout(() => sw?.classList.add('peek'), 1400); setTimeout(() => sw?.classList.remove('peek'), 3400); }
 };
 // The glass takes its colour from your living photo: sunset orange for one, night blue for another.
-function tintFrom(p) {
+function tintFrom(p, sel = '.home') {
   const src = p?.still_path || p?.photo_path; if (!src) return;
-  const home = app.querySelector('.home'); if (!home) return;
+  const home = app.querySelector(sel); if (!home) return;
   const key = 'magaam-tint-' + src, cached = store.get(key);
   const apply = (c) => { home.style.setProperty('--tint', `rgb(${c})`); home.style.setProperty('--tint-a', `rgba(${c},.35)`); home.style.setProperty('--tint-b', `rgba(${c},.16)`); };
   if (cached) return apply(cached);
@@ -1310,11 +1312,14 @@ const STK_FUN = [['🔥','pulse'],['😂','shake'],['❤️','beat'],['🥳','bo
 const STK_WORDS = ['YALLA', 'HABIBI', 'MASHALLAH', 'INSHALLAH', 'BRO', 'OMG', 'LOL', 'TAMAM', 'GG', 'VIBE', 'NO WAY', 'SOON', 'АХАХА', 'ПОКА', 'Я ТУТ', 'ОКЕЙ', 'يلا', 'حبيبي', 'ماشاء الله', 'تمام'];
 const STK_ME = [['laugh','😂','Laughing'],['love','🫶','Love'],['wow','😮','Wow'],['cool','😎','Cool'],['sad','😢','Sad'],['angry','😤','Angry'],['sleep','😴','Sleepy'],['hi','👋','Hi'],['party','🥳','Party']];
 const REACTS = ['❤️', '😂', '🔥', '😮', '😢', '👍'];
+const CMPS = ['Love your style ✨', 'Always fun with you 😄', 'You inspire me 🌟', 'Best friend 🤝', 'Kind soul 🤍', 'So smart 🧠', 'Your smile is fire 😊', 'Proud of you 🙌'];
 function stickerHTML(code) {
   const [k, a, b] = String(code).split('|');
   if (k === 'e') { const f = STK_FUN.find((x) => x[0] === a); return `<span class="se a-${f ? f[1] : 'bounce'}" data-notr>${esc(f ? f[0] : '✨')}</span>`; }
   if (k === 'w') { const i = Math.max(0, STK_WORDS.indexOf(a)); return `<span class="swd sw${i % 6}" data-notr>${esc(STK_WORDS[i])}</span>`; }
   if (k === 'x' && a === 'poke') return `<span class="poke" data-notr>👉</span><b class="poketx">${esc(T('Poke!'))}</b>`;
+  if (k === 'x' && a === 'cmp') return `<span class="cmpc"><i>✨</i><small>${esc(T('Compliment'))}</small><b>${esc(T(CMPS[+b] || CMPS[0]))}</b></span>`;
+  if (k === 'x' && a === 'fill') return `<span class="cmpc fill"><i>📝</i><small>${esc(T('A little request'))}</small><b>${esc(T('Tell me about yourself: fill in your profile 🙂'))}</b></span>`;
   if (k === 'u' && /^[0-9a-f-]{36}\/sticker-\d+\.png$/.test(a || '')) return `<img class="su" src="${esc(url(a))}" alt="Sticker">`;
   return '';
 }
@@ -1470,6 +1475,8 @@ function onIncoming(m) {
   if (!fresh) return;
   const here = route().name === 'chat' && route().id === m.sender && document.visibilityState === 'visible';
   if (m.sticker === 'x|poke') { navigator.vibrate?.([90, 60, 90]); shakeView(); if (!here) toast(`${nameOf(m.sender)} poked you 👉`, 3000); return; }
+  if (m.sticker?.startsWith('x|cmp|')) { navigator.vibrate?.(30); burst('✨'); toast(`${nameOf(m.sender)}: ${T(CMPS[+m.sticker.split('|')[2]] || CMPS[0])}`, 4000); return; }
+  if (m.sticker === 'x|fill') { toast(T('{n} wants to know you better: fill in your profile').replace('{n}', nameOf(m.sender)), 4500); return; }
   if (!here) return;
   runFx(fxFor(m.body) || (m.sticker?.startsWith('e|') ? fxFor(m.sticker.slice(2)) : null));
 }
@@ -2127,58 +2134,74 @@ V.u = async (id) => {
   const self = id === S.uid;
   if (!self && !S.members.has(id)) { await loadAll(); if (!S.members.has(id)) { go('chats', true); return; } }
   const p = self ? S.me : S.members.get(id);
-  const vibe = vibeOf(p), mine = new Set(S.me?.interests || []), ints = p.interests || [];
-  const common = self ? 0 : ints.filter((x) => mine.has(x)).length;
+  const vibe = vibeOf(p), ints = p.interests || [];
   const sub = [`@${esc(p.username || '')}`, p.city ? `📍 ${esc(p.city)}` : '', (p.langs || []).map(flagOf).join(' ')].filter(Boolean).join(' · ');
-  return `<div class="dark prof" style="position:absolute;inset:0">
+  const name = String(p.name || '');
+  const fs = Math.max(56, Math.min(150, Math.floor(360 / Math.max(3, [...name].length) * 1.55)));
+  const empty = !vibe && !p.bio && !ints.length;
+  return `<div class="dark prof2" style="position:absolute;inset:0">
   ${bgMedia(p)}
-  ${p.greet_path ? `<video class="greetv" id="greetv" playsinline webkit-playsinline preload="auto" src="${esc(url(p.greet_path))}"></video>` : ''}
-  <div class="shade"></div>
+  ${p.greet_path ? `<video class="greetv" id="greetv" crossorigin="anonymous" playsinline webkit-playsinline preload="auto" src="${esc(url(p.greet_path))}"></video>` : ''}
+  <canvas class="pbk" id="pbk" aria-hidden="true"></canvas>
+  <h1 class="pname" id="pname" data-notr style="--fs:${fs}px">${[...name].map((c, i) => `<i style="--i:${i}">${esc(c)}</i>`).join('')}</h1>
+  <canvas class="pfg" id="pfg" aria-hidden="true"></canvas>
+  <div class="pshade"></div>
   <div class="hdr"><button class="iconbtn" data-back="${self ? 'me' : 'chats'}" aria-label="Back">${ic('back')}</button><span></span>
     ${self ? `<button class="iconbtn" data-go="edit" aria-label="Edit">${ic('edit')}</button>` : `<button class="iconbtn" data-act="umore" data-uid="${id}" aria-label="More">${ic('more', 2.4)}</button>`}</div>
   ${self ? '' : `<button class="ubub" id="ubub" hidden>${aiFace(p)}<span><b data-notr>${esc(T('{ai} is here').replace('{ai}', p.ai_name || ''))}</b><small data-notr>${esc(T('{n} is offline').replace('{n}', p.name))}</small></span></button>`}
-  <div class="pscroll" id="ps"><div class="pspacer" id="pspacer"></div>
-    <div class="psheet glass"><div class="grab"></div>
-      <div class="ptop"><h1 data-notr>${esc(p.name)}</h1>${self ? `<span class="pill glass">${esc(T('This is how friends see you'))}</span>` : `<span class="pill glass" id="st"></span>`}</div>
-      <div class="psub" data-notr>${sub}</div>
-      ${vibe ? `<div class="vibe" data-notr>${esc(vibe)}</div>` : ''}
-      <div class="pact">${self ? `<button class="pbtn blue" data-go="edit">${ic('edit')}Edit profile</button>`
-        : `<button class="pbtn blue" data-go="chat/${id}">${ic('chat')}Message</button><button class="pbtn glass" data-act="ucircle" data-uid="${id}">${ic('camera')}Circle</button>`}
-        ${p.greet_path ? `<button class="pbtn glass sq" id="greetb" aria-label="Hear the greeting">${ic('play', 2)}</button>` : ''}</div>
-      ${p.bio ? `<div class="psec"><h4>About</h4><p class="pbio" data-notr>${esc(p.bio)}</p></div>` : ''}
-      ${ints.length ? `<div class="psec"><h4>Interests${common ? ` <span class="pcom">${esc(T('{n} in common').replace('{n}', common))}</span>` : ''}</h4><div class="pints">${ints.map((x) => `<span class="pint ${!self && mine.has(x) ? 'same' : ''}">${esc(T(x))}</span>`).join('')}</div></div>` : ''}
-      ${self ? '' : `<div class="psec"><h4>You two</h4><div class="ptog" id="ptog"><span class="spinner xs"></span></div></div>`}
-      <div class="psec" id="phl" hidden><h4>Highlights</h4><div class="phl" id="phlr"></div></div>
-      <div class="psec"><h4>Gallery <span class="pcom" id="pgn"></span></h4><div class="pgrid" id="pgrid"><span class="spinner xs"></span></div></div>
-      ${self || ints.length || p.bio || vibe ? '' : `<p class="fine pempty">${esc(T('{n} has not filled in the profile yet.').replace('{n}', p.name))}</p>`}
-    </div></div></div>`;
+  <div class="pbottom">
+    <div class="pmeta"><span class="pill glass" id="st">${self ? esc(T('This is how friends see you')) : ''}</span><span class="psub2" data-notr>${sub}</span></div>
+    <div class="pdeck" id="pdeck">
+      <section class="pcard">${empty ? `<div class="pai">${aiFace(p)}<p data-notr>${esc(self ? T('Your page is waiting for you: add a vibe, interests and a couple of lines about you.') : T('This is {n} 🙂 Still a bit shy, the profile will come alive soon.').replace('{n}', name))}</p></div>
+          ${self ? `<button class="pchip" data-go="edit">${ic('edit', 2)}${esc(T('Fill in my profile'))}</button>` : `<button class="pchip" id="askfill">${ic('spark', 2)}${esc(T('Ask {n} to fill it in').replace('{n}', name))}</button>`}`
+        : `${vibe ? `<div class="pvibe" data-notr>${esc(vibe)}</div>` : `<h4>${esc(T('About'))}</h4>`}${p.bio ? `<p class="pbio2" data-notr>${esc(p.bio)}</p>` : ''}${!p.bio && ints.length ? `<div class="pints2">${ints.slice(0, 6).map((x) => `<span class="pint2" data-int="${esc(x)}">${esc(T(x))}</span>`).join('')}</div>` : ''}`}</section>
+      ${ints.length && p.bio ? `<section class="pcard"><h4>${esc(T('Interests'))} <span class="pcom" id="pcom"></span></h4><div class="pints2" id="pints">${ints.map((x) => `<span class="pint2" data-int="${esc(x)}">${esc(T(x))}</span>`).join('')}</div></section>` : ''}
+      ${self ? '' : `<section class="pcard"><h4>${esc(T('You two'))}</h4><div class="ptog2" id="ptog"><span class="spinner xs"></span></div></section>`}
+      <section class="pcard" id="pgal"><h4>${esc(T('Gallery'))} <span class="pcom" id="pgn"></span><button class="pall" data-go="gallery/${id}">${esc(T('All'))} ›</button></h4><div class="phl2" id="phlr" hidden></div><div class="pgrid2" id="pgrid"><span class="spinner xs"></span></div></section>
+    </div>
+    <div class="pdots" id="pdots"></div>
+    <div class="pdock">${self ? `<button class="pbtn blue grow" data-go="edit">${ic('edit')}${esc(T('Edit profile'))}</button>`
+      : `<button class="pbtn blue grow" data-go="chat/${id}">${ic('chat')}${esc(T('Message'))}</button><button class="pbtn glass sq" data-act="ucircle" data-uid="${id}" aria-label="${esc(T('Circle'))}">${ic('camera')}</button><button class="pbtn glass sq cmpb" id="cmpb" aria-label="${esc(T('Compliment'))}"><span data-notr>✨</span></button>`}
+      ${p.greet_path ? `<button class="pbtn glass sq" id="greetb" aria-label="${esc(T('Hear the greeting'))}">${ic('play', 2)}</button>` : ''}</div>
+  </div></div>`;
 };
 V.u.cls = 'darkv';
 V.u.update = (id) => {
-  const st = statusOf(id), s = $('#st'); if (s) s.innerHTML = `<i class="dot ${st.on ? 'on' : ''}"></i>${esc(T(st.text))}`;
+  const st = statusOf(id), s = id === S.uid ? null : $('#st'); if (s) s.innerHTML = `<i class="dot ${st.on ? 'on' : ''}"></i>${esc(T(st.text))}`;
   const bb = $('#ubub'); if (bb) { bb.hidden = !(id !== S.uid && awayOn(id) && S.aiMode !== id); bb.onclick = () => { $('#greetv')?.pause(); enterAi(id); }; const ps = $('#ps'); if (ps && !ps.dataset.bub) { ps.dataset.bub = '1'; ps.addEventListener('scroll', () => bb.classList.toggle('away', ps.scrollTop > 140), { passive: true }); } }
 };
 V.u.after = async (id) => {
   V.u.update(id);
   const self = id === S.uid, p = self ? S.me : S.members.get(id);
+  tintFrom(p, '.prof2');
+  startDepth(p);
   // her living photo says hello in her own voice
   const gv = $('#greetv'), gb = $('#greetb');
   const playGreet = () => { if (!gv) return; gv.currentTime = 0; gv.muted = false; gv.classList.add('on'); gv.play().then(() => gb?.classList.remove('pulse')).catch(() => { gv.classList.remove('on'); gb?.classList.add('pulse'); }); };
-  if (gv) { gv.onended = () => gv.classList.remove('on'); gb.onclick = playGreet; $('#pspacer').onclick = playGreet; setTimeout(playGreet, 350); }
+  if (gv) { gv.onended = () => gv.classList.remove('on'); gb.onclick = playGreet; app.querySelector('.prof2 .bg')?.addEventListener('click', playGreet); setTimeout(playGreet, 900); }
   app.querySelector('[data-act="ucircle"]')?.addEventListener('click', () => { go('chat/' + id); setTimeout(() => recordCircle(id), 600); });
+  // compliments: one tap, kind words only
+  $('#cmpb') && ($('#cmpb').onclick = () => sheet(T('Send a compliment'), CMPS.map((c, i) => ({ icon: 'spark', label: T(c), run: () => sendCmp(id, 'x|cmp|' + i) }))));
+  $('#askfill') && ($('#askfill').onclick = () => sendCmp(id, 'x|fill'));
+  // the cards: swipe sideways like stories
+  const deck = $('#pdeck'), dots = $('#pdots'), cards = [...deck.children];
+  dots.innerHTML = cards.length > 1 ? cards.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('') : '';
+  deck.addEventListener('scroll', () => { const i = Math.round(deck.scrollLeft / Math.max(1, deck.clientWidth * 0.86)); dots.querySelectorAll('i').forEach((d, k) => d.classList.toggle('on', k === i)); }, { passive: true });
+  const mine = new Set(S.me?.interests || []);
+  if (!self) { let n = 0; app.querySelectorAll('.prof2 [data-int]').forEach((el) => { const k = el.dataset.int; if (k && mine.has(k)) { el.classList.add('same'); n++; } }); const pc = $('#pcom'); if (pc && n) pc.textContent = T('{n} in common').replace('{n}', n); }
   const [posts, hl, tg] = await Promise.all([loadPosts(id),
     sb.from('stories').select('*').eq('user_id', id).eq('pinned', true).order('created_at', { ascending: false }).then((r) => r.data || []),
     self ? Promise.resolve(null) : sb.rpc('together', { p_other: id }).then((r) => r.data?.[0] || null)]);
   if (route().name !== 'u' || route().id !== id) return;
   const g = $('#pgrid'), n = $('#pgn');
   if (n) n.textContent = posts.length || '';
-  if (g) g.innerHTML = posts.length ? posts.slice(0, 30).map((x, i) => `<button class="ptile" data-pi="${i}">${x.video_path ? `<video src="${esc(url(x.video_path))}#t=0.1" muted loop playsinline autoplay preload="metadata" poster="${esc(thumb(x.path))}"></video>` : `<img src="${esc(thumb(x.path))}" alt="" loading="lazy">`}</button>`).join('')
-    : `<p class="fine" style="grid-column:1/-1;margin:4px 0">${esc(T('No photos yet'))}</p>`;
+  if (g) g.innerHTML = posts.length ? posts.slice(0, 6).map((x, i) => `<button class="ptile" data-pi="${i}">${x.video_path ? `<video src="${esc(url(x.video_path))}#t=0.1" muted loop playsinline autoplay preload="metadata" poster="${esc(thumb(x.path))}"></video>` : `<img src="${esc(thumb(x.path))}" alt="" loading="lazy">`}</button>`).join('')
+    : `<p class="pnone">${esc(T(self ? 'Your photos and videos will live here' : 'No photos yet'))}</p>`;
   g?.addEventListener('click', (e) => { const b = e.target.closest('[data-pi]'); if (b) go('gallery/' + id); });
   if (hl.length) {
-    $('#phl').hidden = false;
-    $('#phlr').innerHTML = hl.map((s, i) => `<button class="phli" data-hi="${i}"><span class="ring on"><img src="${esc(thumb(s.path))}" alt=""></span></button>`).join('');
-    $('#phlr').onclick = (e) => { const b = e.target.closest('[data-hi]'); if (b) openStories(id, hl.slice(+b.dataset.hi).concat(hl.slice(0, +b.dataset.hi))); };
+    const r = $('#phlr'); r.hidden = false;
+    r.innerHTML = hl.map((s, i) => `<button class="phli" data-hi="${i}"><span class="ring on"><img src="${esc(thumb(s.path))}" alt=""></span></button>`).join('');
+    r.onclick = (e) => { const b = e.target.closest('[data-hi]'); if (b) openStories(id, hl.slice(+b.dataset.hi).concat(hl.slice(0, +b.dataset.hi))); };
   }
   const t = $('#ptog');
   if (t && tg) {
@@ -2187,9 +2210,73 @@ V.u.after = async (id) => {
     t.innerHTML = `<div class="tg"><b data-notr>${tg.since ? esc(sinceTxt(tg.since)) : '—'}</b><span>${esc(T('friends since'))}</span></div>
       <div class="tg"><b data-notr>${days ? '🔥 ' + days : '—'}</b><span>${esc(T('days in a row'))}</span></div>
       <div class="tg">${faces.length ? `<span class="faces">${faces.slice(0, 4).map((f) => thumbHTML(f)).join('')}</span>` : '<b>0</b>'}<span>${esc(T('mutual friends'))}</span></div>`;
-  }
+  } else if (t) t.innerHTML = '';
 };
-
+let lastCmp = 0;
+async function sendCmp(to, code) {
+  if (Date.now() - lastCmp < 3000) return; lastCmp = Date.now(); navigator.vibrate?.(20);
+  burst(code === 'x|fill' ? '📝' : '✨', $('#cmpb') || $('#askfill'));
+  const { data, error } = await sb.from('messages').insert({ recipient: to, sticker: code }).select().single();
+  if (error) return toast('Message not sent. Check your connection.');
+  if (S.threadWith === to && !S.thread.some((x) => x.id === data.id)) S.thread.push(data);
+  S.last.set(to, data); toast(T(code === 'x|fill' ? 'Sent. {n} will get a friendly nudge 🙂' : 'Compliment sent ✨').replace('{n}', nameOf(to)), 2600);
+}
+/* The name stands behind the person, like an iPhone lock screen: the phone itself finds the person in every frame. */
+let SEGP = null;
+function getSeg() {
+  if (!SEGP) SEGP = (async () => {
+    const V_ = '0.10.14', mp = await import(`https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${V_}/vision_bundle.mjs`);
+    const fsr = await mp.FilesetResolver.forVisionTasks(`https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${V_}/wasm`);
+    const opt = (d) => ({ baseOptions: { modelAssetPath: new URL('vendor/selfie_segmenter.tflite', location.href).href, delegate: d }, runningMode: 'VIDEO', outputConfidenceMasks: true, outputCategoryMask: false });
+    try { return await mp.ImageSegmenter.createFromOptions(fsr, opt('GPU')); } catch { return await mp.ImageSegmenter.createFromOptions(fsr, opt('CPU')); }
+  })().catch((e) => { console.warn('depth off', e); SEGP = null; return null; });
+  return SEGP;
+}
+async function startDepth(p) {
+  const cv = $('#pfg'), nm = $('#pname'); if (!cv || !nm || reduceMotion()) return;
+  const seg = await getSeg(); if (!seg || !cv.isConnected) return;
+  const view = cv.parentElement, g = cv.getContext('2d'), mc = document.createElement('canvas'), mg = mc.getContext('2d');
+  const bk = $('#pbk'), bg = bk.getContext('2d'); // the whole frame behind the name, drawn from the very same frame, so both layers always match
+  const dpr = Math.min(2, window.devicePixelRatio || 1); let W = 0, H = 0, placed = false, last = 0, ts = 0, busy = false;
+  const size = () => { W = view.clientWidth; H = view.clientHeight; for (const [c, x] of [[cv, g], [bk, bg]]) { c.width = Math.round(W * dpr); c.height = Math.round(H * dpr); x.setTransform(dpr, 0, 0, dpr, 0, 0); } };
+  size(); addEventListener('resize', size);
+  const source = () => {
+    const gv = $('#greetv'); if (gv?.classList.contains('on') && gv.readyState >= 2) return gv;
+    const box = view.querySelector('.bg'); if (!box) return null;
+    if (box.classList.contains('live')) { const vs = [...box.querySelectorAll('video.lv')].filter((v) => v.readyState >= 2 && v.videoWidth && !v.paused); const v = vs.find((x) => x.classList.contains('on')) || vs[0]; if (v) return v; }
+    const im = box.querySelector('img'); return im?.complete && im.naturalWidth ? im : null;
+  };
+  const cover = (sw, sh) => { const k = Math.max(W / sw, H / sh), dw = sw * k, dh = sh * k; return [(W - dw) / 2, (H - dh) * 0.2, dw, dh]; };
+  const tick = (now) => {
+    if (!cv.isConnected) { removeEventListener('resize', size); return; }
+    requestAnimationFrame(tick);
+    if (busy || now - last < 45 || document.hidden || view.closest('.view')?.classList.contains('aimode')) return;
+    const src = source(); if (!src) return;
+    last = now; busy = true;
+    const sw = src.videoWidth || src.naturalWidth, sh = src.videoHeight || src.naturalHeight;
+    try {
+      seg.segmentForVideo(src, ts = Math.max(ts + 1, now), (r) => {
+        const m = r.confidenceMasks?.[0]; if (!m) return;
+        const w = m.width, h = m.height, a = m.getAsFloat32Array();
+        if (mc.width !== w) { mc.width = w; mc.height = h; }
+        const id = mg.createImageData(w, h), d = id.data; let top = -1;
+        for (let i = 0, n = w * h; i < n; i++) { const v = a[i]; d[i * 4 + 3] = v <= .3 ? 0 : v >= .7 ? 255 : (v - .3) * 637; if (top < 0 && v > .6 && (i % w) > w * .2 && (i % w) < w * .8) top = Math.floor(i / w); }
+        mg.putImageData(id, 0, 0);
+        const [x, y, dw, dh] = cover(sw, sh);
+        bg.drawImage(src, x, y, dw, dh);
+        g.clearRect(0, 0, W, H); g.globalCompositeOperation = 'source-over'; g.drawImage(src, x, y, dw, dh);
+        g.globalCompositeOperation = 'destination-in'; g.drawImage(mc, x, y, dw, dh); g.globalCompositeOperation = 'source-over';
+        if (!placed && top >= 0) { // the name goes where the head is, so the head covers the lower part of the letters
+          placed = true; const fsz = parseFloat(getComputedStyle(nm).fontSize) || 100;
+          const headY = y + (top / h) * dh; const want = Math.max(70, Math.min(H * 0.42, headY - fsz * 0.25));
+          nm.style.top = want + 'px'; view.classList.add('depth');
+        }
+      });
+    } catch (e) { console.warn('depth', e); }
+    busy = false;
+  };
+  requestAnimationFrame(tick);
+}
 /* ---------- edit my profile ---------- */
 let greetRec = null;
 V.edit = () => {
