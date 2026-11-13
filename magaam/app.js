@@ -1320,7 +1320,7 @@ function stickerHTML(code) {
   if (k === 'e') { const f = STK_FUN.find((x) => x[0] === a); return `<span class="se a-${f ? f[1] : 'bounce'}" data-notr>${esc(f ? f[0] : '✨')}</span>`; }
   if (k === 'w') { const i = Math.max(0, STK_WORDS.indexOf(a)); return `<span class="swd sw${i % 6}" data-notr>${esc(STK_WORDS[i])}</span>`; }
   if (k === 'x' && a === 'poke') return `<span class="poke" data-notr>👉</span><b class="poketx">${esc(T('Poke!'))}</b>`;
-  if (k === 'x' && a === 'live' && LIVE[b]) return `<button class="lvstk" data-live="${b}" aria-label="${esc(T('Play again'))}"><img src="stk/${b}.png" alt=""><span>${ic('play', 2)}</span></button>`;
+  if (k === 'x' && a === 'live' && LIVE[b]) return `<button class="lvstk" data-live="${b}" aria-label="${esc(T('Play again'))}"><img src="stk/${b}-loop.webp" alt="" loading="lazy"></button>`; // alive in the chat all the time
   if (k === 'x' && a === 'cmp') return `<span class="cmpc"><i>✨</i><small>${esc(T('Compliment'))}</small><b>${esc(T(CMPS[+b] || CMPS[0]))}</b></span>`;
   if (k === 'x' && a === 'fill') return `<span class="cmpc fill"><i>📝</i><small>${esc(T('A little request'))}</small><b>${esc(T('Tell me about yourself: fill in your profile 🙂'))}</b></span>`;
   if (k === 'u' && /^[0-9a-f-]{36}\/sticker-\d+\.png$/.test(a || '')) return `<img class="su" src="${esc(url(a))}" alt="Sticker">`;
