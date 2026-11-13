@@ -206,3 +206,29 @@ label.fl{display:flex;flex-direction:column;gap:7px;font-size:14px;color:var(--g
 .tile .play{position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.4);display:grid;place-items:center;color:#fff}
 .tile .play svg{width:15px;height:15px}
 .viewer video{max-width:100%;max-height:100%}
+
+/* AI assistant + raw photo rules */
+.raw{filter:blur(10px) brightness(.9);transform:scale(1.15)}
+.bg.rawbox{overflow:hidden}
+.bg.rawbox img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:blur(22px) brightness(.8);transform:scale(1.2)}
+.bg.rawbox .alive{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:8px;color:#fff;font-size:15px;padding:9px 16px;border-radius:999px;background:rgba(0,0,0,.28);white-space:nowrap}
+.bg.rawbox .alive svg{width:18px;height:18px;color:var(--sun)}
+.aiorb{width:34px;height:34px;border-radius:50%;flex:none;display:grid;place-items:center;color:var(--navy);background:radial-gradient(circle at 35% 30%,#FFE7A3,var(--sun) 60%,#F2A312)}
+.aiorb svg{width:18px;height:18px}
+.aiorb.big{width:64px;height:64px}.aiorb.big svg{width:32px;height:32px}
+.aimsg{display:flex;gap:10px;align-items:flex-start;background:#FFF6DD;border-radius:20px;padding:12px 14px;text-align:left}
+.aimsg b{font-weight:600;font-size:14px;color:var(--navy)}
+.aimsg p{margin:2px 0 0;font-size:14.5px;line-height:1.38;color:#3b4257}
+.askbox{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.field.ta{height:auto;min-height:84px;padding:13px 16px;resize:none;line-height:1.35;font-size:16px}
+.ideas{display:flex;flex-wrap:wrap;gap:7px}
+.idea{font-size:13.5px;padding:7px 12px;border-radius:999px;background:#fff;border:1.5px solid var(--hair);color:var(--navy);text-align:left}
+.photo-slot.sm{width:min(42%,180px);margin-top:14px}
+.chips.two{grid-template-columns:1fr 1fr}
+.aipill svg{color:var(--sun)}
+.sheet.ask{display:flex;flex-direction:column;gap:12px;max-height:88dvh;overflow:auto}
+.btn svg{flex:none}
+.light > *{flex-shrink:0}
+.light > .grow{flex-shrink:1}
+textarea{font:inherit}
+.photo-slot{flex:none}
