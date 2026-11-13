@@ -891,7 +891,6 @@ h1{font-weight:700;font-size:38px;letter-spacing:-.035em;line-height:1.05}
 /* the assistant on stage */
 .aistage{position:absolute;inset:0;z-index:0;overflow:hidden;background:radial-gradient(120% 80% at 50% 30%,#3b2a8f 0%,#1a1450 45%,#07081a 100%);animation:aiIn .7s cubic-bezier(.2,.9,.3,1.2) both}
 @keyframes aiIn{from{transform:scale(.6) rotate(-25deg);opacity:0;filter:blur(10px)}to{transform:none;opacity:1;filter:none}}
-.view.aimode .bg,.view.aimode .loopbox{opacity:0}
 .aistage .aura{position:absolute;left:50%;top:34%;width:120vw;height:120vw;margin:-60vw 0 0 -60vw;border-radius:50%;
   background:conic-gradient(from 0deg,#2F6BFF,#6A5CFF,#E55CFF,#FF6FA8,#FFC233,#2F6BFF);filter:blur(60px);opacity:.55;animation:spin 9s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -997,3 +996,51 @@ h1{font-weight:700;font-size:38px;letter-spacing:-.035em;line-height:1.05}
 .tabs button .tl{font-size:11px;max-height:0;opacity:0;overflow:hidden;transition:max-height .3s,opacity .25s}
 .tabs button[aria-current="page"] .tl{max-height:16px;opacity:1}
 .tabs button svg{width:25px;height:25px}
+
+/* the assistant steps out onto the friend's page: page stays, softly blurred behind */
+.view.aimode .hdr{z-index:16}
+.view.aimode .composer,.view.aimode .aidock{visibility:hidden}
+.aiov{position:absolute;inset:0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:calc(var(--st) + 96px) max(18px,var(--sr)) calc(var(--sb) + 18px) max(18px,var(--sl))}
+.aiov-veil{position:absolute;inset:0;background:radial-gradient(90% 60% at 50% 42%,rgba(40,24,110,.35),rgba(6,7,20,.72));
+  -webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);animation:veilIn .5s ease both}
+@keyframes veilIn{from{opacity:0}to{opacity:1}}
+.aiov-in{position:relative;width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;color:#fff}
+.aiov-face{position:relative;width:min(40vw,168px);aspect-ratio:1;animation:aiPop .8s cubic-bezier(.2,1.5,.35,1) both,aifloat 4.5s ease-in-out .8s infinite}
+.aiov-face .aiface{position:relative;width:100%;height:100%;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px rgba(255,255,255,.45),0 0 50px 8px rgba(229,92,255,.45),0 24px 60px -16px rgba(0,0,0,.8)}
+.aiov-face .ring{position:absolute;inset:-14%;border-radius:50%;background:conic-gradient(from 0deg,#2F6BFF,#6A5CFF,#E55CFF,#FF6FA8,#FFC233,#2F6BFF);filter:blur(22px);opacity:.6;animation:spin 7s linear infinite}
+.aiov-face .ring.r2{inset:-4%;filter:blur(6px);opacity:.5;animation-duration:11s;animation-direction:reverse}
+@keyframes aiPop{0%{transform:scale(.1) rotate(-200deg);opacity:0;filter:blur(12px)}60%{opacity:1;filter:none}100%{transform:none}}
+@keyframes aifloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.aiov-tag{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--sun,#FFC233);letter-spacing:.02em;animation:fadeUp .5s .35s both}
+.aiov-tag svg{width:14px;height:14px}
+.aiov-wave{display:flex;gap:4px;align-items:center;height:18px;opacity:.35;transition:opacity .3s}
+.aiov-wave.on{opacity:1}
+.aiov-wave i{width:3px;height:6px;border-radius:2px;background:linear-gradient(#fff,#E5C8FF)}
+.aiov-wave.on i{animation:wv .9s ease-in-out infinite}
+.aiov-wave i:nth-child(2n){animation-delay:.12s}.aiov-wave i:nth-child(3n){animation-delay:.24s}.aiov-wave i:nth-child(5n){animation-delay:.36s}
+@keyframes wv{0%,100%{height:5px}50%{height:18px}}
+.aiov-say{margin:0;font-size:clamp(22px,6.4vw,28px);line-height:1.28;font-weight:300;letter-spacing:-.01em;min-height:3.9em;text-wrap:balance;text-shadow:0 2px 24px rgba(0,0,0,.45)}
+.aiov-say>span:not(.aidots){display:inline-block;animation:wordIn .55s cubic-bezier(.2,.9,.3,1) calc(var(--i)*110ms + .5s) both}
+.aiov-say>span:not(.aidots):nth-child(-n+3){font-weight:500;background:linear-gradient(90deg,#FFE7A3,#FF9BD0);-webkit-background-clip:text;background-clip:text;color:transparent}
+@keyframes wordIn{from{opacity:0;filter:blur(8px);transform:translateY(10px) scale(.96)}to{opacity:1;filter:none;transform:none}}
+.aidots{display:inline-flex;gap:7px;padding:.6em 0}.aidots i{width:9px;height:9px;border-radius:50%;background:#fff;animation:dotb 1.2s ease-in-out infinite}@keyframes dotb{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-5px)}}.aidots i:nth-child(2){animation-delay:.2s}.aidots i:nth-child(3){animation-delay:.4s}
+.aiov-log{display:flex;flex-direction:column;align-items:flex-end;gap:6px;width:100%}
+.ail{max-width:85%;padding:9px 14px;border-radius:18px 18px 6px 18px;background:var(--grad);color:#fff;text-align:start;font-size:15px;animation:pop .45s var(--spring) both}
+.ail small{display:flex;align-items:center;gap:4px;justify-content:flex-end;font-size:11px;opacity:.85;margin-top:2px}
+.ail small svg{width:12px;height:12px}
+.aiov-form{display:flex;gap:8px;width:100%;margin-top:4px;animation:fadeUp .5s .7s both}
+.aiov-form input{flex:1;min-width:0;height:52px;border-radius:26px;padding:0 18px;font:inherit;font-size:16px;color:#fff;
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.32);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:0 0 0 0 rgba(229,92,255,0);transition:box-shadow .3s}
+.aiov-form input::placeholder{color:rgba(255,255,255,.65)}
+.aiov-form input:focus{outline:none;box-shadow:0 0 0 3px rgba(229,92,255,.45)}
+.aiov-form .send{flex:none}
+.aiov-x{display:inline-flex;align-items:center;gap:8px;padding:5px 14px 5px 5px;border-radius:999px;color:#fff;font-size:13.5px;font-weight:600;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.26);animation:fadeUp .5s .9s both}
+.aiov-x .thumb{width:30px;height:30px;aspect-ratio:auto;border-radius:50%;overflow:hidden;flex:none}
+.aiov-x .thumb img,.aiov-x .thumb video{width:100%;height:100%;object-fit:cover}
+.aiov-since{font-size:12px;opacity:.6;animation:fadeUp .5s 1s both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.aiov.out .aiov-veil{animation:veilIn .35s reverse both}
+.aiov.out .aiov-in{transition:transform .35s cubic-bezier(.5,0,.7,.4),opacity .35s,filter .35s;transform:scale(.4) rotate(160deg);opacity:0;filter:blur(10px)}
+@media (prefers-reduced-motion:reduce){.aiov-face,.aiov-face .ring,.aiov-say span,.aiov-wave.on i{animation:none}}
