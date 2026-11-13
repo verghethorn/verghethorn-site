@@ -393,9 +393,20 @@ V.assistant.after = () => {
 
 let pendingPhoto = null, draftWish = '', lookMode = 'me';
 const AI_DECIDES = '__ai__';
+let lookVars = null, lookPick = -1, lookBusy = false;
+const varKey = () => 'magaam-var-' + S.uid;
+function loadVars() { if (lookVars) return; try { lookVars = JSON.parse(store.get(varKey()) || '[]'); } catch { lookVars = []; } }
+function saveVars() { store.set(varKey(), JSON.stringify(lookVars || [])); }
+async function makeVariants(path, wish) {
+  const { data: { session } } = await sb.auth.getSession();
+  const r = await fetch(SB_URL + '/functions/v1/animate', { method: 'POST', headers: { 'content-type': 'application/json', apikey: SB_KEY, Authorization: 'Bearer ' + (session?.access_token || '') }, body: JSON.stringify({ kind: 'variants', path, prompt: wish }) });
+  const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || 'ai'); return j.variants || [];
+}
 V.look = () => {
+  loadVars();
   const editing = !!(S.me?.orig_path || S.me?.photo_path);
   const src = pendingPhoto ? pendingPhoto.preview : (S.me?.orig_path ? url(S.me.orig_path) : S.me?.photo_path ? url(S.me.photo_path) : '');
+  const vars = pendingPhoto ? [] : (lookVars || []);
   return `<div class="light">
   <div class="topbar">${editing ? `<button class="iconbtn" data-back="me" aria-label="Back">${ic('back')}</button><span class="word">MAGAAM</span>` : `<span style="width:44px"></span>${progress(3)}`}<span style="width:44px"></span></div>
   <div class="lhead" style="margin-top:14px"><h1>Your living photo</h1><p class="sub">Your profile photo is always made with AI and always alive</p></div>
@@ -403,38 +414,55 @@ V.look = () => {
   <div class="duo"><button class="btn ${src ? 'out' : ''}" data-act="pick">${ic('image')}${src ? 'Another photo' : 'Upload photo'}</button><button class="btn out" data-act="snap">${ic('camera')}Take a photo</button></div>
   ${src ? `<div class="askbox">${aiMsg(`Hi ${esc(S.me?.name || '')}! I'm ${esc(aiName())}, your AI assistant. Your profile photo must be changed and brought to life. Tell me what you want to see: the place, your outfit and what you are doing.`)}
     <div class="seg2" role="group" aria-label="Who decides"><button data-mode="me" aria-pressed="${lookMode === 'me'}">I'll describe it</button><button data-mode="ai" aria-pressed="${lookMode === 'ai'}">${ic('spark')}${esc(aiName())} decides</button></div>
-    ${lookMode === 'ai' ? aiMsg(`Great, I'll choose a new place, outfit, pose and movement for you myself. Just press the button.`) : `<textarea class="field ta" id="wish" maxlength="400" placeholder="Describe your living photo">${esc(draftWish)}</textarea>
+    ${lookMode === 'ai' ? aiMsg(`Great, I'll choose a new place, outfit and pose for you myself. Just press the button.`) : `<textarea class="field ta" id="wish" maxlength="400" placeholder="Describe your living photo">${esc(draftWish)}</textarea>
     <div class="ideas">${IDEAS_AVATAR.map((t) => `<button class="idea" data-idea="${esc(t)}">${esc(t)}</button>`).join('')}</div>`}</div>` : ''}
+  ${lookBusy ? `<div class="varwait"><span class="spinner"></span><span>${esc(aiName())} is creating 4 variants… about 30 seconds</span></div>`
+    : vars.length ? `<div class="vars"><h3>Pick the one you like</h3><div class="vgrid">${vars.map((v, i) => `<button class="vimg" data-var="${i}" aria-pressed="${i === lookPick}"><img src="${esc(url(v))}" alt="Variant ${i + 1}"></button>`).join('')}</div></div>` : ''}
   <p class="err" id="err"></p>
   <div class="grow"></div>
-  <button class="btn" id="go" disabled>${ic('spark')}Create my living photo</button>
-  <p class="fine">${src ? 'Takes about 2 minutes. You can write in any language.' : 'A full-length photo works best'}</p></div>`;
+  ${vars.length && !lookBusy ? `<button class="btn" id="setp" ${lookPick < 0 ? 'disabled' : ''}>${ic('check')}Set as my profile photo</button><button class="btn out" id="go" style="margin-top:8px">${ic('spark')}Make 4 new variants</button>`
+    : `<button class="btn" id="go" disabled>${ic('spark')}Create 4 variants</button>`}
+  <p class="fine">${!src ? 'A full-length photo works best' : vars.length ? `${esc(aiName())} will bring it to life once you set it. About 2 minutes.` : 'You can write in any language.'}</p></div>`;
 };
 V.look.after = () => {
-  const choose = async (cap) => { const f = await pickFile(cap); if (!f) return; const w = $('#wish'); if (w) draftWish = w.value; pendingPhoto = { file: f, preview: URL.createObjectURL(f) }; show(); };
+  const choose = async (cap) => { const f = await pickFile(cap); if (!f) return; const w = $('#wish'); if (w) draftWish = w.value; pendingPhoto = { file: f, preview: URL.createObjectURL(f) }; lookVars = []; lookPick = -1; saveVars(); show(); };
   app.querySelector('[data-act="pick"]').onclick = () => choose(false);
   app.querySelector('[data-act="snap"]').onclick = () => choose(true);
-  const w = $('#wish'), btn = $('#go');
+  const w = $('#wish'), btn = $('#go'), setp = $('#setp');
   app.querySelectorAll('[data-mode]').forEach((b) => (b.onclick = () => { if (w) draftWish = w.value; lookMode = b.dataset.mode; show(); }));
+  app.querySelectorAll('[data-var]').forEach((b) => (b.onclick = () => { lookPick = +b.dataset.var; app.querySelectorAll('[data-var]').forEach((x) => x.setAttribute('aria-pressed', x === b)); if (setp) setp.disabled = false; }));
   const hasSrc = !!app.querySelector('.photo-slot img');
-  const check = () => { btn.disabled = !hasSrc || (lookMode === 'ai' ? false : (!w || w.value.trim().length < 3)); if (w) draftWish = w.value; };
+  const check = () => { if (btn) btn.disabled = lookBusy || !hasSrc || (lookMode === 'ai' ? false : (!w || w.value.trim().length < 3)); if (w) draftWish = w.value; };
   if (w) { w.addEventListener('input', check); app.querySelectorAll('[data-idea]').forEach((b) => (b.onclick = () => { w.value = b.dataset.idea; check(); w.focus(); })); }
   check();
-  btn.onclick = async () => {
+  if (btn) btn.onclick = async () => {
     const wish = lookMode === 'ai' ? AI_DECIDES : (w ? w.value.trim() : ''); if (wish.length < 3) return;
-    btn.disabled = true; btn.textContent = pendingPhoto ? 'Uploading…' : 'Starting…';
+    btn.disabled = true;
     try {
       let path = S.me?.orig_path || S.me?.photo_path;
       if (pendingPhoto) {
+        btn.textContent = 'Uploading…';
         path = await uploadPhoto(pendingPhoto.file, 'avatar');
         const upd = { orig_path: path }; if (!S.me?.photo_path) upd.photo_path = path;
         const { data, error } = await sb.from('profiles').update(upd).eq('id', S.uid).select().single(); if (error) throw error;
         S.me = data; pendingPhoto = null;
       }
-      const job = await startAI('avatar', path, wish);
-      if (!job) { btn.disabled = false; btn.innerHTML = `${ic('spark')}Create my living photo`; return; }
-      draftWish = ''; lookMode = 'me'; go('me');
-    } catch (e) { $('#err').textContent = e.message || 'Upload failed. Try again.'; btn.disabled = false; btn.innerHTML = `${ic('spark')}Create my living photo`; }
+      lookBusy = true; lookPick = -1; show();
+      const v = await makeVariants(path, wish);
+      lookVars = v; saveVars();
+    } catch (e) {
+      lookBusy = false; show();
+      const m = String(e.message || '');
+      $('#err').textContent = T(m === 'daily_limit' ? 'You have used today’s AI limit. Try again tomorrow.' : /fetch|network/i.test(m) ? 'AI is not available right now. Check your connection.' : m.startsWith('This photo') ? m : 'AI is not available right now. Try again later.');
+      return;
+    }
+    lookBusy = false; if (route().name === 'look') show();
+  };
+  if (setp) setp.onclick = async () => {
+    if (lookPick < 0) return; setp.disabled = true; setp.textContent = 'Starting…';
+    const job = await startAI('avatar', lookVars[lookPick], '');
+    if (!job) { setp.disabled = false; setp.innerHTML = `${ic('check')}Set as my profile photo`; return; }
+    lookVars = []; lookPick = -1; saveVars(); draftWish = ''; lookMode = 'me'; go('me');
   };
 };
 

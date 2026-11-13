@@ -154,7 +154,7 @@ window.I18N = (() => {
       'Laughing': 'Смеюсь', 'Love': 'Люблю', 'Wow': 'Вау', 'Cool': 'Круто', 'Sad': 'Грущу', 'Angry': 'Злюсь', 'Sleepy': 'Сплю', 'Hi': 'Привет', 'Party': 'Праздник',
       'Make': 'Сделать',
       'Your stickers appear here': 'Здесь появятся ваши стикеры',
-      'Remove reaction': 'Убрать реакцию', 'Hide original': 'Скрыть оригинал', 'Your AI': 'Ваш AI'
+      'Remove reaction': 'Убрать реакцию', 'Hide original': 'Скрыть оригинал', "Create 4 variants": "Создать 4 варианта", "{ai} is creating 4 variants… about 30 seconds": "{ai} создаёт 4 варианта… около 30 секунд", "Pick the one you like": "Выберите понравившийся", "Set as my profile photo": "Поставить на фото профиля", "Make 4 new variants": "Ещё 4 варианта", "{ai} will bring it to life once you set it. About 2 minutes.": "Когда поставите фото, {ai} оживит его. Около 2 минут.", "Great, I'll choose a new place, outfit and pose for you myself. Just press the button.": "Отлично, я сам выберу новое место, одежду и позу. Просто нажми кнопку.", "Variant {n}": "Вариант {n}", 'Your AI': 'Ваш AI'
     }
   };
   D.ar = {
@@ -225,7 +225,7 @@ window.I18N = (() => {
     'Stickers': 'الملصقات', 'Fun': 'إيموجي', 'Words': 'كلمات', 'Me stickers': 'أنا', 'Make a sticker of me': 'اصنع ملصقًا لي', 'Or describe your sticker': 'أو صِف ملصقك',
     '{ai} is drawing your sticker…': '{ai} يرسم ملصقك…', 'Your sticker is ready': 'ملصقك جاهز', 'Could not make the sticker. Try again.': 'تعذّر صنع الملصق. حاول مجددًا.',
     'Laughing': 'أضحك', 'Love': 'حب', 'Wow': 'واو', 'Cool': 'رائع', 'Sad': 'حزين', 'Angry': 'غاضب', 'Sleepy': 'نعسان', 'Hi': 'مرحبًا', 'Party': 'احتفال', 'Make': 'اصنع',
-    'Your stickers appear here': 'ستظهر ملصقاتك هنا', 'Remove reaction': 'إزالة التفاعل', 'Hide original': 'إخفاء الأصل', 'Your AI': 'مساعدك'
+    'Your stickers appear here': 'ستظهر ملصقاتك هنا', 'Remove reaction': 'إزالة التفاعل', 'Hide original': 'إخفاء الأصل', "Create 4 variants": "أنشئ 4 خيارات", "{ai} is creating 4 variants… about 30 seconds": "{ai} ينشئ 4 خيارات… نحو 30 ثانية", "Pick the one you like": "اختر ما يعجبك", "Set as my profile photo": "اجعلها صورة ملفي", "Make 4 new variants": "4 خيارات جديدة", "{ai} will bring it to life once you set it. About 2 minutes.": "عندما تعتمدها سيُحييها {ai}. نحو دقيقتين.", "Great, I'll choose a new place, outfit and pose for you myself. Just press the button.": "رائع، سأختار لك مكانًا وملابس ووضعية جديدة بنفسي. فقط اضغط الزر.", "Variant {n}": "خيار {n}", 'Your AI': 'مساعدك'
   };
   D.tr = {
     'Your living self. Always here.': 'Canlı halin. Hep burada.', 'Start': 'Başla',
@@ -295,7 +295,7 @@ window.I18N = (() => {
     'Stickers': 'Çıkartmalar', 'Fun': 'Emoji', 'Words': 'Kelimeler', 'Me stickers': 'Ben', 'Make a sticker of me': 'Benden çıkartma yap', 'Or describe your sticker': 'Ya da çıkartmanı anlat',
     '{ai} is drawing your sticker…': '{ai} çıkartmanı çiziyor…', 'Your sticker is ready': 'Çıkartman hazır', 'Could not make the sticker. Try again.': 'Çıkartma yapılamadı. Tekrar dene.',
     'Laughing': 'Gülüyorum', 'Love': 'Sevgi', 'Wow': 'Vay', 'Cool': 'Havalı', 'Sad': 'Üzgün', 'Angry': 'Kızgın', 'Sleepy': 'Uykulu', 'Hi': 'Selam', 'Party': 'Parti', 'Make': 'Yap',
-    'Your stickers appear here': 'Çıkartmaların burada görünür', 'Remove reaction': 'Tepkiyi kaldır', 'Hide original': 'Orijinali gizle', 'Your AI': 'AI asistanın'
+    'Your stickers appear here': 'Çıkartmaların burada görünür', 'Remove reaction': 'Tepkiyi kaldır', 'Hide original': 'Orijinali gizle', "Create 4 variants": "4 seçenek oluştur", "{ai} is creating 4 variants… about 30 seconds": "{ai} 4 seçenek hazırlıyor… yaklaşık 30 saniye", "Pick the one you like": "Beğendiğini seç", "Set as my profile photo": "Profil fotoğrafım yap", "Make 4 new variants": "4 yeni seçenek", "{ai} will bring it to life once you set it. About 2 minutes.": "Profil fotoğrafı yaptığında {ai} onu canlandıracak. Yaklaşık 2 dakika.", "Great, I'll choose a new place, outfit and pose for you myself. Just press the button.": "Harika, yeni bir mekân, kıyafet ve pozu ben seçeceğim. Sadece butona bas.", "Variant {n}": "Seçenek {n}", 'Your AI': 'AI asistanın'
   };
   const tpl = {};
   for (const l of Object.keys(D)) {
