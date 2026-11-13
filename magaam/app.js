@@ -421,7 +421,7 @@ function refresh() {
 function tabbar(active) {
   const t = [['spark', 'Assistant', 'soon'], ['chat', 'Chats', 'chats'], ['video', 'Video', 'video'], ['bag', 'Shop', 'soon'], ['me', 'Me', 'me']];
   const n = totalUnread();
-  return `<nav class="tabs glass" aria-label="Sections">${t.map(([i, l, r]) => `<button data-tab="${r}" ${r === active ? 'aria-current="page"' : ''}>${ic(i)}${l}${r === 'chats' && n ? `<span class="badge">${n}</span>` : ''}</button>`).join('')}</nav>`;
+  return `<nav class="tabs glass" aria-label="Sections">${t.map(([i, l, r]) => `<button data-tab="${r}" ${r === active ? 'aria-current="page"' : ''}>${ic(i)}<span class="tl">${l}</span>${r === 'chats' && n ? `<span class="badge">${n}</span>` : ''}</button>`).join('')}</nav>`;
 }
 const progress = (n) => `<div class="progress" aria-label="Step ${n} of 3">${[1,2,3].map((i) => `<i class="${i <= n ? 'on' : ''}"></i>`).join('')}</div>`;
 function sheet(title, items, top) {
@@ -699,36 +699,85 @@ V.look.after = () => {
 V.me = () => {
   const m = S.me; const posts = S.posts.get(S.uid);
   if (!posts) loadPosts(S.uid).then(() => route().name === 'me' && V.me.update());
-  return `<div class="dark" style="position:absolute;inset:0">
+  if (!S.stories.size) loadStories().then(() => route().name === 'me' && V.me.update());
+  const vibe = vibeOf(m);
+  return `<div class="dark home" style="position:absolute;inset:0">
   ${bgMedia(m)}
   <div class="shade"></div>
-  <div class="hdr"><div class="leftname"><b data-notr>${esc(m.name)}</b><span class="pill glass aipill">${ic('spark').replace('<svg', '<svg style="width:15px;height:15px"')}${esc(aiName())}</span></div><div class="hright"><button class="pill glass coinpill" data-go="wallet" aria-label="Balance">${ic('coin')}<span data-notr id="coins">${S.coins}</span></button><button class="iconbtn" data-act="settings" aria-label="Settings">${ic('gear')}</button></div></div>
+  <div class="hhead">
+    <button class="hring" id="hring" data-act="addstory" data-uid="${S.uid}" aria-label="Your story">${thumbHTML(m)}<i class="hplus">${ic('plus', 3)}</i></button>
+    <div class="hname2"><b data-notr>${esc(m.name)}</b><span data-notr>@${esc(m.username || '')}</span>${vibe ? `<span class="hvibe" data-notr>${esc(vibe)}</span>` : `<button class="hvibe add" data-go="edit">${esc(T('+ vibe for today'))}</button>`}
+      <div class="ailine" id="ailine" hidden></div></div>
+  </div>
+  <div class="hrail">
+    <button class="rb grad" data-act="hplus" aria-label="Create">${ic('plus', 2.4)}</button>
+    <button class="rb" data-go="gallery/${S.uid}" aria-label="Gallery">${ic('grid')}</button>
+    <button class="rb" data-go="u/${S.uid}" aria-label="My profile">${ic('me')}</button>
+    <button class="rb coin" data-go="wallet" aria-label="Balance">${ic('coin')}<small data-notr id="coins">${S.coins}</small></button>
+    <button class="rb" data-act="settings" aria-label="Settings">${ic('gear')}</button>
+  </div>
   <div class="digest" id="digest" hidden></div>
+  <button class="hai" id="hai" aria-label="${esc(aiName())}">${aiFace(m)}<i class="hdot" id="hdot" hidden></i></button>
   <div class="dock">
     ${installBanner()}
-    <div class="card glass"><div class="ailine" id="ailine" hidden></div><button class="photos-btn" data-go="gallery/${S.uid}"><span class="pt" id="pthumbs"></span><span class="pl"><b>My photos</b><span id="pcount">Open your gallery</span></span><span class="chev">${ic('back')}</span></button>
-      <div class="chips two"><button class="chip" data-go="look">${ic('spark')}<span class="cl">Profile photo</span></button><button class="chip" data-act="addpost">${ic('plus')}<span class="cl">Add to gallery</span></button></div></div>
+    <div class="shelfwrap"><button class="shelfh" data-go="u/${S.uid}"><i></i><span>${esc(T('My profile'))}</span></button><div class="shelf" id="shelf"></div></div>
     <div id="tabs">${tabbar('me')}</div>
   </div></div>`;
 };
-V.me.cls = '';
+V.me.cls = 'darkv';
 V.me.update = () => {
   const cn = $('#coins'); if (cn) cn.textContent = S.coins;
   const posts = S.posts.get(S.uid) || [];
-  const th = $('#pthumbs'); if (th) th.innerHTML = posts.length ? posts.slice(0, 3).map((x) => `<img src="${esc(thumb(x.path))}" alt="">`).join('') : `<i>${ic('image')}</i>`;
-  const pc = $('#pcount'); if (pc) pc.textContent = posts.length ? `${posts.length} photo${posts.length > 1 ? 's' : ''}` : 'No photos yet. Add your first one';
+  const mine = S.stories.get(S.uid) || [];
+  const hr = $('#hring'); if (hr) { hr.classList.toggle('on', !!mine.length); hr.dataset.act = mine.length ? 'story' : 'addstory'; }
+  const sh = $('#shelf');
+  if (sh) sh.innerHTML = `<button class="stile add" data-act="addpost" aria-label="Add to gallery">${ic('plus', 2.4)}</button>` + posts.slice(0, 20).map((x) => `<button class="stile" data-go="gallery/${S.uid}">${x.video_path ? `<video src="${esc(url(x.video_path))}#t=0.1" muted loop playsinline autoplay preload="metadata" poster="${esc(thumb(x.path))}"></video>` : `<img src="${esc(thumb(x.path))}" alt="" loading="lazy">`}</button>`).join('')
+    + (posts.length ? '' : `<span class="sempty">${esc(T('Your photos and videos will live here'))}</span>`);
   const al = $('#ailine'); const j = avatarJob();
   if (al) {
-    const ai = esc(aiName());
-    if (j && ['editing', 'video', 'queued'].includes(j.status)) { al.hidden = false; al.innerHTML = `<span class="spinner sm"></span><span><b>${ai} is creating your living photo</b>${j.status === 'editing' ? 'Changing your photo…' : 'Bringing it to life, about 2 minutes…'}</span>`; }
-    else if (j && j.status === 'error' && j === S.jobs.find((x) => x.kind === 'avatar')) { al.hidden = false; al.innerHTML = `<span>${ic('spark')}</span><span><b>${ai} could not finish your photo</b><button data-act="retryai">Try another photo or description</button></span>`; }
-    else if (!S.me.video_path) { al.hidden = false; al.innerHTML = `<span>${ic('spark')}</span><span><b>Your photo is not alive yet</b><button data-act="retryai">Change profile photo</button></span>`; }
+    if (j && ['editing', 'video', 'queued'].includes(j.status)) { al.hidden = false; al.innerHTML = `<span class="spinner xs"></span><span>${esc(T('Bringing it to life, about 2 minutes…'))}</span>`; }
+    else if (j && j.status === 'error' && j === S.jobs.find((x) => x.kind === 'avatar')) { al.hidden = false; al.innerHTML = `<button data-act="retryai">${ic('spark', 2)}${esc(T('Try another photo or description'))}</button>`; }
+    else if (!S.me.video_path) { al.hidden = false; al.innerHTML = `<button data-act="retryai">${ic('spark', 2)}${esc(T('Your photo is not alive yet'))}</button>`; }
     else al.hidden = true;
   }
+  const d = $('#hdot'); if (d) d.hidden = !totalUnread();
   const t = $('#tabs'); if (t) t.innerHTML = tabbar('me');
   showDigest();
 };
-V.me.after = () => V.me.update();
+V.me.after = () => {
+  V.me.update();
+  tintFrom(S.me);
+  $('#hai').onclick = () => {
+    const dg = $('#digest');
+    if (totalUnread()) { store.set('magaam-digest-x', ''); if (dg) { dg.hidden = false; showDigest(); } return; }
+    const m = S.me;
+    sheet('', [{ icon: 'chat', label: T('All calm, no new messages 🙂'), run: () => go('chats') }, { icon: 'spark', label: T('How {ai} looks').replace('{ai}', aiName()), run: () => go('edit') }, { icon: 'edit', label: `Rename ${aiName()}`, run: () => go('assistant') }],
+      { html: `<div class="aihead">${aiFace(m)}<b data-notr>${esc(aiName())}</b></div>`, run: () => {} });
+  };
+  // swipe the shelf up to open your full profile
+  const sw = app.querySelector('.shelfwrap'); let y0 = null;
+  sw?.addEventListener('touchstart', (e) => { y0 = e.touches[0].clientY; }, { passive: true });
+  sw?.addEventListener('touchmove', (e) => { if (y0 !== null && y0 - e.touches[0].clientY > 50) { y0 = null; go('u/' + S.uid); } }, { passive: true });
+};
+// The glass takes its colour from your living photo: sunset orange for one, night blue for another.
+function tintFrom(p) {
+  const src = p?.still_path || p?.photo_path; if (!src) return;
+  const home = app.querySelector('.home'); if (!home) return;
+  const key = 'magaam-tint-' + src, cached = store.get(key);
+  const apply = (c) => { home.style.setProperty('--tint', `rgb(${c})`); home.style.setProperty('--tint-a', `rgba(${c},.35)`); home.style.setProperty('--tint-b', `rgba(${c},.16)`); };
+  if (cached) return apply(cached);
+  const im = new Image(); im.crossOrigin = 'anonymous';
+  im.onload = () => {
+    try {
+      const c = document.createElement('canvas'); c.width = 24; c.height = 32; const g = c.getContext('2d'); g.drawImage(im, 0, 0, 24, 32);
+      const d = g.getImageData(0, 0, 24, 32).data; let best = null, bs = -1;
+      for (let i = 0; i < d.length; i += 4) { const r = d[i], gg = d[i + 1], b = d[i + 2]; const mx = Math.max(r, gg, b), mn = Math.min(r, gg, b); const s = (mx - mn) * (mx > 40 && mx < 250 ? 1 : 0.2); if (s > bs) { bs = s; best = [r, gg, b]; } }
+      if (!best) return; const out = best.join(','); store.set(key, out); apply(out);
+    } catch {}
+  };
+  im.src = thumb(src);
+}
+
 // "While you were away": your own assistant tells you who wrote and what about.
 let digestBusy = false;
 async function showDigest() {
@@ -2250,6 +2299,12 @@ app.addEventListener('click', (e) => {
   const a = t.dataset.act;
   if (a === 'addpost') return sheet('Add to gallery', [{ icon: 'image', label: 'Photo', run: addPost }, { icon: 'video', label: 'Video', run: addVideoPost }]);
   if (a === 'uilang') return pickUiLang();
+  if (a === 'hplus') return sheet(T('Create'), [
+    { icon: 'spark', label: 'Add to your story', run: addStory },
+    { icon: 'image', label: 'Photo to gallery', run: addPost },
+    { icon: 'video', label: 'Video to gallery', run: addVideoPost },
+    { icon: 'me', label: 'Profile photo', run: () => go('look') },
+    { icon: 'edit', label: 'Edit profile', run: () => go('edit') }]);
   if (a === 'sharelink') return shareLink();
   if (a === 'addstory') return addStory();
   if (a === 'story') return openStories(t.dataset.uid);
