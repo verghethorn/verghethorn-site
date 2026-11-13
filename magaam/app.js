@@ -75,13 +75,39 @@ function statusOf(id) {
 }
 function thumbHTML(p, withDot = true) {
   const on = withDot && S.online.has(p.id);
-  return `<span class="thumb">${p.photo_path ? `<img class="${p.video_path ? '' : 'raw'}" src="${esc(thumb(p.photo_path))}" alt="" loading="lazy" onerror="this.src='${esc(url(p.photo_path))}'">` : `<span class="ini">${initial(p.name)}</span>`}${on ? '<i class="dot on"></i>' : ''}</span>`;
+  const ph = p.still_path || p.photo_path;
+  return `<span class="thumb">${ph ? `<img class="${p.video_path || p.still_path ? '' : 'raw'}" src="${esc(thumb(ph))}" alt="" loading="lazy" onerror="this.src='${esc(url(ph))}'">` : `<span class="ini">${initial(p.name)}</span>`}${on ? '<i class="dot on"></i>' : ''}</span>`;
 }
 function bgMedia(p) {
-  if (p.video_path) return `<video class="bg" data-bgfor="${p.id}" src="${esc(url(p.video_path))}" ${p.photo_path ? `poster="${esc(url(p.photo_path))}"` : ''} autoplay muted loop playsinline preload="auto"></video>`;
-  if (p.photo_path) return `<div class="bg rawbox" data-bgfor="${p.id}"><img src="${esc(url(p.photo_path))}" alt=""><span class="alive">${ic('spark')}Coming to life</span></div>`;
+  const still = p.still_path || p.photo_path;
+  // Two copies of the living video crossfade at the end, so the loop never jumps.
+  if (p.video_path) { const v = esc(url(p.video_path)), po = still ? `poster="${esc(url(still))}"` : ''; return `<div class="bg loopbox" data-bgfor="${p.id}"><video class="lv on" src="${v}" ${po} autoplay muted playsinline preload="auto"></video><video class="lv" src="${v}" ${po} muted playsinline preload="auto"></video></div>`; }
+  // The AI photo shows right away and gently "breathes" while its living video is being made.
+  if (p.still_path) return `<div class="bg stillbox" data-bgfor="${p.id}"><img src="${esc(url(p.still_path))}" alt=""></div>`;
+  if (p.photo_path) return `<div class="bg rawbox" data-bgfor="${p.id}"><img src="${esc(url(p.photo_path))}" alt=""><span class="alive">${ic('spark')}Not alive yet</span></div>`;
   return `<div class="bg-blur" data-bgfor="${p.id}" style="background-image:url('${sceneImg(p.scene)}')"></div>`;
 }
+// Crossfade loop for living videos, and a light check on living photos still being made.
+setInterval(() => {
+  app.querySelectorAll('.loopbox').forEach((box) => {
+    const [a, b] = box.querySelectorAll('video'); if (!a || !b) return;
+    const cur = a.classList.contains('on') ? a : b, nxt = cur === a ? b : a;
+    if (cur.paused && !cur.ended && cur.readyState >= 2 && !document.hidden && !box.dataset.x) cur.play().catch(() => {});
+    if (!cur.duration || !isFinite(cur.duration)) return;
+    if ((cur.ended || cur.currentTime > cur.duration - 0.75) && !box.dataset.x) {
+      box.dataset.x = '1'; nxt.currentTime = 0; nxt.play().catch(() => {});
+      nxt.classList.add('on'); cur.classList.remove('on');
+      setTimeout(() => { cur.pause(); delete box.dataset.x; }, 850);
+    }
+  });
+}, 120);
+let lastPoll = 0;
+setInterval(async () => {
+  if (!S.uid || document.hidden || Date.now() - lastPoll < 12000) return;
+  const j = (S.jobs || []).find((x) => x.kind === 'avatar' && x.status === 'video' && Date.now() - new Date(x.created_at) > 25000 && Date.now() - new Date(x.created_at) < 3600000);
+  if (!j) return; lastPoll = Date.now();
+  try { const { data: { session } } = await sb.auth.getSession(); await fetch(SB_URL + '/functions/v1/or-hook', { method: 'POST', headers: { 'content-type': 'application/json', apikey: SB_KEY, Authorization: 'Bearer ' + (session?.access_token || '') }, body: JSON.stringify({ job: j.id }) }); } catch {}
+}, 3000);
 async function resize(file, max, q = 0.86) {
   const src = URL.createObjectURL(file);
   try {
@@ -258,7 +284,7 @@ function startRealtime() {
       if (!p || !p.id) return;
       const old = p.id === S.uid ? S.me : S.members.get(p.id);
       if (p.id === S.uid) S.me = p; else if (p.name) S.members.set(p.id, p);
-      if (old && (old.photo_path !== p.photo_path || old.video_path !== p.video_path)) swapBg(p);
+      if (old && (old.photo_path !== p.photo_path || old.video_path !== p.video_path || old.still_path !== p.still_path)) swapBg(p);
       refresh();
     })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'ai_jobs' }, ({ new: j }) => {
@@ -1117,7 +1143,7 @@ V.chat = async (id) => {
   <div class="hdr"><button class="iconbtn" data-back="chats" aria-label="Back">${ic('back')}</button>
     <button class="hname" data-go="u/${id}"><b data-notr>${esc(p.name)}</b><span class="pill glass" id="st"></span></button>
     <button class="iconbtn pokebtn" id="pokeb" aria-label="Poke ${esc(p.name)}" title="Poke"><span data-notr>👉</span></button></div>
-  <div class="you glass">${S.me.photo_path ? `<img class="${S.me.video_path ? '' : 'raw'}" src="${esc(thumb(S.me.photo_path))}" alt="">` : ''}<span>You</span></div>
+  <div class="you glass">${S.me.still_path || S.me.photo_path ? `<img class="${S.me.video_path || S.me.still_path ? '' : 'raw'}" src="${esc(thumb(S.me.still_path || S.me.photo_path))}" alt="">` : ''}<span>You</span></div>
   <div class="msgs" id="msgs" aria-live="polite"></div>
   <div class="stkpanel glass" id="stk" hidden></div>
   <button class="sendlang glass" id="sendlang" hidden></button>
