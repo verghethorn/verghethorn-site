@@ -73,6 +73,9 @@ function when(d) {
   if (t.toDateString() === y.toDateString()) return T('Yesterday');
   return t.toLocaleDateString(I18N.lang, { day: 'numeric', month: 'short' });
 }
+// A friend's AI assistant speaks for them when they have been away for 5 minutes.
+const awayOn = (id) => { const p = S.members.get(id); if (!p || p.away_ai === false || !p.ai_name || S.online.has(id)) return false; return !p.last_seen || Date.now() - new Date(p.last_seen) > 5 * 60_000; };
+S.aiTyping = new Set();
 function statusOf(id) {
   if (S.online.has(id)) return { on: true, text: 'Online' };
   const p = S.members.get(id) || S.extra.get(id); if (!p?.last_seen) return { on: false, text: 'Away' };
@@ -1308,7 +1311,8 @@ function msgHTML(m) {
   const rs = m.reply_story ? `<span class="rstory"><img src="${esc(thumb(m.reply_story))}" alt=""><span>${mine ? 'Replied to a story' : 'Replied to your story'}</span></span>` : '';
   const note = tr && tr.show ? `<button class="trnote" data-orig="${m.id}">${ic('globe')}<span>Show original</span></button>`
     : (mine && m.orig_lang ? `<span class="trnote">${ic('globe')}<span>Sent in ${esc(langLabel(m.orig_lang))}</span></span>` : '');
-  return `<div class="b ${jumbo ? 'jumbo' : ''} ${mine ? 'me' : 'them'} ${rx ? 'has-rx' : ''}" data-msg="${m.id}" title="${hm(m.created_at)}">${rs}<span class="tx" data-notr>${esc(text)}</span>${note}${rx}</div>`;
+  const ail = m.ai ? `<span class="ailbl">${ic('spark', 2)}<span data-notr>${esc(mine ? T('{ai} answered for you').replace('{ai}', S.me?.ai_name || 'AI') : T('{ai} · assistant of {n}').replace('{ai}', S.members.get(m.sender)?.ai_name || 'AI').replace('{n}', nameOf(m.sender)))}</span></span>` : '';
+  return `<div class="b ${jumbo && !m.ai ? 'jumbo' : ''} ${m.ai ? 'ai' : ''} ${mine ? 'me' : 'them'} ${rx ? 'has-rx' : ''}" data-msg="${m.id}" title="${hm(m.created_at)}">${ail}${rs}<span class="tx" data-notr>${esc(text)}</span>${note}${rx}</div>`;
 }
 /* ---------- chat magic: screen effects, flying reactions, poke ---------- */
 const FX_WORDS = [
@@ -1693,7 +1697,15 @@ V.chat.update = (id) => {
     html += msgHTML(m);
     if (lastMine && m === lastMine) html += `<div class="meta">${m.tmp ? 'Sending…' : m.read_at ? 'Read ' + hm(m.read_at) : 'Sent ' + hm(m.created_at)}</div>`;
   });
-  if (!S.thread.length) html = `<div class="day">Say hello to ${esc(S.members.get(id)?.name)}</div>`;
+  if (!S.thread.length && !awayOn(id)) html = `<div class="day">Say hello to ${esc(S.members.get(id)?.name)}</div>`;
+  const lastM = S.thread[S.thread.length - 1];
+  if (awayOn(id) && !(lastM?.ai && lastM.sender === id) && !S.aiTyping.has(id)) {
+    const p = S.members.get(id), t = p.last_seen ? (new Date(p.last_seen).toDateString() === new Date().toDateString() ? hm(p.last_seen) : when(p.last_seen)) : '';
+    const txt = (t ? T("Hi {me}! I'm {ai}, {n}'s AI assistant. {n} has been offline since {t}. Write to me and I'll answer or pass it on.") : T("Hi {me}! I'm {ai}, {n}'s AI assistant. {n} is offline right now. Write to me and I'll answer or pass it on."))
+      .replace('{me}', S.me?.name || '').replace('{ai}', p.ai_name).replaceAll('{n}', p.name).replace('{t}', t);
+    html += `<div class="b them ai greet"><span class="ailbl">${ic('spark', 2)}<span data-notr>${esc(T('{ai} · assistant of {n}').replace('{ai}', p.ai_name).replace('{n}', p.name))}</span></span><span class="tx" data-notr>${esc(txt)}</span></div>`;
+  }
+  if (S.aiTyping.has(id)) html += `<div class="typing aity"><span data-notr>${esc(S.members.get(id)?.ai_name || '')}</span><i></i><i></i><i></i></div>`;
   if (S.typing.has(id)) html += '<div class="typing"><i></i><i></i><i></i></div>';
   box.innerHTML = html;
   mountScratch(box); mountCircles(box);
@@ -1763,7 +1775,14 @@ V.chat.after = async (id) => {
     const { data, error } = await sb.from('messages').insert(row).select().single();
     S.thread = S.thread.filter((x) => x !== tmp);
     if (error) { toast('Message not sent. Check your connection.'); tx.value = original; grow(); }
-    else { if (!S.thread.some((x) => x.id === data.id)) { S.thread.push(data); S.last.set(id, data); } runFx(fxFor(original)); }
+    else {
+      if (!S.thread.some((x) => x.id === data.id)) { S.thread.push(data); S.last.set(id, data); } runFx(fxFor(original));
+      if (awayOn(id)) {
+        S.aiTyping.add(id); V.chat.update(id);
+        aiCall({ op: 'away', to: id }).then((j) => { const m = j?.message; if (m && !S.thread.some((x) => x.id === m.id) && S.threadWith === id) { S.thread.push(m); S.last.set(id, m); chime(true); } })
+          .catch(() => {}).finally(() => { S.aiTyping.delete(id); if (route().name === 'chat' && route().id === id) V.chat.update(id); });
+      }
+    }
     V.chat.update(id);
   };
 };
@@ -1995,6 +2014,9 @@ app.addEventListener('click', (e) => {
     { icon: 'edit', label: `Rename ${aiName()}`, run: () => go('assistant') },
     { icon: 'globe', label: `App language: ${I18N.label}`, run: pickUiLang },
     { icon: 'globe', label: `Translation language: ${langLabel(myLang())}`, run: pickLang },
+    { icon: 'spark', label: S.me?.away_ai === false ? `${aiName()} answers for me: off` : `${aiName()} answers for me: on`, run: async () => {
+      const v = S.me?.away_ai === false; const { data, error } = await sb.from('profiles').update({ away_ai: v }).eq('id', S.uid).select().single();
+      if (error) return toast('Could not save. Try again.'); S.me = data; toast(v ? `${aiName()} will answer friends while you are away` : `${aiName()} will not answer for you`); } },
     { icon: 'bell', label: soundOn() ? 'Message sound: on' : 'Message sound: off', run: () => { store.set('magaam-sound', soundOn() ? 'off' : 'on'); unlockAudio(); if (soundOn()) setTimeout(() => chime(false, true), 60); toast(soundOn() ? 'Message sound is on' : 'Message sound is off'); } },
     { icon: S.me?.is_public ? 'globe' : 'lock', label: S.me?.is_public ? 'Profile: open' : 'Profile: closed', run: pickPrivacy },
     { icon: 'useradd', label: 'Add friends', run: () => go('add') },

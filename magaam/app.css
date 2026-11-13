@@ -761,3 +761,11 @@ h1{font-weight:700;font-size:38px;letter-spacing:-.035em;line-height:1.05}
 .findrow .unwrap .search{background:rgba(255,255,255,.14)}
 .pcard .cta2 .pbtn{font-size:14.5px;gap:6px;padding:0 10px;white-space:nowrap}
 .pcard .cta2 .pbtn svg{width:18px;height:18px}
+/* the friend's AI assistant */
+.b.ai{background:linear-gradient(135deg,rgba(255,194,51,.30),rgba(229,92,255,.22))!important;border:1px solid rgba(255,214,106,.55)!important;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+.b.me.ai{background:linear-gradient(135deg,rgba(255,194,51,.42),rgba(106,92,255,.55))!important}
+.ailbl{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#FFD56A;margin-bottom:3px;white-space:nowrap}
+.ailbl svg{width:13px;height:13px}
+.b.greet{animation:pop .5s var(--spring) both}
+.typing.aity{display:flex;align-items:center;gap:6px;width:auto;padding:8px 14px;border:1px solid rgba(255,214,106,.55);background:linear-gradient(135deg,rgba(255,194,51,.25),rgba(229,92,255,.18))}
+.typing.aity span{font-size:12.5px;font-weight:600;color:#FFD56A;margin-right:2px}
