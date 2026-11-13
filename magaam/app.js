@@ -871,7 +871,7 @@ V.chats.update = () => {
   const reqs = S.reqIn.length && !q ? `<button class="reqbar glass" data-go="add">${ic('useradd')}<span><b>Friend requests</b><span data-notr>${S.reqIn.map((p) => esc(p.name)).slice(0, 3).join(', ')}</span></span><span class="badge">${S.reqIn.length}</span></button>` : '';
   box.innerHTML = reqs + (list.length ? `<div class="rows glass">${list.map((p) => {
     const l = S.last.get(p.id), u = S.unread.get(p.id) || 0, ty = S.typing.has(p.id);
-    const prev = ty ? T('typing…') : l ? (l.sender === S.uid ? T('You') + ': ' : '') + previewOf(l) : T('Say hello');
+    const prev = ty ? T('typing…') : l ? (l.sender === S.uid ? (l.read_at ? '✓✓ ' : '✓ ') : '') + previewOf(l) : T('Say hello');
     return `<button class="crow" data-go="chat/${p.id}">${thumbHTML(p)}<span class="cmid"><b data-notr>${esc(p.name)}${vbadge(p, 'sm')}${S.streaks.get(p.id) ? ` <span class="streak">🔥${S.streaks.get(p.id)}</span>` : ''}</b><span data-notr>${esc(prev)}</span></span><span class="cend">${l ? when(l.created_at) : ''}${u ? `<span class="badge">${u}</span>` : ''}</span></button>`;
   }).join('')}</div>` : `<div class="rows glass"><div class="empty"><b>${q ? 'No one found' : 'No friends yet'}</b><span>${q ? 'Try another name.' : 'Add friends by their @username or send them your link.'}</span>${q ? '' : `<button class="pbtn blue" data-go="add">${ic('useradd')}Add friends</button>`}</div></div>`);
   setTabs('chats');
@@ -1435,7 +1435,10 @@ function stickerPanel(to) {
     }
   };
 }
-function msgHTML(m) {
+// time and ticks in the corner of a bubble: one tick sent, two bright ticks read
+const btHTML = (m) => `<span class="bt" data-notr>${hm(m.created_at)}${m.sender === S.uid ? `<i class="tk ${m.read_at ? 'rd' : ''}">${m.tmp ? '◷' : m.read_at ? '✓✓' : '✓'}</i>` : ''}</span>`;
+function msgHTML(m) { return msgHTML0(m).replace(/<\/div>\s*$/, btHTML(m) + '</div>'); }
+function msgHTML0(m) {
   const mine = m.sender === S.uid;
   if (m.audio_path) {
     const talk = false, making = false; // talking avatars are removed from the messenger: plain voice messages only
@@ -1821,13 +1824,12 @@ V.chat = async (id) => {
   if (!S.members.has(id)) { await loadAll(); if (!S.members.has(id)) { go('chats', true); return; } }
   if (S.threadWith !== id) { S.thread = []; S.threadWith = id; }
   const p = S.members.get(id);
-  return `<div class="dark" style="position:absolute;inset:0">
-  ${bgMedia(p)}
-  <div class="shade"></div>
+  const wall = p.still_path || p.photo_path;
+  return `<div class="dark wa" style="position:absolute;inset:0">
+  <div class="bg wabg" data-bgfor="${p.id}">${wall ? `<img src="${esc(thumb(wall))}" alt="">` : ''}</div>
   <div class="hdr"><button class="iconbtn" data-back="chats" aria-label="Back">${ic('back')}</button>
-    <button class="hname" data-go="u/${id}"><b data-notr>${esc(p.name)}${vbadge(p)}</b><span class="pill glass" id="st"></span></button>
+    <button class="hname wah" data-go="u/${id}">${thumbHTML(p, false)}<span class="wan"><b data-notr>${esc(p.name)}${vbadge(p)}</b><span class="wast" id="st"></span></span></button>
     <button class="iconbtn pokebtn" id="pokeb" aria-label="Poke ${esc(p.name)}" title="Poke"><span data-notr>👉</span></button></div>
-  <div class="you glass">${S.me.still_path || S.me.photo_path ? `<img class="${S.me.video_path || S.me.still_path ? '' : 'raw'}" src="${esc(thumb(S.me.still_path || S.me.photo_path))}" alt="">` : ''}<span>You</span></div>
   <button class="aidock" id="aidock" hidden></button>
   <div class="msgs" id="msgs" aria-live="polite"></div>
   <div class="stkpanel glass" id="stk" hidden></div>
@@ -2065,7 +2067,6 @@ V.chat.update = (id) => {
     const d = new Date(m.created_at).toDateString();
     if (d !== lastDay) { html += `<div class="day">${when(m.created_at) === hm(m.created_at) ? 'Today' : when(m.created_at)}</div>`; lastDay = d; }
     html += msgHTML(m);
-    if (lastMine && m === lastMine) html += `<div class="meta">${m.tmp ? 'Sending…' : m.read_at ? 'Read ' + hm(m.read_at) : 'Sent ' + hm(m.created_at)}</div>`;
   });
   if (inAi) paintAiOv(id);
   if (!vis.length) html = `<div class="day">Say hello to ${esc(S.members.get(id)?.name)}</div>`;

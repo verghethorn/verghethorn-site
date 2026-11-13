@@ -1230,3 +1230,34 @@ h1{font-weight:700;font-size:38px;letter-spacing:-.035em;line-height:1.05}
 .vbbig i{position:absolute;inset:-18px;border-radius:50%;background:conic-gradient(from 0deg,#FFE38A,#FF8FC8,#7A6CFF,#5AC8FF,#FFE38A);filter:blur(22px);opacity:.45;animation:spin 6s linear infinite}
 .vbbig.vb-verified i{background:conic-gradient(from 0deg,#5AC8FF,#6A5CFF,#5AC8FF)}
 @media (prefers-reduced-motion:reduce){.vb svg,.vb svg g,.pnvb svg,.vbbig svg,.vbbig i,.vbpill{animation:none}}
+
+/* ===== messenger: calm like WhatsApp, glass like MAGAAM ===== */
+.wa .wabg{overflow:hidden;background:#0d1020}
+.wa .wabg img{width:100%;height:100%;object-fit:cover;filter:blur(38px) saturate(1.3) brightness(.42);transform:scale(1.25)}
+.wa .wabg::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 70% at 50% 0,rgba(106,92,255,.16),transparent 60%),linear-gradient(180deg,rgba(8,10,22,.25),rgba(8,10,22,.55))}
+.wa .hdr{z-index:5;align-items:center;padding-bottom:10px;background:linear-gradient(180deg,rgba(10,12,26,.55),rgba(10,12,26,.25));-webkit-backdrop-filter:blur(20px) saturate(1.4);backdrop-filter:blur(20px) saturate(1.4);border-bottom:1px solid rgba(255,255,255,.1)}
+.hname.wah{flex-direction:row;align-items:center;gap:10px;text-align:start;flex:1;padding:0;justify-content:flex-start}
+.wah .thumb{width:42px;height:42px;aspect-ratio:auto;border-radius:50%;flex:none;overflow:hidden}
+.wah .wan{display:flex;flex-direction:column;min-width:0;gap:1px}
+.wah b{font-size:17.5px;font-weight:600;max-width:52vw;text-shadow:none}
+.wah .wast{display:flex;align-items:center;gap:5px;font-size:12.5px;opacity:.75}
+.wa .msgs{top:calc(var(--st) + 74px);max-height:none;padding-top:12px;gap:5px;-webkit-mask-image:none;mask-image:none}
+.wa .msgs>:first-child{margin-top:auto}
+.wa .b{border-radius:18px;padding:7px 12px 6px;font-size:16px;max-width:80%}
+.wa .b.them{border-end-start-radius:5px;background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.12)}
+.wa .b.me{border-end-end-radius:5px}
+.wa .b.me+.b.them,.wa .b.them+.b.me,.wa .day+.b{margin-top:6px}
+.bt{float:right;display:inline-flex;align-items:center;gap:3px;margin:7px -3px -2px 10px;font-size:11px;line-height:1;opacity:.72;white-space:nowrap;font-variant-numeric:tabular-nums}
+.bt .tk{font-style:normal;font-size:12px;letter-spacing:-.14em;padding-inline-end:.14em}
+.bt .tk.rd{color:#7FE3FF;opacity:1}
+.b.voice .bt{float:none;align-self:flex-end;margin:0 0 -2px 2px}
+.b.stk .bt,.b.media .bt,.b.jumbo .bt,.b.circle .bt{float:none;display:flex;width:max-content;margin:3px 0 0 auto;padding:3px 8px;border-radius:999px;background:rgba(0,0,0,.35);opacity:.9}
+.b.them.stk .bt,.b.them.media .bt,.b.them.jumbo .bt{margin:3px auto 0 0}
+.b.stk.live .bt{position:absolute;right:12%;bottom:0}
+.b.jumbo .bt{font-size:11px;line-height:1}
+/* chats list: round faces, tight rows */
+#list .crow{padding:9px 12px;gap:12px}
+#list .crow .thumb{width:54px;height:54px;aspect-ratio:auto;border-radius:50%}
+#list .crow .cmid b{font-size:16.5px}
+.wa .b.stk,.wa .b.media,.wa .b.jumbo{box-shadow:none;padding:0;border-radius:0}
+.wa .b.jumbo{font-size:54px;padding:0 2px}
