@@ -449,3 +449,15 @@ canvas.scratch.gone{opacity:0}
 .lp-title span:not(:first-child){color:var(--grey);font-weight:400;font-size:15px}
 .weeknote{display:flex;gap:10px;align-items:flex-start;margin-top:14px;padding:12px 14px;border-radius:16px;background:#FFF4D6;color:var(--navy);font-size:14px;line-height:1.4}
 .weeknote svg{width:20px;height:20px;flex:none;color:#E0A100;margin-top:1px}
+/* simple living photo screen */
+.look2 .l2title{font-size:30px;font-weight:500;text-align:center;margin:10px 0 0;letter-spacing:-.01em}
+.photo-slot.big{width:min(76%,330px);aspect-ratio:9/14;margin-top:16px;border-style:solid;border-color:transparent;box-shadow:0 18px 40px rgba(11,20,48,.14)}
+.photo-slot.big.busy img{filter:brightness(.75) saturate(.9)}
+.photo-slot.big .spinner{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2}
+.l2status{text-align:center;color:var(--navy);font-size:15.5px;margin:16px 0 0;text-wrap:balance}
+.l2note{text-align:center;color:var(--grey);font-size:14px;margin:12px 0 0}
+.look2 .duo{margin-top:10px}
+.look2 .l2actions{display:flex;flex-direction:column;padding-bottom:6px}
+.editbox{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.editbox .ideas{margin:0}
+#editb[aria-pressed="true"]{border-color:var(--blue);color:var(--blue)}
