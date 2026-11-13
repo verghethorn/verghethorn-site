@@ -1387,7 +1387,7 @@ function askAI(msg, ideas, cta, ideasPromise) {
     const bg = document.createElement('div'); bg.className = 'sheet-bg';
     const chips = (list) => list.map((t) => `<button class="idea" data-idea="${esc(t)}">${esc(t)}</button>`).join('');
     bg.innerHTML = `<div class="sheet ask" role="dialog" aria-label="${esc(aiName())}"><div class="grab"></div>${aiMsg(msg)}
-      <div class="ideas" id="askideas">${ideasPromise ? `<span class="idea muted"><span class="spinner xs dark"></span>${esc(aiName())} is looking at your photo…</span>` : chips(ideas)}</div>
+      <div class="ideas" id="askideas">${chips(ideas)}${ideasPromise ? `<span class="idea muted" id="askwait"><span class="spinner xs dark"></span>${esc(aiName())} is looking at your photo…</span>` : ''}</div>
       <textarea class="field ta" id="askta" maxlength="400" placeholder="Or write your own idea"></textarea>
       <button class="btn" id="askgo" disabled>${ic('spark')}${esc(cta)}</button>
       <button class="btn soft" id="askai">${ic('spark')}Let ${esc(aiName())} decide</button>
@@ -1397,7 +1397,12 @@ function askAI(msg, ideas, cta, ideasPromise) {
     const ta = $('#askta', bg), go2 = $('#askgo', bg), box = $('#askideas', bg);
     const wire = () => box.querySelectorAll('[data-idea]').forEach((b) => (b.onclick = () => { ta.value = b.dataset.idea; go2.disabled = false; }));
     wire();
-    if (ideasPromise) ideasPromise.then((list) => { box.innerHTML = chips(list && list.length ? list : ideas); wire(); }).catch(() => { box.innerHTML = chips(ideas); wire(); });
+    // Ready-made ideas show at once; ideas made for this exact photo replace them when they arrive.
+    if (ideasPromise) {
+      const stopWait = () => $('#askwait', bg)?.remove();
+      const t = setTimeout(stopWait, 15000);
+      ideasPromise.then((list) => { clearTimeout(t); if (list && list.length && bg.isConnected) { box.innerHTML = chips(list); wire(); } else stopWait(); }).catch(() => { clearTimeout(t); stopWait(); });
+    }
     ta.addEventListener('input', () => (go2.disabled = ta.value.trim().length < 3));
     go2.onclick = () => done(ta.value.trim());
     $('#askai', bg).onclick = () => done(AI_DECIDES);
