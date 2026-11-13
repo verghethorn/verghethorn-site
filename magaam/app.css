@@ -447,3 +447,5 @@ canvas.scratch.gone{opacity:0}
 .lp-title{display:flex;flex-direction:column;gap:2px;font-size:17px}
 .lp-title span:first-child{font-size:20px;color:var(--navy)}
 .lp-title span:not(:first-child){color:var(--grey);font-weight:400;font-size:15px}
+.weeknote{display:flex;gap:10px;align-items:flex-start;margin-top:14px;padding:12px 14px;border-radius:16px;background:#FFF4D6;color:var(--navy);font-size:14px;line-height:1.4}
+.weeknote svg{width:20px;height:20px;flex:none;color:#E0A100;margin-top:1px}

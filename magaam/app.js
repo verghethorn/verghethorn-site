@@ -516,14 +516,22 @@ async function makeVariants(path, wish) {
   const r = await fetch(SB_URL + '/functions/v1/animate', { method: 'POST', headers: { 'content-type': 'application/json', apikey: SB_KEY, Authorization: 'Bearer ' + (session?.access_token || '') }, body: JSON.stringify({ kind: 'variants', path, prompt: wish }) });
   const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || 'ai'); return j.variants || [];
 }
+// When was the last living photo made? Free once a week; earlier it costs coins.
+let weekInfo = null;
+async function loadWeek() {
+  const { data } = await sb.from('ai_jobs').select('created_at').eq('user_id', S.uid).eq('kind', 'avatar').in('status', ['video', 'queued', 'done']).gte('created_at', new Date(Date.now() - 7 * 86400_000).toISOString()).order('created_at', { ascending: false }).limit(1);
+  weekInfo = data?.[0] ? { next: new Date(new Date(data[0].created_at).getTime() + 7 * 86400_000).toISOString() } : { next: null };
+}
 V.look = () => {
   loadVars();
+  if (!weekInfo) loadWeek().then(() => { if (route().name === 'look' && weekInfo.next) show(); });
   const editing = !!(S.me?.orig_path || S.me?.photo_path);
   const src = pendingPhoto ? pendingPhoto.preview : (S.me?.orig_path ? url(S.me.orig_path) : S.me?.photo_path ? url(S.me.photo_path) : '');
   const vars = pendingPhoto ? [] : (lookVars || []);
   return `<div class="light">
   <div class="topbar">${editing ? `<button class="iconbtn" data-back="me" aria-label="Back">${ic('back')}</button><span class="word">MAGAAM</span>` : `<span style="width:44px"></span>${progress(3)}`}<span style="width:44px"></span></div>
   <div class="lhead" style="margin-top:14px"><h1>Your living photo</h1><p class="sub">Your profile photo is always made with AI and always alive</p></div>
+  ${weekInfo?.next ? `<div class="weeknote">${ic('coin')}<span>You can change your living photo for free once a week. The next free change is on ${esc(dayName(weekInfo.next))}. A change before then costs 150 coins (you have ${S.coins}).</span></div>` : ''}
   <div class="photo-slot sm">${src ? `<img src="${esc(src)}" alt="Your photo">` : `<div class="ph">${ic('camera')}Add your photo</div>`}</div>
   <div class="duo"><button class="btn ${src ? 'out' : ''}" data-act="pick">${ic('image')}${src ? 'Another photo' : 'Upload photo'}</button><button class="btn out" data-act="snap">${ic('camera')}Take a photo</button></div>
   ${lookCheck === 'checking' ? `<div class="varwait"><span class="spinner"></span><span>${esc(aiName())} is looking at your photo…</span></div>`
@@ -574,7 +582,7 @@ V.look.after = () => {
     if (route().name === 'look') show();
   };
   const bringToLife = async (path) => {
-    const r = await runPaid({ kind: 'avatar', path });
+    const r = await runPaid({ kind: 'avatar', path }); weekInfo = null;
     if (!r) { lookCheck = 'hold'; if (route().name === 'look') show(); return false; }
     lookVars = []; lookPick = -1; saveVars(); draftWish = ''; lookMode = 'me'; lookCheck = '';
     go('me'); toast(`${aiName()} is bringing your photo to life. About 2 minutes.`, 4500); return true;
@@ -614,7 +622,7 @@ V.look.after = () => {
   };
   if (setp) setp.onclick = async () => {
     if (lookPick < 0) return; setp.disabled = true; setp.textContent = 'Starting…';
-    const r = await runPaid({ kind: 'avatar', path: lookVars[lookPick] });
+    const r = await runPaid({ kind: 'avatar', path: lookVars[lookPick] }); weekInfo = null;
     if (!r) { setp.disabled = false; setp.innerHTML = `${ic('check')}Set as my profile photo`; return; }
     lookVars = []; lookPick = -1; saveVars(); draftWish = ''; lookMode = 'me'; lookCheck = ''; go('me'); toast(`${aiName()} is bringing your photo to life. About 2 minutes.`, 4500);
   };
