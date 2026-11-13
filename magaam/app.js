@@ -207,7 +207,7 @@ function startRealtime() {
     .subscribe(async (st) => { if (st === 'SUBSCRIBED') await S.pres.track({ at: Date.now() }); });
   sb.rpc('touch'); setInterval(() => document.visibilityState === 'visible' && sb.rpc('touch'), 60_000);
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') { S.pres?.track({ at: Date.now() }); sb.rpc('touch'); loadAll().then(refresh); }
+    if (document.visibilityState === 'visible') { S.pres?.track({ at: Date.now() }); sb.rpc('touch'); loadAll().then(refresh); if (route().name === 'chat') loadThread(route().id).then(refresh); }
     else { sb.rpc('touch'); S.pres?.untrack(); }
   });
 }
@@ -517,37 +517,63 @@ function msgHTML(m) {
   if (m.audio_path) {
     const talk = m.talk_status === 'ready' && m.talk_path, making = m.talk_status === 'making';
     return `<div class="b voice ${mine ? 'me' : 'them'} ${playing === String(m.id) ? 'playing' : ''}" data-msg="${m.id}">
-      <button class="vplay" data-play="${m.id}" aria-label="Play voice message">${ic(playing === String(m.id) ? 'pause' : 'play', 2)}</button>
+      <button class="vplay" data-play="${m.id}" aria-label="${playing === String(m.id) ? 'Stop' : 'Replay voice message'}">${ic(playing === String(m.id) ? 'pause' : 'play', 2)}</button>
       <span class="wave">${bars(m.id)}</span><span class="vlen">${fmtSec((m.audio_ms || 0) / 1000)}</span>
       ${talk ? `<span class="vtag" title="Living photo">${ic('spark', 2)}</span>` : making ? '<span class="vtag wait" title="Living photo is coming"><span class="spinner xs"></span></span>' : ''}</div>`;
   }
   const tr = TR.get(String(m.id));
   return `<div class="b ${mine ? 'me' : 'them'}" data-msg="${m.id}" title="${hm(m.created_at)}">${esc(tr && tr.show ? tr.text : m.body)}${tr && tr.show ? `<button class="trnote" data-orig="${m.id}">${ic('globe')}${esc(langLabel(myLang()))} · Show original</button>` : ''}</div>`;
 }
-let playing = null, player = null;
+let playing = null, player = null, talkBusy = false;
+/* Media elements unlocked by the first tap, so voices can play by themselves later (iOS rule). */
+const TALKER = document.createElement('video'); TALKER.setAttribute('playsinline', ''); TALKER.playsInline = true; TALKER.preload = 'auto'; TALKER.className = 'bg talkbg';
+const VOICE = new Audio();
+let unlocked = false;
+document.addEventListener('pointerdown', () => {
+  if (player?.video && TALKER.muted) TALKER.muted = false;
+  if (unlocked) return; unlocked = true;
+  try { TALKER.muted = false; TALKER.src = 'img/silence.mp4'; TALKER.play().then(() => TALKER.pause()).catch(() => {}); } catch {}
+  try { VOICE.src = 'img/silence.mp4'; VOICE.play().then(() => VOICE.pause()).catch(() => {}); } catch {}
+}, { capture: true });
+const played = new Set((store.get('magaam-played') || '').split(',').filter(Boolean));
+const markPlayed = (id) => { played.add(String(id)); store.set('magaam-played', [...played].slice(-300).join(',')); };
+function talkEligible(m) { const p = S.members.get(m.sender) || (m.sender === S.uid ? S.me : null); return m.audio_ms >= 2000 && m.audio_ms <= 10500 && !!p?.video_path; }
+function voiceMode(m) {
+  if (m.talk_status === 'ready' && m.talk_path) return 'video';
+  if (m.talk_status === 'failed') return 'audio';
+  if (talkEligible(m) && Date.now() - new Date(m.created_at) < 180000) return 'wait';
+  return 'audio';
+}
+function autoVoices(chatId) {
+  const r = route(); if (r.name !== 'chat' || r.id !== chatId || document.visibilityState !== 'visible' || talkBusy) return;
+  const next = S.thread.find((m) => m.audio_path && !m.tmp && m.sender === chatId && !played.has(String(m.id)));
+  if (!next || voiceMode(next) === 'wait') return;
+  playVoice(next);
+}
 function stopPlayer() {
-  if (!player) return;
-  try { player.audio?.pause(); player.video?.pause(); } catch {}
-  player.pip?.classList.add('out'); const p = player.pip; setTimeout(() => p?.remove(), 250);
-  player = null; playing = null; refresh();
+  const had = player; player = null; playing = null; talkBusy = false;
+  if (had) {
+    try { had.audio?.pause(); had.video?.pause(); } catch {}
+    if (had.video) { TALKER.classList.add('out'); setTimeout(() => { if (!player) TALKER.remove(); }, 350); }
+  }
+  refresh();
 }
 function playVoice(m) {
   const id = String(m.id);
   if (playing === id) return stopPlayer();
-  stopPlayer(); playing = id;
-  if (m.talk_status === 'ready' && m.talk_path) {
-    const who = m.sender === S.uid ? S.me : S.members.get(m.sender);
-    const pip = document.createElement('div'); pip.className = 'talkpip';
-    pip.innerHTML = `<video src="${esc(url(m.talk_path))}" playsinline autoplay ${who?.photo_path ? `poster="${esc(url(who.photo_path))}"` : ''}></video><span class="pipname">${ic('spark')}${esc(who?.name || '')}</span><button class="pipx" aria-label="Close">${ic('x')}</button>`;
-    app.querySelector('.view').appendChild(pip);
-    const v = pip.querySelector('video'); player = { pip, video: v };
-    v.play().catch(() => { v.muted = true; v.play().catch(() => {}); });
-    v.onended = () => setTimeout(stopPlayer, 500);
-    pip.querySelector('.pipx').onclick = stopPlayer;
+  if (player) stopPlayer();
+  playing = id; talkBusy = true; markPlayed(id);
+  if (m.talk_status === 'ready' && m.talk_path && m.sender !== S.uid) {
+    const host = app.querySelector('.view .dark'); const bg = host?.querySelector(`[data-bgfor="${m.sender}"]`);
+    TALKER.classList.remove('out'); TALKER.src = url(m.talk_path); TALKER.muted = false;
+    if (bg) bg.after(TALKER); else host?.prepend(TALKER);
+    player = { video: TALKER };
+    TALKER.onended = () => stopPlayer();
+    const pr = TALKER.play(); if (pr) pr.catch(() => { TALKER.muted = true; TALKER.play().catch(() => {}); toast('Tap the screen to hear the voice'); });
   } else {
-    const a = new Audio(url(m.audio_path)); player = { audio: a };
-    a.play().catch(() => { toast('Could not play this voice message.'); stopPlayer(); });
-    a.onended = stopPlayer;
+    VOICE.src = url(m.audio_path); VOICE.muted = false; player = { audio: VOICE };
+    VOICE.onended = () => stopPlayer();
+    VOICE.play().catch(() => { toast('Tap the voice message to listen'); stopPlayer(); });
   }
   refresh();
 }
@@ -603,6 +629,7 @@ async function sendVoice(to, blob, ms) {
     const path = `${S.uid}/voice-${Date.now()}.${ext}`;
     const { error } = await sb.storage.from('media').upload(path, blob, { contentType: ctype, cacheControl: '31536000' }); if (error) throw error;
     const { data, error: e2 } = await sb.from('messages').insert({ recipient: to, audio_path: path, audio_ms: Math.round(ms) }).select().single(); if (e2) throw e2;
+    markPlayed(data.id);
     S.thread = S.thread.filter((x) => x !== tmp); if (!S.thread.some((x) => x.id === data.id)) { S.thread.push(data); S.last.set(to, data); }
     V.chat.update(to);
     if (ms >= 2000 && ms <= 10500 && S.me?.video_path) aiCall({ op: 'talk', message_id: data.id }).catch(() => {});
@@ -644,6 +671,7 @@ V.chat.update = (id) => {
   if (S.typing.has(id)) html += '<div class="typing"><i></i><i></i><i></i></div>';
   box.innerHTML = html;
   if (nearBottom || box.dataset.init !== '1') { box.scrollTop = box.scrollHeight; box.dataset.init = '1'; }
+  setTimeout(() => autoVoices(id), 0);
 };
 V.chat.after = async (id) => {
   V.chat.update(id);
@@ -681,7 +709,7 @@ V.chat.after = async (id) => {
     V.chat.update(id);
   };
 };
-window.addEventListener('hashchange', () => { stopPlayer(); if (rec) stopRec(false); });
+window.addEventListener('hashchange', () => { if (player) stopPlayer(); if (rec) stopRec(false); });
 
 /* Someone's page */
 V.u = async (id) => {

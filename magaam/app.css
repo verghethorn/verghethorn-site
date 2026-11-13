@@ -281,3 +281,9 @@ textarea{font:inherit}
 .btn.soft{background:#FFF1C9;color:var(--navy)}
 .idea.muted{display:flex;align-items:center;gap:8px;color:var(--grey);border-style:dashed}
 .sheet{max-height:86dvh;overflow:auto}
+
+/* The person on the chat background speaks the voice message */
+.talkbg{z-index:0;animation:talkIn .35s ease both}
+.talkbg.out{opacity:0;transition:opacity .3s}
+@keyframes talkIn{from{opacity:0}}
+.b.voice.playing{box-shadow:0 0 0 2px var(--sun)}
