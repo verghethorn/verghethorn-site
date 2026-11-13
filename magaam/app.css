@@ -146,7 +146,7 @@ label.fl{display:flex;flex-direction:column;gap:7px;font-size:14px;color:var(--g
 .typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
 @keyframes tp{30%{opacity:1;transform:translateY(-3px)}}
 .composer{position:absolute;left:0;right:0;bottom:0;padding:8px max(12px,var(--sr)) calc(var(--sb) + 12px) max(12px,var(--sl));display:flex;gap:10px;align-items:flex-end;z-index:4}
-.composer textarea{flex:1;min-width:0;min-height:52px;max-height:130px;resize:none;border-radius:26px;padding:14px 20px;color:#fff;font:inherit;font-size:16.5px;outline:none;line-height:1.3}
+.composer textarea{flex:1;min-width:0;min-height:52px;max-height:168px;resize:none;border-radius:26px;padding:14px 20px;color:#fff;font:inherit;font-size:16.5px;outline:none;line-height:1.3}
 .composer textarea::placeholder{color:rgba(255,255,255,.72)}
 .send{width:52px;height:52px;border-radius:50%;background:var(--blue);display:grid;place-items:center;flex:none;color:#fff}
 .send:disabled{opacity:.55}
@@ -1173,3 +1173,9 @@ h1{font-weight:700;font-size:38px;letter-spacing:-.035em;line-height:1.05}
 .dock{padding-bottom:calc(var(--sb) + 14px)}
 .tabs.glass{background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.05));border-color:rgba(255,255,255,.22);
   -webkit-backdrop-filter:blur(16px) saturate(1.7);backdrop-filter:blur(16px) saturate(1.7);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 12px 30px -14px rgba(0,0,0,.6)}
+
+/* typing: the side buttons step aside, the text box gets the whole width */
+.composer.writing .tool{display:none}
+.composer.writing textarea{animation:txwide .25s ease}
+@keyframes txwide{from{opacity:.6}to{opacity:1}}
+.composer.writing textarea{border-radius:24px}

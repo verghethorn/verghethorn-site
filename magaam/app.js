@@ -56,20 +56,29 @@ const app = $('#app');
 (() => {
   if (!(navigator.standalone || matchMedia('(display-mode: standalone)').matches) || !/iPhone|iPad|iPod/.test(navigator.userAgent)) return;
   const fit = () => {
-    const vv = window.visualViewport, kb = vv && vv.height < window.innerHeight * 0.8;
-    const full = Math.max(screen.height, screen.width) > 0 && innerWidth < innerHeight ? screen.height : 0;
-    const de = document.documentElement, bd = document.body;
-    if (!kb && full && full > innerHeight) {
+    const vv = window.visualViewport, de = document.documentElement, bd = document.body;
+    const full = innerWidth < innerHeight ? screen.height : 0;
+    const kb = vv && full && vv.height < full * 0.72; // the keyboard is open
+    if (kb) {
+      // the app shrinks to the part above the keyboard, so the message box sits right on top of it
+      const h = Math.round(vv.height);
+      for (const el of [de, bd]) el.style.height = h + 'px';
+      Object.assign(app.style, { position: 'absolute', top: '0px', height: h + 'px', bottom: 'auto' });
+      app.style.setProperty('--sb', '0px');
+      if (scrollY) scrollTo(0, 0);
+    } else if (full && full > innerHeight) {
       // the page is laid out taller than iOS says, and everything that sits at the bottom moves up by the missing part
       const gap = full - innerHeight;
       for (const el of [de, bd]) el.style.height = full + 'px';
-      Object.assign(app.style, { position: 'absolute', height: full + 'px', bottom: 'auto' });
+      Object.assign(app.style, { position: 'absolute', top: '0px', height: full + 'px', bottom: 'auto' });
       app.style.setProperty('--sb', `max(env(safe-area-inset-bottom, 0px), ${gap}px)`);
     } else {
       for (const el of [de, bd]) el.style.height = '';
-      Object.assign(app.style, { position: '', height: '', bottom: '' }); app.style.removeProperty('--sb');
+      Object.assign(app.style, { position: '', top: '', height: '', bottom: '' }); app.style.removeProperty('--sb');
     }
   };
+  window.visualViewport?.addEventListener('scroll', () => { if (scrollY) scrollTo(0, 0); });
+  document.addEventListener('focusout', () => setTimeout(fit, 120));
   fit(); addEventListener('resize', fit); window.visualViewport?.addEventListener('resize', fit); addEventListener('orientationchange', () => setTimeout(fit, 300));
 })();
 
@@ -2069,7 +2078,8 @@ V.chat.after = async (id) => {
     if (lastTap.id === b.dataset.msg && now - lastTap.t < 320) { const m = S.thread.find((x) => String(x.id) === b.dataset.msg); if (m) toggleReact(m, '❤️'); lastTap = { id: null, t: 0 }; }
     else lastTap = { id: b.dataset.msg, t: now };
   });
-  const grow = () => { tx.style.height = 'auto'; tx.style.height = Math.min(tx.scrollHeight, 130) + 'px'; const has = !!tx.value.trim(); $('#sendb').hidden = !has; $('#micb').hidden = has; };
+  const grow = () => { tx.style.height = 'auto'; tx.style.height = Math.min(tx.scrollHeight, 168) + 'px'; const has = !!tx.value.trim(); $('#sendb').hidden = !has; $('#micb').hidden = has; f.classList.toggle('writing', has || document.activeElement === tx); };
+  tx.addEventListener('focus', grow); tx.addEventListener('blur', () => setTimeout(grow, 50));
   tx.addEventListener('input', () => { grow(); if (tx.value.trim()) sendTyping(id); });
   if (tx.value) grow(); // text typed while the chat was still loading
   tx.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey && !/mobi/i.test(navigator.userAgent)) { e.preventDefault(); f.requestSubmit(); } });
