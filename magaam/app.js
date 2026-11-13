@@ -187,6 +187,7 @@ async function loadAll() {
   const { data: ms } = await sb.from('messages').select('*').order('created_at', { ascending: false }).limit(1000);
   S.last.clear(); S.unread.clear();
   (ms || []).forEach((m) => {
+    if (m.ai) return;
     const o = m.sender === S.uid ? m.recipient : m.sender;
     if (!S.last.has(o)) S.last.set(o, m);
     if (m.recipient === S.uid && !m.read_at) S.unread.set(o, (S.unread.get(o) || 0) + 1);
@@ -301,7 +302,7 @@ function startRealtime() {
     .on('postgres_changes', { event: '*', schema: 'public', table: 'wallets' }, ({ new: w }) => { if (w && w.user_id === S.uid) { S.coins = w.coins; refresh(); } })
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, ({ new: m }) => {
       const o = m.sender === S.uid ? m.recipient : m.sender;
-      S.last.set(o, m);
+      if (!m.ai) S.last.set(o, m);
       if (S.threadWith === o && !S.thread.some((x) => x.id === m.id)) {
         S.thread = S.thread.filter((x) => !(x.tmp && x.sender === m.sender && (x.sticker ? x.sticker === m.sticker : x.media_path ? x.media_path === m.media_path : x.body ? (x.body === m.body || x.orig === m.orig_body) : !!m.audio_path))); S.thread.push(m);
       }
@@ -1600,11 +1601,17 @@ function autoVoices(chatId) {
   if (!next || voiceMode(next) === 'wait') return;
   playVoice(next);
 }
+// While the friend's living photo speaks, the chat flies apart and they step forward; then it all comes back.
+function stage(on) {
+  const v = app.querySelector('.view'); if (!v) return;
+  if (on) { const bs = [...v.querySelectorAll('.msgs > *')].reverse(); bs.forEach((b, i) => b.style.setProperty('--d', Math.min(i, 10) * 35 + 'ms')); }
+  v.classList.toggle('stage', on);
+}
 function stopPlayer() {
   const had = player; player = null; playing = null; talkBusy = false;
   if (had) {
     try { had.audio?.pause(); had.video?.pause(); } catch {}
-    if (had.video) { TALKER.classList.add('out'); setTimeout(() => { if (!player) TALKER.remove(); }, 350); }
+    if (had.video) { stage(false); TALKER.classList.add('out'); setTimeout(() => { if (!player) TALKER.remove(); }, 450); }
   }
   refresh();
 }
@@ -1617,7 +1624,7 @@ function playVoice(m) {
     const host = app.querySelector('.view .dark'); const bg = host?.querySelector(`[data-bgfor="${m.sender}"]`);
     TALKER.classList.remove('out'); TALKER.src = url(m.talk_path); TALKER.muted = false;
     if (bg) bg.after(TALKER); else host?.prepend(TALKER);
-    player = { video: TALKER };
+    player = { video: TALKER }; stage(true);
     TALKER.onended = () => stopPlayer();
     const pr = TALKER.play(); if (pr) pr.catch(() => { TALKER.muted = true; TALKER.play().catch(() => {}); toast('Tap the screen to hear the voice'); });
   } else {
@@ -1708,6 +1715,7 @@ V.chat = async (id) => {
     <button class="hname" data-go="u/${id}"><b data-notr>${esc(p.name)}</b><span class="pill glass" id="st"></span></button>
     <button class="iconbtn pokebtn" id="pokeb" aria-label="Poke ${esc(p.name)}" title="Poke"><span data-notr>👉</span></button></div>
   <div class="you glass">${S.me.still_path || S.me.photo_path ? `<img class="${S.me.video_path || S.me.still_path ? '' : 'raw'}" src="${esc(thumb(S.me.still_path || S.me.photo_path))}" alt="">` : ''}<span>You</span></div>
+  <button class="aidock" id="aidock" hidden></button>
   <div class="msgs" id="msgs" aria-live="polite"></div>
   <div class="stkpanel glass" id="stk" hidden></div>
   <button class="sendlang glass" id="sendlang" hidden></button>
@@ -1719,27 +1727,52 @@ V.chat = async (id) => {
     <button type="button" class="send" id="recsend" aria-label="Send voice message">${ic('send', 2)}</button></div>
   </div>`;
 };
+// The assistant's panel at the top of a chat: the friend's assistant while they are away, or yours after it spoke for you.
+function paintAiDock(id) {
+  const el = $('#aidock'); if (!el) return;
+  const p = S.members.get(id); if (!p) { el.hidden = true; return; }
+  const theirs = S.thread.filter((m) => m.ai && m.sender === id), mineAi = S.thread.filter((m) => m.ai && m.sender === S.uid);
+  const recent = (a) => a.filter((m) => Date.now() - new Date(m.created_at) < 12 * 3600_000);
+  let who = '', text = '', n = 0;
+  if (S.aiTyping.has(id)) { who = p.ai_name; text = T('typing…'); }
+  else if (recent(theirs).length) { const l = theirs[theirs.length - 1]; who = p.ai_name; text = l.body; n = theirs.length; }
+  else if (awayOn(id)) {
+    const t = p.last_seen ? (new Date(p.last_seen).toDateString() === new Date().toDateString() ? hm(p.last_seen) : when(p.last_seen)) : '';
+    who = p.ai_name; text = (t ? T('{n} is offline since {t}. Write, and I will answer or pass it on.') : T('{n} is offline. Write, and I will answer or pass it on.')).replace('{n}', p.name).replace('{t}', t);
+  } else if (recent(mineAi).length) { who = S.me?.ai_name || 'AI'; text = T('I talked with {n} while you were away').replace('{n}', p.name); n = mineAi.length; }
+  if (!who) { el.hidden = true; return; }
+  const key = who + text; if (el.dataset.k !== key) { el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); el.dataset.k = key; }
+  el.hidden = false;
+  el.innerHTML = `<span class="aiorb">${ic('spark')}</span><span class="adt"><b data-notr>${esc(who)}</b><span data-notr>${esc(text)}</span></span>${n ? `<span class="badge">${n}</span>` : ''}${theirs.length || mineAi.length ? `<i class="chev">${ic('back')}</i>` : ''}`;
+  el.onclick = () => (theirs.length || mineAi.length) && openAiTalk(id);
+}
+function openAiTalk(id) {
+  const p = S.members.get(id), list = [];
+  S.thread.forEach((m, i) => { if (!m.ai) return; const prev = [...S.thread.slice(0, i)].reverse().find((x) => !x.ai && x.sender !== m.sender); if (prev && !list.includes(prev)) list.push(prev); list.push(m); });
+  const bg = document.createElement('div'); bg.className = 'sheet-bg';
+  bg.innerHTML = `<div class="sheet aitalk" role="dialog"><div class="grab"></div><h3>${esc(T('Talk with the assistant'))}</h3><div class="atl">${list.map((m) => {
+    const fromAi = m.ai, mine = m.sender === S.uid;
+    const label = fromAi ? (mine ? S.me?.ai_name : p.ai_name) : (mine ? T('You') : p.name);
+    return `<div class="atm ${fromAi ? 'ai' : ''} ${mine ? 'me' : ''}"><small data-notr>${fromAi ? '✦ ' : ''}${esc(label || '')} · ${esc(hm(m.created_at))}</small><p data-notr>${esc(m.body || previewOf(m))}</p></div>`; }).join('')}</div></div>`;
+  bg.addEventListener('click', (e) => { if (e.target === bg) bg.remove(); });
+  app.appendChild(bg); const l = bg.querySelector('.atl'); l.scrollTop = 1e9;
+}
 V.chat.update = (id) => {
   const box = $('#msgs'); if (!box) return;
   const st = statusOf(id); const s = $('#st'); if (s) s.innerHTML = `<i class="dot ${st.on ? 'on' : ''}"></i>${esc(st.text)}`;
   const nearBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 80;
   let html = '', lastDay = '';
-  const lastMine = [...S.thread].reverse().find((m) => m.sender === S.uid);
-  S.thread.forEach((m) => {
+  // Talk with the assistant lives in its own little panel, not in the chat with the friend.
+  const vis = S.thread.filter((m) => !m.ai);
+  const lastMine = [...vis].reverse().find((m) => m.sender === S.uid);
+  vis.forEach((m) => {
     const d = new Date(m.created_at).toDateString();
     if (d !== lastDay) { html += `<div class="day">${when(m.created_at) === hm(m.created_at) ? 'Today' : when(m.created_at)}</div>`; lastDay = d; }
     html += msgHTML(m);
     if (lastMine && m === lastMine) html += `<div class="meta">${m.tmp ? 'Sending…' : m.read_at ? 'Read ' + hm(m.read_at) : 'Sent ' + hm(m.created_at)}</div>`;
   });
-  if (!S.thread.length && !awayOn(id)) html = `<div class="day">Say hello to ${esc(S.members.get(id)?.name)}</div>`;
-  const lastM = S.thread[S.thread.length - 1];
-  if (awayOn(id) && !(lastM?.ai && lastM.sender === id) && !S.aiTyping.has(id)) {
-    const p = S.members.get(id), t = p.last_seen ? (new Date(p.last_seen).toDateString() === new Date().toDateString() ? hm(p.last_seen) : when(p.last_seen)) : '';
-    const txt = (t ? T("Hi {me}! I'm {ai}, {n}'s AI assistant. {n} has been offline since {t}. Write to me and I'll answer or pass it on.") : T("Hi {me}! I'm {ai}, {n}'s AI assistant. {n} is offline right now. Write to me and I'll answer or pass it on."))
-      .replace('{me}', S.me?.name || '').replace('{ai}', p.ai_name).replaceAll('{n}', p.name).replace('{t}', t);
-    html += `<div class="b them ai greet"><span class="ailbl">${ic('spark', 2)}<span data-notr>${esc(T('{ai} · assistant of {n}').replace('{ai}', p.ai_name).replace('{n}', p.name))}</span></span><span class="tx" data-notr>${esc(txt)}</span></div>`;
-  }
-  if (S.aiTyping.has(id)) html += `<div class="typing aity"><span data-notr>${esc(S.members.get(id)?.ai_name || '')}</span><i></i><i></i><i></i></div>`;
+  if (!vis.length) html = `<div class="day">Say hello to ${esc(S.members.get(id)?.name)}</div>`;
+  paintAiDock(id);
   if (S.typing.has(id)) html += '<div class="typing"><i></i><i></i><i></i></div>';
   box.innerHTML = html;
   mountScratch(box); mountCircles(box);
