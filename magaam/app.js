@@ -588,7 +588,7 @@ V.look = () => {
     : lookCheck === 'ai' ? `This photo is already made with AI. ${esc(aiName())} is bringing it to life…`
     : lookBusy ? `${esc(aiName())} is making your photo… about 20 seconds` : '';
   let actions = '';
-  if (lookCheck === 'later') actions = `<div class="askbox">${aiMsg(`AI is not available right now, so I saved your photo for now. Others see it blurred until I change it and bring it to life. Come back later: Settings → New living photo.`)}</div><button class="btn" data-go="me">${ic('check')}Continue to MAGAAM</button>`;
+  if (lookCheck === 'later') actions = `<div class="askbox">${aiMsg(`AI is not available right now, so I saved your photo for now. Others see it blurred until I change it and bring it to life. Come back later: Settings → Change profile photo.`)}</div><button class="btn" data-go="me">${ic('check')}Continue to MAGAAM</button>`;
   else if (busy) actions = '';
   else if (!orig) actions = `<button class="btn" data-act="pick">${ic('image')}Upload photo</button><button class="btn out" data-act="snap" style="margin-top:10px">${ic('camera')}Take a photo</button>`;
   else if (showVar) actions = `<button class="btn" id="livevar">${ic('spark')}Bring to life</button>
@@ -686,7 +686,7 @@ V.me = () => {
   <div class="dock">
     ${installBanner()}
     <div class="card glass"><div class="ailine" id="ailine" hidden></div><button class="photos-btn" data-go="gallery/${S.uid}"><span class="pt" id="pthumbs"></span><span class="pl"><b>My photos</b><span id="pcount">Open your gallery</span></span><span class="chev">${ic('back')}</span></button>
-      <div class="chips two"><button class="chip" data-go="look">${ic('spark')}New living photo</button><button class="chip" data-act="addpost">${ic('plus')}Add photo</button></div></div>
+      <div class="chips two"><button class="chip" data-go="look">${ic('spark')}Change profile photo</button><button class="chip" data-act="addpost">${ic('plus')}Add to gallery</button></div></div>
     <div id="tabs">${tabbar('me')}</div>
   </div></div>`;
 };
@@ -701,7 +701,7 @@ V.me.update = () => {
     const ai = esc(aiName());
     if (j && ['editing', 'video', 'queued'].includes(j.status)) { al.hidden = false; al.innerHTML = `<span class="spinner sm"></span><span><b>${ai} is creating your living photo</b>${j.status === 'editing' ? 'Changing your photo…' : 'Bringing it to life, about 2 minutes…'}</span>`; }
     else if (j && j.status === 'error' && j === S.jobs.find((x) => x.kind === 'avatar')) { al.hidden = false; al.innerHTML = `<span>${ic('spark')}</span><span><b>${ai} could not finish your photo</b><button data-act="retryai">Try another photo or description</button></span>`; }
-    else if (!S.me.video_path) { al.hidden = false; al.innerHTML = `<span>${ic('spark')}</span><span><b>Your photo is not alive yet</b><button data-act="retryai">Create my living photo</button></span>`; }
+    else if (!S.me.video_path) { al.hidden = false; al.innerHTML = `<span>${ic('spark')}</span><span><b>Your photo is not alive yet</b><button data-act="retryai">Change profile photo</button></span>`; }
     else al.hidden = true;
   }
   const t = $('#tabs'); if (t) t.innerHTML = tabbar('me');
@@ -1616,7 +1616,7 @@ app.addEventListener('click', (e) => {
   if (a === 'install' && deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.finally(() => { deferredPrompt = null; $('#install')?.remove(); }); return; }
   if (a === 'settings') return sheet('Settings', [
     { icon: 'edit', label: 'Edit name and birthday', run: () => go('about') },
-    { icon: 'spark', label: 'New living photo', run: () => go('look') },
+    { icon: 'spark', label: 'Change profile photo', run: () => go('look') },
     { icon: 'coin', label: `Balance: ${S.coins} coins`, run: () => go('wallet') },
     { icon: 'edit', label: `Rename ${aiName()}`, run: () => go('assistant') },
     { icon: 'globe', label: `App language: ${I18N.label}`, run: pickUiLang },
