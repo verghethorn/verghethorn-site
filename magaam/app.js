@@ -321,7 +321,11 @@ function startRealtime() {
     .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, ({ new: p }) => {
       if (!p || !p.id) return;
       const old = p.id === S.uid ? S.me : S.members.get(p.id);
+      const greetChanged = p.id === S.uid && S.me?.greet_status !== p.greet_status;
+      if (p.id === S.uid && S.me?.greet_status === 'making' && p.greet_status === 'ready') toast('Your voice greeting is ready');
+      if (p.id === S.uid && S.me?.greet_status === 'making' && p.greet_status === 'failed') toast('The greeting did not work. Try recording again.', 4000);
       if (p.id === S.uid) S.me = p; else if (p.name && S.members.has(p.id)) S.members.set(p.id, p);
+      if (greetChanged && route().name === 'edit') setTimeout(() => V.edit._paint?.(), 0);
       if (old && (old.photo_path !== p.photo_path || old.video_path !== p.video_path || old.still_path !== p.still_path)) swapBg(p);
       refresh();
     })
@@ -983,13 +987,13 @@ async function addStory() {
   }
 }
 // Full-screen stories: tap right for next, left for back, hold to pause, swipe down to close.
-function openStories(startUid) {
-  const queue = startUid === S.uid ? [S.uid] : storyUsers().filter((u) => u !== S.uid);
+function openStories(startUid, override) {
+  const queue = override || startUid === S.uid ? [startUid] : storyUsers().filter((u) => u !== S.uid);
   let ui = Math.max(0, queue.indexOf(startUid)), si = 0, raf = 0, t0 = 0, dur = 5000, paused = false, pausedAt = 0;
   const v = document.createElement('div'); v.className = 'storyv'; app.appendChild(v);
-  const list = () => S.stories.get(queue[ui]) || [];
+  const list = () => (override || S.stories.get(queue[ui])) || [];
   const firstUnseen = () => { const i = list().findIndex((s) => !S.seenSt.has(s.id)); return i < 0 ? 0 : i; };
-  si = queue[ui] === S.uid ? 0 : firstUnseen();
+  si = override || queue[ui] === S.uid ? 0 : firstUnseen();
   const close = () => { cancelAnimationFrame(raf); v.remove(); refresh(); };
   const go = (d) => {
     si += d;
@@ -1007,7 +1011,7 @@ function openStories(startUid) {
     const mine = u === S.uid, p = mine ? S.me : S.members.get(u);
     if (!mine && !S.seenSt.has(s.id)) { S.seenSt.add(s.id); sb.from('story_views').insert({ story_id: s.id, viewer: S.uid }).then(() => {}); }
     v.innerHTML = `<div class="sbars">${list().map((x, i) => `<span class="${i < si ? 'done' : i === si ? 'cur' : ''}"><i></i></span>`).join('')}</div>
-      <div class="shead">${thumbHTML(p)}<b data-notr>${esc(mine ? T('Your story') : p?.name || '')}</b><span data-notr>${esc(when(s.created_at))}</span><span class="grow"></span>${mine ? `<button class="iconbtn" data-sdel aria-label="Delete">${ic('trash')}</button>` : ''}<button class="iconbtn" data-sx aria-label="Close">${ic('x')}</button></div>
+      <div class="shead">${thumbHTML(p)}<b data-notr>${esc(mine ? T('Your story') : p?.name || '')}</b><span data-notr>${esc(when(s.created_at))}</span><span class="grow"></span>${mine ? `<button class="iconbtn ${s.pinned ? 'pinned' : ''}" data-spin aria-label="Pin to profile">${ic('pin')}</button><button class="iconbtn" data-sdel aria-label="Delete">${ic('trash')}</button>` : ''}<button class="iconbtn" data-sx aria-label="Close">${ic('x')}</button></div>
       <div class="smedia">${s.video_path ? `<video src="${esc(url(s.video_path))}" poster="${esc(url(s.path))}" playsinline autoplay></video>` : `<img src="${esc(url(s.path))}" alt="">`}</div>
       <button class="sz l" data-prev aria-label="Back"></button><button class="sz r" data-next aria-label="Next"></button>
       <div class="sfoot">${mine ? `<button class="pill glass" data-seen>${ic('me')}<span>Seen by</span> <b data-notr id="seenn">…</b></button>`
@@ -1034,6 +1038,11 @@ function openStories(startUid) {
     if (e.target.closest('[data-sx]')) return close();
     if (e.target.closest('[data-next]')) return go(1);
     if (e.target.closest('[data-prev]')) return go(-1);
+    if (e.target.closest('[data-spin]')) {
+      const s = list()[si]; const { error } = await sb.from('stories').update({ pinned: !s.pinned }).eq('id', s.id);
+      if (error) return toast('Something went wrong. Try again.');
+      s.pinned = !s.pinned; e.target.closest('[data-spin]').classList.toggle('pinned', s.pinned); toast(s.pinned ? 'Pinned to your profile' : 'Removed from your profile'); return;
+    }
     if (e.target.closest('[data-sdel]')) {
       const s = list()[si]; paused = true;
       const k = await dialog(`<h3 class="dh">Delete this story?</h3>`, [{ k: 'd', label: 'Delete', style: 'red' }, { k: 'n', label: 'Cancel', style: 'out' }]);
@@ -1839,23 +1848,153 @@ V.p.after = (id) => {
   app.querySelectorAll('[data-fr]').forEach((b) => (b.onclick = () => { b.disabled = true; friendAct(b.dataset.fr, b.dataset.uid); }));
 };
 
+/* ---------- a friend's living profile ---------- */
+const FLAGS = [['Русский', '🇷🇺'], ['English', '🇬🇧'], ['العربية', '🇸🇦'], ['Türkçe', '🇹🇷'], ['Español', '🇪🇸'], ['Français', '🇫🇷'], ['Deutsch', '🇩🇪'], ['Italiano', '🇮🇹'], ['Português', '🇵🇹'],
+  ['O‘zbekcha', '🇺🇿'], ['Қазақша', '🇰🇿'], ['Українська', '🇺🇦'], ['Azərbaycan', '🇦🇿'], ['فارسی', '🇮🇷'], ['اردو', '🇵🇰'], ['हिन्दी', '🇮🇳'], ['中文', '🇨🇳'], ['Bahasa Indonesia', '🇮🇩'], ['Bahasa Melayu', '🇲🇾'], ['한국어', '🇰🇷'], ['日本語', '🇯🇵']];
+const flagOf = (l) => (FLAGS.find((f) => f[0] === l) || [, '🌐'])[1];
+const INTERESTS = ['📚 Books', '🎮 Games', '⚽ Football', '🏀 Basketball', '🛼 Roller skating', '🎨 Drawing', '📸 Photography', '🎬 Movies', '🎵 Music', '✈️ Travel',
+  '🍳 Cooking', '💻 Coding', '♟️ Chess', '🏋️ Gym', '🧗 Climbing', '🐱 Cats', '🐶 Dogs', '🌍 Languages', '📖 Quran', '🛍️ Fashion', '🚗 Cars', '🎤 Singing', '🧘 Calm', '🌙 Night walks'];
+const vibeOf = (p) => (p?.vibe && p.vibe_at && Date.now() - new Date(p.vibe_at) < 86400_000 ? p.vibe : '');
+const sinceTxt = (iso) => { try { return new Date(iso).toLocaleDateString(I18N.lang === 'en' ? 'en-GB' : I18N.lang, { day: 'numeric', month: 'long', year: new Date(iso).getFullYear() === new Date().getFullYear() ? undefined : 'numeric' }); } catch { return ''; } };
 V.u = async (id) => {
-  if (id === S.uid) { go('me', true); return; }
-  if (!S.members.has(id)) { await loadAll(); if (!S.members.has(id)) { go('chats', true); return; } }
-  const p = S.members.get(id);
-  loadPosts(id).then(() => route().name === 'u' && V.u.update(id));
-  return `<div class="dark" style="position:absolute;inset:0">
+  const self = id === S.uid;
+  if (!self && !S.members.has(id)) { await loadAll(); if (!S.members.has(id)) { go('chats', true); return; } }
+  const p = self ? S.me : S.members.get(id);
+  const vibe = vibeOf(p), mine = new Set(S.me?.interests || []), ints = p.interests || [];
+  const common = self ? 0 : ints.filter((x) => mine.has(x)).length;
+  const sub = [`@${esc(p.username || '')}`, p.city ? `📍 ${esc(p.city)}` : '', (p.langs || []).map(flagOf).join(' ')].filter(Boolean).join(' · ');
+  return `<div class="dark prof" style="position:absolute;inset:0">
   ${bgMedia(p)}
+  ${p.greet_path ? `<video class="greetv" id="greetv" playsinline webkit-playsinline preload="auto" src="${esc(url(p.greet_path))}"></video>` : ''}
   <div class="shade"></div>
-  <div class="hdr"><button class="iconbtn" data-back="chats" aria-label="Back">${ic('back')}</button>
-    <div class="hname"><b data-notr>${esc(p.name)}</b><span class="pill glass" id="st"></span></div><button class="iconbtn" data-act="umore" data-uid="${id}" aria-label="More">${ic('more', 2.4)}</button></div>
-  <div class="dock"><div class="cta2"><button class="pbtn blue" data-go="chat/${id}">${ic('chat')}Message</button><button class="pbtn glass" data-go="gallery/${id}" id="gal">${ic('grid')}Gallery</button></div></div></div>`;
+  <div class="hdr"><button class="iconbtn" data-back="${self ? 'me' : 'chats'}" aria-label="Back">${ic('back')}</button><span></span>
+    ${self ? `<button class="iconbtn" data-go="edit" aria-label="Edit">${ic('edit')}</button>` : `<button class="iconbtn" data-act="umore" data-uid="${id}" aria-label="More">${ic('more', 2.4)}</button>`}</div>
+  <div class="pscroll" id="ps"><div class="pspacer" id="pspacer"></div>
+    <div class="psheet glass"><div class="grab"></div>
+      <div class="ptop"><h1 data-notr>${esc(p.name)}</h1>${self ? `<span class="pill glass">${esc(T('This is how friends see you'))}</span>` : `<span class="pill glass" id="st"></span>`}</div>
+      <div class="psub" data-notr>${sub}</div>
+      ${vibe ? `<div class="vibe" data-notr>${esc(vibe)}</div>` : ''}
+      <div class="pact">${self ? `<button class="pbtn blue" data-go="edit">${ic('edit')}Edit profile</button>`
+        : `<button class="pbtn blue" data-go="chat/${id}">${ic('chat')}Message</button><button class="pbtn glass" data-act="ucircle" data-uid="${id}">${ic('camera')}Circle</button>`}
+        ${p.greet_path ? `<button class="pbtn glass sq" id="greetb" aria-label="Hear the greeting">${ic('play', 2)}</button>` : ''}</div>
+      ${p.bio ? `<div class="psec"><h4>About</h4><p class="pbio" data-notr>${esc(p.bio)}</p></div>` : ''}
+      ${ints.length ? `<div class="psec"><h4>Interests${common ? ` <span class="pcom">${esc(T('{n} in common').replace('{n}', common))}</span>` : ''}</h4><div class="pints">${ints.map((x) => `<span class="pint ${!self && mine.has(x) ? 'same' : ''}">${esc(T(x))}</span>`).join('')}</div></div>` : ''}
+      ${self ? '' : `<div class="psec"><h4>You two</h4><div class="ptog" id="ptog"><span class="spinner xs"></span></div></div>`}
+      <div class="psec" id="phl" hidden><h4>Highlights</h4><div class="phl" id="phlr"></div></div>
+      <div class="psec"><h4>Gallery <span class="pcom" id="pgn"></span></h4><div class="pgrid" id="pgrid"><span class="spinner xs"></span></div></div>
+      ${self || ints.length || p.bio || vibe ? '' : `<p class="fine pempty">${esc(T('{n} has not filled in the profile yet.').replace('{n}', p.name))}</p>`}
+    </div></div></div>`;
 };
-V.u.update = (id) => {
-  const st = statusOf(id), s = $('#st'); if (s) s.innerHTML = `<i class="dot ${st.on ? 'on' : ''}"></i>${esc(st.text)}`;
-  const g = $('#gal'); const n = (S.posts.get(id) || []).length; if (g) g.innerHTML = `${ic('grid')}Gallery <span class="n">${n}</span>`;
+V.u.cls = 'darkv';
+V.u.update = (id) => { const st = statusOf(id), s = $('#st'); if (s) s.innerHTML = `<i class="dot ${st.on ? 'on' : ''}"></i>${esc(T(st.text))}`; };
+V.u.after = async (id) => {
+  V.u.update(id);
+  const self = id === S.uid, p = self ? S.me : S.members.get(id);
+  // her living photo says hello in her own voice
+  const gv = $('#greetv'), gb = $('#greetb');
+  const playGreet = () => { if (!gv) return; gv.currentTime = 0; gv.muted = false; gv.classList.add('on'); gv.play().then(() => gb?.classList.remove('pulse')).catch(() => { gv.classList.remove('on'); gb?.classList.add('pulse'); }); };
+  if (gv) { gv.onended = () => gv.classList.remove('on'); gb.onclick = playGreet; $('#pspacer').onclick = playGreet; setTimeout(playGreet, 350); }
+  app.querySelector('[data-act="ucircle"]')?.addEventListener('click', () => { go('chat/' + id); setTimeout(() => recordCircle(id), 600); });
+  const [posts, hl, tg] = await Promise.all([loadPosts(id),
+    sb.from('stories').select('*').eq('user_id', id).eq('pinned', true).order('created_at', { ascending: false }).then((r) => r.data || []),
+    self ? Promise.resolve(null) : sb.rpc('together', { p_other: id }).then((r) => r.data?.[0] || null)]);
+  if (route().name !== 'u' || route().id !== id) return;
+  const g = $('#pgrid'), n = $('#pgn');
+  if (n) n.textContent = posts.length || '';
+  if (g) g.innerHTML = posts.length ? posts.slice(0, 30).map((x, i) => `<button class="ptile" data-pi="${i}">${x.video_path ? `<video src="${esc(url(x.video_path))}#t=0.1" muted loop playsinline autoplay preload="metadata" poster="${esc(thumb(x.path))}"></video>` : `<img src="${esc(thumb(x.path))}" alt="" loading="lazy">`}</button>`).join('')
+    : `<p class="fine" style="grid-column:1/-1;margin:4px 0">${esc(T('No photos yet'))}</p>`;
+  g?.addEventListener('click', (e) => { const b = e.target.closest('[data-pi]'); if (b) go('gallery/' + id); });
+  if (hl.length) {
+    $('#phl').hidden = false;
+    $('#phlr').innerHTML = hl.map((s, i) => `<button class="phli" data-hi="${i}"><span class="ring on"><img src="${esc(thumb(s.path))}" alt=""></span></button>`).join('');
+    $('#phlr').onclick = (e) => { const b = e.target.closest('[data-hi]'); if (b) openStories(id, hl.slice(+b.dataset.hi).concat(hl.slice(0, +b.dataset.hi))); };
+  }
+  const t = $('#ptog');
+  if (t && tg) {
+    const days = S.streaks.get(id);
+    const faces = (tg.mutual_ids || []).map((m) => S.members.get(m)).filter(Boolean);
+    t.innerHTML = `<div class="tg"><b data-notr>${tg.since ? esc(sinceTxt(tg.since)) : '—'}</b><span>${esc(T('friends since'))}</span></div>
+      <div class="tg"><b data-notr>${days ? '🔥 ' + days : '—'}</b><span>${esc(T('days in a row'))}</span></div>
+      <div class="tg">${faces.length ? `<span class="faces">${faces.slice(0, 4).map((f) => thumbHTML(f)).join('')}</span>` : '<b>0</b>'}<span>${esc(T('mutual friends'))}</span></div>`;
+  }
 };
-V.u.after = (id) => V.u.update(id);
+
+/* ---------- edit my profile ---------- */
+let greetRec = null;
+V.edit = () => {
+  const m = S.me, ints = new Set(m.interests || []), langs = new Set(m.langs || []);
+  return `<div class="light">
+  <div class="topbar"><button class="iconbtn" data-back="me" aria-label="Back">${ic('back')}</button><span class="word">MAGAAM</span><button class="iconbtn" data-go="u/${S.uid}" aria-label="Preview">${ic('me')}</button></div>
+  <div class="lhead" style="margin-top:8px"><h1>My profile</h1><p class="sub">This is what friends see when they open your page.</p></div>
+  <div class="stack">
+    <div class="ecard"><b>${ic('mic', 2)} Voice greeting</b><p class="fine" style="text-align:left;margin:0">Your living photo says it in your voice when friends open your page. Up to 6 seconds, for example: “Hi, I’m ${esc(m.name)}!”</p>
+      <div class="erow" id="grow">${greetState()}</div></div>
+    <label class="fl">Vibe for today<input class="field" id="evibe" maxlength="60" placeholder="🎧 learning Turkish" value="${esc(vibeOf(m))}"></label>
+    <div class="ideas" id="evq">${['🎧 ', '📚 ', '✈️ ', '🔥 ', '😴 ', '🎮 ', '☕ '].map((e) => `<button class="idea" data-ve="${e}" data-notr>${e.trim()}</button>`).join('')}</div>
+    <label class="fl">City<input class="field" id="ecity" maxlength="60" placeholder="Istanbul" value="${esc(m.city || '')}"></label>
+    <div class="fl"><span>Languages I speak</span><div class="echips" id="elangs">${FLAGS.map(([l, f]) => `<button type="button" class="echip ${langs.has(l) ? 'on' : ''}" data-l="${esc(l)}" data-notr>${f} ${esc(l)}</button>`).join('')}</div></div>
+    <div class="fl"><span>Interests</span><div class="echips" id="eints">${INTERESTS.map((x) => `<button type="button" class="echip ${ints.has(x) ? 'on' : ''}" data-i="${esc(x)}">${esc(x)}</button>`).join('')}</div></div>
+    <label class="fl">About me<textarea class="field ta" id="ebio" maxlength="300" placeholder="A line or two about you">${esc(m.bio || '')}</textarea></label>
+    <button class="btn soft" id="ebioai">${ic('spark')}Let ${esc(aiName())} write it</button>
+    <p class="err" id="eerr"></p>
+  </div>
+  <div class="grow"></div>
+  <button class="btn" id="esave">${ic('check')}Save</button>
+  <button class="btn out" style="margin-top:10px" data-go="u/${S.uid}">${ic('me')}See it like a friend</button></div>`;
+};
+function greetState() {
+  const m = S.me;
+  if (!m.video_path) return `<span class="fine" style="margin:0">${esc(T('First make your living photo.'))}</span>`;
+  if (greetRec) return `<button class="pbtn sm red" id="grec">${ic('x', 2)}<span>Stop</span></button><b id="gtime" data-notr>0:00</b>`;
+  if (m.greet_status === 'making') return `<span class="spinner xs dark"></span><span class="fine" style="margin:0">${esc(T('Your living photo is learning it… about 3 minutes.'))}</span>`;
+  return `<button class="pbtn sm blue" id="grec">${ic('mic', 2)}<span>${m.greet_path ? 'Record again' : 'Record'}</span></button>${m.greet_path ? `<button class="pbtn sm out" data-go="u/${S.uid}">${ic('play', 2)}<span>Listen</span></button>` : ''}`;
+}
+V.edit.after = () => {
+  const paintG = () => { const r = $('#grow'); if (r) { r.innerHTML = greetState(); const b = $('#grec'); if (b) b.onclick = toggleGreet; } };
+  V.edit._paint = paintG; paintG();
+  async function toggleGreet() {
+    if (greetRec) { const r = greetRec; greetRec = null; clearInterval(r.timer); r.mr.stop(); return; }
+    let stream; try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch { return toast('Allow microphone access to record a voice message.', 4000); }
+    const mime = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm'].find((t) => MediaRecorder.isTypeSupported?.(t)) || '';
+    const mr = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined), chunks = [], t0 = Date.now();
+    mr.ondataavailable = (e) => e.data?.size && chunks.push(e.data);
+    mr.onstop = async () => {
+      stream.getTracks().forEach((t) => t.stop()); paintG();
+      const ms = Date.now() - t0; if (ms < 1500) return toast('Too short. Hold on a little longer.');
+      let blob = new Blob(chunks, { type: (mr.mimeType || 'audio/mp4').split(';')[0] });
+      try { blob = (await applyVfx(blob, '')).blob; } catch {}
+      toast('Uploading…', 20000);
+      const path = `${S.uid}/greetsrc-${Date.now()}.wav`;
+      const { error } = await sb.storage.from('media').upload(path, blob, { contentType: 'audio/wav', cacheControl: '31536000' });
+      if (error) return toast('Upload failed. Try again.');
+      try { await aiCall({ op: 'greet', path }); S.me.greet_status = 'making'; toast('Your living photo is learning it… about 3 minutes.', 4000); }
+      catch (e) { toast(e.message === 'daily_limit' ? 'You have used today’s AI limit. Try again tomorrow.' : 'AI is not available right now. Try again later.', 4000); }
+      paintG();
+    };
+    mr.start(250); greetRec = { mr, t0 }; paintG();
+    greetRec.timer = setInterval(() => { const s = (Date.now() - t0) / 1000; const el = $('#gtime'); if (el) el.textContent = fmtSec(s); if (s >= 6) toggleGreet(); }, 200);
+  }
+  $('#evq').onclick = (e) => { const b = e.target.closest('[data-ve]'); if (!b) return; const v = $('#evibe'); v.value = b.dataset.ve + v.value.replace(/^\S+\s/, ''); v.focus(); };
+  ['#elangs', '#eints'].forEach((s) => ($(s).onclick = (e) => { const b = e.target.closest('.echip'); if (!b) return; if (s === '#eints' && !b.classList.contains('on') && $(s).querySelectorAll('.on').length >= 12) return toast('Up to 12 interests'); b.classList.toggle('on'); }));
+  const pick = (s, a) => [...$(s).querySelectorAll('.echip.on')].map((b) => b.dataset[a]);
+  $('#ebioai').onclick = async () => {
+    const b = $('#ebioai'); b.disabled = true; const old = b.innerHTML; b.innerHTML = `<span class="spinner xs dark"></span>${esc(T('Writing…'))}`;
+    try { const j = await aiCall({ op: 'bio', lang: I18N.langName, interests: pick('#eints', 'i'), langs: pick('#elangs', 'l'), city: $('#ecity').value, vibe: $('#evibe').value, hint: $('#ebio').value }); if (j.text) $('#ebio').value = j.text; }
+    catch { toast('AI is not available right now. Try again later.'); }
+    b.disabled = false; b.innerHTML = old;
+  };
+  $('#esave').onclick = async () => {
+    const vibe = $('#evibe').value.trim();
+    const upd = { vibe: vibe || null, vibe_at: vibe ? (vibe === vibeOf(S.me) ? S.me.vibe_at : new Date().toISOString()) : null, city: $('#ecity').value.trim() || null,
+      langs: pick('#elangs', 'l'), interests: pick('#eints', 'i'), bio: $('#ebio').value.trim() || null };
+    $('#esave').disabled = true;
+    const { data, error } = await sb.from('profiles').update(upd).eq('id', S.uid).select().single();
+    $('#esave').disabled = false;
+    if (error) { $('#eerr').textContent = T('Could not save. Try again.'); return; }
+    S.me = data; toast('Saved'); go('u/' + S.uid);
+  };
+};
+
 
 /* Gallery */
 V.gallery = async (id) => {
@@ -2033,6 +2172,7 @@ app.addEventListener('click', (e) => {
   if (a === 'hideinstall') { store.set('magaam-install-hide', '1'); $('#install')?.remove(); return; }
   if (a === 'install' && deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.finally(() => { deferredPrompt = null; $('#install')?.remove(); }); return; }
   if (a === 'settings') return sheet('Settings', [
+    { icon: 'me', label: 'Edit profile', run: () => go('edit') },
     { icon: 'edit', label: 'Edit name and birthday', run: () => go('about') },
     { icon: 'spark', label: 'Change profile photo', run: () => go('look') },
     { icon: 'coin', label: `Balance: ${S.coins} coins`, run: () => go('wallet') },
