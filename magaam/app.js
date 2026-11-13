@@ -96,13 +96,17 @@ function bgMedia(p) {
 }
 // Crossfade loop for living videos, and a light check on living photos still being made.
 // The AI photo always sits under the video, so the screen is never black; a video only shows once it really plays.
-const lvPlay = (v) => { v.muted = true; v.defaultMuted = true; v.playsInline = true; const pr = v.play(); return pr ? pr : Promise.resolve(); };
+// play() on iPhone can stay pending forever (Low Power Mode, a slow network): give up after 2.5 s and try again later.
+const lvPlay = (v) => { v.muted = true; v.defaultMuted = true; v.playsInline = true; const pr = v.play() || Promise.resolve();
+  return Promise.race([pr, new Promise((_, rej) => setTimeout(() => rej(new Error('slow')), 2500))]); };
+// The video shows only once it really moves; until then the AI photo "breathes" underneath.
+document.addEventListener('playing', (e) => { const box = e.target.closest?.('.loopbox'); if (box) box.classList.add('live'); }, true);
 setInterval(() => {
   app.querySelectorAll('.loopbox').forEach((box) => {
     const [a, b] = box.querySelectorAll('video'); if (!a || !b) return;
     const cur = a.classList.contains('on') ? a : b, nxt = cur === a ? b : a;
     if (box.dataset.x || document.hidden) return;
-    if (cur.paused && !cur.ended) { box.dataset.x = '1'; lvPlay(cur).then(() => box.classList.add('live')).catch(() => box.classList.remove('live')).finally(() => delete box.dataset.x); return; }
+    if (cur.paused && !cur.ended) { box.dataset.x = '1'; lvPlay(cur).then(() => box.classList.add('live')).catch(() => {}).finally(() => delete box.dataset.x); return; }
     if (!cur.paused) box.classList.add('live');
     if (!cur.duration || !isFinite(cur.duration)) return;
     if (cur.ended || cur.currentTime > cur.duration - 0.75) {
@@ -112,7 +116,7 @@ setInterval(() => {
         setTimeout(() => { cur.pause(); delete box.dataset.x; }, 850);
       }).catch(() => {
         // The second copy could not start: just loop the same one.
-        cur.currentTime = 0; lvPlay(cur).catch(() => box.classList.remove('live')).finally(() => delete box.dataset.x);
+        cur.currentTime = 0; lvPlay(cur).catch(() => {}).finally(() => delete box.dataset.x);
       });
     }
   });
