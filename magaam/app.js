@@ -254,8 +254,9 @@ function startRealtime() {
     .on('postgres_changes', { event: '*', schema: 'public', table: 'ai_jobs' }, ({ new: j }) => {
       if (!j?.id) return; const i = S.jobs.findIndex((x) => x.id === j.id); if (i >= 0) S.jobs[i] = { ...S.jobs[i], ...j }; else S.jobs.unshift(j);
       if (j.status === 'done' && j.kind === 'avatar') toast(`${aiName()}: your photo is alive now`);
-      if (j.status === 'done' && j.kind !== 'avatar') toast(`${aiName()} added a new photo to your gallery`);
-      if (j.status === 'error') toast(`${aiName()} could not finish this one. Try another photo or description.`, 4500);
+      if (j.status === 'done' && j.kind === 'post_edit') toast(`${aiName()} added a new photo to your gallery`);
+      if (j.status === 'done' && j.kind === 'video_edit') { toast(`${aiName()} added your new video to the gallery`); loadPosts(S.uid).then(refresh); }
+      if (j.status === 'error' && ['avatar', 'post_edit', 'video_edit'].includes(j.kind)) toast(`${aiName()} could not finish this one. Try another photo or description.`, 4500);
       refresh();
     })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'reactions' }, (pl) => {
