@@ -163,6 +163,7 @@ function aiError(e) {
     : e === 'video_length' ? 'AI can change videos from 3 to 10 seconds long.'
     : e === 'video_read' ? 'This video could not be read. Try an MP4 or MOV video.'
     : e === 'not_ai' ? 'This photo has no AI changes yet.'
+    : e === 'group' ? 'Only one person can be in your profile photo, because your living photo talks for you in chats. Choose a photo where only you are visible.'
     : e === 'no_face' ? 'Your profile photo must show your face. Pictures without a person, drawings or animals are not allowed. Choose a photo where your face is visible.'
     : 'AI is not available right now. Try again later.';
 }
@@ -502,8 +503,8 @@ V.look.after = () => {
       const [hints, path] = await Promise.all([fileHints(f), uploadPhoto(f, 'avatar')]);
       const r = await anim({ kind: 'check', path, hints });
       if (!r.ok) { sb.storage.from('media').remove([path, path.replace(/\.jpg$/, '-t.jpg')]); throw new Error(r.error || 'ai'); }
-      // The rule: a profile photo must show the person's face.
-      if (!r.face) { sb.storage.from('media').remove([path, path.replace(/\.jpg$/, '-t.jpg')]); throw new Error('no_face'); }
+      // The rule: one person, with the face visible (that person speaks in chats).
+      if (!r.pass) { sb.storage.from('media').remove([path, path.replace(/\.jpg$/, '-t.jpg')]); throw new Error(r.problem === 'group' ? 'group' : 'no_face'); }
       const upd = { orig_path: path }; if (!S.me?.photo_path) upd.photo_path = path;
       const { data, error } = await sb.from('profiles').update(upd).eq('id', S.uid).select().single(); if (error) throw error;
       S.me = data; pendingPhoto = null;
