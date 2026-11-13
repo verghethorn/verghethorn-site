@@ -333,10 +333,13 @@ function go(path, replace) { const h = '#/' + path; if (replace) history.replace
 function back(fallback) { if (history.length > 1 && S.prevView) { navBack = true; history.back(); } else { navBack = true; go(fallback, true); } }
 window.addEventListener('popstate', () => { navBack = true; show(); });
 
-const ONBOARD = ['welcome', 'signin', 'code'];
+const ONBOARD = ['lang', 'welcome', 'signin', 'code'];
+const langChosen = () => !!store.get('magaam-ui-chosen');
 async function show() {
   let { name, id } = route();
   if (!S.uid && !ONBOARD.includes(name)) { name = 'welcome'; history.replaceState(null, '', '#/welcome'); }
+  // The very first screen: choose the language of the app.
+  if (!S.uid && !langChosen() && name !== 'lang') { name = 'lang'; history.replaceState(null, '', '#/lang'); }
   if (S.uid) {
     if (ONBOARD.includes(name) || !name) name = 'me';
     const hasPhoto = !!(S.me?.orig_path || S.me?.photo_path);
@@ -384,6 +387,16 @@ window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); defe
 /* ---------- views ---------- */
 const V = {};
 
+const LANG_HELLO = { en: 'Hello', ru: 'Привет', ar: 'مرحبًا', tr: 'Merhaba' };
+V.lang = () => `<div class="light splash langpick">
+  <img class="mark sm" src="img/symbol.png" alt="MAGAAM">
+  <div class="word">MAGAAM</div>
+  <h1 class="lp-title" data-notr><span>Choose your language</span><span>Выберите язык</span><span dir="rtl">اختر لغتك</span><span>Dilini seç</span></h1>
+  <div class="lp-list">${I18N.LANGS.map(([code, label]) => `<button class="lp-btn" data-pick="${code}" aria-pressed="${code === I18N.lang}" ${code === 'ar' ? 'dir="rtl"' : ''}><b data-notr>${esc(label)}</b><span data-notr>${esc(LANG_HELLO[code] || '')}</span></button>`).join('')}</div>
+</div>`;
+V.lang.after = () => app.querySelectorAll('[data-pick]').forEach((b) => (b.onclick = () => {
+  I18N.set(b.dataset.pick); store.set('magaam-ui-chosen', '1'); TR.clear?.(); go('welcome', true);
+}));
 V.welcome = () => `<div class="light splash"><button class="langbtn" data-act="uilang">${ic('globe')}<span data-notr>${esc(I18N.label)}</span></button>
   <img class="mark" src="img/symbol.png" alt="MAGAAM">
   <div class="word">MAGAAM</div><p class="sub">Your living self. Always here.</p>
