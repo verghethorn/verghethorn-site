@@ -993,7 +993,7 @@ h1{font-weight:700;font-size:38px;letter-spacing:-.035em;line-height:1.05}
 /* slimmer tab bar: icons, the active one with its name */
 .tabs{padding:6px}
 .tabs button{height:50px;justify-content:center}
-.tabs button .tl{font-size:11px;max-height:0;opacity:0;overflow:hidden;transition:max-height .3s,opacity .25s}
+.tabs button .tl{font-size:11px;max-height:0;opacity:0;overflow:hidden}
 .tabs button[aria-current="page"] .tl{max-height:16px;opacity:1}
 .tabs button svg{width:25px;height:25px}
 

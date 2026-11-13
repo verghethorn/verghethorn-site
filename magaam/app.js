@@ -55,30 +55,35 @@ const app = $('#app');
 // Stretch the app to the real screen height, except while the keyboard is open.
 (() => {
   if (!(navigator.standalone || matchMedia('(display-mode: standalone)').matches) || !/iPhone|iPad|iPod/.test(navigator.userAgent)) return;
+  // Measured once, before we change anything: re-measuring after our own change made the page jump up and down.
+  const full = innerWidth < innerHeight ? screen.height : 0, gap0 = full ? Math.max(0, full - innerHeight) : 0;
+  let mode = '';
   const fit = () => {
     const vv = window.visualViewport, de = document.documentElement, bd = document.body;
-    const full = innerWidth < innerHeight ? screen.height : 0;
-    const kb = vv && full && vv.height < full * 0.72; // the keyboard is open
-    if (kb) {
+    const kb = !!(vv && full && vv.height < full * 0.72) && /^(TEXTAREA|INPUT)$/.test(document.activeElement?.tagName || ''); // the keyboard is open
+    const want = kb ? 'kb' : gap0 > 0 ? 'full' : 'plain';
+    const h = kb ? Math.round(vv.height) : full;
+    if (want === mode && (want !== 'kb' || app.style.height === h + 'px')) return; // nothing changed: do not touch the page
+    mode = want;
+    if (want === 'kb') {
       // the app shrinks to the part above the keyboard, so the message box sits right on top of it
-      const h = Math.round(vv.height);
       for (const el of [de, bd]) el.style.height = h + 'px';
       Object.assign(app.style, { position: 'absolute', top: '0px', height: h + 'px', bottom: 'auto' });
       app.style.setProperty('--sb', '0px');
       if (scrollY) scrollTo(0, 0);
-    } else if (full && full > innerHeight) {
+    } else if (want === 'full') {
       // the page is laid out taller than iOS says, and everything that sits at the bottom moves up by the missing part
-      const gap = full - innerHeight;
       for (const el of [de, bd]) el.style.height = full + 'px';
       Object.assign(app.style, { position: 'absolute', top: '0px', height: full + 'px', bottom: 'auto' });
-      app.style.setProperty('--sb', `max(env(safe-area-inset-bottom, 0px), ${gap}px)`);
+      app.style.setProperty('--sb', `max(env(safe-area-inset-bottom, 0px), ${gap0}px)`);
     } else {
       for (const el of [de, bd]) el.style.height = '';
       Object.assign(app.style, { position: '', top: '', height: '', bottom: '' }); app.style.removeProperty('--sb');
     }
   };
   window.visualViewport?.addEventListener('scroll', () => { if (scrollY) scrollTo(0, 0); });
-  document.addEventListener('focusout', () => setTimeout(fit, 120));
+  document.addEventListener('focusout', () => setTimeout(fit, 150));
+  document.addEventListener('focusin', () => setTimeout(fit, 150));
   fit(); addEventListener('resize', fit); window.visualViewport?.addEventListener('resize', fit); addEventListener('orientationchange', () => setTimeout(fit, 300));
 })();
 
@@ -451,6 +456,8 @@ function refresh() {
 }
 
 /* ---------- shared fragments ---------- */
+// redraw the tab bar only when something in it changed (redrawing every time made the bottom twitch)
+function setTabs(active) { const t = $('#tabs'); if (!t) return; const h = tabbar(active); if (t.dataset.h !== h) { t.innerHTML = h; t.dataset.h = h; } }
 function tabbar(active) {
   const t = [['spark', 'Assistant', 'soon'], ['chat', 'Chats', 'chats'], ['video', 'Video', 'video'], ['bag', 'Shop', 'soon'], ['me', 'Me', 'me']];
   const n = totalUnread();
@@ -773,7 +780,7 @@ V.me.update = () => {
     else al.hidden = true;
   }
   const d = $('#hdot'); if (d) d.hidden = !totalUnread();
-  const t = $('#tabs'); if (t) t.innerHTML = tabbar('me');
+  setTabs('me');
   showDigest();
 };
 V.me.after = () => {
@@ -851,7 +858,7 @@ V.chats.update = () => {
     const prev = ty ? T('typing…') : l ? (l.sender === S.uid ? T('You') + ': ' : '') + previewOf(l) : T('Say hello');
     return `<button class="crow" data-go="chat/${p.id}">${thumbHTML(p)}<span class="cmid"><b data-notr>${esc(p.name)}${S.streaks.get(p.id) ? ` <span class="streak">🔥${S.streaks.get(p.id)}</span>` : ''}</b><span data-notr>${esc(prev)}</span></span><span class="cend">${l ? when(l.created_at) : ''}${u ? `<span class="badge">${u}</span>` : ''}</span></button>`;
   }).join('')}</div>` : `<div class="rows glass"><div class="empty"><b>${q ? 'No one found' : 'No friends yet'}</b><span>${q ? 'Try another name.' : 'Add friends by their @username or send them your link.'}</span>${q ? '' : `<button class="pbtn blue" data-go="add">${ic('useradd')}Add friends</button>`}</div></div>`);
-  const t = $('#tabs'); if (t) t.innerHTML = tabbar('chats');
+  setTabs('chats');
 };
 V.chats.after = () => {
   V.chats.update();
@@ -921,7 +928,7 @@ V.add.update = () => {
   if (r) r.innerHTML = S.reqIn.length ? `<h3 class="sech">Friend requests</h3><div class="rows glass">${S.reqIn.map((p) => personRow(p, `<button class="pbtn blue sm" data-fr="accept" data-uid="${p.id}">${ic('check')}Accept</button><button class="iconbtn sm" data-fr="decline" data-uid="${p.id}" aria-label="Decline">${ic('x')}</button>`)).join('')}</div>` : '';
   const sn = $('#sent');
   if (sn) sn.innerHTML = S.reqOut.size ? `<h3 class="sech">Waiting for an answer</h3><div class="rows glass">${[...S.reqOut].map((id) => { const p = S.people?.get(id) || { id, name: '…' }; return personRow(p, `<button class="pbtn glass sm" data-fr="cancel" data-uid="${id}">Cancel</button>`); }).join('')}</div>` : '';
-  const t = $('#tabs'); if (t) t.innerHTML = tabbar('chats');
+  setTabs('chats');
 };
 V.add.after = (id) => {
   V.add.update();
