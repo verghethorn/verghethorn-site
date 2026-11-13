@@ -2153,12 +2153,15 @@ V.p = async (id) => {
     <div class="hname"><b data-notr>${esc(c.name)}</b>${c.is_public ? `<span class="pill glass" id="st"></span>` : ''}</div><button class="iconbtn" data-act="umore" data-uid="${id}" aria-label="More">${ic('more', 2.4)}</button></div>
   <div class="dock"><div class="card glass pcard">
     <div class="phead"><span class="puser" data-notr>@${esc(c.username || '')}</span><span class="ptype ${c.is_public ? 'open' : ''}">${ic(c.is_public ? 'globe' : 'lock', 2)}${esc(T(c.is_public ? 'Open profile' : 'Closed profile'))}</span></div>
-    <div class="pstats">${stats}</div>
-    ${c.is_public ? `<div class="cta2">${relBtn(id, true)}<button class="pbtn glass" data-go="gallery/${id}">${ic('grid')}Gallery</button></div>`
+    <div class="pstat sm" id="pstat2" hidden></div>
+    ${c.is_public ? `<div class="cta2">${relBtn(id, true)}<button class="pbtn glass" id="followb">${ic('plus', 2)}${esc(T('Follow'))}</button></div><button class="pbtn glass thin" data-go="gallery/${id}">${ic('grid')}Gallery</button>`
       : `<div class="plock">${ic('lock', 2)}<span>Gallery and stories are only for friends.</span></div>${relBtn(id, true)}`}
   </div></div></div>`;
 };
-V.p.after = (id) => {
+V.p.after = async (id) => {
+  await paintStats(id, '#pstat2');
+  const fb = $('#followb'), paintF = (on) => { if (!fb) return; fb.classList.toggle('on', on); fb.innerHTML = on ? `${ic('check', 2)}${esc(T('Following'))}` : `${ic('plus', 2)}${esc(T('Follow'))}`; };
+  if (fb) { paintF(!!$('#pstat2')?.dataset.follow); fb.onclick = async () => { fb.disabled = true; const { data, error } = await sb.rpc('follow_toggle', { p_id: id }); fb.disabled = false; if (error) return toast('Could not save. Try again.'); paintF(!!data); navigator.vibrate?.(12); if (data) burst('👀', fb); paintStats(id, '#pstat2'); }; }
   const s = $('#st'); if (s) { const st = statusOf(id); s.innerHTML = `<i class="dot ${st.on ? 'on' : ''}"></i>${esc(T(st.text))}`; }
   app.querySelectorAll('[data-fr]').forEach((b) => (b.onclick = () => { b.disabled = true; friendAct(b.dataset.fr, b.dataset.uid); }));
 };
@@ -2191,6 +2194,7 @@ V.u = async (id) => {
     ${self ? `<button class="iconbtn" data-go="edit" aria-label="Edit">${ic('edit')}</button>` : `<button class="iconbtn" data-act="umore" data-uid="${id}" aria-label="More">${ic('more', 2.4)}</button>`}</div>
   ${self ? '' : `<button class="ubub" id="ubub" hidden>${aiFace(p)}<span><b data-notr>${esc(T('{ai} is here').replace('{ai}', p.ai_name || ''))}</b><small data-notr>${esc(T('{n} is offline').replace('{n}', p.name))}</small></span></button>`}
   <div class="pbottom">
+    <div class="pstat" id="pstat" hidden></div>
     <div class="pmeta"><span class="pill glass" id="st">${self ? esc(T('This is how friends see you')) : ''}</span><span class="psub2" data-notr>${sub}</span></div>
     <div class="pdeck" id="pdeck">
       <section class="pcard">${empty ? `<div class="pai">${aiFace(p)}<p data-notr>${esc(self ? T('Your page is waiting for you: add a vibe, interests and a couple of lines about you.') : T('This is {n} 🙂 Still a bit shy, the profile will come alive soon.').replace('{n}', name))}</p></div>
@@ -2230,6 +2234,7 @@ V.u.after = async (id) => {
   deck.addEventListener('scroll', () => { const i = Math.round(deck.scrollLeft / Math.max(1, deck.clientWidth * 0.86)); dots.querySelectorAll('i').forEach((d, k) => d.classList.toggle('on', k === i)); }, { passive: true });
   const mine = new Set(S.me?.interests || []);
   if (!self) { let n = 0; app.querySelectorAll('.prof2 [data-int]').forEach((el) => { const k = el.dataset.int; if (k && mine.has(k)) { el.classList.add('same'); n++; } }); const pc = $('#pcom'); if (pc && n) pc.textContent = T('{n} in common').replace('{n}', n); }
+  paintStats(id);
   const [posts, hl, tg] = await Promise.all([loadPosts(id),
     sb.from('stories').select('*').eq('user_id', id).eq('pinned', true).order('created_at', { ascending: false }).then((r) => r.data || []),
     self ? Promise.resolve(null) : sb.rpc('together', { p_other: id }).then((r) => r.data?.[0] || null)]);
@@ -2288,6 +2293,46 @@ function petKitten(box) {
     s0.k.classList.remove('boop'); void s0.k.offsetWidth; s0.k.classList.add('boop'); navigator.vibrate?.(12); hearts(s0.k, 3);
   };
   ['pointerup', 'pointercancel', 'pointerleave'].forEach((ev) => box.addEventListener(ev, end));
+}
+/* Living numbers: friends first, then followers, posts and sparks (compliments). They count up when you open the page. */
+const STATS = [['friends', '👥', 'Friends'], ['followers', '👀', 'Followers'], ['posts', '📸', 'Posts'], ['sparks', '✨', 'Sparks']];
+const nfmt = (n) => (n >= 1e6 ? (n / 1e6).toFixed(n >= 1e7 ? 0 : 1) + 'M' : n >= 1e4 ? Math.round(n / 1e3) + 'K' : n >= 1e3 ? (n / 1e3).toFixed(1) + 'K' : String(n));
+async function paintStats(id, into = '#pstat') {
+  const { data } = await sb.rpc('profile_stats', { p_id: id }); const st = data?.[0];
+  const box = $(into); if (!box || !st) return;
+  const show = STATS.filter(([k]) => st[k] !== null && st[k] !== undefined);
+  box.innerHTML = show.map(([k, e, l], i) => { const wk = st[k + '_week'] || 0;
+    return `<button class="ps ps-${k}" data-ps="${k}" style="--i:${i}"><b data-n="${st[k]}" data-notr>0</b><span>${esc(T(l))}${k === 'sparks' ? ' ✨' : ''}</span>${wk ? `<i data-notr>↑ +${wk}</i>` : ''}</button>`; }).join('');
+  box.hidden = false; box.dataset.follow = st.i_follow ? '1' : '';
+  // count up, a little like a slot machine
+  box.querySelectorAll('b[data-n]').forEach((b, i) => { const n = +b.dataset.n, t0 = performance.now() + i * 90, dur = 900;
+    const step = (t) => { const k = Math.min(1, Math.max(0, (t - t0) / dur)), e = 1 - Math.pow(1 - k, 3); b.textContent = nfmt(Math.round(n * e)); if (k < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step); });
+  box.onclick = (e) => { const b = e.target.closest('[data-ps]'); if (b) statTap(id, b.dataset.ps, st); };
+}
+function peopleSheet(title, list, empty) {
+  const bg = document.createElement('div'); bg.className = 'sheet-bg';
+  bg.innerHTML = `<div class="sheet" role="dialog"><div class="grab"></div><h3>${esc(title)}</h3><div class="plist">${list.length ? list.map((p) => `<button class="prow2" data-go="${S.members.has(p.id) || p.id === S.uid ? 'u' : 'p'}/${p.id}">${thumbHTML(p)}<span><b data-notr>${esc(p.name || '')}</b><small data-notr>${p.sub ? esc(p.sub) : '@' + esc(p.username || '')}</small></span></button>`).join('') : `<p class="fine">${esc(empty || '')}</p>`}</div></div>`;
+  bg.addEventListener('click', (e) => { if (e.target === bg || e.target.closest('[data-go]')) setTimeout(() => bg.remove(), 0); });
+  app.appendChild(bg);
+}
+async function statTap(id, k, st) {
+  const self = id === S.uid, who = self ? S.me : S.members.get(id) || S.extra.get(id) || {};
+  if (k === 'posts') return go('gallery/' + id);
+  if (k === 'friends') {
+    if (self) return peopleSheet(T('Friends'), [...S.members.values()], T('No friends yet'));
+    const { data } = await sb.rpc('together', { p_other: id }); const ids = data?.[0]?.mutual_ids || [];
+    return peopleSheet(T('Mutual friends'), ids.map((m) => S.members.get(m)).filter(Boolean), T('{n} friends, none in common yet').replace('{n}', st.friends));
+  }
+  if (k === 'followers') {
+    if (!self) return toast(T('{n} follow {who}').replace('{n}', st.followers).replace('{who}', who.name || ''), 2500);
+    const { data } = await sb.rpc('my_followers'); return peopleSheet(T('Followers'), data || [], T('No followers yet. Open profiles get followers.'));
+  }
+  if (k === 'sparks') {
+    if (!self) return toast(T('{who} got {n} compliments ✨').replace('{who}', who.name || '').replace('{n}', st.sparks), 2500);
+    const { data } = await sb.from('messages').select('sender, sticker, created_at').eq('recipient', S.uid).like('sticker', 'x|cmp|%').order('created_at', { ascending: false }).limit(60);
+    return peopleSheet(T('Sparks'), (data || []).map((m) => ({ ...(S.members.get(m.sender) || { id: m.sender, name: nameOf(m.sender) }), sub: '✨ ' + T(CMPS[+m.sticker.split('|')[2]] || CMPS[0]) })), T('Compliments from friends will shine here'));
+  }
 }
 let lastCmp = 0;
 async function sendCmp(to, code) {
@@ -2633,9 +2678,9 @@ app.addEventListener('click', (e) => {
     { icon: 'edit', label: `Rename ${aiName()}`, run: () => go('assistant') },
     { icon: 'globe', label: `App language: ${I18N.label}`, run: pickUiLang },
     { icon: 'globe', label: `Translation language: ${langLabel(myLang())}`, run: pickLang },
-    { icon: 'spark', label: S.me?.away_ai === false ? `${aiName()} answers for me: off` : `${aiName()} answers for me: on`, run: async () => {
-      const v = S.me?.away_ai === false; const { data, error } = await sb.from('profiles').update({ away_ai: v }).eq('id', S.uid).select().single();
-      if (error) return toast('Could not save. Try again.'); S.me = data; toast(v ? `${aiName()} will answer friends while you are away` : `${aiName()} will not answer for you`); } },
+    { icon: 'grid', label: S.me?.hide_stats ? T('Numbers on my profile: hidden') : T('Numbers on my profile: shown'), run: async () => {
+      const v = !S.me?.hide_stats; const { data, error } = await sb.from('profiles').update({ hide_stats: v }).eq('id', S.uid).select().single();
+      if (error) return toast('Could not save. Try again.'); S.me = data; toast(T(v ? 'Others now see only friends and sparks' : 'Everyone sees all your numbers')); } },
     { icon: 'bell', label: soundOn() ? 'Message sound: on' : 'Message sound: off', run: () => { store.set('magaam-sound', soundOn() ? 'off' : 'on'); unlockAudio(); if (soundOn()) setTimeout(() => chime(false, true), 60); toast(soundOn() ? 'Message sound is on' : 'Message sound is off'); } },
     { icon: S.me?.is_public ? 'globe' : 'lock', label: S.me?.is_public ? 'Profile: open' : 'Profile: closed', run: pickPrivacy },
     { icon: 'useradd', label: 'Add friends', run: () => go('add') },
