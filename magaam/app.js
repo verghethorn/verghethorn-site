@@ -34,9 +34,11 @@ const I = {
   mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
   globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
   copy:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>',
-  check:'<path d="M5 12.5l4.5 4.5L19 7"/>'
+  check:'<path d="M5 12.5l4.5 4.5L19 7"/>',
+  smile:'<circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1 1.3 2.2 2 3.5 2s2.5-.7 3.5-2"/><circle cx="9" cy="10" r=".8" fill="currentColor"/><circle cx="15" cy="10" r=".8" fill="currentColor"/>'
 };
-const aiName = () => S.me?.ai_name || 'Your AI';
+const T = (x) => I18N.tr(x);
+const aiName = () => S.me?.ai_name || T('Your AI');
 const ic = (n, sw = 1.8) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]}</svg>`;
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
 const $ = (s, r = document) => r.querySelector(s);
@@ -44,13 +46,13 @@ const app = $('#app');
 
 /* ---------- state ---------- */
 const S = { uid:null, me:null, priv:null, members:new Map(), last:new Map(), unread:new Map(), online:new Set(),
-  typing:new Map(), thread:[], threadWith:null, posts:new Map(), jobs:[], phone:'', pres:null, view:'', prevView:'' };
+  typing:new Map(), thread:[], threadWith:null, posts:new Map(), jobs:[], rx:new Map(), phone:'', pres:null, view:'', prevView:'' };
 try { S.phone = localStorage.getItem('magaam-phone') || ''; } catch {}
 const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
 
 /* ---------- helpers ---------- */
 let toastT;
-function toast(t, ms = 2400) { const n = $('#toast'); n.textContent = t; n.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => (n.hidden = true), ms); }
+function toast(t, ms = 2400) { const n = $('#toast'); n.textContent = T(t); n.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => (n.hidden = true), ms); }
 const url = (p) => (p ? MEDIA + p : '');
 const thumb = (p) => (p ? MEDIA + p.replace(/\.jpg$/, '-t.jpg') : '');
 const sceneImg = (k) => `img/scene-${SCENES.some((s) => s[0] === k) ? k : 'plaza'}.jpg`;
@@ -60,8 +62,8 @@ function hm(d) { return new Date(d).toLocaleTimeString([], { hour: '2-digit', mi
 function when(d) {
   const t = new Date(d), now = new Date(), y = new Date(now); y.setDate(now.getDate() - 1);
   if (t.toDateString() === now.toDateString()) return hm(t);
-  if (t.toDateString() === y.toDateString()) return 'Yesterday';
-  return t.toLocaleDateString([], { day: 'numeric', month: 'short' });
+  if (t.toDateString() === y.toDateString()) return T('Yesterday');
+  return t.toLocaleDateString(I18N.lang, { day: 'numeric', month: 'short' });
 }
 function statusOf(id) {
   if (S.online.has(id)) return { on: true, text: 'Online' };
@@ -165,12 +167,12 @@ function startRealtime() {
       const o = m.sender === S.uid ? m.recipient : m.sender;
       S.last.set(o, m);
       if (S.threadWith === o && !S.thread.some((x) => x.id === m.id)) {
-        S.thread = S.thread.filter((x) => !(x.tmp && x.sender === m.sender && (x.body ? x.body === m.body : !!m.audio_path))); S.thread.push(m);
+        S.thread = S.thread.filter((x) => !(x.tmp && x.sender === m.sender && (x.sticker ? x.sticker === m.sticker : x.body ? (x.body === m.body || x.orig === m.orig_body) : !!m.audio_path))); S.thread.push(m);
       }
       if (m.sender !== S.uid) {
         S.typing.delete(o);
         if (route().name === 'chat' && route().id === o && document.visibilityState === 'visible') { sb.rpc('mark_read', { p_other: o }); }
-        else { S.unread.set(o, (S.unread.get(o) || 0) + 1); if (route().name !== 'chat') toast(`${nameOf(o)}: ${m.body ? m.body.slice(0, 60) : 'Voice message'}`); }
+        else { S.unread.set(o, (S.unread.get(o) || 0) + 1); if (route().name !== 'chat') toast(`${nameOf(o)}: ${m.body ? m.body.slice(0, 60) : m.sticker ? T('Sticker') : T('Voice message')}`); }
       }
       refresh();
     })
@@ -191,6 +193,12 @@ function startRealtime() {
       if (j.status === 'done' && j.kind === 'avatar') toast(`${aiName()}: your photo is alive now`);
       if (j.status === 'done' && j.kind !== 'avatar') toast(`${aiName()} added a new photo to your gallery`);
       if (j.status === 'error') toast(`${aiName()} could not finish this one. Try another photo or description.`, 4500);
+      refresh();
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'reactions' }, (pl) => {
+      const x = pl.eventType === 'DELETE' ? pl.old : pl.new; if (!x?.message_id) return; const k = String(x.message_id);
+      if (!S.rx.has(k)) S.rx.set(k, new Map());
+      if (pl.eventType === 'DELETE') S.rx.get(k).delete(x.user_id); else S.rx.get(k).set(x.user_id, x.emoji);
       refresh();
     })
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, ({ new: x }) => {
@@ -256,10 +264,10 @@ function tabbar(active) {
   return `<nav class="tabs glass" aria-label="Sections">${t.map(([i, l, r]) => `<button data-tab="${r}" ${r === active ? 'aria-current="page"' : ''}>${ic(i)}${l}${r === 'chats' && n ? `<span class="badge">${n}</span>` : ''}</button>`).join('')}</nav>`;
 }
 const progress = (n) => `<div class="progress" aria-label="Step ${n} of 3">${[1,2,3].map((i) => `<i class="${i <= n ? 'on' : ''}"></i>`).join('')}</div>`;
-function sheet(title, items) {
+function sheet(title, items, top) {
   const bg = document.createElement('div'); bg.className = 'sheet-bg';
-  bg.innerHTML = `<div class="sheet" role="dialog" aria-label="${esc(title)}"><div class="grab"></div><h3>${esc(title)}</h3>${items.map((it, i) => `<button class="it ${it.red ? 'red' : ''}" data-i="${i}">${ic(it.icon)}${esc(it.label)}</button>`).join('')}</div>`;
-  bg.addEventListener('click', (e) => { const b = e.target.closest('[data-i]'); if (b) { bg.remove(); items[+b.dataset.i].run(); } else if (e.target === bg) bg.remove(); });
+  bg.innerHTML = `<div class="sheet" role="dialog" aria-label="${esc(title)}"><div class="grab"></div>${top ? top.html : ''}${title ? `<h3>${esc(title)}</h3>` : ''}${items.map((it, i) => `<button class="it ${it.red ? 'red' : ''}" data-i="${i}">${ic(it.icon)}<span ${it.notr ? 'data-notr' : ''}>${esc(it.label)}</span></button>`).join('')}</div>`;
+  bg.addEventListener('click', (e) => { const r = e.target.closest('[data-top]'); if (r && top) { bg.remove(); top.run(r.dataset.top); return; } const b = e.target.closest('[data-i]'); if (b) { bg.remove(); items[+b.dataset.i].run(); } else if (e.target === bg) bg.remove(); });
   app.appendChild(bg);
 }
 function installBanner() {
@@ -275,7 +283,7 @@ window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); defe
 /* ---------- views ---------- */
 const V = {};
 
-V.welcome = () => `<div class="light splash">
+V.welcome = () => `<div class="light splash"><button class="langbtn" data-act="uilang">${ic('globe')}<span data-notr>${esc(I18N.label)}</span></button>
   <img class="mark" src="img/symbol.png" alt="MAGAAM">
   <div class="word">MAGAAM</div><p class="sub">Your living self. Always here.</p>
   <div class="grow"></div>
@@ -400,7 +408,7 @@ V.look = () => {
   <p class="err" id="err"></p>
   <div class="grow"></div>
   <button class="btn" id="go" disabled>${ic('spark')}Create my living photo</button>
-  <p class="fine">${src ? 'Takes about 2 minutes. English descriptions work best.' : 'A full-length photo works best'}</p></div>`;
+  <p class="fine">${src ? 'Takes about 2 minutes. You can write in any language.' : 'A full-length photo works best'}</p></div>`;
 };
 V.look.after = () => {
   const choose = async (cap) => { const f = await pickFile(cap); if (!f) return; const w = $('#wish'); if (w) draftWish = w.value; pendingPhoto = { file: f, preview: URL.createObjectURL(f) }; show(); };
@@ -437,7 +445,7 @@ V.me = () => {
   return `<div class="dark" style="position:absolute;inset:0">
   ${bgMedia(m)}
   <div class="shade"></div>
-  <div class="hdr"><div class="leftname"><b>${esc(m.name)}</b><span class="pill glass aipill">${ic('spark').replace('<svg', '<svg style="width:15px;height:15px"')}${esc(aiName())}</span></div><button class="iconbtn" data-act="settings" aria-label="Settings">${ic('gear')}</button></div>
+  <div class="hdr"><div class="leftname"><b data-notr>${esc(m.name)}</b><span class="pill glass aipill">${ic('spark').replace('<svg', '<svg style="width:15px;height:15px"')}${esc(aiName())}</span></div><button class="iconbtn" data-act="settings" aria-label="Settings">${ic('gear')}</button></div>
   <div class="dock">
     ${installBanner()}
     <div class="card glass"><div class="ailine" id="ailine" hidden></div><button class="photos-btn" data-go="gallery/${S.uid}"><span class="pt" id="pthumbs"></span><span class="pl"><b>My photos</b><span id="pcount">Open your gallery</span></span><span class="chev">${ic('back')}</span></button>
@@ -478,8 +486,8 @@ V.chats.update = () => {
   const box = $('#list'); if (!box) return;
   box.innerHTML = list.length ? `<div class="rows glass">${list.map((p) => {
     const l = S.last.get(p.id), u = S.unread.get(p.id) || 0, ty = S.typing.has(p.id);
-    const prev = ty ? 'typing…' : l ? (l.sender === S.uid ? 'You: ' : '') + (l.body || 'Voice message') : 'Say hello';
-    return `<button class="crow" data-go="chat/${p.id}">${thumbHTML(p)}<span class="cmid"><b>${esc(p.name)}</b><span>${esc(prev)}</span></span><span class="cend">${l ? when(l.created_at) : ''}${u ? `<span class="badge">${u}</span>` : ''}</span></button>`;
+    const prev = ty ? T('typing…') : l ? (l.sender === S.uid ? T('You') + ': ' : '') + (l.body || (l.sticker ? T('Sticker') : T('Voice message'))) : T('Say hello');
+    return `<button class="crow" data-go="chat/${p.id}">${thumbHTML(p)}<span class="cmid"><b data-notr>${esc(p.name)}</b><span data-notr>${esc(prev)}</span></span><span class="cend">${l ? when(l.created_at) : ''}${u ? `<span class="badge">${u}</span>` : ''}</span></button>`;
   }).join('')}</div>` : `<div class="rows glass"><div class="empty"><b>${q ? 'No one found' : 'No friends here yet'}</b><span>${q ? 'Try another name.' : 'Send the MAGAAM link and an invite code to your friends. They appear here as soon as they join.'}</span></div></div>`;
   const t = $('#tabs'); if (t) t.innerHTML = tabbar('chats');
 };
@@ -496,7 +504,7 @@ const LANGS = [['English','English'],['Русский','Russian'],['العربي
 function myLang() {
   const v = store.get('magaam-lang'); if (v) return v;
   const map = { ru:'Russian', ar:'Arabic', tr:'Turkish', es:'Spanish', fr:'French', de:'German', it:'Italian', pt:'Portuguese', zh:'Chinese', hi:'Hindi', id:'Indonesian', uk:'Ukrainian', kk:'Kazakh', uz:'Uzbek', fa:'Persian', ur:'Urdu' };
-  return map[(navigator.language || 'en').slice(0, 2)] || 'English';
+  return I18N.lang !== 'en' ? I18N.langName : (map[(navigator.language || 'en').slice(0, 2)] || 'English');
 }
 const langLabel = (v) => (LANGS.find((l) => l[1] === v) || [v])[0];
 function pickLang() {
@@ -512,17 +520,100 @@ function bars(seed) {
   let x = 0; for (const c of String(seed)) x = (x * 31 + c.charCodeAt(0)) >>> 0;
   let h = ''; for (let i = 0; i < 22; i++) { x = (x * 1103515245 + 12345) >>> 0; h += `<i style="height:${30 + (x % 70)}%"></i>`; } return h;
 }
+/* Stickers, reactions, big emoji */
+const STK_FUN = [['🔥','pulse'],['😂','shake'],['❤️','beat'],['🥳','bounce'],['😎','tilt'],['😭','shake'],['👍','bounce'],['🤯','pulse'],['🙏','bounce'],['💯','spin'],['🫶','beat'],['😴','float'],['👀','tilt'],['🎉','spin'],['💀','shake'],['🤝','bounce'],['🌙','float'],['☕','float'],['⚽','spin'],['🏆','bounce'],['🌹','float'],['✨','spin'],['🤲','float'],['🫡','tilt']];
+const STK_WORDS = ['YALLA', 'HABIBI', 'MASHALLAH', 'INSHALLAH', 'BRO', 'OMG', 'LOL', 'TAMAM', 'GG', 'VIBE', 'NO WAY', 'SOON', 'АХАХА', 'ПОКА', 'Я ТУТ', 'ОКЕЙ', 'يلا', 'حبيبي', 'ماشاء الله', 'تمام'];
+const STK_ME = [['laugh','😂','Laughing'],['love','🫶','Love'],['wow','😮','Wow'],['cool','😎','Cool'],['sad','😢','Sad'],['angry','😤','Angry'],['sleep','😴','Sleepy'],['hi','👋','Hi'],['party','🥳','Party']];
+const REACTS = ['❤️', '😂', '🔥', '😮', '😢', '👍'];
+function stickerHTML(code) {
+  const [k, a, b] = String(code).split('|');
+  if (k === 'e') { const f = STK_FUN.find((x) => x[0] === a); return `<span class="se a-${f ? f[1] : 'bounce'}" data-notr>${esc(f ? f[0] : '✨')}</span>`; }
+  if (k === 'w') { const i = Math.max(0, STK_WORDS.indexOf(a)); return `<span class="swd sw${i % 6}" data-notr>${esc(STK_WORDS[i])}</span>`; }
+  if (k === 'u' && /^[0-9a-f-]{36}\/sticker-\d+\.png$/.test(a || '')) return `<img class="su" src="${esc(url(a))}" alt="Sticker">`;
+  return '';
+}
+const seg = typeof Intl !== 'undefined' && Intl.Segmenter ? new Intl.Segmenter() : null;
+function isJumbo(t) {
+  if (!t || t.length > 24 || !seg) return false;
+  const g = [...seg.segment(t.trim())].map((x) => x.segment).filter((x) => x.trim());
+  return g.length > 0 && g.length <= 3 && g.every((x) => /\p{Extended_Pictographic}/u.test(x));
+}
+function rxHTML(m) {
+  const r = S.rx.get(String(m.id)); if (!r || !r.size) return '';
+  const counts = {}; r.forEach((e) => (counts[e] = (counts[e] || 0) + 1));
+  const mineE = r.get(S.uid);
+  return `<span class="rx" data-notr>${Object.entries(counts).map(([e, n]) => `<span class="${e === mineE ? 'mine' : ''}">${e}${n > 1 ? `<b>${n}</b>` : ''}</span>`).join('')}</span>`;
+}
+async function loadRx() {
+  const ids = S.thread.filter((m) => !m.tmp).map((m) => m.id); if (!ids.length) return;
+  const { data } = await sb.from('reactions').select('message_id,user_id,emoji').in('message_id', ids.slice(-400));
+  (data || []).forEach((x) => { const k = String(x.message_id); if (!S.rx.has(k)) S.rx.set(k, new Map()); S.rx.get(k).set(x.user_id, x.emoji); });
+}
+async function toggleReact(m, e) {
+  if (m.tmp) return; const k = String(m.id);
+  if (!S.rx.has(k)) S.rx.set(k, new Map());
+  const r = S.rx.get(k), cur = r.get(S.uid);
+  if (cur === e) { r.delete(S.uid); refresh(); await sb.from('reactions').delete().eq('message_id', m.id).eq('user_id', S.uid); }
+  else { r.set(S.uid, e); refresh(); navigator.vibrate?.(10); await sb.from('reactions').upsert({ message_id: m.id, user_id: S.uid, emoji: e }, { onConflict: 'message_id,user_id' }); }
+}
+async function sendSticker(to, code) {
+  const tmp = { id: 'tmp' + Date.now(), tmp: true, sender: S.uid, recipient: to, sticker: code, created_at: new Date().toISOString() };
+  S.thread.push(tmp); V.chat.update(to); const box = $('#msgs'); if (box) box.scrollTop = 1e9;
+  const { data, error } = await sb.from('messages').insert({ recipient: to, sticker: code }).select().single();
+  S.thread = S.thread.filter((x) => x !== tmp);
+  if (error) toast('Message not sent. Check your connection.'); else if (!S.thread.some((x) => x.id === data.id)) { S.thread.push(data); S.last.set(to, data); }
+  V.chat.update(to);
+}
+let myStickers = null;
+async function loadMyStickers() { const { data } = await sb.from('stickers').select('*').eq('user_id', S.uid).order('created_at', { ascending: false }); myStickers = data || []; }
+let stkTab = 'fun', stkBusy = false;
+function stickerPanel(to) {
+  const p = $('#stk'); if (!p) return;
+  const tabs = [['fun', 'Fun'], ['words', 'Words'], ['me', 'Me stickers']];
+  let body = '';
+  if (stkTab === 'fun') body = `<div class="sgrid">${STK_FUN.map(([e, a]) => `<button class="sbtn" data-stk="e|${e}"><span class="se a-${a}" data-notr>${e}</span></button>`).join('')}</div>`;
+  else if (stkTab === 'words') body = `<div class="sgrid words">${STK_WORDS.map((w, i) => `<button class="sbtn" data-stk="w|${esc(w)}"><span class="swd sw${i % 6}" data-notr>${esc(w)}</span></button>`).join('')}</div>`;
+  else {
+    if (!myStickers) { loadMyStickers().then(() => stickerPanel(to)); }
+    body = `<div class="mkstk"><b>Make a sticker of me</b>
+      <div class="ideas">${STK_ME.map(([k, e, l]) => `<button class="idea dark" data-mk="${k}" ${stkBusy ? 'disabled' : ''}>${e} <span>${l}</span></button>`).join('')}</div>
+      <div class="mkrow"><input class="search glass" id="mkp" maxlength="200" placeholder="Or describe your sticker"><button class="send sm" id="mkgo" aria-label="Make" ${stkBusy ? 'disabled' : ''}>${ic('spark', 2)}</button></div>
+      ${stkBusy ? `<div class="mkwait"><span class="spinner sm"></span><span>${esc(aiName())} is drawing your sticker…</span></div>` : ''}</div>
+      <div class="sgrid">${(myStickers || []).map((x) => `<button class="sbtn" data-stk="u|${esc(x.path)}"><img class="su" src="${esc(url(x.path))}" alt="" loading="lazy"></button>`).join('') || (myStickers ? '<p class="note2">Your stickers appear here</p>' : '<span class="spinner sm"></span>')}</div>`;
+  }
+  p.innerHTML = `<div class="stabs">${tabs.map(([k, l]) => `<button data-stab="${k}" aria-pressed="${stkTab === k}">${l}</button>`).join('')}</div><div class="sbody">${body}</div>`;
+  p.onclick = async (e) => {
+    const t = e.target.closest('[data-stab]'); if (t) { stkTab = t.dataset.stab; return stickerPanel(to); }
+    const s2 = e.target.closest('[data-stk]'); if (s2) { p.hidden = true; return sendSticker(to, s2.dataset.stk); }
+    const mk = e.target.closest('[data-mk]'); const mg = e.target.closest('#mkgo');
+    if ((mk || mg) && !stkBusy) {
+      const body2 = mk ? { op: 'sticker', expr: mk.dataset.mk } : { op: 'sticker', prompt: ($('#mkp')?.value || '').trim() };
+      if (!mk && (body2.prompt || '').length < 2) return;
+      stkBusy = true; stickerPanel(to);
+      try { const j = await aiCall(body2); if (j.sticker) { myStickers = [j.sticker, ...(myStickers || [])]; toast('Your sticker is ready'); } }
+      catch (err) { toast(err.message === 'daily_limit' ? 'You have used today’s AI limit. Try again tomorrow.' : 'Could not make the sticker. Try again.'); }
+      stkBusy = false; stickerPanel(to);
+    }
+  };
+}
 function msgHTML(m) {
   const mine = m.sender === S.uid;
   if (m.audio_path) {
     const talk = m.talk_status === 'ready' && m.talk_path, making = m.talk_status === 'making';
-    return `<div class="b voice ${mine ? 'me' : 'them'} ${playing === String(m.id) ? 'playing' : ''}" data-msg="${m.id}">
+    const rxv = rxHTML(m);
+    return `<div class="b voice ${mine ? 'me' : 'them'} ${playing === String(m.id) ? 'playing' : ''} ${rxv ? 'has-rx' : ''}" data-msg="${m.id}">
       <button class="vplay" data-play="${m.id}" aria-label="${playing === String(m.id) ? 'Stop' : 'Replay voice message'}">${ic(playing === String(m.id) ? 'pause' : 'play', 2)}</button>
       <span class="wave">${bars(m.id)}</span><span class="vlen">${fmtSec((m.audio_ms || 0) / 1000)}</span>
-      ${talk ? `<span class="vtag" title="Living photo">${ic('spark', 2)}</span>` : making ? '<span class="vtag wait" title="Living photo is coming"><span class="spinner xs"></span></span>' : ''}</div>`;
+      ${talk ? `<span class="vtag" title="Living photo">${ic('spark', 2)}</span>` : making ? '<span class="vtag wait" title="Living photo is coming"><span class="spinner xs"></span></span>' : ''}${rxv}</div>`;
   }
+  const rx = rxHTML(m);
+  if (m.sticker) return `<div class="b stk ${mine ? 'me' : 'them'} ${rx ? 'has-rx' : ''}" data-msg="${m.id}">${stickerHTML(m.sticker)}${rx}</div>`;
   const tr = TR.get(String(m.id));
-  return `<div class="b ${mine ? 'me' : 'them'}" data-msg="${m.id}" title="${hm(m.created_at)}">${esc(tr && tr.show ? tr.text : m.body)}${tr && tr.show ? `<button class="trnote" data-orig="${m.id}">${ic('globe')}${esc(langLabel(myLang()))} · Show original</button>` : ''}</div>`;
+  const text = tr && tr.show ? tr.text : m.body;
+  const jumbo = !(tr && tr.show) && isJumbo(m.body);
+  const note = tr && tr.show ? `<button class="trnote" data-orig="${m.id}">${ic('globe')}<span>Show original</span></button>`
+    : (mine && m.orig_lang ? `<span class="trnote">${ic('globe')}<span>Sent in ${esc(langLabel(m.orig_lang))}</span></span>` : '');
+  return `<div class="b ${jumbo ? 'jumbo' : ''} ${mine ? 'me' : 'them'} ${rx ? 'has-rx' : ''}" data-msg="${m.id}" title="${hm(m.created_at)}"><span class="tx" data-notr>${esc(text)}</span>${note}${rx}</div>`;
 }
 let playing = null, player = null, talkBusy = false;
 /* Media elements unlocked by the first tap, so voices can play by themselves later (iOS rule). */
@@ -585,13 +676,20 @@ async function translateMsg(m) {
   refresh();
 }
 function msgMenu(m) {
-  if (m.audio_path) return sheet('Voice message', [{ icon: 'play', label: 'Play', run: () => playVoice(m) }]);
+  const mineE = S.rx.get(String(m.id))?.get(S.uid);
+  const top = { html: `<div class="rxrow">${REACTS.map((e) => `<button data-top="${e}" class="${e === mineE ? 'on' : ''}" aria-label="${e}">${e}</button>`).join('')}</div>`, run: (e) => toggleReact(m, e) };
+  if (m.audio_path) return sheet('', [{ icon: 'play', label: 'Play', run: () => playVoice(m) }], top);
+  if (m.sticker) return sheet('', [], top);
   const tr = TR.get(String(m.id));
-  sheet('Message', [
+  if (m.sender === S.uid && m.orig_body) return sheet('', [
+    tr && tr.show ? { icon: 'globe', label: 'Hide original', run: () => { tr.show = false; refresh(); } } : { icon: 'globe', label: 'Show original', run: () => { TR.set(String(m.id), { text: m.orig_body, show: true }); refresh(); } },
+    { icon: 'copy', label: 'Copy', run: async () => { try { await navigator.clipboard.writeText(m.body); toast('Copied'); } catch { toast('Could not copy'); } } }
+  ], top);
+  sheet('', [
     tr && tr.show ? { icon: 'globe', label: 'Show original', run: () => { tr.show = false; refresh(); } } : { icon: 'globe', label: `Translate to ${langLabel(myLang())}`, run: () => translateMsg(m) },
     { icon: 'copy', label: 'Copy', run: async () => { try { await navigator.clipboard.writeText(m.body); toast('Copied'); } catch { toast('Could not copy'); } } },
     { icon: 'edit', label: 'Change translation language', run: pickLang }
-  ]);
+  ], top);
 }
 let rec = null;
 async function startRec(to) {
@@ -644,11 +742,13 @@ V.chat = async (id) => {
   ${bgMedia(p)}
   <div class="shade"></div>
   <div class="hdr"><button class="iconbtn" data-back="chats" aria-label="Back">${ic('back')}</button>
-    <button class="hname" data-go="u/${id}"><b>${esc(p.name)}</b><span class="pill glass" id="st"></span></button>
+    <button class="hname" data-go="u/${id}"><b data-notr>${esc(p.name)}</b><span class="pill glass" id="st"></span></button>
     <span style="width:44px"></span></div>
   <div class="you glass">${S.me.photo_path ? `<img class="${S.me.video_path ? '' : 'raw'}" src="${esc(thumb(S.me.photo_path))}" alt="">` : ''}<span>You</span></div>
   <div class="msgs" id="msgs" aria-live="polite"></div>
-  <form class="composer" id="cf"><textarea class="glass" id="tx" rows="1" placeholder="Message…" aria-label="Message" maxlength="2000"></textarea>
+  <div class="stkpanel glass" id="stk" hidden></div>
+  <button class="sendlang glass" id="sendlang" hidden></button>
+  <form class="composer" id="cf"><button type="button" class="tool glass" id="stkb" aria-label="Stickers">${ic('smile')}</button><button type="button" class="tool glass" id="langb" aria-label="Write in">${ic('globe')}</button><textarea class="glass" id="tx" rows="1" placeholder="Message…" aria-label="Message" maxlength="2000"></textarea>
     <button type="button" class="send" id="micb" aria-label="Record a voice message">${ic('mic', 2)}</button><button class="send" id="sendb" aria-label="Send" hidden>${ic('send', 2)}</button></form>
   <div class="composer recbar" id="rec" hidden><button type="button" class="recx glass" id="reccancel" aria-label="Cancel recording">${ic('x')}</button>
     <div class="recinfo glass"><span class="recdot"></span><b id="rect">0:00</b><span id="rechint"></span></div>
@@ -675,8 +775,23 @@ V.chat.update = (id) => {
 };
 V.chat.after = async (id) => {
   V.chat.update(id);
-  await loadThread(id); markRead(id); V.chat.update(id);
+  await loadThread(id); await loadRx(); markRead(id); V.chat.update(id);
   const tx = $('#tx'), f = $('#cf'), box = $('#msgs');
+  const slKey = 'magaam-sl-' + id; let sendIn = store.get(slKey) || '';
+  const paintSL = () => { const c = $('#sendlang'); if (!c) return; c.hidden = !sendIn; c.innerHTML = sendIn ? `${ic('globe')}<span>Sending in ${esc(langLabel(sendIn))}</span>${ic('x')}` : ''; $('#langb').classList.toggle('on', !!sendIn); };
+  paintSL();
+  $('#sendlang').onclick = () => { sendIn = ''; store.set(slKey, ''); paintSL(); };
+  $('#langb').onclick = () => sheet('Write in', [{ icon: sendIn ? 'globe' : 'check', label: 'As I type', run: () => { sendIn = ''; store.set(slKey, ''); paintSL(); } },
+    ...LANGS.map(([l, v]) => ({ icon: v === sendIn ? 'check' : 'globe', label: l, notr: true, run: () => { sendIn = v; store.set(slKey, v); paintSL(); toast(`Messages to ${S.members.get(id)?.name || ''} will be sent in ${l}`); } }))]);
+  $('#stkb').onclick = () => { const p = $('#stk'); p.hidden = !p.hidden; if (!p.hidden) stickerPanel(id); };
+  tx.addEventListener('focus', () => { const p = $('#stk'); if (p) p.hidden = true; });
+  let lastTap = { id: null, t: 0 };
+  box.addEventListener('pointerup', (e) => {
+    const b = e.target.closest('.b[data-msg]'); if (!b || e.target.closest('button')) return;
+    const now = Date.now();
+    if (lastTap.id === b.dataset.msg && now - lastTap.t < 320) { const m = S.thread.find((x) => String(x.id) === b.dataset.msg); if (m) toggleReact(m, '❤️'); lastTap = { id: null, t: 0 }; }
+    else lastTap = { id: b.dataset.msg, t: now };
+  });
   const grow = () => { tx.style.height = 'auto'; tx.style.height = Math.min(tx.scrollHeight, 130) + 'px'; const has = !!tx.value.trim(); $('#sendb').hidden = !has; $('#micb').hidden = has; };
   tx.addEventListener('input', () => { grow(); if (tx.value.trim()) sendTyping(id); });
   tx.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey && !/mobi/i.test(navigator.userAgent)) { e.preventDefault(); f.requestSubmit(); } });
@@ -698,13 +813,18 @@ V.chat.after = async (id) => {
   ['pointerup', 'pointercancel', 'pointerleave'].forEach((ev) => box.addEventListener(ev, () => clearTimeout(lp)));
   box.addEventListener('contextmenu', (e) => { if (e.target.closest('.b[data-msg]')) e.preventDefault(); });
   f.onsubmit = async (e) => {
-    e.preventDefault(); const body = tx.value.trim(); if (!body) return;
+    e.preventDefault(); const original = tx.value.trim(); if (!original) return;
     tx.value = ''; grow(); tx.focus();
-    const tmp = { id: 'tmp' + Date.now(), tmp: true, sender: S.uid, recipient: id, body, created_at: new Date().toISOString() };
+    const tmp = { id: 'tmp' + Date.now(), tmp: true, sender: S.uid, recipient: id, body: original, orig: original, created_at: new Date().toISOString() };
     S.thread.push(tmp); V.chat.update(id); box.scrollTop = 1e9;
-    const { data, error } = await sb.from('messages').insert({ recipient: id, body }).select().single();
+    let row = { recipient: id, body: original };
+    if (sendIn) {
+      try { const j = await aiCall({ op: 'translate', text: original, to: sendIn }); if (j.text) row = { recipient: id, body: j.text.slice(0, 2000), orig_body: original, orig_lang: sendIn }; }
+      catch { S.thread = S.thread.filter((x) => x !== tmp); V.chat.update(id); toast('Translation is not available right now.'); tx.value = original; grow(); return; }
+    }
+    const { data, error } = await sb.from('messages').insert(row).select().single();
     S.thread = S.thread.filter((x) => x !== tmp);
-    if (error) { toast('Message not sent. Check your connection.'); tx.value = body; grow(); }
+    if (error) { toast('Message not sent. Check your connection.'); tx.value = original; grow(); }
     else if (!S.thread.some((x) => x.id === data.id)) { S.thread.push(data); S.last.set(id, data); }
     V.chat.update(id);
   };
@@ -721,7 +841,7 @@ V.u = async (id) => {
   ${bgMedia(p)}
   <div class="shade"></div>
   <div class="hdr"><button class="iconbtn" data-back="chats" aria-label="Back">${ic('back')}</button>
-    <div class="hname"><b>${esc(p.name)}</b><span class="pill glass" id="st"></span></div><span style="width:44px"></span></div>
+    <div class="hname"><b data-notr>${esc(p.name)}</b><span class="pill glass" id="st"></span></div><span style="width:44px"></span></div>
   <div class="dock"><div class="cta2"><button class="pbtn blue" data-go="chat/${id}">${ic('chat')}Message</button><button class="pbtn glass" data-go="gallery/${id}" id="gal">${ic('grid')}Gallery</button></div></div></div>`;
 };
 V.u.update = (id) => {
@@ -811,7 +931,7 @@ async function addPost() {
   let path;
   try { path = await uploadPhoto(f, 'src'); } catch (e) { toast(e.message || 'Upload failed. Try again.'); return; }
   $('#toast').hidden = true;
-  const ideasP = aiCall({ op: 'ideas', path }).then((j) => j.ideas || []);
+  const ideasP = aiCall({ op: 'ideas', path, lang: I18N.langName }).then((j) => j.ideas || []);
   const wish = await askAI(`Every photo in MAGAAM is made with AI. Here are my ideas for this photo. Pick one, write your own, or let me decide.`, IDEAS_POST, 'Change my photo', ideasP);
   if (!wish) { sb.storage.from('media').remove([path, path.replace(/\.jpg$/, '-t.jpg')]); return; }
   if (await startAI('post_edit', path, wish)) toast(`${aiName()} is changing your photo. About 30 seconds.`, 4000);
@@ -825,6 +945,7 @@ app.addEventListener('click', (e) => {
   if (t.dataset.tab) { if (t.dataset.tab === 'soon') return toast('Coming soon'); return go(t.dataset.tab); }
   const a = t.dataset.act;
   if (a === 'addpost') return addPost();
+  if (a === 'uilang') return pickUiLang();
   if (a === 'retryai') return go('look');
   if (a === 'hideinstall') { store.set('magaam-install-hide', '1'); $('#install')?.remove(); return; }
   if (a === 'install' && deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.finally(() => { deferredPrompt = null; $('#install')?.remove(); }); return; }
@@ -832,11 +953,23 @@ app.addEventListener('click', (e) => {
     { icon: 'edit', label: 'Edit name and birthday', run: () => go('about') },
     { icon: 'spark', label: 'New living photo', run: () => go('look') },
     { icon: 'edit', label: `Rename ${aiName()}`, run: () => go('assistant') },
+    { icon: 'globe', label: `App language: ${I18N.label}`, run: pickUiLang },
     { icon: 'globe', label: `Translation language: ${langLabel(myLang())}`, run: pickLang },
     { icon: 'share', label: 'Copy invite link', run: async () => { try { await navigator.clipboard.writeText(location.origin + location.pathname); toast('Link copied'); } catch { toast(location.origin + location.pathname, 5000); } } },
     { icon: 'out', label: 'Sign out', red: true, run: async () => { await sb.auth.signOut(); location.hash = '#/welcome'; location.reload(); } }
   ]);
 });
+
+/* ---------- interface language ---------- */
+new MutationObserver((ms) => { if (I18N.lang === 'en') return; for (const m of ms) { if (m.type === 'characterData') { if (m.target.parentElement) I18N.apply(m.target.parentElement); } else m.addedNodes.forEach((n) => { if (n.nodeType === 1) I18N.apply(n); else if (n.nodeType === 3 && n.parentElement) I18N.apply(n.parentElement); }); } })
+  .observe(app, { childList: true, subtree: true, characterData: true });
+function pickUiLang() {
+  sheet('Choose your language', I18N.LANGS.map(([code, label]) => ({ icon: code === I18N.lang ? 'check' : 'globe', label, notr: true, run: async () => {
+    I18N.set(code); if (!store.get('magaam-lang')) TR.clear();
+    if (S.uid) sb.from('profiles').update({ ui_lang: code }).eq('id', S.uid);
+    show();
+  } })));
+}
 
 /* ---------- boot ---------- */
 async function afterAuth() {
