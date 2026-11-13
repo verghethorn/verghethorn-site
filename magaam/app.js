@@ -1314,7 +1314,7 @@ const STK_WORDS = ['YALLA', 'HABIBI', 'MASHALLAH', 'INSHALLAH', 'BRO', 'OMG', 'L
 const STK_ME = [['laugh','😂','Laughing'],['love','🫶','Love'],['wow','😮','Wow'],['cool','😎','Cool'],['sad','😢','Sad'],['angry','😤','Angry'],['sleep','😴','Sleepy'],['hi','👋','Hi'],['party','🥳','Party']];
 const REACTS = ['❤️', '😂', '🔥', '😮', '😢', '👍'];
 const LIVE = { kitten: { label: 'Kitten', emoji: '🐱' } };
-const canLive = () => S.me?.username === 'rashid';
+const canLive = () => true; // living stickers are free, so everyone can send them
 const CMPS = ['Love your style ✨', 'Always fun with you 😄', 'You inspire me 🌟', 'Best friend 🤝', 'Kind soul 🤍', 'So smart 🧠', 'Your smile is fire 😊', 'Proud of you 🙌'];
 function stickerHTML(code) {
   const [k, a, b] = String(code).split('|');
