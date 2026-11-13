@@ -989,7 +989,7 @@ h1{font-weight:700;font-size:38px;letter-spacing:-.035em;line-height:1.05}
 .stile.add{display:grid;place-items:center;color:#fff;background:linear-gradient(160deg,var(--tint-a),rgba(255,255,255,.1));-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
 .stile.add svg{width:26px;height:26px}
 .sempty{align-self:center;color:rgba(255,255,255,.85);font-size:13.5px;padding:0 6px;text-shadow:0 1px 8px rgba(0,0,0,.5)}
-.home .tabs{background:linear-gradient(180deg,var(--tint-b),rgba(10,12,24,.35))}
+.home .tabs{background:linear-gradient(180deg,rgba(255,255,255,.14),var(--tint-b))}
 /* slimmer tab bar: icons, the active one with its name */
 .tabs{padding:6px}
 .tabs button{height:50px;justify-content:center}
@@ -1168,3 +1168,8 @@ h1{font-weight:700;font-size:38px;letter-spacing:-.035em;line-height:1.05}
 .lvpick img{width:100%;max-height:90px;object-fit:contain}
 .lvpick span{font-size:13px;color:#fff}
 @media (prefers-reduced-motion:reduce){.livefx .lvwrap{animation:none}}
+
+/* the tab bar: see-through glass, a little above the bottom edge */
+.dock{padding-bottom:calc(var(--sb) + 14px)}
+.tabs.glass{background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.05));border-color:rgba(255,255,255,.22);
+  -webkit-backdrop-filter:blur(16px) saturate(1.7);backdrop-filter:blur(16px) saturate(1.7);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 12px 30px -14px rgba(0,0,0,.6)}

@@ -58,8 +58,17 @@ const app = $('#app');
   const fit = () => {
     const vv = window.visualViewport, kb = vv && vv.height < window.innerHeight * 0.8;
     const full = Math.max(screen.height, screen.width) > 0 && innerWidth < innerHeight ? screen.height : 0;
-    if (!kb && full && full > innerHeight) { app.style.height = full + 'px'; app.style.bottom = 'auto'; }
-    else { app.style.height = ''; app.style.bottom = ''; }
+    const de = document.documentElement, bd = document.body;
+    if (!kb && full && full > innerHeight) {
+      // the page is laid out taller than iOS says, and everything that sits at the bottom moves up by the missing part
+      const gap = full - innerHeight;
+      for (const el of [de, bd]) el.style.height = full + 'px';
+      Object.assign(app.style, { position: 'absolute', height: full + 'px', bottom: 'auto' });
+      app.style.setProperty('--sb', `max(env(safe-area-inset-bottom, 0px), ${gap}px)`);
+    } else {
+      for (const el of [de, bd]) el.style.height = '';
+      Object.assign(app.style, { position: '', height: '', bottom: '' }); app.style.removeProperty('--sb');
+    }
   };
   fit(); addEventListener('resize', fit); window.visualViewport?.addEventListener('resize', fit); addEventListener('orientationchange', () => setTimeout(fit, 300));
 })();
