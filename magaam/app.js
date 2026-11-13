@@ -1806,7 +1806,10 @@ function whirl(then) {
 const aiSince = (id) => { const p = S.members.get(id); return p?.last_seen ? new Date(p.last_seen).getTime() : 0; };
 const onPageOf = (id) => ['chat', 'u'].includes(route().name) && route().id === id;
 const aiRefresh = (id) => { if (!onPageOf(id)) return; if (route().name === 'chat') V.chat.update(id); else { paintAiOv(id); V.u.update(id); } };
+// The friend's assistant does not step into chats or onto friends' pages (Rashid decided). Only your own assistant on your home stays.
+const AWAY_AI = false;
 async function enterAi(id) {
+  if (!AWAY_AI) return;
   const p = S.members.get(id); if (!p || S.aiMode === id) return;
   if (S.threadWith !== id) { await loadThread(id); if (!onPageOf(id)) return; }
   whirl(() => {
@@ -1950,7 +1953,7 @@ function aiRecStop(send) {
   try { r.mr.stop(); } catch { r.mr.onstop(); }
 }
 function askAway(id) {
-  if (!awayOn(id)) return;
+  if (!AWAY_AI || !awayOn(id)) return;
   S.aiTyping.add(id); aiRefresh(id);
   aiCall({ op: 'away', to: id }).then(async (j) => { const m = j?.message;
     const vs = S.thread.filter((x) => x.audio_path && x.sender === S.uid && !x.transcript && !x.tmp).slice(-2).map((x) => x.id);
@@ -1969,6 +1972,7 @@ function exitAi(id, why) {
 // The assistant's panel at the top of a chat: the friend's assistant while they are away, or yours after it spoke for you.
 function paintAiDock(id) {
   const el = $('#aidock'); if (!el) return;
+  if (!AWAY_AI) { el.hidden = true; return; }
   const p = S.members.get(id); if (!p) { el.hidden = true; return; }
   if (S.aiMode === id) { el.hidden = true; return; }
   el.classList.remove('back');
@@ -2168,7 +2172,7 @@ V.u = async (id) => {
 V.u.cls = 'darkv';
 V.u.update = (id) => {
   const st = statusOf(id), s = id === S.uid ? null : $('#st'); if (s) s.innerHTML = `<i class="dot ${st.on ? 'on' : ''}"></i>${esc(T(st.text))}`;
-  const bb = $('#ubub'); if (bb) { bb.hidden = !(id !== S.uid && awayOn(id) && S.aiMode !== id); bb.onclick = () => { $('#greetv')?.pause(); enterAi(id); }; const ps = $('#ps'); if (ps && !ps.dataset.bub) { ps.dataset.bub = '1'; ps.addEventListener('scroll', () => bb.classList.toggle('away', ps.scrollTop > 140), { passive: true }); } }
+  const bb = $('#ubub'); if (bb) { bb.hidden = !(AWAY_AI && id !== S.uid && awayOn(id) && S.aiMode !== id); bb.onclick = () => { $('#greetv')?.pause(); enterAi(id); }; const ps = $('#ps'); if (ps && !ps.dataset.bub) { ps.dataset.bub = '1'; ps.addEventListener('scroll', () => bb.classList.toggle('away', ps.scrollTop > 140), { passive: true }); } }
 };
 V.u.after = async (id) => {
   V.u.update(id);
