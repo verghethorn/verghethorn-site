@@ -689,7 +689,7 @@ V.me = () => {
   <div class="dock">
     ${installBanner()}
     <div class="card glass"><div class="ailine" id="ailine" hidden></div><button class="photos-btn" data-go="gallery/${S.uid}"><span class="pt" id="pthumbs"></span><span class="pl"><b>My photos</b><span id="pcount">Open your gallery</span></span><span class="chev">${ic('back')}</span></button>
-      <div class="chips two"><button class="chip" data-go="look">${ic('spark')}Change profile photo</button><button class="chip" data-act="addpost">${ic('plus')}Add to gallery</button></div></div>
+      <div class="chips two"><button class="chip" data-go="look">${ic('spark')}<span class="cl">Profile photo</span></button><button class="chip" data-act="addpost">${ic('plus')}<span class="cl">Add to gallery</span></button></div></div>
     <div id="tabs">${tabbar('me')}</div>
   </div></div>`;
 };
