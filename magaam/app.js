@@ -9,6 +9,7 @@ const SCENES = [['plaza','City plaza'],['library','Library'],['tennis','Tennis c
 
 /* ---------- icons ---------- */
 const I = {
+  bell: '<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/>',
   useradd: '<circle cx="10" cy="8" r="4"/><path d="M3 21c1-4 3.6-6 7-6 1.4 0 2.6.3 3.6.9M19 14v6M16 17h6"/>',
   qr: '<rect x="3.5" y="3.5" width="6" height="6" rx="1"/><rect x="14.5" y="3.5" width="6" height="6" rx="1"/><rect x="3.5" y="14.5" width="6" height="6" rx="1"/><path d="M14.5 14.5h2.5v2.5h-2.5zM18.5 18.5h2v2h-2zM14.5 19.5h1.5M19.5 14.5v2"/>',
   block: '<circle cx="12" cy="12" r="8.5"/><path d="M6 6l12 12"/>',
@@ -264,10 +265,10 @@ async function fileHints(f) {
     return [...new Set((t.match(AI_MARKS) || []).map((x) => x.toLowerCase()))].slice(0, 5);
   } catch { return []; }
 }
-async function startAI(kind, path, prompt) {
+async function startAI(kind, path, prompt, extra) {
   const { data: { session } } = await sb.auth.getSession(); if (!session) return null;
   try {
-    const r = await fetch(SB_URL + '/functions/v1/animate', { method: 'POST', headers: { 'content-type': 'application/json', apikey: SB_KEY, Authorization: 'Bearer ' + session.access_token }, body: JSON.stringify({ kind, path, prompt }) });
+    const r = await fetch(SB_URL + '/functions/v1/animate', { method: 'POST', headers: { 'content-type': 'application/json', apikey: SB_KEY, Authorization: 'Bearer ' + session.access_token }, body: JSON.stringify({ kind, path, prompt, ...(extra || {}) }) });
     const j = await r.json().catch(() => ({}));
     if (!r.ok) { toast(j.error === 'daily_limit' ? 'You have used today’s AI limit. Try again tomorrow.' : 'AI is not available right now. Try again later.', 4000); return null; }
     await loadJobs(); refresh(); return j.job;
@@ -278,6 +279,7 @@ function previewOf(m) {
   if (m.body) return m.body;
   if (m.sticker === 'x|poke') return T('👉 Poke!');
   if (m.sticker) return T('Sticker');
+  if (m.media_kind === 'circle') return T('⭕ Video message');
   if (m.media_path) return T(m.media_fx === 'once' ? '🔥 View-once photo' : m.media_kind === 'video' ? '🎬 Video' : '📷 Photo');
   return T('Voice message');
 }
@@ -295,7 +297,7 @@ function startRealtime() {
       if (S.threadWith === o && !S.thread.some((x) => x.id === m.id)) {
         S.thread = S.thread.filter((x) => !(x.tmp && x.sender === m.sender && (x.sticker ? x.sticker === m.sticker : x.media_path ? x.media_path === m.media_path : x.body ? (x.body === m.body || x.orig === m.orig_body) : !!m.audio_path))); S.thread.push(m);
       }
-      if (m.sender !== S.uid) setTimeout(() => onIncoming(m), 60);
+      if (m.sender !== S.uid) { setTimeout(() => onIncoming(m), 60); chime(route().name === 'chat' && route().id === m.sender); }
       if (m.sender !== S.uid) {
         S.typing.delete(o);
         if (route().name === 'chat' && route().id === o && document.visibilityState === 'visible') { sb.rpc('mark_read', { p_other: o }).then(() => {}); }
@@ -318,7 +320,7 @@ function startRealtime() {
     .on('postgres_changes', { event: '*', schema: 'public', table: 'ai_jobs' }, ({ new: j }) => {
       if (!j?.id) return; const i = S.jobs.findIndex((x) => x.id === j.id); if (i >= 0) S.jobs[i] = { ...S.jobs[i], ...j }; else S.jobs.unshift(j);
       if (j.status === 'done' && j.kind === 'avatar') toast(`${aiName()}: your photo is alive now`);
-      if (j.status === 'done' && j.kind === 'post_edit') toast(`${aiName()} added a new photo to your gallery`);
+      if (j.status === 'done' && j.kind === 'post_edit') { if (j.scene === 'story') { toast('Your story is live for 24 hours'); loadStories().then(refresh); } else toast(`${aiName()} added a new photo to your gallery`); }
       if (j.status === 'done' && j.kind === 'video_edit') { toast(`${aiName()} added your new video to the gallery`); loadPosts(S.uid).then(refresh); }
       if (j.status === 'error' && ['avatar', 'post_edit', 'video_edit'].includes(j.kind)) toast(`${aiName()} could not finish this one. Try another photo or description.`, 4500);
       refresh();
@@ -333,11 +335,12 @@ function startRealtime() {
     .on('postgres_changes', { event: '*', schema: 'public', table: 'friends' }, (pl) => {
       const f = pl.new && pl.new.a ? pl.new : null;
       loadAll().then(() => {
-        if (f && f.status === 'pending' && f.requested_by !== S.uid) { const p = S.reqIn.find((x) => x.id === f.requested_by); if (p) toast(`${p.name} wants to be your friend`, 4000); }
+        if (f && f.status === 'pending' && f.requested_by !== S.uid) { const p = S.reqIn.find((x) => x.id === f.requested_by); if (p) { toast(`${p.name} wants to be your friend`, 4000); chime(); } }
         if (f && f.status === 'accepted' && pl.eventType === 'UPDATE' && f.requested_by === S.uid) { const o = f.a === S.uid ? f.b : f.a; const p = S.members.get(o); if (p) toast(`${p.name} accepted your friend request`, 4000); }
         const rn = route().name; if (rn === 'add') V.add.update(); else if (rn === 'chats' || (rn === 'u' && !S.members.has(route().id)) || (rn === 'chat' && !S.members.has(route().id))) show(); else refresh();
       });
     })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'stories' }, () => { loadStories().then(() => { if (route().name === 'chats') V.chats.update(); }); })
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, ({ new: x }) => {
       const arr = S.posts.get(x.user_id); if (arr && !arr.some((y) => y.id === x.id)) arr.unshift(x);
       if (route().name === 'gallery' && route().id === x.user_id) show(); else refresh();
@@ -403,7 +406,7 @@ function refresh() {
 
 /* ---------- shared fragments ---------- */
 function tabbar(active) {
-  const t = [['spark', 'Assistant', 'soon'], ['chat', 'Chats', 'chats'], ['video', 'Video', 'soon'], ['bag', 'Shop', 'soon'], ['me', 'Me', 'me']];
+  const t = [['spark', 'Assistant', 'soon'], ['chat', 'Chats', 'chats'], ['video', 'Video', 'video'], ['bag', 'Shop', 'soon'], ['me', 'Me', 'me']];
   const n = totalUnread();
   return `<nav class="tabs glass" aria-label="Sections">${t.map(([i, l, r]) => `<button data-tab="${r}" ${r === active ? 'aria-current="page"' : ''}>${ic(i)}${l}${r === 'chats' && n ? `<span class="badge">${n}</span>` : ''}</button>`).join('')}</nav>`;
 }
@@ -714,7 +717,7 @@ V.chats = () => `<div class="dark" style="position:absolute;inset:0">
   <div class="listwrap">
     <div class="ltitle"><h2>Chats</h2><span class="hright"><button class="iconbtn" data-act="search" aria-label="Search">${ic('search')}</button><button class="iconbtn" data-go="add" aria-label="Add friends">${ic('useradd')}${S.reqIn.length ? `<span class="badge dotb">${S.reqIn.length}</span>` : ''}</button></span></div>
     <input class="search glass" id="q" placeholder="Search" hidden aria-label="Search chats">
-    <div class="scroll"><div id="list"></div></div>
+    <div class="scroll"><div class="strow" id="strow"></div><div id="list"></div></div>
   </div>
   <div class="dock"><div id="tabs">${tabbar('chats')}</div></div></div>`;
 V.chats.update = () => {
@@ -722,6 +725,7 @@ V.chats.update = () => {
   const list = [...S.members.values()].filter((p) => !q || (p.name || '').toLowerCase().includes(q))
     .sort((a, b) => (new Date(S.last.get(b.id)?.created_at || 0) - new Date(S.last.get(a.id)?.created_at || 0)) || (a.name || '').localeCompare(b.name || ''));
   const box = $('#list'); if (!box) return;
+  const sr = $('#strow'); if (sr) { sr.innerHTML = storiesRowHTML(); sr.hidden = !!q; }
   const reqs = S.reqIn.length && !q ? `<button class="reqbar glass" data-go="add">${ic('useradd')}<span><b>Friend requests</b><span data-notr>${S.reqIn.map((p) => esc(p.name)).slice(0, 3).join(', ')}</span></span><span class="badge">${S.reqIn.length}</span></button>` : '';
   box.innerHTML = reqs + (list.length ? `<div class="rows glass">${list.map((p) => {
     const l = S.last.get(p.id), u = S.unread.get(p.id) || 0, ty = S.typing.has(p.id);
@@ -732,6 +736,7 @@ V.chats.update = () => {
 };
 V.chats.after = () => {
   V.chats.update();
+  loadStories().then(() => route().name === 'chats' && V.chats.update());
   sb.rpc('my_streaks').then(({ data }) => { S.streaks = new Map((data || []).map((x) => [x.other, x.days])); if (route().name === 'chats') V.chats.update(); });
   $('[data-act="search"]').onclick = () => { const q = $('#q'); q.hidden = !q.hidden; if (!q.hidden) q.focus(); else { q.value = ''; V.chats.update(); } };
   $('#q').oninput = V.chats.update;
@@ -846,6 +851,325 @@ async function blockedList() {
   if (!S.blocked.length) { toast('You have not blocked anyone'); return; }
   const { data } = await sb.rpc('blocked_people');
   sheet('Blocked people', (data || []).map((p) => ({ icon: 'block', label: `${p.name} — unblock`, notr: false, run: async () => { await sb.rpc('unblock_user', { p_other: p.id }); await loadAll(); toast('Unblocked'); } })));
+}
+
+/* ---------- message sound: a soft glass bell ---------- */
+let AC = null;
+const soundOn = () => store.get('magaam-sound') !== 'off';
+function unlockAudio() { try { AC ||= new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume(); } catch {} }
+['touchstart', 'pointerdown', 'keydown'].forEach((ev) => document.addEventListener(ev, unlockAudio, { passive: true }));
+function chime(soft, force) {
+  if ((!soundOn() && !force) || !AC || document.hidden) return;
+  try {
+    if (AC.state === 'suspended') AC.resume();
+    const t = AC.currentTime + 0.03, out = AC.createGain(); out.gain.value = soft ? 0.09 : 0.15;
+    const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 4800; out.connect(lp); lp.connect(AC.destination);
+    // a quiet echo makes it feel airy
+    const dl = AC.createDelay(); dl.delayTime.value = 0.17; const fb = AC.createGain(); fb.gain.value = 0.2;
+    lp.connect(dl); dl.connect(fb); fb.connect(dl); fb.connect(AC.destination);
+    const note = (f, at, len, vol) => [[1, 1], [2.0, 0.16], [3.99, 0.04]].forEach(([m, a]) => {
+      const o = AC.createOscillator(), g = AC.createGain(); o.type = 'sine'; o.frequency.value = f * m;
+      g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(vol * a, at + 0.014); g.gain.exponentialRampToValueAtTime(0.0001, at + len / Math.sqrt(m));
+      o.connect(g); g.connect(out); o.start(at); o.stop(at + len + 0.1);
+    });
+    note(783.99, t, 1.0, 0.9);                  // G5
+    if (!soft) note(1174.66, t + 0.12, 1.2, 0.65); // D6, a gentle rising fifth
+  } catch {}
+}
+
+/* ---------- stories: 24 hours, for friends ---------- */
+S.stories = new Map(); S.seenSt = new Set();
+async function loadStories() {
+  const [{ data: st }, { data: sv }] = await Promise.all([
+    sb.from('stories').select('*').gt('expires_at', new Date().toISOString()).order('created_at', { ascending: true }),
+    sb.from('story_views').select('story_id').eq('viewer', S.uid)]);
+  S.stories = new Map();
+  (st || []).forEach((s) => { if (s.user_id !== S.uid && !S.members.has(s.user_id)) return; if (!S.stories.has(s.user_id)) S.stories.set(s.user_id, []); S.stories.get(s.user_id).push(s); });
+  S.seenSt = new Set((sv || []).map((x) => x.story_id));
+}
+const unseenSt = (u) => (S.stories.get(u) || []).some((s) => !S.seenSt.has(s.id));
+const lastSt = (u) => { const a = S.stories.get(u) || []; return a.length ? new Date(a[a.length - 1].created_at).getTime() : 0; };
+const storyUsers = () => [...S.stories.keys()].filter((u) => u !== S.uid).sort((a, b) => (unseenSt(b) - unseenSt(a)) || (lastSt(b) - lastSt(a)));
+function storiesRowHTML() {
+  const mine = S.stories.get(S.uid) || [];
+  const me = `<div class="stit"><button class="ring ${mine.length ? 'mine' : 'none'}" data-act="${mine.length ? 'story' : 'addstory'}" data-uid="${S.uid}" aria-label="Your story">${thumbHTML(S.me)}</button><button class="stplus" data-act="addstory" aria-label="Add to your story">${ic('plus', 2.6)}</button><span class="stn">Your story</span></div>`;
+  return me + storyUsers().map((u) => { const p = S.members.get(u); return `<div class="stit"><button class="ring ${unseenSt(u) ? 'on' : 'seen'}" data-act="story" data-uid="${u}" aria-label="${esc(p?.name || '')}">${thumbHTML(p)}</button><span class="stn" data-notr>${esc(p?.name || '')}</span></div>`; }).join('');
+}
+async function addStory() {
+  const k = await choose('Add to your story', [{ k: 'photo', icon: 'spark', label: 'Photo, changed with AI' }, { k: 'gallery', icon: 'grid', label: 'From my photos' }, { k: 'video', icon: 'video', label: 'Video' }]);
+  if (k === 'photo') {
+    const f = await pickFile(false); if (!f) return;
+    toast('Uploading…', 30000);
+    let path; try { path = await uploadPhoto(f, 'src'); } catch (e) { toast(e.message || 'Upload failed. Try again.'); return; }
+    $('#toast').hidden = true;
+    const ideasP = aiCall({ op: 'ideas', path, lang: I18N.langName }).then((j) => j.ideas || []);
+    const wish = await askAI(`Every photo in MAGAAM is made with AI. How should I change it for your story?`, IDEAS_POST, 'Make my story', ideasP);
+    if (!wish) { sb.storage.from('media').remove([path, path.replace(/\.jpg$/, '-t.jpg')]); return; }
+    if (await startAI('post_edit', path, wish, { story: true })) toast(`${aiName()} is making your story. About 30 seconds.`, 4000);
+    return;
+  }
+  if (k === 'gallery') {
+    const posts = await loadPosts(S.uid);
+    if (!posts.length) return toast('Your gallery is empty. Add a photo first.', 3500);
+    const pick = await new Promise((res) => {
+      const bg = document.createElement('div'); bg.className = 'sheet-bg';
+      bg.innerHTML = `<div class="sheet" role="dialog"><div class="grab"></div><h3>From my photos</h3><div class="pickgrid">${posts.slice(0, 30).map((x, i) => `<button data-pi="${i}">${x.video_path ? `<i>${ic('play', 2)}</i>` : ''}<img src="${esc(thumb(x.path))}" alt=""></button>`).join('')}</div></div>`;
+      bg.addEventListener('click', (e) => { const b = e.target.closest('[data-pi]'); if (b) { bg.remove(); res(posts[+b.dataset.pi]); } else if (e.target === bg) { bg.remove(); res(null); } });
+      app.appendChild(bg);
+    });
+    if (!pick) return;
+    const { error } = await sb.from('stories').insert({ user_id: S.uid, path: pick.path, video_path: pick.video_path || null });
+    if (error) return toast('Something went wrong. Try again.');
+    await loadStories(); toast('Your story is live for 24 hours'); refresh(); return;
+  }
+  if (k === 'video') {
+    const f = await pickVideo(); if (!f) return;
+    if (f.size > 50 * 1024 * 1024) return toast('This video is larger than 50 MB. Use a shorter clip.', 4000);
+    toast('Uploading your video…', 120000);
+    try {
+      const info = await videoInfo(f); if (!info?.poster) throw new Error('This video could not be read. Try an MP4 or MOV video.');
+      if (info.dur > 60.5) throw new Error('A story video can be up to 60 seconds long.');
+      const ext = /quicktime|mov/i.test(f.type) || /\.mov$/i.test(f.name) ? 'mov' : /webm/.test(f.type) ? 'webm' : 'mp4';
+      const vpath = `${S.uid}/story-${Date.now()}.${ext}`;
+      const [p] = await Promise.all([uploadPhoto(info.poster, 'sframe'), sb.storage.from('media').upload(vpath, f, { contentType: f.type || 'video/mp4', cacheControl: '31536000' }).then(({ error }) => { if (error) throw error; })]);
+      const { error } = await sb.from('stories').insert({ user_id: S.uid, path: p, video_path: vpath }); if (error) throw error;
+      await loadStories(); toast('Your story is live for 24 hours'); refresh();
+    } catch (e) { toast(e.message || 'Upload failed. Try again.', 4000); }
+  }
+}
+// Full-screen stories: tap right for next, left for back, hold to pause, swipe down to close.
+function openStories(startUid) {
+  const queue = startUid === S.uid ? [S.uid] : storyUsers().filter((u) => u !== S.uid);
+  let ui = Math.max(0, queue.indexOf(startUid)), si = 0, raf = 0, t0 = 0, dur = 5000, paused = false, pausedAt = 0;
+  const v = document.createElement('div'); v.className = 'storyv'; app.appendChild(v);
+  const list = () => S.stories.get(queue[ui]) || [];
+  const firstUnseen = () => { const i = list().findIndex((s) => !S.seenSt.has(s.id)); return i < 0 ? 0 : i; };
+  si = queue[ui] === S.uid ? 0 : firstUnseen();
+  const close = () => { cancelAnimationFrame(raf); v.remove(); refresh(); };
+  const go = (d) => {
+    si += d;
+    if (si >= list().length) { ui++; if (ui >= queue.length) return close(); si = firstUnseen(); }
+    else if (si < 0) { if (ui === 0) si = 0; else { ui--; si = 0; } }
+    paint();
+  };
+  const tick = () => {
+    if (!paused) { const p = Math.min(1, (performance.now() - t0) / dur); const bar = v.querySelector('.sbars .cur i'); if (bar) bar.style.width = p * 100 + '%'; if (p >= 1) return go(1); }
+    raf = requestAnimationFrame(tick);
+  };
+  const paint = () => {
+    cancelAnimationFrame(raf);
+    const u = queue[ui], s = list()[si]; if (!s) return close();
+    const mine = u === S.uid, p = mine ? S.me : S.members.get(u);
+    if (!mine && !S.seenSt.has(s.id)) { S.seenSt.add(s.id); sb.from('story_views').insert({ story_id: s.id, viewer: S.uid }).then(() => {}); }
+    v.innerHTML = `<div class="sbars">${list().map((x, i) => `<span class="${i < si ? 'done' : i === si ? 'cur' : ''}"><i></i></span>`).join('')}</div>
+      <div class="shead">${thumbHTML(p)}<b data-notr>${esc(mine ? T('Your story') : p?.name || '')}</b><span data-notr>${esc(when(s.created_at))}</span><span class="grow"></span>${mine ? `<button class="iconbtn" data-sdel aria-label="Delete">${ic('trash')}</button>` : ''}<button class="iconbtn" data-sx aria-label="Close">${ic('x')}</button></div>
+      <div class="smedia">${s.video_path ? `<video src="${esc(url(s.video_path))}" poster="${esc(url(s.path))}" playsinline autoplay></video>` : `<img src="${esc(url(s.path))}" alt="">`}</div>
+      <button class="sz l" data-prev aria-label="Back"></button><button class="sz r" data-next aria-label="Next"></button>
+      <div class="sfoot">${mine ? `<button class="pill glass" data-seen>${ic('me')}<span>Seen by</span> <b data-notr id="seenn">…</b></button>`
+        : `<form class="sreply" id="srf"><input class="glass" id="srt" maxlength="500" placeholder="Reply to ${esc(p?.name || '')}…" autocomplete="off"><span class="srx">${['❤️', '🔥', '😂', '😮'].map((e) => `<button type="button" data-srx="${e}" data-notr>${e}</button>`).join('')}</span></form>`}</div>`;
+    t0 = performance.now(); dur = 5000; paused = false;
+    const vid = v.querySelector('.smedia video');
+    if (vid) {
+      vid.muted = false; vid.play().catch(() => { vid.muted = true; vid.play().catch(() => {}); });
+      vid.onloadedmetadata = () => { dur = Math.min(60, vid.duration || 5) * 1000; t0 = performance.now() - vid.currentTime * 1000; };
+      vid.ontimeupdate = () => { if (vid.duration) t0 = performance.now() - vid.currentTime * 1000; };
+    }
+    if (mine) sb.from('story_views').select('viewer', { count: 'exact', head: true }).eq('story_id', s.id).then(({ count }) => { const n = v.querySelector('#seenn'); if (n) n.textContent = count ?? 0; });
+    raf = requestAnimationFrame(tick);
+    const inp = v.querySelector('#srt');
+    if (inp) { inp.onfocus = () => { paused = true; pausedAt = performance.now(); vid?.pause(); }; inp.onblur = () => { if (paused) { t0 += performance.now() - pausedAt; paused = false; vid?.play().catch(() => {}); } }; }
+    const send = async (body) => {
+      const { error } = await sb.from('messages').insert({ recipient: u, body, reply_story: s.path });
+      toast(error ? 'Not sent. Check your connection.' : 'Sent');
+    };
+    v.querySelector('#srf')?.addEventListener('submit', (e) => { e.preventDefault(); const t = inp.value.trim(); if (!t) return; inp.value = ''; inp.blur(); send(t); });
+    v.querySelectorAll('[data-srx]').forEach((b) => (b.onclick = () => { burst(b.dataset.srx, b); send(b.dataset.srx); }));
+  };
+  v.addEventListener('click', async (e) => {
+    if (e.target.closest('[data-sx]')) return close();
+    if (e.target.closest('[data-next]')) return go(1);
+    if (e.target.closest('[data-prev]')) return go(-1);
+    if (e.target.closest('[data-sdel]')) {
+      const s = list()[si]; paused = true;
+      const k = await dialog(`<h3 class="dh">Delete this story?</h3>`, [{ k: 'd', label: 'Delete', style: 'red' }, { k: 'n', label: 'Cancel', style: 'out' }]);
+      if (k !== 'd') { paused = false; t0 = performance.now(); return; }
+      await sb.from('stories').delete().eq('id', s.id); await loadStories();
+      if (!(S.stories.get(S.uid) || []).length) return close(); si = Math.min(si, list().length - 1); return paint();
+    }
+    if (e.target.closest('[data-seen]')) {
+      const s = list()[si]; paused = true;
+      const { data } = await sb.from('story_views').select('viewer,viewed_at').eq('story_id', s.id).order('viewed_at', { ascending: false });
+      await new Promise((res) => { sheet((data || []).length ? 'Seen by' : 'No one has seen it yet', (data || []).map((x) => ({ icon: 'me', label: `${nameOf(x.viewer)} · ${hm(x.viewed_at)}`, run: res }))); setTimeout(() => { const bg = [...app.querySelectorAll('.sheet-bg')].pop(); bg?.addEventListener('click', (ev) => { if (ev.target === bg) res(); }); }, 0); });
+      paused = false; t0 = performance.now(); return;
+    }
+  });
+  // hold to pause, swipe down to close
+  let sy = 0, down = 0;
+  v.addEventListener('pointerdown', (e) => { if (e.target.closest('input,form,button:not(.sz)')) return; sy = e.clientY; down = performance.now(); setTimeout(() => { if (down && !paused) { paused = true; pausedAt = performance.now(); v.querySelector('.smedia video')?.pause(); v.classList.add('held'); } }, 220); });
+  v.addEventListener('pointerup', (e) => {
+    const held = paused && v.classList.contains('held'); down = 0;
+    if (e.clientY - sy > 90) return close();
+    if (held) { e.stopPropagation(); v.classList.remove('held'); t0 += performance.now() - pausedAt; paused = false; v.querySelector('.smedia video')?.play().catch(() => {}); v.dataset.skip = '1'; setTimeout(() => delete v.dataset.skip, 50); }
+  });
+  v.addEventListener('click', (e) => { if (v.dataset.skip) { e.stopImmediatePropagation(); } }, true);
+  paint();
+}
+
+/* ---------- video messages in a circle ---------- */
+const CIRC = new Map();
+function circleHTML(m, mine, rx) {
+  return `<div class="b circle ${mine ? 'me' : 'them'} ${rx ? 'has-rx' : ''}" data-msg="${m.id}"><span class="circph" data-circ="${m.id}"></span>${m.tmp ? '<span class="ptag">Sending…</span>' : ''}${rx}</div>`;
+}
+function mountCircles(box) {
+  box.querySelectorAll('[data-circ]').forEach((ph) => {
+    const id = ph.dataset.circ, m = S.thread.find((x) => String(x.id) === id); if (!m) return;
+    let el = CIRC.get(id);
+    if (!el) {
+      el = document.createElement('button'); el.className = 'circv'; el.setAttribute('aria-label', T('Play video message'));
+      const src = m.tmp ? m.preview : url(m.media_path);
+      el.innerHTML = `<video muted loop playsinline webkit-playsinline preload="auto" ${m.poster_path ? `poster="${esc(url(m.poster_path))}"` : ''} src="${esc(src)}"></video><svg class="cring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48"/></svg><i class="csnd">${ic('mic', 2)}</i>`;
+      const vid = el.querySelector('video');
+      el.onclick = (e) => {
+        e.stopPropagation();
+        if (vid.muted) { app.querySelectorAll('.circv.loud').forEach((o) => { if (o !== el) { const ov = o.querySelector('video'); ov.muted = true; ov.loop = true; o.classList.remove('loud'); } });
+          vid.muted = false; vid.loop = false; vid.currentTime = 0; vid.play().catch(() => {}); el.classList.add('loud'); }
+        else { vid.muted = true; vid.loop = true; el.classList.remove('loud'); vid.play().catch(() => {}); }
+      };
+      vid.onended = () => { vid.muted = true; vid.loop = true; el.classList.remove('loud'); vid.play().catch(() => {}); };
+      vid.ontimeupdate = () => { if (!vid.muted && vid.duration) el.style.setProperty('--p', vid.currentTime / vid.duration); };
+      if (!m.tmp) CIRC.set(id, el);
+    }
+    ph.replaceWith(el);
+    const vid = el.querySelector('video'); if (vid.paused) lvPlay(vid).catch(() => {});
+  });
+}
+async function recordCircle(to) {
+  if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) return toast('This phone cannot record video messages here.', 4000);
+  let stream;
+  try { stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 640 } }, audio: true }); }
+  catch { return toast('Allow the camera and microphone to record a video message.', 4500); }
+  const mime = ['video/mp4;codecs=avc1,mp4a.40.2', 'video/mp4', 'video/webm;codecs=vp8,opus', 'video/webm'].find((t) => MediaRecorder.isTypeSupported?.(t)) || '';
+  const v = document.createElement('div'); v.className = 'circrec';
+  v.innerHTML = `<div class="crtop"><button class="iconbtn" data-cx aria-label="Cancel">${ic('x')}</button><b id="crt" data-notr>0:00</b><span style="width:44px"></span></div>
+    <div class="crwrap"><video class="live" autoplay muted playsinline></video><video class="prev" playsinline loop hidden></video><svg class="crring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48"/></svg></div>
+    <p class="crhint" id="crh">Tap to record. Up to 30 seconds.</p>
+    <div class="crbtns"><button class="pbtn glass" data-cagain hidden>${ic('swap')}Again</button><button class="crbig" data-crec aria-label="Record"><i></i></button><button class="pbtn blue" data-csend hidden>${ic('send')}Send</button></div>`;
+  app.appendChild(v);
+  const live = v.querySelector('.live'), prev = v.querySelector('.prev'), ring = v.querySelector('.crring');
+  live.srcObject = stream; live.play().catch(() => {});
+  let rec = null, chunks = [], blob = null, poster = null, t0 = 0, timer = 0;
+  const stopAll = () => { clearInterval(timer); try { rec?.state === 'recording' && rec.stop(); } catch {} stream.getTracks().forEach((t) => t.stop()); v.remove(); };
+  const grab = () => new Promise((res) => { const c = document.createElement('canvas'); const s = Math.min(live.videoWidth, live.videoHeight) || 480; c.width = c.height = Math.min(640, s);
+    const sx = (live.videoWidth - s) / 2, sy = (live.videoHeight - s) / 2; const g = c.getContext('2d'); g.translate(c.width, 0); g.scale(-1, 1); g.drawImage(live, sx, sy, s, s, 0, 0, c.width, c.height); c.toBlob(res, 'image/jpeg', 0.85); });
+  const start = async () => {
+    chunks = []; blob = null; poster = await grab();
+    rec = new MediaRecorder(stream, { ...(mime ? { mimeType: mime } : {}), videoBitsPerSecond: 1_000_000 });
+    rec.ondataavailable = (e) => e.data.size && chunks.push(e.data);
+    rec.onstop = () => {
+      blob = new Blob(chunks, { type: (rec.mimeType || mime || 'video/mp4').split(';')[0] });
+      prev.src = URL.createObjectURL(blob); prev.hidden = false; live.hidden = true; prev.play().catch(() => {});
+      v.querySelector('[data-crec]').hidden = true; v.querySelector('[data-csend]').hidden = false; v.querySelector('[data-cagain]').hidden = false;
+      $('#crh', v).textContent = T('Send it or record again.');
+    };
+    rec.start(250); t0 = Date.now(); v.classList.add('recording'); $('#crh', v).textContent = T('Tap to stop.');
+    timer = setInterval(() => { const s = (Date.now() - t0) / 1000; $('#crt', v).textContent = fmtSec(s); ring.style.setProperty('--p', Math.min(1, s / 30)); if (s >= 30) stop(); }, 100);
+  };
+  const stop = () => { clearInterval(timer); v.classList.remove('recording'); if (rec?.state === 'recording') rec.stop(); };
+  v.addEventListener('click', async (e) => {
+    if (e.target.closest('[data-cx]')) return stopAll();
+    if (e.target.closest('[data-crec]')) return rec?.state === 'recording' ? stop() : start();
+    if (e.target.closest('[data-cagain]')) { prev.pause(); prev.hidden = true; live.hidden = false; ring.style.setProperty('--p', 0); $('#crt', v).textContent = '0:00'; v.querySelector('[data-crec]').hidden = false; v.querySelector('[data-csend]').hidden = true; v.querySelector('[data-cagain]').hidden = true; $('#crh', v).textContent = T('Tap to record. Up to 30 seconds.'); return; }
+    if (e.target.closest('[data-csend]')) {
+      if (!blob || (Date.now() - t0) < 700) return;
+      const b = blob, pst = poster; stopAll();
+      const tmp = { id: 'tmp' + Date.now(), tmp: true, sender: S.uid, recipient: to, media_kind: 'circle', preview: URL.createObjectURL(b), created_at: new Date().toISOString() };
+      S.thread.push(tmp); V.chat.update(to);
+      try {
+        const ext = /webm/.test(b.type) ? 'webm' : 'mp4', media = `${S.uid}/circle-${Date.now()}.${ext}`;
+        const [p] = await Promise.all([pst ? uploadPhoto(pst, 'circp') : Promise.resolve(null), sb.storage.from('media').upload(media, b, { contentType: b.type || 'video/mp4', cacheControl: '31536000' }).then(({ error }) => { if (error) throw error; })]);
+        const { data, error } = await sb.from('messages').insert({ recipient: to, media_path: media, media_kind: 'circle', poster_path: p }).select().single(); if (error) throw error;
+        S.thread = S.thread.filter((x) => x !== tmp); if (!S.thread.some((x) => x.id === data.id)) { S.thread.push(data); S.last.set(to, data); }
+      } catch { S.thread = S.thread.filter((x) => x !== tmp); toast('Not sent. Check your connection.'); }
+      V.chat.update(to);
+    }
+  });
+}
+
+/* ---------- Video: a feed of friends' videos, swipe up for the next ---------- */
+let feedMuted = false, feedObs = null, feedItems = [];
+V.video = () => `<div class="feedwrap"><div class="feed" id="feed"><div class="center" style="height:100%"><div class="spinner"></div></div></div>
+  <div class="feedtop"><h2>Video</h2><button class="iconbtn" id="fsnd" aria-label="Sound">${ic('mic')}</button></div>
+  <div class="dock"><div id="tabs">${tabbar('video')}</div></div></div>`;
+V.video.cls = 'darkv';
+V.video.after = async () => {
+  const { data } = await sb.from('posts').select('*').not('video_path', 'is', null).order('created_at', { ascending: false }).limit(60);
+  feedItems = (data || []).filter((x) => x.user_id === S.uid || S.members.has(x.user_id));
+  const feed = $('#feed'); if (!feed) return;
+  if (!feedItems.length) { feed.innerHTML = `<div class="center fempty"><b>No videos from friends yet</b><span>Add your first video. Friends will see it here.</span><button class="pbtn blue" data-act="addvideo">${ic('video')}Add a video</button></div>`; return; }
+  const counts = new Map(((await sb.rpc('feed_counts', { p_ids: feedItems.map((x) => x.id) })).data || []).map((c) => [c.post_id, c]));
+  feedItems.forEach((x) => Object.assign(x, counts.get(x.id) || { likes: 0, comments: 0, liked: false }));
+  feed.innerHTML = feedItems.map((x, i) => { const p = x.user_id === S.uid ? S.me : S.members.get(x.user_id);
+    return `<section class="fitem" data-fi="${i}"><video playsinline webkit-playsinline loop preload="none" poster="${esc(url(x.path))}" data-src="${esc(url(x.video_path))}"></video>
+      <div class="fshade"></div><span class="fheart" aria-hidden="true">❤️</span>
+      <div class="fside"><button data-fu="${x.user_id}" aria-label="${esc(p?.name || '')}">${thumbHTML(p)}</button>
+        <button data-flike class="${x.liked ? 'on' : ''}" aria-label="Like"><span data-notr>${x.liked ? '❤️' : '🤍'}</span><b data-notr>${x.likes || ''}</b></button>
+        <button data-fcom aria-label="Comments"><span data-notr>💬</span><b data-notr>${x.comments || ''}</b></button>
+        <button data-fsend aria-label="Send to a friend">${ic('send', 2)}</button></div>
+      <div class="fmeta"><b data-notr>${esc(p?.name || '')}</b><span data-notr>${esc(when(x.created_at))}</span></div></section>`; }).join('');
+  const vids = [...feed.querySelectorAll('video')];
+  const load = (vd) => { if (vd && !vd.src) { vd.src = vd.dataset.src; vd.preload = 'auto'; } };
+  feedObs?.disconnect();
+  feedObs = new IntersectionObserver((ents) => ents.forEach((en) => {
+    const vd = en.target.querySelector('video'), i = +en.target.dataset.fi;
+    if (en.isIntersecting && en.intersectionRatio > 0.6) {
+      load(vd); load(vids[i + 1]);
+      vd.muted = feedMuted; vd.play().catch(() => { vd.muted = true; feedMuted = true; paintSnd(); vd.play().catch(() => {}); });
+    } else { vd.pause(); }
+  }), { root: feed, threshold: [0, 0.6, 1] });
+  feed.querySelectorAll('.fitem').forEach((s) => feedObs.observe(s));
+  const paintSnd = () => { const b = $('#fsnd'); if (b) { b.classList.toggle('muted', feedMuted); b.setAttribute('aria-label', feedMuted ? T('Turn sound on') : T('Turn sound off')); } };
+  paintSnd();
+  $('#fsnd').onclick = () => { feedMuted = !feedMuted; vids.forEach((vd) => (vd.muted = feedMuted)); paintSnd(); };
+  let lastTap = 0;
+  feed.addEventListener('click', async (e) => {
+    const sec = e.target.closest('.fitem'); if (!sec) return; const x = feedItems[+sec.dataset.fi], vd = sec.querySelector('video');
+    const fu = e.target.closest('[data-fu]'); if (fu) return go(fu.dataset.fu === S.uid ? 'gallery/' + S.uid : 'u/' + fu.dataset.fu);
+    if (e.target.closest('[data-flike]')) return toggleLike(x, sec);
+    if (e.target.closest('[data-fcom]')) return openComments(x, sec);
+    if (e.target.closest('[data-fsend]')) return sendToFriend(x);
+    const now = Date.now();
+    if (now - lastTap < 300) { lastTap = 0; const h = sec.querySelector('.fheart'); h.classList.remove('go'); void h.offsetWidth; h.classList.add('go'); if (!x.liked) toggleLike(x, sec); return; }
+    lastTap = now;
+    setTimeout(() => { if (lastTap !== now) return; if (feedMuted) { feedMuted = false; vids.forEach((v2) => (v2.muted = false)); paintSnd(); vd.play().catch(() => {}); } else if (vd.paused) vd.play().catch(() => {}); else vd.pause(); }, 310);
+  });
+};
+async function toggleLike(x, sec) {
+  x.liked = !x.liked; x.likes = Math.max(0, (x.likes || 0) + (x.liked ? 1 : -1));
+  const b = sec.querySelector('[data-flike]'); b.classList.toggle('on', x.liked); b.innerHTML = `<span data-notr>${x.liked ? '❤️' : '🤍'}</span><b data-notr>${x.likes || ''}</b>`;
+  if (x.liked) { navigator.vibrate?.(15); await sb.from('post_likes').insert({ post_id: x.id, user_id: S.uid }); } else await sb.from('post_likes').delete().eq('post_id', x.id).eq('user_id', S.uid);
+}
+async function openComments(x, sec) {
+  const bg = document.createElement('div'); bg.className = 'sheet-bg';
+  bg.innerHTML = `<div class="sheet comsheet" role="dialog"><div class="grab"></div><h3>Comments</h3><div class="comlist" id="coml"><div class="center" style="padding:20px"><span class="spinner sm dark"></span></div></div>
+    <form class="comform" id="comf"><input class="field" id="comt" maxlength="500" placeholder="Add a comment…" autocomplete="off"><button class="send sm" aria-label="Send">${ic('send', 2)}</button></form></div>`;
+  app.appendChild(bg);
+  bg.addEventListener('click', (e) => { if (e.target === bg) bg.remove(); });
+  const paint = async () => {
+    const { data } = await sb.rpc('post_comments_list', { p_post: x.id });
+    const l = $('#coml', bg); if (!l) return;
+    l.innerHTML = (data || []).length ? data.map((c) => `<div class="com">${thumbHTML({ id: c.user_id, still_path: c.photo })}<div><b data-notr>${esc(c.name || '')}</b> <small data-notr>${esc(when(c.created_at))}</small><p data-notr>${esc(c.body)}</p></div></div>`).join('') : `<p class="fine" style="text-align:center;padding:18px">No comments yet. Be the first.</p>`;
+    l.scrollTop = 1e9; x.comments = (data || []).length; const b = sec.querySelector('[data-fcom] b'); if (b) b.textContent = x.comments || '';
+  };
+  await paint();
+  $('#comf', bg).onsubmit = async (e) => { e.preventDefault(); const t = $('#comt', bg).value.trim(); if (!t) return; $('#comt', bg).value = ''; const { error } = await sb.from('post_comments').insert({ post_id: x.id, user_id: S.uid, body: t }); if (error) toast('Not sent. Check your connection.'); await paint(); };
+}
+async function sendToFriend(x) {
+  const fr = [...S.members.values()].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+  if (!fr.length) return toast('Add friends first');
+  const to = await choose('Send to', fr.map((p) => ({ k: p.id, icon: 'send', label: p.name, notr: true })));
+  if (!to) return;
+  const { error } = await sb.from('messages').insert({ recipient: to, media_path: x.video_path, media_kind: 'video', poster_path: x.path });
+  toast(error ? 'Not sent. Check your connection.' : 'Sent');
 }
 
 /* Chat */
@@ -963,10 +1287,11 @@ function msgHTML(m) {
   if (m.sticker) return `<div class="b stk ${mine ? 'me' : 'them'} ${rx ? 'has-rx' : ''}" data-msg="${m.id}">${stickerHTML(m.sticker)}${rx}</div>`;
   const tr = TR.get(String(m.id));
   const text = tr && tr.show ? tr.text : m.body;
-  const jumbo = !(tr && tr.show) && isJumbo(m.body);
+  const jumbo = !(tr && tr.show) && !m.reply_story && isJumbo(m.body);
+  const rs = m.reply_story ? `<span class="rstory"><img src="${esc(thumb(m.reply_story))}" alt=""><span>${mine ? 'Replied to a story' : 'Replied to your story'}</span></span>` : '';
   const note = tr && tr.show ? `<button class="trnote" data-orig="${m.id}">${ic('globe')}<span>Show original</span></button>`
     : (mine && m.orig_lang ? `<span class="trnote">${ic('globe')}<span>Sent in ${esc(langLabel(m.orig_lang))}</span></span>` : '');
-  return `<div class="b ${jumbo ? 'jumbo' : ''} ${mine ? 'me' : 'them'} ${rx ? 'has-rx' : ''}" data-msg="${m.id}" title="${hm(m.created_at)}"><span class="tx" data-notr>${esc(text)}</span>${note}${rx}</div>`;
+  return `<div class="b ${jumbo ? 'jumbo' : ''} ${mine ? 'me' : 'them'} ${rx ? 'has-rx' : ''}" data-msg="${m.id}" title="${hm(m.created_at)}">${rs}<span class="tx" data-notr>${esc(text)}</span>${note}${rx}</div>`;
 }
 /* ---------- chat magic: screen effects, flying reactions, poke ---------- */
 const FX_WORDS = [
@@ -1043,6 +1368,7 @@ const landed = new Set();
 const scratched = new Set((store.get('magaam-scratched') || '').split(',').filter(Boolean));
 const SCR = new Map();
 function mediaHTML(m, mine, rx) {
+  if (m.media_kind === 'circle') return circleHTML(m, mine, rx);
   const id = String(m.id);
   const fresh = !landed.has(id) && Date.now() - new Date(m.created_at) < 15000; if (!m.tmp) landed.add(id);
   const cls = `b media ${mine ? 'me' : 'them'} ${rx ? 'has-rx' : ''} ${fresh ? (mine ? 'land-me' : 'land-them') : ''}`;
@@ -1089,7 +1415,8 @@ function mountScratch(box) {
 }
 function choose(title, items) { return new Promise((res) => { sheet(title, items.map((it) => ({ ...it, run: () => res(it.k) }))); setTimeout(() => { const bg = [...app.querySelectorAll('.sheet-bg')].pop(); bg?.addEventListener('click', (e) => { if (e.target === bg) res(null); }); }, 0); }); }
 async function sendMedia(to) {
-  const kind = await choose('Send to chat', [{ k: 'image', icon: 'image', label: 'Photo' }, { k: 'video', icon: 'video', label: 'Video' }]); if (!kind) return;
+  const kind = await choose('Send to chat', [{ k: 'circle', icon: 'camera', label: 'Video message in a circle' }, { k: 'image', icon: 'image', label: 'Photo' }, { k: 'video', icon: 'video', label: 'Video' }]); if (!kind) return;
+  if (kind === 'circle') return recordCircle(to);
   const f = kind === 'image' ? await pickFile(false) : await pickVideo(); if (!f) return;
   if (kind === 'video' && f.size > 50 * 1024 * 1024) return toast('This video is larger than 50 MB. Use a shorter clip.', 4000);
   const fx = await choose('How should it arrive?', [{ k: 'plain', icon: 'send', label: 'Send' }, { k: 'scratch', icon: 'spark', label: 'Scratch to reveal' }, { k: 'once', icon: 'x', label: 'View once, then it disappears' }]); if (!fx) return;
@@ -1350,7 +1677,7 @@ V.chat.update = (id) => {
   if (!S.thread.length) html = `<div class="day">Say hello to ${esc(S.members.get(id)?.name)}</div>`;
   if (S.typing.has(id)) html += '<div class="typing"><i></i><i></i><i></i></div>';
   box.innerHTML = html;
-  mountScratch(box);
+  mountScratch(box); mountCircles(box);
   const stick = nearBottom || box.dataset.init !== '1';
   if (stick) { box.scrollTop = box.scrollHeight; box.dataset.init = '1'; }
   // Photos load after the list is drawn; keep the newest message in view.
@@ -1606,6 +1933,9 @@ app.addEventListener('click', (e) => {
   if (a === 'addpost') return sheet('Add to gallery', [{ icon: 'image', label: 'Photo', run: addPost }, { icon: 'video', label: 'Video', run: addVideoPost }]);
   if (a === 'uilang') return pickUiLang();
   if (a === 'sharelink') return shareLink();
+  if (a === 'addstory') return addStory();
+  if (a === 'story') return openStories(t.dataset.uid);
+  if (a === 'addvideo') return addVideoPost().then(() => route().name === 'video' && show());
   if (a === 'copylink') { navigator.clipboard.writeText(myLink()).then(() => toast('Link copied')).catch(() => toast(myLink(), 6000)); return; }
   if (a === 'umore') { const id = t.dataset.uid; return sheet(nameOf(id), [
     { icon: 'flag', label: 'Report', run: () => reportUser(id) },
@@ -1621,6 +1951,7 @@ app.addEventListener('click', (e) => {
     { icon: 'edit', label: `Rename ${aiName()}`, run: () => go('assistant') },
     { icon: 'globe', label: `App language: ${I18N.label}`, run: pickUiLang },
     { icon: 'globe', label: `Translation language: ${langLabel(myLang())}`, run: pickLang },
+    { icon: 'bell', label: soundOn() ? 'Message sound: on' : 'Message sound: off', run: () => { store.set('magaam-sound', soundOn() ? 'off' : 'on'); unlockAudio(); if (soundOn()) setTimeout(() => chime(false, true), 60); toast(soundOn() ? 'Message sound is on' : 'Message sound is off'); } },
     { icon: 'useradd', label: 'Add friends', run: () => go('add') },
     { icon: 'share', label: 'Share my friend link', run: shareLink },
     { icon: 'edit', label: `My username: @${S.me?.username || ''}`, notr: false, run: () => go('about') },
