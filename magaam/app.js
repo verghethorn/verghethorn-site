@@ -51,6 +51,22 @@ const ic = (n, sw = 1.8) => `<svg viewBox="0 0 24 24" fill="none" stroke="curren
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
 const $ = (s, r = document) => r.querySelector(s);
 const app = $('#app');
+/* The MAGAAM seal: an eight-pointed star of light with a check, instead of a plain tick. Founder: living gold-to-violet hologram. */
+const VBDEF = `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="vbg-founder" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE38A"/><stop offset=".45" stop-color="#FF8FC8"/><stop offset="1" stop-color="#7A6CFF"/></linearGradient>
+  <linearGradient id="vbg-verified" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5AC8FF"/><stop offset="1" stop-color="#6A5CFF"/></linearGradient></defs></svg>`;
+document.body.insertAdjacentHTML('afterbegin', VBDEF);
+const vbSvg = (k) => `<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="url(#vbg-${k})"><rect x="4.6" y="4.6" width="14.8" height="14.8" rx="3.2"/><rect x="4.6" y="4.6" width="14.8" height="14.8" rx="3.2" transform="rotate(45 12 12)"/></g><path d="M8.4 12.2l2.4 2.4 4.9-5.1" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const vbadge = (p, cls = '') => (p?.verified === 'founder' || p?.verified === 'verified') ? `<span class="vb vb-${p.verified} ${cls}" data-vb="${p.verified}" role="img" aria-label="${p.verified === 'founder' ? 'MAGAAM founder' : 'Verified'}">${vbSvg(p.verified)}</span>` : '';
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-vb]'); if (!b) return; e.stopPropagation(); e.preventDefault();
+  const k = b.dataset.vb, f = k === 'founder';
+  const bg = document.createElement('div'); bg.className = 'sheet-bg';
+  bg.innerHTML = `<div class="sheet vbsheet" role="dialog"><div class="grab"></div><div class="vbbig vb-${k}">${vbSvg(k)}<i></i></div>
+    <h3>${esc(T(f ? 'MAGAAM founder' : 'Verified account'))}</h3><p>${esc(T(f ? 'This person created MAGAAM. The MAGAAM seal confirms the account is real.' : 'MAGAAM has checked that this account really belongs to this person.'))}</p>
+    <small>${esc(T('Soon everyone will be able to get the seal by verifying their account.'))}</small></div>`;
+  bg.addEventListener('click', (ev) => { if (ev.target === bg) bg.remove(); }); app.appendChild(bg); navigator.vibrate?.(12);
+}, true);
 // iPhone home-screen app: iOS reports the screen without the status bar, which left an empty strip at the bottom.
 // Stretch the app to the real screen height, except while the keyboard is open.
 (() => {
@@ -746,7 +762,7 @@ V.me = () => {
   <div class="shade"></div>
   <div class="hhead">
     <button class="hring" id="hring" data-act="addstory" data-uid="${S.uid}" aria-label="Your story">${thumbHTML(m)}<i class="hplus">${ic('plus', 3)}</i></button>
-    <div class="hname2"><b data-notr>${esc(m.name)}</b><span data-notr>@${esc(m.username || '')}</span>${vibe ? `<span class="hvibe" data-notr>${esc(vibe)}</span>` : `<button class="hvibe add" data-go="edit">${esc(T('+ vibe for today'))}</button>`}
+    <div class="hname2"><b data-notr>${esc(m.name)}${vbadge(m)}</b><span data-notr>@${esc(m.username || '')}</span>${vibe ? `<span class="hvibe" data-notr>${esc(vibe)}</span>` : `<button class="hvibe add" data-go="edit">${esc(T('+ vibe for today'))}</button>`}
       <div class="ailine" id="ailine" hidden></div></div>
   </div>
   <div class="hrail">
@@ -856,7 +872,7 @@ V.chats.update = () => {
   box.innerHTML = reqs + (list.length ? `<div class="rows glass">${list.map((p) => {
     const l = S.last.get(p.id), u = S.unread.get(p.id) || 0, ty = S.typing.has(p.id);
     const prev = ty ? T('typing…') : l ? (l.sender === S.uid ? T('You') + ': ' : '') + previewOf(l) : T('Say hello');
-    return `<button class="crow" data-go="chat/${p.id}">${thumbHTML(p)}<span class="cmid"><b data-notr>${esc(p.name)}${S.streaks.get(p.id) ? ` <span class="streak">🔥${S.streaks.get(p.id)}</span>` : ''}</b><span data-notr>${esc(prev)}</span></span><span class="cend">${l ? when(l.created_at) : ''}${u ? `<span class="badge">${u}</span>` : ''}</span></button>`;
+    return `<button class="crow" data-go="chat/${p.id}">${thumbHTML(p)}<span class="cmid"><b data-notr>${esc(p.name)}${vbadge(p, 'sm')}${S.streaks.get(p.id) ? ` <span class="streak">🔥${S.streaks.get(p.id)}</span>` : ''}</b><span data-notr>${esc(prev)}</span></span><span class="cend">${l ? when(l.created_at) : ''}${u ? `<span class="badge">${u}</span>` : ''}</span></button>`;
   }).join('')}</div>` : `<div class="rows glass"><div class="empty"><b>${q ? 'No one found' : 'No friends yet'}</b><span>${q ? 'Try another name.' : 'Add friends by their @username or send them your link.'}</span>${q ? '' : `<button class="pbtn blue" data-go="add">${ic('useradd')}Add friends</button>`}</div></div>`);
   setTabs('chats');
 };
@@ -874,7 +890,7 @@ const myLink = () => location.origin + location.pathname + '#/add/' + (S.me?.use
 let qrLoad = null;
 function loadQR() { return qrLoad ||= new Promise((res, rej) => { if (window.qrcode) return res(); const sc = document.createElement('script'); sc.src = 'qrcode.js?v=1'; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); }); }
 const mutualTxt = (n) => (n ? ' · ' + T(n === 1 ? '1 mutual friend' : '{n} mutual friends').replace('{n}', n) : '');
-const personRow = (p, right) => `<div class="crow"><button class="prow" data-go="p/${p.id}">${thumbHTML(p)}<span class="cmid"><b data-notr>${esc(p.name)}</b><span data-notr>@${esc(p.username || '')}${esc(mutualTxt(p.mutual))}</span></span></button><span class="cend fbtns">${right}</span></div>`;
+const personRow = (p, right) => `<div class="crow"><button class="prow" data-go="p/${p.id}">${thumbHTML(p)}<span class="cmid"><b data-notr>${esc(p.name)}${vbadge(p, 'sm')}</b><span data-notr>@${esc(p.username || '')}${esc(mutualTxt(p.mutual))}</span></span></button><span class="cend fbtns">${right}</span></div>`;
 const relBtn = (id, big) => { const c = big ? 'pbtn' : 'pbtn sm';
   return id === S.uid ? `<span class="tag">This is you</span>`
     : S.members.has(id) ? `<button class="${c} blue" data-go="chat/${id}">${ic('chat')}Message</button>`
@@ -1808,7 +1824,7 @@ V.chat = async (id) => {
   ${bgMedia(p)}
   <div class="shade"></div>
   <div class="hdr"><button class="iconbtn" data-back="chats" aria-label="Back">${ic('back')}</button>
-    <button class="hname" data-go="u/${id}"><b data-notr>${esc(p.name)}</b><span class="pill glass" id="st"></span></button>
+    <button class="hname" data-go="u/${id}"><b data-notr>${esc(p.name)}${vbadge(p)}</b><span class="pill glass" id="st"></span></button>
     <button class="iconbtn pokebtn" id="pokeb" aria-label="Poke ${esc(p.name)}" title="Poke"><span data-notr>👉</span></button></div>
   <div class="you glass">${S.me.still_path || S.me.photo_path ? `<img class="${S.me.video_path || S.me.still_path ? '' : 'raw'}" src="${esc(thumb(S.me.still_path || S.me.photo_path))}" alt="">` : ''}<span>You</span></div>
   <button class="aidock" id="aidock" hidden></button>
@@ -2150,7 +2166,7 @@ V.p = async (id) => {
   ${bgMedia(c)}
   <div class="shade"></div>
   <div class="hdr"><button class="iconbtn" data-back="add" aria-label="Back">${ic('back')}</button>
-    <div class="hname"><b data-notr>${esc(c.name)}</b>${c.is_public ? `<span class="pill glass" id="st"></span>` : ''}</div><button class="iconbtn" data-act="umore" data-uid="${id}" aria-label="More">${ic('more', 2.4)}</button></div>
+    <div class="hname"><b data-notr>${esc(c.name)}${vbadge(c)}</b>${c.is_public ? `<span class="pill glass" id="st"></span>` : ''}</div><button class="iconbtn" data-act="umore" data-uid="${id}" aria-label="More">${ic('more', 2.4)}</button></div>
   <div class="dock"><div class="card glass pcard">
     <div class="phead"><span class="puser" data-notr>@${esc(c.username || '')}</span><span class="ptype ${c.is_public ? 'open' : ''}">${ic(c.is_public ? 'globe' : 'lock', 2)}${esc(T(c.is_public ? 'Open profile' : 'Closed profile'))}</span></div>
     <div class="pstat sm" id="pstat2" hidden></div>
@@ -2187,7 +2203,7 @@ V.u = async (id) => {
   ${bgMedia(p)}
   ${p.greet_path ? `<video class="greetv" id="greetv" crossorigin="anonymous" playsinline webkit-playsinline preload="auto" src="${esc(url(p.greet_path))}"></video>` : ''}
   <canvas class="pbk" id="pbk" aria-hidden="true"></canvas>
-  <h1 class="pname" id="pname" data-notr style="--fs:${fs}px">${[...name].map((c, i) => `<i style="--i:${i}">${esc(c)}</i>`).join('')}</h1>
+  <h1 class="pname" id="pname" data-notr style="--fs:${fs}px">${[...name].map((c, i) => `<i style="--i:${i}">${esc(c)}</i>`).join('')}${p.verified ? `<span class="pnvb" style="--i:${[...name].length}">${vbSvg(p.verified)}</span>` : ''}</h1>
   <canvas class="pfg" id="pfg" aria-hidden="true"></canvas>
   <div class="pshade"></div>
   <div class="hdr"><button class="iconbtn" data-back="${self ? 'me' : 'chats'}" aria-label="Back">${ic('back')}</button><span></span>
@@ -2195,7 +2211,7 @@ V.u = async (id) => {
   ${self ? '' : `<button class="ubub" id="ubub" hidden>${aiFace(p)}<span><b data-notr>${esc(T('{ai} is here').replace('{ai}', p.ai_name || ''))}</b><small data-notr>${esc(T('{n} is offline').replace('{n}', p.name))}</small></span></button>`}
   <div class="pbottom">
     <div class="pstat" id="pstat" hidden></div>
-    <div class="pmeta"><span class="pill glass" id="st">${self ? esc(T('This is how friends see you')) : ''}</span><span class="psub2" data-notr>${sub}</span></div>
+    <div class="pmeta">${p.verified ? `<button class="vbpill vb-${p.verified}" data-vb="${p.verified}">${vbSvg(p.verified)}<span>${esc(T(p.verified === 'founder' ? 'MAGAAM founder' : 'Verified'))}</span></button>` : ''}<span class="pill glass" id="st">${self ? esc(T('This is how friends see you')) : ''}</span><span class="psub2" data-notr>${sub}</span></div>
     <div class="pdeck" id="pdeck">
       <section class="pcard">${empty ? `<div class="pai">${aiFace(p)}<p data-notr>${esc(self ? T('Your page is waiting for you: add a vibe, interests and a couple of lines about you.') : T('This is {n} 🙂 Still a bit shy, the profile will come alive soon.').replace('{n}', name))}</p></div>
           ${self ? `<button class="pchip" data-go="edit">${ic('edit', 2)}${esc(T('Fill in my profile'))}</button>` : `<button class="pchip" id="askfill">${ic('spark', 2)}${esc(T('Ask {n} to fill it in').replace('{n}', name))}</button>`}`

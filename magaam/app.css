@@ -1203,3 +1203,30 @@ h1{font-weight:700;font-size:38px;letter-spacing:-.035em;line-height:1.05}
 .prow2 .thumb{width:44px;height:44px;aspect-ratio:auto;border-radius:50%;overflow:hidden;flex:none}
 .prow2 span{display:flex;flex-direction:column;min-width:0}.prow2 b{font-size:15.5px}.prow2 small{font-size:13px;opacity:.65;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media (prefers-reduced-motion:reduce){.ps{animation:none}}
+
+/* the MAGAAM seal */
+.vb{display:inline-grid;place-items:center;width:.95em;height:.95em;margin-inline-start:.28em;vertical-align:-.12em;cursor:pointer;position:relative}
+.vb svg{width:100%;height:100%;filter:drop-shadow(0 0 6px rgba(255,143,200,.55))}
+.vb.sm{width:16px;height:16px}
+.vb-founder svg{animation:vbholo 6s linear infinite}
+.vb-verified svg{filter:drop-shadow(0 0 5px rgba(90,200,255,.55))}
+@keyframes vbholo{0%{filter:hue-rotate(0) drop-shadow(0 0 6px rgba(255,143,200,.6))}50%{filter:hue-rotate(40deg) drop-shadow(0 0 9px rgba(122,108,255,.7))}100%{filter:hue-rotate(0) drop-shadow(0 0 6px rgba(255,143,200,.6))}}
+.vb-founder svg g{transform-origin:12px 12px;animation:vbspin 14s linear infinite}
+@keyframes vbspin{to{transform:rotate(90deg)}}
+.pname .pnvb{display:inline-block;width:.34em;height:.34em;vertical-align:.95em;margin-inline-start:.06em;animation:pnIn .9s cubic-bezier(.2,.9,.25,1) calc(var(--i)*55ms + .3s) both;-webkit-text-fill-color:initial}
+.pname .pnvb svg{width:100%;height:100%;animation:vbholo 6s linear infinite;filter:drop-shadow(0 0 10px rgba(255,143,200,.7))}
+.vbpill{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px 0 7px;border-radius:999px;color:#fff;font-size:12.5px;font-weight:700;letter-spacing:.01em;
+  background:linear-gradient(120deg,rgba(255,227,138,.28),rgba(255,143,200,.28),rgba(122,108,255,.32));border:1px solid rgba(255,255,255,.35);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  background-size:200% 100%;animation:vbpill 5s ease-in-out infinite}
+.vbpill.vb-verified{background:linear-gradient(120deg,rgba(90,200,255,.28),rgba(106,92,255,.32))}
+.vbpill svg{width:18px;height:18px}
+@keyframes vbpill{0%,100%{background-position:0 0}50%{background-position:100% 0}}
+.vbsheet{text-align:center;padding-bottom:calc(var(--sb) + 22px)}
+.vbsheet h3{margin:6px 0 4px;font-size:21px}
+.vbsheet p{margin:0 auto 10px;max-width:300px;font-size:15px;line-height:1.4;opacity:.8}
+.vbsheet small{display:block;opacity:.55;font-size:12.5px}
+.vbbig{position:relative;width:96px;height:96px;margin:10px auto 6px}
+.vbbig svg{position:relative;width:100%;height:100%;animation:vbholo 6s linear infinite}
+.vbbig i{position:absolute;inset:-18px;border-radius:50%;background:conic-gradient(from 0deg,#FFE38A,#FF8FC8,#7A6CFF,#5AC8FF,#FFE38A);filter:blur(22px);opacity:.45;animation:spin 6s linear infinite}
+.vbbig.vb-verified i{background:conic-gradient(from 0deg,#5AC8FF,#6A5CFF,#5AC8FF)}
+@media (prefers-reduced-motion:reduce){.vb svg,.vb svg g,.pnvb svg,.vbbig svg,.vbbig i,.vbpill{animation:none}}
