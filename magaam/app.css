@@ -769,3 +769,17 @@ h1{font-weight:700;font-size:38px;letter-spacing:-.035em;line-height:1.05}
 .b.greet{animation:pop .5s var(--spring) both}
 .typing.aity{display:flex;align-items:center;gap:6px;width:auto;padding:8px 14px;border:1px solid rgba(255,214,106,.55);background:linear-gradient(135deg,rgba(255,194,51,.25),rgba(229,92,255,.18))}
 .typing.aity span{font-size:12.5px;font-weight:600;color:#FFD56A;margin-right:2px}
+/* "while you were away" from your assistant */
+.digest{position:absolute;left:max(12px,var(--sl));right:max(12px,var(--sr));top:calc(var(--st) + 66px);z-index:4;animation:pop .5s var(--spring) both}
+.dg{display:flex;gap:12px;align-items:flex-start;border-radius:26px;padding:14px 10px 14px 14px;color:#fff;border-color:rgba(255,214,106,.5)!important;
+  background:linear-gradient(135deg,rgba(255,194,51,.26),rgba(106,92,255,.22))!important}
+.dgt{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.dgt b{font-size:13px;font-weight:700;color:#FFD56A;letter-spacing:.01em}
+.dgt p{margin:0;font-size:15px;line-height:1.38}
+.dgx{width:32px;height:32px;color:#fff;opacity:.8;flex:none}
+.dgx svg{width:18px;height:18px}
+.dgp{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.dgc{display:flex;align-items:center;gap:7px;height:36px;padding:0 10px 0 4px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);font-size:14px;font-weight:600;color:#fff}
+.dgc .thumb{width:28px;height:28px;aspect-ratio:auto;border-radius:50%}
+.dgc .thumb .dot{display:none}
+.dgc .badge{min-width:20px;height:20px;font-size:11px}

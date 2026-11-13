@@ -698,6 +698,7 @@ V.me = () => {
   ${bgMedia(m)}
   <div class="shade"></div>
   <div class="hdr"><div class="leftname"><b data-notr>${esc(m.name)}</b><span class="pill glass aipill">${ic('spark').replace('<svg', '<svg style="width:15px;height:15px"')}${esc(aiName())}</span></div><div class="hright"><button class="pill glass coinpill" data-go="wallet" aria-label="Balance">${ic('coin')}<span data-notr id="coins">${S.coins}</span></button><button class="iconbtn" data-act="settings" aria-label="Settings">${ic('gear')}</button></div></div>
+  <div class="digest" id="digest" hidden></div>
   <div class="dock">
     ${installBanner()}
     <div class="card glass"><div class="ailine" id="ailine" hidden></div><button class="photos-btn" data-go="gallery/${S.uid}"><span class="pt" id="pthumbs"></span><span class="pl"><b>My photos</b><span id="pcount">Open your gallery</span></span><span class="chev">${ic('back')}</span></button>
@@ -720,8 +721,32 @@ V.me.update = () => {
     else al.hidden = true;
   }
   const t = $('#tabs'); if (t) t.innerHTML = tabbar('me');
+  showDigest();
 };
 V.me.after = () => V.me.update();
+// "While you were away": your own assistant tells you who wrote and what about.
+let digestBusy = false;
+async function showDigest() {
+  const el = $('#digest'); if (!el) return;
+  if (!totalUnread()) { el.hidden = true; return; }
+  const key = [...S.unread.entries()].filter(([, c]) => c).map(([k, c]) => k + ':' + c).sort().join(',') + '|' + I18N.lang;
+  if (store.get('magaam-digest-x') === key) { el.hidden = true; return; }
+  let cached = null; try { cached = JSON.parse(store.get('magaam-digest') || 'null'); } catch {}
+  const shell = (body) => `<div class="dg glass"><span class="aiorb">${ic('spark')}</span><div class="dgt"><b data-notr>${esc(aiName())}</b>${body}</div><button class="iconbtn dgx" data-dgx aria-label="Close">${ic('x')}</button></div>`;
+  const paint = (d) => {
+    el.hidden = false;
+    el.innerHTML = shell(`<p data-notr>${esc(d.text)}</p><div class="dgp">${(d.people || []).filter((p) => S.members.has(p.id)).map((p) => `<button class="dgc" data-go="chat/${p.id}">${thumbHTML(S.members.get(p.id))}<span data-notr>${esc(p.name)}</span>${S.unread.get(p.id) ? `<b class="badge">${S.unread.get(p.id)}</b>` : ''}</button>`).join('')}</div>`);
+    el.querySelector('[data-dgx]').onclick = () => { store.set('magaam-digest-x', key); el.hidden = true; };
+  };
+  if (cached?.key === key) return paint(cached);
+  if (digestBusy) return; digestBusy = true;
+  el.hidden = false; el.innerHTML = shell(`<p><span class="spinner xs"></span> ${esc(T('Reading your new messages…'))}</p>`);
+  el.querySelector('[data-dgx]').onclick = () => { store.set('magaam-digest-x', key); el.hidden = true; };
+  try {
+    const j = await aiCall({ op: 'digest', lang: I18N.langName });
+    if (j.text) { const d = { key, text: j.text, people: j.people }; store.set('magaam-digest', JSON.stringify(d)); if (route().name === 'me') { paint(d); chime(true); } } else el.hidden = true;
+  } catch { el.hidden = true; } finally { digestBusy = false; }
+}
 
 /* Chats list */
 V.chats = () => `<div class="dark" style="position:absolute;inset:0">
