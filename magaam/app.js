@@ -715,7 +715,6 @@ V.me = () => {
   <div class="hrail">
     <button class="rb grad" data-act="hplus" aria-label="Create">${ic('plus', 2.4)}</button>
     <button class="rb" data-go="gallery/${S.uid}" aria-label="Gallery">${ic('grid')}</button>
-    <button class="rb" data-go="u/${S.uid}" aria-label="My profile">${ic('me')}</button>
     <button class="rb coin" data-go="wallet" aria-label="Balance">${ic('coin')}<small data-notr id="coins">${S.coins}</small></button>
     <button class="rb" data-act="settings" aria-label="Settings">${ic('gear')}</button>
   </div>

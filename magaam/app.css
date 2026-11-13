@@ -17,7 +17,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;paddin
 input{font:inherit;color:inherit}
 img{display:block;max-width:100%}
 :focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:10px}
-#app{position:relative;max-width:480px;height:100dvh;margin:0 auto;overflow:hidden;background:var(--paper)}
+#app{position:fixed;top:0;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;overflow:hidden;background:var(--paper)} /* fixed to the screen edges: no empty strip under the tab bar on iPhone */
 @media (min-width:600px){#app{box-shadow:0 0 80px rgba(0,0,0,.5)}}
 .view{position:absolute;inset:0;overflow:hidden;animation:enter .32s cubic-bezier(.2,.8,.2,1) both}
 .view.back{animation-name:enterBack}
