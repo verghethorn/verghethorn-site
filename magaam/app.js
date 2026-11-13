@@ -81,26 +81,40 @@ function thumbHTML(p, withDot = true) {
 function bgMedia(p) {
   const still = p.still_path || p.photo_path;
   // Two copies of the living video crossfade at the end, so the loop never jumps.
-  if (p.video_path) { const v = esc(url(p.video_path)), po = still ? `poster="${esc(url(still))}"` : ''; return `<div class="bg loopbox" data-bgfor="${p.id}"><video class="lv on" src="${v}" ${po} autoplay muted playsinline preload="auto"></video><video class="lv" src="${v}" ${po} muted playsinline preload="auto"></video></div>`; }
+  if (p.video_path) { const v = esc(url(p.video_path)), si = still ? `<img class="lvstill" src="${esc(url(still))}" alt="">` : ''; return `<div class="bg loopbox" data-bgfor="${p.id}">${si}<video class="lv on" src="${v}" autoplay muted playsinline webkit-playsinline disablepictureinpicture disableremoteplayback preload="auto"></video><video class="lv" src="${v}" muted playsinline webkit-playsinline disablepictureinpicture disableremoteplayback preload="auto"></video></div>`; }
   // The AI photo shows right away and gently "breathes" while its living video is being made.
   if (p.still_path) return `<div class="bg stillbox" data-bgfor="${p.id}"><img src="${esc(url(p.still_path))}" alt=""></div>`;
   if (p.photo_path) return `<div class="bg rawbox" data-bgfor="${p.id}"><img src="${esc(url(p.photo_path))}" alt=""><span class="alive">${ic('spark')}Not alive yet</span></div>`;
   return `<div class="bg-blur" data-bgfor="${p.id}" style="background-image:url('${sceneImg(p.scene)}')"></div>`;
 }
 // Crossfade loop for living videos, and a light check on living photos still being made.
+// The AI photo always sits under the video, so the screen is never black; a video only shows once it really plays.
+const lvPlay = (v) => { v.muted = true; v.defaultMuted = true; v.playsInline = true; const pr = v.play(); return pr ? pr : Promise.resolve(); };
 setInterval(() => {
   app.querySelectorAll('.loopbox').forEach((box) => {
     const [a, b] = box.querySelectorAll('video'); if (!a || !b) return;
     const cur = a.classList.contains('on') ? a : b, nxt = cur === a ? b : a;
-    if (cur.paused && !cur.ended && cur.readyState >= 2 && !document.hidden && !box.dataset.x) cur.play().catch(() => {});
+    if (box.dataset.x || document.hidden) return;
+    if (cur.paused && !cur.ended) { box.dataset.x = '1'; lvPlay(cur).then(() => box.classList.add('live')).catch(() => box.classList.remove('live')).finally(() => delete box.dataset.x); return; }
+    if (!cur.paused) box.classList.add('live');
     if (!cur.duration || !isFinite(cur.duration)) return;
-    if ((cur.ended || cur.currentTime > cur.duration - 0.75) && !box.dataset.x) {
-      box.dataset.x = '1'; nxt.currentTime = 0; nxt.play().catch(() => {});
-      nxt.classList.add('on'); cur.classList.remove('on');
-      setTimeout(() => { cur.pause(); delete box.dataset.x; }, 850);
+    if (cur.ended || cur.currentTime > cur.duration - 0.75) {
+      box.dataset.x = '1'; nxt.currentTime = 0;
+      lvPlay(nxt).then(() => {
+        nxt.classList.add('on'); cur.classList.remove('on');
+        setTimeout(() => { cur.pause(); delete box.dataset.x; }, 850);
+      }).catch(() => {
+        // The second copy could not start: just loop the same one.
+        cur.currentTime = 0; lvPlay(cur).catch(() => box.classList.remove('live')).finally(() => delete box.dataset.x);
+      });
     }
   });
 }, 120);
+// iPhone in Low Power Mode blocks videos that start by themselves: the first touch starts them.
+['touchstart', 'pointerdown', 'visibilitychange'].forEach((ev) => document.addEventListener(ev, () => {
+  if (document.hidden) return;
+  app.querySelectorAll('.loopbox video.on').forEach((v) => { if (v.paused) lvPlay(v).then(() => v.closest('.loopbox')?.classList.add('live')).catch(() => {}); });
+}, { passive: true }));
 let lastPoll = 0;
 setInterval(async () => {
   if (!S.uid || document.hidden || Date.now() - lastPoll < 12000) return;

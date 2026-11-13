@@ -435,7 +435,11 @@ canvas.scratch.gone{opacity:0}
 @media (prefers-reduced-motion:reduce){.bg.stillbox img{animation:none}}
 .bg.loopbox{overflow:hidden}
 .bg.loopbox video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 20%;opacity:0;transition:opacity .8s ease}
-.bg.loopbox video.on{opacity:1}
+.bg.loopbox .lvstill{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 20%;transform-origin:50% 40%;animation:breath 9s ease-in-out infinite alternate}
+.bg.loopbox.live video.on{opacity:1}
+.bg.loopbox video::-webkit-media-controls,.bg.loopbox video::-webkit-media-controls-start-playback-button,.bg.loopbox video::-webkit-media-controls-overlay-play-button,.bg.loopbox video::-webkit-media-controls-panel{display:none!important;-webkit-appearance:none;opacity:0!important}
+.bg.loopbox video{pointer-events:none}
+@media (prefers-reduced-motion:reduce){.bg.loopbox .lvstill{animation:none}}
 .langpick .mark.sm{width:84px;margin-top:10vh}
 .lp-title{font-size:19px;font-weight:500;line-height:1.5;margin:26px 0 22px;color:var(--navy);text-wrap:balance}
 .lp-list{display:flex;flex-direction:column;gap:10px;width:100%;max-width:360px}
