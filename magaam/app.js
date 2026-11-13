@@ -1646,6 +1646,20 @@ async function afterAuth() {
   S.uid = session?.user?.id || null; if (!S.uid) return;
   await loadMe(); await loadAll(); await loadJobs(); await loadWallet(); startRealtime();
 }
+// Updates arrive by themselves: if a newer version is published, the app reloads into it.
+const MY_VER = (document.querySelector('script[src*="app.js?v="]')?.getAttribute('src') || '').split('v=')[1] || '';
+async function checkUpdate() {
+  try {
+    const h = await (await fetch(location.pathname + '?check=' + Date.now(), { cache: 'no-store' })).text();
+    const v = (h.match(/app\.js\?v=(\d+)/) || [])[1];
+    if (v && MY_VER && v !== MY_VER && sessionStorage.getItem('magaam-upd') !== v) {
+      sessionStorage.setItem('magaam-upd', v);
+      location.replace(location.pathname + '?v=' + v + location.hash);
+    }
+  } catch {}
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkUpdate(); });
+setTimeout(checkUpdate, 1500);
 (async function boot() {
   app.innerHTML = '<div class="center" style="background:var(--paper)"><div class="spinner"></div></div>';
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
