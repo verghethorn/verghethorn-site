@@ -1066,3 +1066,5 @@ h1{font-weight:700;font-size:38px;letter-spacing:-.035em;line-height:1.05}
 .aircx{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.14)}
 .aircx svg{width:14px;height:14px}
 .ail em{display:block;font-style:normal;font-size:13px;opacity:.85;margin-top:2px}
+.aiov-rec.auto{background:rgba(47,107,255,.2);border-color:rgba(120,150,255,.5)}
+.aiov-rec.auto .recdot{background:#7FA2FF;box-shadow:0 0 0 0 rgba(127,162,255,.7);animation:pulseg 1.4s infinite}

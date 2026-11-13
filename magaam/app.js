@@ -1815,7 +1815,7 @@ async function enterAi(id) {
         <p class="aiov-say" id="aisay" data-notr></p>
         <div class="aiov-log" id="ailog"></div>
         <form class="aiov-form" id="aiform"><input id="aitx" maxlength="2000" autocomplete="off" placeholder="${esc(T('Tell {ai} what to pass on…').replace('{ai}', p.ai_name))}" aria-label="${esc(T('Message'))}"><button type="button" class="send aimic" id="aimic" aria-label="${esc(T('Say it by voice'))}">${ic('mic', 2)}</button><button class="send" id="aisend" aria-label="Send" hidden>${ic('send', 2)}</button></form>
-        <div class="aiov-rec" id="airec" hidden><span class="recdot"></span><b id="airect">0:00</b><span>${esc(T('Speak — tap again to send'))}</span><button type="button" class="aircx" id="aircx" aria-label="Cancel">${ic('x')}</button></div>
+        <div class="aiov-rec" id="airec" hidden><span class="recdot"></span><b id="airect">0:00</b><span id="airech">${esc(T('Speak — tap again to send'))}</span><button type="button" class="aircx" id="aircx" aria-label="Cancel">${ic('x')}</button></div>
         <button class="aiov-x" id="aix" type="button">${thumbHTML(p, false)}<span>${esc(T(route().name === 'u' ? 'Back to {n}\'s profile' : 'Back to the chat with {n}').replace('{n}', p.name))}</span></button>
         ${t ? `<small class="aiov-since" data-notr>${esc(T('{n} was here at {t}').replace('{n}', p.name).replace('{t}', t))}</small>` : ''}
       </div>`;
@@ -1824,6 +1824,7 @@ async function enterAi(id) {
     ov.querySelector('.aiov-veil').onclick = () => exitAi(id);
     const atx = $('#aitx'), paintBtns = () => { const has = !!atx.value.trim(); $('#aisend').hidden = !has; $('#aimic').hidden = has; };
     atx.addEventListener('input', paintBtns);
+    atx.addEventListener('focus', () => { if (aiRec?.auto) aiRecStop(false); });
     $('#aiform').onsubmit = (e) => { e.preventDefault(); const text = atx.value.trim(); if (!text) return; atx.value = ''; paintBtns(); sendToAway(id, text); };
     $('#aimic').onclick = () => (aiRec ? aiRecStop(true) : aiRecStart(id));
     $('#aircx').onclick = () => aiRecStop(false);
@@ -1841,16 +1842,19 @@ function pickVoice(lang) {
   const vs = (window.speechSynthesis?.getVoices() || []).filter((v) => v.lang.toLowerCase().startsWith(lang));
   return vs.find((v) => /premium|enhanced|neural|natural|google|siri/i.test(v.name)) || vs.find((v) => v.localService) || vs[0] || null;
 }
-function aiSpeak(text) {
-  const ss = window.speechSynthesis; if (!ss || !ttsOn) return;
+function aiSpeak(text, done) {
+  const words = String(text).split(/\s+/).length;
+  let fired = false; const fin = () => { if (fired) return; fired = true; clearTimeout(aiSpeak.t); done?.(); };
+  const ss = window.speechSynthesis;
+  if (!ss || !ttsOn) { aiSpeak.t = setTimeout(fin, 900 + words * 160); return; }
   try {
     ss.cancel();
-    const clean = String(text).replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '').trim(); if (!clean) return;
+    const clean = String(text).replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '').trim(); if (!clean) return fin();
     const u = new SpeechSynthesisUtterance(clean); const lang = ttsLang(clean); const v = pickVoice(lang);
     if (v) u.voice = v; u.lang = v?.lang || lang; u.rate = 1.02; u.pitch = 1.05;
-    const wv = () => $('#aiwave'); u.onstart = () => wv()?.classList.add('on'); u.onend = () => wv()?.classList.remove('on');
-    ss.speak(u);
-  } catch { /* no voice on this phone */ }
+    const wv = () => $('#aiwave'); u.onstart = () => wv()?.classList.add('on'); u.onend = () => { wv()?.classList.remove('on'); fin(); }; u.onerror = fin;
+    ss.speak(u); aiSpeak.t = setTimeout(fin, 2500 + words * 520);
+  } catch { fin(); }
 }
 const aiHush = () => { try { window.speechSynthesis?.cancel(); } catch { /* ignore */ } };
 // iPhone lets a page speak only after the first touch: unlock the voice on it.
@@ -1865,7 +1869,7 @@ function aiSay(text, key) {
   const words = String(text).split(/\s+/).filter(Boolean);
   el.innerHTML = words.map((w, i) => `<span style="--i:${i}">${esc(w)}</span>`).join(' ');
   const wv = $('#aiwave'); if (wv) { wv.classList.add('on'); clearTimeout(aiSay.t); aiSay.t = setTimeout(() => wv.classList.remove('on'), 300 + words.length * 110); }
-  aiSpeak(text);
+  aiSpeak(text, () => { if (S.aiMode && $('#aisay')?.dataset.k === String(key)) aiListen(S.aiMode); });
 }
 function paintAiOv(id) {
   if (!$('#aiov')) return;
@@ -1888,20 +1892,44 @@ async function sendToAway(id, text) {
   if (!S.thread.some((x) => x.id === data.id)) { S.thread.push(data); S.last.set(id, data); }
   askAway(id);
 }
+// Hands-free: when the assistant has finished speaking, it listens. You just talk; a short pause sends it.
+const aiHandsFree = () => store.get('magaam-handsfree') !== '0';
+function aiListen(id) {
+  if (!aiHandsFree() || aiRec || S.aiMode !== id || S.aiTyping.has(id)) return;
+  const tx = $('#aitx'); if (!tx || tx.value.trim() || document.activeElement === tx) return;
+  aiRecStart(id, true);
+}
 let aiRec = null;
-async function aiRecStart(id) {
+async function aiRecStart(id, auto = false) {
   if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) return toast('Voice messages are not supported in this browser.', 4000);
-  aiHush();
-  let stream; try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch { return toast('Allow microphone access to record a voice message.', 4000); }
+  if (!auto) aiHush();
+  let stream; try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch { if (!auto) toast('Allow microphone access to record a voice message.', 4000); return; }
+  if (S.aiMode !== id || aiRec) { stream.getTracks().forEach((t) => t.stop()); return; }
   const mime = ['audio/mp4', 'audio/aac', 'audio/webm;codecs=opus', 'audio/webm'].find((t) => MediaRecorder.isTypeSupported?.(t)) || '';
   const mr = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined); const chunks = [];
   mr.ondataavailable = (e) => e.data && e.data.size && chunks.push(e.data);
-  aiRec = { mr, stream, chunks, t0: Date.now(), to: id }; mr.start(250); navigator.vibrate?.(15);
-  $('#aimic')?.classList.add('on'); const rb = $('#airec'); if (rb) rb.hidden = false; $('#aiwave')?.classList.add('on');
-  aiRec.timer = setInterval(() => { if (!aiRec) return; const sec = (Date.now() - aiRec.t0) / 1000; const t = $('#airect'); if (t) t.textContent = fmtSec(sec); if (sec >= 60) aiRecStop(true); }, 200);
+  aiRec = { mr, stream, chunks, t0: Date.now(), to: id, auto }; mr.start(250); navigator.vibrate?.(15);
+  $('#aimic')?.classList.add('on'); const rb = $('#airec'); if (rb) { rb.hidden = false; rb.classList.toggle('auto', auto); }
+  const hint = $('#airech'); if (hint) hint.textContent = T(auto ? 'Listening… just speak' : 'Speak — tap again to send');
+  $('#aiwave')?.classList.add('on');
+  // listen to the loudness: wait for speech, then send after a short silence
+  let ac = null, an = null, buf = null, base = 0, nBase = 0, spoke = 0, quietFrom = 0;
+  try { ac = new (window.AudioContext || window.webkitAudioContext)(); an = ac.createAnalyser(); an.fftSize = 1024; ac.createMediaStreamSource(stream).connect(an); buf = new Float32Array(an.fftSize); aiRec.ac = ac; } catch { an = null; }
+  aiRec.timer = setInterval(() => {
+    if (!aiRec) return; const now = Date.now(), sec = (now - aiRec.t0) / 1000; const t = $('#airect'); if (t) t.textContent = fmtSec(sec);
+    if (sec >= 60) return aiRecStop(true);
+    if (!an) { if (auto && sec >= 12) aiRecStop(true); return; }
+    an.getFloatTimeDomainData(buf); let sum = 0; for (let i = 0; i < buf.length; i++) sum += buf[i] * buf[i]; const rms = Math.sqrt(sum / buf.length);
+    if (sec < 0.4) { base += rms; nBase++; return; }
+    const thr = Math.max(0.012, (nBase ? base / nBase : 0) * 3);
+    if (rms > thr) { spoke = spoke || now; quietFrom = 0; } else if (spoke && !quietFrom) quietFrom = now;
+    if (!auto) return;
+    if (!spoke && sec >= 8) return aiRecStop(false);              // nobody spoke: stop listening quietly
+    if (spoke && quietFrom && now - quietFrom > 1600) aiRecStop(now - spoke > 900); // a pause after speaking: send
+  }, 100);
 }
 function aiRecStop(send) {
-  if (!aiRec) return; const r = aiRec; aiRec = null; clearInterval(r.timer);
+  if (!aiRec) return; const r = aiRec; aiRec = null; clearInterval(r.timer); try { r.ac?.close(); } catch { /* ignore */ }
   $('#aimic')?.classList.remove('on'); const rb = $('#airec'); if (rb) rb.hidden = true; $('#aiwave')?.classList.remove('on');
   r.mr.onstop = async () => {
     r.stream.getTracks().forEach((t) => t.stop()); if (!send) return;
