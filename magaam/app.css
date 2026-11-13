@@ -1150,7 +1150,16 @@ h1{font-weight:700;font-size:38px;letter-spacing:-.035em;line-height:1.05}
 .livefx .lvshadow{position:absolute;left:12%;right:12%;bottom:-6px;height:26px;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.45),transparent)}
 @keyframes lvIn{0%{transform:translate(-50%,120%) rotate(-4deg)}9%{transform:translate(-50%,-4%) rotate(1deg)}13%{transform:translate(-50%,0) rotate(0)}45%{transform:translate(-50%,-2%) rotate(-1deg)}75%{transform:translate(-50%,0) rotate(.6deg)}90%{transform:translate(-50%,0)}100%{transform:translate(-50%,130%) rotate(3deg)}}
 .livefx.out{transition:opacity .6s;opacity:0}
-.lvstk{position:relative;display:block;width:200px;background:none}
+.b.stk.live{align-self:center;max-width:none;width:100%;display:flex;justify-content:center}
+.lvstk{position:relative;display:block;width:min(92%,420px);background:none;touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.lvstk .lvsh{position:absolute;left:14%;right:14%;bottom:2%;height:12%;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.5),transparent)}
+.lvstk img{position:relative;pointer-events:none;-webkit-user-drag:none}
+.lvstk.boop img{animation:kboop .5s cubic-bezier(.3,1.6,.5,1)}
+.lvstk.pet img{animation:kpet .9s ease-in-out infinite}
+@keyframes kboop{0%{transform:scale(1)}35%{transform:scale(1.06,.94)}70%{transform:scale(.98,1.03)}100%{transform:none}}
+@keyframes kpet{0%,100%{transform:scale(1)}50%{transform:scale(1.025,.985) translateY(1px)}}
+.khrt{position:absolute;z-index:70;font-size:24px;pointer-events:none;animation:khrt 1.6s ease-out both}
+@keyframes khrt{0%{opacity:0;transform:translate(0,0) scale(.5)}15%{opacity:1}100%{opacity:0;transform:translate(var(--dx),-140px) scale(1.2)}}
 .lvstk img{width:100%;display:block;filter:drop-shadow(0 10px 16px rgba(0,0,0,.45))}
 .lvstk span{position:absolute;right:8px;bottom:8px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(0,0,0,.45);color:#fff}
 .lvstk span svg{width:14px;height:14px}

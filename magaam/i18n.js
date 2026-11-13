@@ -385,6 +385,9 @@ window.I18N = (() => {
   Object.assign(D.ru, {"Living": "Живые", "Kitten": "Котёнок", "Play again": "Ещё раз", "🐱 Living sticker": "🐱 Живой стикер", "{n} sent you a living kitten 🐱": "{n} прислал(а) тебе живого котёнка 🐱"});
   Object.assign(D.ar, {"Living": "حية", "Kitten": "قطة صغيرة", "Play again": "مرة أخرى", "🐱 Living sticker": "🐱 ملصق حي", "{n} sent you a living kitten 🐱": "أرسل لك {n} قطة صغيرة حية 🐱"});
   Object.assign(D.tr, {"Living": "Canlı", "Kitten": "Yavru kedi", "Play again": "Tekrar", "🐱 Living sticker": "🐱 Canlı çıkartma", "{n} sent you a living kitten 🐱": "{n} sana canlı bir yavru kedi gönderdi 🐱"});
+  Object.assign(D.ru, {"Pet the kitten": "Погладь котёнка"});
+  Object.assign(D.ar, {"Pet the kitten": "دلّل القطة"});
+  Object.assign(D.tr, {"Pet the kitten": "Kediyi sev"});
 const tpl = {};
   for (const l of Object.keys(D)) {
     tpl[l] = Object.entries(D[l]).filter(([k]) => /\{\w+\}/.test(k)).map(([k, v]) => {

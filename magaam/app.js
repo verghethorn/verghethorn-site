@@ -1322,7 +1322,7 @@ function stickerHTML(code) {
   if (k === 'e') { const f = STK_FUN.find((x) => x[0] === a); return `<span class="se a-${f ? f[1] : 'bounce'}" data-notr>${esc(f ? f[0] : '✨')}</span>`; }
   if (k === 'w') { const i = Math.max(0, STK_WORDS.indexOf(a)); return `<span class="swd sw${i % 6}" data-notr>${esc(STK_WORDS[i])}</span>`; }
   if (k === 'x' && a === 'poke') return `<span class="poke" data-notr>👉</span><b class="poketx">${esc(T('Poke!'))}</b>`;
-  if (k === 'x' && a === 'live' && LIVE[b]) return `<button class="lvstk" data-live="${b}" aria-label="${esc(T('Play again'))}"><img src="stk/${b}-loop.webp" alt="" loading="lazy"></button>`; // alive in the chat all the time
+  if (k === 'x' && a === 'live' && LIVE[b]) return `<button class="lvstk" data-live="${b}" aria-label="${esc(T('Pet the kitten'))}"><span class="lvsh"></span><img src="stk/${b}-loop.webp" alt=""></button>`; // big and alive in the chat all the time
   if (k === 'x' && a === 'cmp') return `<span class="cmpc"><i>✨</i><small>${esc(T('Compliment'))}</small><b>${esc(T(CMPS[+b] || CMPS[0]))}</b></span>`;
   if (k === 'x' && a === 'fill') return `<span class="cmpc fill"><i>📝</i><small>${esc(T('A little request'))}</small><b>${esc(T('Tell me about yourself: fill in your profile 🙂'))}</b></span>`;
   if (k === 'u' && /^[0-9a-f-]{36}\/sticker-\d+\.png$/.test(a || '')) return `<img class="su" src="${esc(url(a))}" alt="Sticker">`;
@@ -1357,7 +1357,7 @@ async function sendSticker(to, code) {
   S.thread.push(tmp); V.chat.update(to); if (S.aiMode === to) paintAiOv(to); const box = $('#msgs'); if (box) box.scrollTop = 1e9;
   const { data, error } = await sb.from('messages').insert({ recipient: to, sticker: code }).select().single();
   S.thread = S.thread.filter((x) => x !== tmp);
-  if (error) toast('Message not sent. Check your connection.'); else { if (!S.thread.some((x) => x.id === data.id)) { S.thread.push(data); S.last.set(to, data); } if (code.startsWith('e|')) runFx(fxFor(code.slice(2))); if (code.startsWith('x|live|')) { markPlayed(data.id); playLive(code.split('|')[2]); } }
+  if (error) toast('Message not sent. Check your connection.'); else { if (!S.thread.some((x) => x.id === data.id)) { S.thread.push(data); S.last.set(to, data); } if (code.startsWith('e|')) runFx(fxFor(code.slice(2))); }
   V.chat.update(to);
 }
 let myStickers = null;
@@ -1406,7 +1406,7 @@ function msgHTML(m) {
   }
   const rx = rxHTML(m);
   if (m.media_path || m.media_kind) return mediaHTML(m, mine, rx);
-  if (m.sticker) return `<div class="b stk ${mine ? 'me' : 'them'} ${rx ? 'has-rx' : ''}" data-msg="${m.id}">${stickerHTML(m.sticker)}${rx}</div>`;
+  if (m.sticker) return `<div class="b stk ${m.sticker.startsWith('x|live|') ? 'live' : ''} ${mine ? 'me' : 'them'} ${rx ? 'has-rx' : ''}" data-msg="${m.id}">${stickerHTML(m.sticker)}${rx}</div>`;
   const tr = TR.get(String(m.id));
   const text = tr && tr.show ? tr.text : m.body;
   const jumbo = !(tr && tr.show) && !m.reply_story && isJumbo(m.body);
@@ -1482,7 +1482,7 @@ function onIncoming(m) {
   if (!fresh) return;
   const here = route().name === 'chat' && route().id === m.sender && document.visibilityState === 'visible';
   if (m.sticker === 'x|poke') { navigator.vibrate?.([90, 60, 90]); shakeView(); if (!here) toast(`${nameOf(m.sender)} poked you 👉`, 3000); return; }
-  if (m.sticker?.startsWith('x|live|')) { if (here) { markPlayed(m.id); playLive(m.sticker.split('|')[2]); } else toast(T('{n} sent you a living kitten 🐱').replace('{n}', nameOf(m.sender)), 3500); return; }
+  if (m.sticker?.startsWith('x|live|')) { if (!here) toast(T('{n} sent you a living kitten 🐱').replace('{n}', nameOf(m.sender)), 3500); return; }
   if (m.sticker?.startsWith('x|cmp|')) { navigator.vibrate?.(30); burst('✨'); toast(`${nameOf(m.sender)}: ${T(CMPS[+m.sticker.split('|')[2]] || CMPS[0])}`, 4000); return; }
   if (m.sticker === 'x|fill') { toast(T('{n} wants to know you better: fill in your profile').replace('{n}', nameOf(m.sender)), 4500); return; }
   if (!here) return;
@@ -2041,8 +2041,7 @@ V.chat.after = async (id) => {
   V.chat.update(id);
   S.aiMode = null; S.aiSkip.delete(id);
   await loadThread(id); await loadRx(); markRead(id); V.chat.update(id);
-  const lvm = [...S.thread].reverse().find((m) => m.sticker?.startsWith('x|live|') && m.sender === id && !played.has(String(m.id)) && Date.now() - new Date(m.created_at) < 86400_000);
-  if (lvm && route().name === 'chat' && route().id === id) { markPlayed(lvm.id); setTimeout(() => playLive(lvm.sticker.split('|')[2]), 600); }
+
   setTimeout(() => { if (route().name === 'chat' && route().id === id && awayOn(id) && !S.aiSkip.has(id) && !player) enterAi(id); }, 2000);
   const tx = $('#tx'), f = $('#cf'), box = $('#msgs');
   if (!tx || !f || route().name !== 'chat' || route().id !== id) return; // left the chat while it was loading
@@ -2077,7 +2076,7 @@ V.chat.after = async (id) => {
     if (e.target.closest('canvas.scratch')) return;
     const md = e.target.closest('[data-media]'); if (md) { const m = S.thread.find((x) => String(x.id) === md.dataset.media); if (m && !m.tmp) openMedia(m); return; }
     const on = e.target.closest('[data-once]'); if (on) { const m = S.thread.find((x) => String(x.id) === on.dataset.once); if (m && !m.opened_at) openMedia(m); return; }
-    const lvb = e.target.closest('[data-live]'); if (lvb) return playLive(lvb.dataset.live);
+    if (e.target.closest('[data-live]')) return; // the kitten has its own touch
     const pl = e.target.closest('[data-play]'); if (pl) { const m = S.thread.find((x) => String(x.id) === pl.dataset.play); if (m && !m.tmp) playVoice(m); return; }
     const og = e.target.closest('[data-orig]'); if (og) { const t = TR.get(og.dataset.orig); if (t) { t.show = false; V.chat.update(id); } }
   });
@@ -2088,6 +2087,7 @@ V.chat.after = async (id) => {
   });
   box.addEventListener('pointermove', (e) => { if (Math.abs(e.clientX - sx) > 8 || Math.abs(e.clientY - sy) > 8) clearTimeout(lp); });
   ['pointerup', 'pointercancel', 'pointerleave'].forEach((ev) => box.addEventListener(ev, () => clearTimeout(lp)));
+  petKitten(box);
   box.addEventListener('contextmenu', (e) => { if (e.target.closest('.b[data-msg]')) e.preventDefault(); });
   f.onsubmit = async (e) => {
     e.preventDefault(); const original = tx.value.trim(); if (!original) return;
@@ -2238,6 +2238,30 @@ async function playLive(kind) {
   app.appendChild(fx); navigator.vibrate?.([20, 40, 20]);
   const end = () => { fx.classList.add('out'); setTimeout(() => fx.remove(), 700); };
   fx.addEventListener('click', end); setTimeout(end, 10600);
+}
+// Touch the kitten: a tap and it meows, hold or stroke it and it purrs, with little hearts.
+const KSND = {}; const ksnd = (n) => (KSND[n] ||= Object.assign(new Audio(`stk/${n}.mp3`), { preload: 'auto' }));
+function petKitten(box) {
+  let st = null;
+  const hearts = (el, n) => { const r = el.getBoundingClientRect(), a = app.getBoundingClientRect();
+    for (let i = 0; i < n; i++) { const h = document.createElement('span'); h.className = 'khrt'; h.textContent = ['❤️', '💕', '🩷', '✨'][i % 4];
+      h.style.left = (r.left - a.left + r.width * (.3 + Math.random() * .4)) + 'px'; h.style.top = (r.top - a.top + r.height * .35) + 'px';
+      h.style.setProperty('--dx', (Math.random() - .5) * 120 + 'px'); h.style.animationDelay = i * 90 + 'ms'; app.appendChild(h); setTimeout(() => h.remove(), 1800 + i * 90); } };
+  box.addEventListener('pointerdown', (e) => {
+    const k = e.target.closest('[data-live]'); if (!k) return;
+    ['meow1', 'meow2', 'meow3', 'purr'].forEach(ksnd);
+    st = { k, t: Date.now(), x: e.clientX, moved: 0, purring: false };
+    st.timer = setTimeout(() => startPurr(), 380);
+  });
+  const startPurr = () => { if (!st || st.purring) return; st.purring = true; st.k.classList.add('pet'); const a = ksnd('purr'); a.currentTime = 0; a.loop = true; a.play().catch(() => {}); navigator.vibrate?.([15, 30, 15, 30, 15]); hearts(st.k, 5); st.hi = setInterval(() => hearts(st.k, 2), 700); };
+  box.addEventListener('pointermove', (e) => { if (!st) return; st.moved += Math.abs(e.clientX - st.x); st.x = e.clientX; if (st.moved > 30) startPurr(); });
+  const end = () => {
+    if (!st) return; const s0 = st; st = null; clearTimeout(s0.timer); clearInterval(s0.hi);
+    if (s0.purring) { s0.k.classList.remove('pet'); const a = ksnd('purr'); a.loop = false; setTimeout(() => a.pause(), 250); return; }
+    const a = ksnd(['meow1', 'meow2', 'meow3'][Math.floor(Math.random() * 3)]); a.currentTime = 0; a.play().catch(() => {});
+    s0.k.classList.remove('boop'); void s0.k.offsetWidth; s0.k.classList.add('boop'); navigator.vibrate?.(12); hearts(s0.k, 3);
+  };
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach((ev) => box.addEventListener(ev, end));
 }
 let lastCmp = 0;
 async function sendCmp(to, code) {
