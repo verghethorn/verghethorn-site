@@ -9,6 +9,11 @@ const SCENES = [['plaza','City plaza'],['library','Library'],['tennis','Tennis c
 
 /* ---------- icons ---------- */
 const I = {
+  useradd: '<circle cx="10" cy="8" r="4"/><path d="M3 21c1-4 3.6-6 7-6 1.4 0 2.6.3 3.6.9M19 14v6M16 17h6"/>',
+  qr: '<rect x="3.5" y="3.5" width="6" height="6" rx="1"/><rect x="14.5" y="3.5" width="6" height="6" rx="1"/><rect x="3.5" y="14.5" width="6" height="6" rx="1"/><path d="M14.5 14.5h2.5v2.5h-2.5zM18.5 18.5h2v2h-2zM14.5 19.5h1.5M19.5 14.5v2"/>',
+  block: '<circle cx="12" cy="12" r="8.5"/><path d="M6 6l12 12"/>',
+  flag: '<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
+  more: '<circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/>',
   coin: '<circle cx="12" cy="12" r="8.6"/><path d="M14.6 9.4c-.4-.9-1.4-1.4-2.6-1.4-1.5 0-2.6.8-2.6 1.9 0 2.6 5.3 1.3 5.3 4.1 0 1.1-1.2 2-2.7 2-1.3 0-2.3-.6-2.7-1.5M12 6.4V8M12 16v1.6"/>',
   back:'<path d="M15 5l-7 7 7 7"/>',
   gear:'<circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.6 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
@@ -46,7 +51,7 @@ const $ = (s, r = document) => r.querySelector(s);
 const app = $('#app');
 
 /* ---------- state ---------- */
-const S = { streaks: new Map(), uid:null, me:null, priv:null, members:new Map(), last:new Map(), unread:new Map(), online:new Set(),
+const S = { streaks: new Map(), reqIn: [], reqOut: new Set(), blocked: [], uid:null, me:null, priv:null, members:new Map(), last:new Map(), unread:new Map(), online:new Set(),
   typing:new Map(), thread:[], threadWith:null, posts:new Map(), jobs:[], rx:new Map(), phone:'', pres:null, view:'', prevView:'' };
 try { S.phone = localStorage.getItem('magaam-phone') || ''; } catch {}
 const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
@@ -159,8 +164,17 @@ async function loadMe() {
   S.me = me; S.priv = priv;
 }
 async function loadAll() {
-  const { data: ps } = await sb.from('profiles').select('*');
-  S.members.clear(); (ps || []).forEach((p) => { if (p.id === S.uid) S.me = p; else if (p.name) S.members.set(p.id, p); });
+  // Only friends (and people with a pending request) are visible; chats are with friends only.
+  const [{ data: ps }, { data: fr }, { data: bl }] = await Promise.all([sb.from('profiles').select('*'), sb.from('friends').select('*'), sb.from('blocks').select('blocked')]);
+  const byId = new Map((ps || []).map((p) => [p.id, p])); S.people = byId;
+  S.members.clear(); S.reqIn = []; S.reqOut = new Set(); S.blocked = (bl || []).map((x) => x.blocked);
+  if (byId.has(S.uid)) S.me = byId.get(S.uid);
+  (fr || []).forEach((f) => {
+    const o = f.a === S.uid ? f.b : f.a, p = byId.get(o);
+    if (f.status === 'accepted') { if (p?.name) S.members.set(o, p); }
+    else if (f.requested_by === S.uid) S.reqOut.add(o);
+    else if (p?.name) S.reqIn.push(p);
+  });
   const { data: ms } = await sb.from('messages').select('*').order('created_at', { ascending: false }).limit(1000);
   S.last.clear(); S.unread.clear();
   (ms || []).forEach((m) => {
@@ -297,7 +311,7 @@ function startRealtime() {
     .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, ({ new: p }) => {
       if (!p || !p.id) return;
       const old = p.id === S.uid ? S.me : S.members.get(p.id);
-      if (p.id === S.uid) S.me = p; else if (p.name) S.members.set(p.id, p);
+      if (p.id === S.uid) S.me = p; else if (p.name && S.members.has(p.id)) S.members.set(p.id, p);
       if (old && (old.photo_path !== p.photo_path || old.video_path !== p.video_path || old.still_path !== p.still_path)) swapBg(p);
       refresh();
     })
@@ -315,6 +329,14 @@ function startRealtime() {
       if (pl.eventType === 'DELETE') S.rx.get(k).delete(x.user_id); else S.rx.get(k).set(x.user_id, x.emoji);
       refresh();
       if (pl.eventType !== 'DELETE' && x.user_id !== S.uid && route().name === 'chat') setTimeout(() => burst(x.emoji, app.querySelector(`.b[data-msg="${k}"]`)), 30);
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'friends' }, (pl) => {
+      const f = pl.new && pl.new.a ? pl.new : null;
+      loadAll().then(() => {
+        if (f && f.status === 'pending' && f.requested_by !== S.uid) { const p = S.reqIn.find((x) => x.id === f.requested_by); if (p) toast(`${p.name} wants to be your friend`, 4000); }
+        if (f && f.status === 'accepted' && pl.eventType === 'UPDATE' && f.requested_by === S.uid) { const o = f.a === S.uid ? f.b : f.a; const p = S.members.get(o); if (p) toast(`${p.name} accepted your friend request`, 4000); }
+        const rn = route().name; if (rn === 'add') V.add.update(); else if (rn === 'chats' || (rn === 'u' && !S.members.has(route().id)) || (rn === 'chat' && !S.members.has(route().id))) show(); else refresh();
+      });
     })
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, ({ new: x }) => {
       const arr = S.posts.get(x.user_id); if (arr && !arr.some((y) => y.id === x.id)) arr.unshift(x);
@@ -351,16 +373,20 @@ const ONBOARD = ['lang', 'welcome', 'signin', 'code'];
 const langChosen = () => !!store.get('magaam-ui-chosen');
 async function show() {
   let { name, id } = route();
+  // A friend's "add me" link opened before signing in: remember it for after sign-in.
+  if (!S.uid && name === 'add' && id) store.set('magaam-addfriend', id);
   if (!S.uid && !ONBOARD.includes(name)) { name = 'welcome'; history.replaceState(null, '', '#/welcome'); }
   // The very first screen: choose the language of the app.
   if (!S.uid && !langChosen() && name !== 'lang') { name = 'lang'; history.replaceState(null, '', '#/lang'); }
   if (S.uid) {
     if (ONBOARD.includes(name) || !name) name = 'me';
     const hasPhoto = !!(S.me?.orig_path || S.me?.photo_path);
-    if (!S.me?.name && name !== 'about') name = 'about';
+    if ((!S.me?.name || !S.me?.username) && name !== 'about') name = 'about';
     else if (S.me?.name && !S.me?.ai_name && !['about', 'assistant'].includes(name)) name = 'assistant';
     else if (S.me?.name && S.me?.ai_name && !hasPhoto && !['about', 'assistant', 'look'].includes(name)) name = 'look';
-    if (location.hash.replace(/^#\/?/, '').split('/')[0] !== name) history.replaceState(null, '', '#/' + name + (id && ['chat','u','gallery'].includes(name) ? '/' + id : ''));
+    const pend = store.get('magaam-addfriend');
+    if (pend && name === 'me' && S.me?.username && S.me?.ai_name && hasPhoto) { store.set('magaam-addfriend', ''); name = 'add'; id = pend; }
+    if (location.hash.replace(/^#\/?/, '').split('/')[0] !== name) history.replaceState(null, '', '#/' + name + (id && ['chat','u','gallery','add'].includes(name) ? '/' + id : ''));
   }
   S.prevView = S.view; S.view = name;
   const fn = V[name] || V.me;
@@ -475,19 +501,29 @@ V.about = () => `<div class="light">
   <div class="lhead"><img src="img/symbol.png" alt=""><h1>About you</h1></div>
   <form class="stack" id="f">
     <label class="fl" for="nm">Name<input class="field" id="nm" maxlength="40" autocomplete="given-name" value="${esc(S.me?.name || '')}" placeholder="Your name"></label>
+    <label class="fl" for="un">Username<span class="unwrap"><span class="at" data-notr>@</span><input class="field" id="un" maxlength="20" autocapitalize="none" autocorrect="off" spellcheck="false" value="${esc(S.me?.username || '')}" placeholder="yourname"></span></label>
+    <p class="fine" style="margin-top:-4px">Friends find you by this name. Letters a–z, numbers, dot and _.</p>
     <label class="fl" for="bd">Date of birth<input class="field" id="bd" type="date" value="${esc(S.priv?.birthdate || '')}" max="${new Date().toISOString().slice(0, 10)}"></label>
     <p class="fine" style="margin-top:2px">Your age keeps the right protections on for you. Only you see it.</p>
     <p class="err" id="err"></p>
   </form>
   <div class="grow"></div>
   <button class="btn" id="go">Next</button></div>`;
+const TRL = { а:'a',б:'b',в:'v',г:'g',д:'d',е:'e',ё:'e',ж:'zh',з:'z',и:'i',й:'y',к:'k',л:'l',м:'m',н:'n',о:'o',п:'p',р:'r',с:'s',т:'t',у:'u',ф:'f',х:'h',ц:'ts',ч:'ch',ш:'sh',щ:'sch',ы:'y',э:'e',ю:'yu',я:'ya',ı:'i',ş:'s',ğ:'g',ç:'c',ö:'o',ü:'u' };
+const cleanUser = (v) => String(v || '').toLowerCase().replace(/^@+/, '').split('').map((c) => TRL[c] ?? c).join('').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '').replace(/[^a-z0-9_.]/g, '').slice(0, 20);
 V.about.after = () => {
+  const nm = $('#nm'), un = $('#un'); let touched = !!S.me?.username;
+  const suggest = () => { if (!touched) { const b = cleanUser(nm.value); un.value = b.length >= 3 ? b : b ? b + Math.floor(100 + Math.random() * 900) : ''; } };
+  nm.addEventListener('input', suggest); suggest();
+  un.addEventListener('input', () => { touched = true; const c = cleanUser(un.value); if (c !== un.value) un.value = c; });
   $('#go').onclick = async () => {
-    const name = $('#nm').value.trim(), bd = $('#bd').value;
+    const name = nm.value.trim(), bd = $('#bd').value, username = cleanUser(un.value);
     if (!name) { $('#err').textContent = 'Enter your name.'; return; }
+    if (username.length < 3) { $('#err').textContent = 'The username needs at least 3 letters or numbers.'; return; }
     if (!bd) { $('#err').textContent = 'Choose your date of birth.'; return; }
     $('#go').disabled = true;
-    const [a, b] = await Promise.all([sb.from('profiles').update({ name }).eq('id', S.uid).select().single(), sb.from('profiles_private').update({ birthdate: bd }).eq('id', S.uid)]);
+    const [a, b] = await Promise.all([sb.from('profiles').update({ name, username }).eq('id', S.uid).select().single(), sb.from('profiles_private').update({ birthdate: bd }).eq('id', S.uid)]);
+    if (a.error?.code === '23505') { $('#err').textContent = 'This username is taken. Try another one.'; $('#go').disabled = false; return; }
     if (a.error || b.error) { $('#err').textContent = 'Could not save. Try again.'; $('#go').disabled = false; return; }
     S.me = a.data; go(!S.me.ai_name ? 'assistant' : (S.me.orig_path || S.me.photo_path) ? 'me' : 'look');
   };
@@ -676,7 +712,7 @@ V.me.after = () => V.me.update();
 V.chats = () => `<div class="dark" style="position:absolute;inset:0">
   <div class="bg-blur" style="background-image:url('${sceneImg(S.me?.scene)}')"></div>
   <div class="listwrap">
-    <div class="ltitle"><h2>Chats</h2><button class="iconbtn" data-act="search" aria-label="Search">${ic('search')}</button></div>
+    <div class="ltitle"><h2>Chats</h2><span class="hright"><button class="iconbtn" data-act="search" aria-label="Search">${ic('search')}</button><button class="iconbtn" data-go="add" aria-label="Add friends">${ic('useradd')}${S.reqIn.length ? `<span class="badge dotb">${S.reqIn.length}</span>` : ''}</button></span></div>
     <input class="search glass" id="q" placeholder="Search" hidden aria-label="Search chats">
     <div class="scroll"><div id="list"></div></div>
   </div>
@@ -686,11 +722,12 @@ V.chats.update = () => {
   const list = [...S.members.values()].filter((p) => !q || (p.name || '').toLowerCase().includes(q))
     .sort((a, b) => (new Date(S.last.get(b.id)?.created_at || 0) - new Date(S.last.get(a.id)?.created_at || 0)) || (a.name || '').localeCompare(b.name || ''));
   const box = $('#list'); if (!box) return;
-  box.innerHTML = list.length ? `<div class="rows glass">${list.map((p) => {
+  const reqs = S.reqIn.length && !q ? `<button class="reqbar glass" data-go="add">${ic('useradd')}<span><b>Friend requests</b><span data-notr>${S.reqIn.map((p) => esc(p.name)).slice(0, 3).join(', ')}</span></span><span class="badge">${S.reqIn.length}</span></button>` : '';
+  box.innerHTML = reqs + (list.length ? `<div class="rows glass">${list.map((p) => {
     const l = S.last.get(p.id), u = S.unread.get(p.id) || 0, ty = S.typing.has(p.id);
     const prev = ty ? T('typing…') : l ? (l.sender === S.uid ? T('You') + ': ' : '') + previewOf(l) : T('Say hello');
     return `<button class="crow" data-go="chat/${p.id}">${thumbHTML(p)}<span class="cmid"><b data-notr>${esc(p.name)}${S.streaks.get(p.id) ? ` <span class="streak">🔥${S.streaks.get(p.id)}</span>` : ''}</b><span data-notr>${esc(prev)}</span></span><span class="cend">${l ? when(l.created_at) : ''}${u ? `<span class="badge">${u}</span>` : ''}</span></button>`;
-  }).join('')}</div>` : `<div class="rows glass"><div class="empty"><b>${q ? 'No one found' : 'No friends here yet'}</b><span>${q ? 'Try another name.' : 'Send the MAGAAM link and an invite code to your friends. They appear here as soon as they join.'}</span></div></div>`;
+  }).join('')}</div>` : `<div class="rows glass"><div class="empty"><b>${q ? 'No one found' : 'No friends yet'}</b><span>${q ? 'Try another name.' : 'Add friends by their @username or send them your link.'}</span>${q ? '' : `<button class="pbtn blue" data-go="add">${ic('useradd')}Add friends</button>`}</div></div>`);
   const t = $('#tabs'); if (t) t.innerHTML = tabbar('chats');
 };
 V.chats.after = () => {
@@ -699,6 +736,117 @@ V.chats.after = () => {
   $('[data-act="search"]').onclick = () => { const q = $('#q'); q.hidden = !q.hidden; if (!q.hidden) q.focus(); else { q.value = ''; V.chats.update(); } };
   $('#q').oninput = V.chats.update;
 };
+
+
+/* Add friends: by @username, by link or QR code; requests in and out */
+const myLink = () => location.origin + location.pathname + '#/add/' + (S.me?.username || '');
+let qrLoad = null;
+function loadQR() { return qrLoad ||= new Promise((res, rej) => { if (window.qrcode) return res(); const sc = document.createElement('script'); sc.src = 'qrcode.js?v=1'; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); }); }
+const personRow = (p, right) => `<div class="crow">${thumbHTML(p)}<span class="cmid"><b data-notr>${esc(p.name)}</b><span data-notr>@${esc(p.username || '')}</span></span><span class="cend fbtns">${right}</span></div>`;
+async function shareLink() {
+  const url = myLink();
+  if (navigator.share) { try { await navigator.share({ title: 'MAGAAM', text: T('Add me on MAGAAM'), url }); return; } catch (e) { if (e?.name === 'AbortError') return; } }
+  try { await navigator.clipboard.writeText(url); toast('Link copied'); } catch { toast(url, 6000); }
+}
+async function friendAct(kind, uid) {
+  let r;
+  if (kind === 'add') r = await sb.rpc('friend_request', { p_to: uid });
+  else if (kind === 'accept') r = await sb.rpc('friend_respond', { p_other: uid, p_accept: true });
+  else if (kind === 'decline' || kind === 'cancel') r = await sb.rpc('friend_respond', { p_other: uid, p_accept: false });
+  if (r?.error) { toast('Something went wrong. Try again.'); return; }
+  const out = r?.data;
+  if (out === 'blocked') toast('You cannot add this person.');
+  else if (out === 'limit') toast('Too many requests today. Try again tomorrow.');
+  else if (kind === 'add' && out === 'sent') toast('Friend request sent');
+  else if (out === 'friends') toast('You are friends now');
+  await loadAll(); if (route().name === 'add') V.add.update(); else refresh();
+}
+let addFound = null, addMsg = '';
+V.add = (id) => {
+  addFound = null; addMsg = '';
+  return `<div class="dark" style="position:absolute;inset:0">
+  <div class="bg-blur" style="background-image:url('${sceneImg(S.me?.scene)}')"></div>
+  <div class="listwrap">
+    <div class="ltitle"><span class="hright"><button class="iconbtn" data-back="chats" aria-label="Back">${ic('back')}</button><h2>Add friends</h2></span></div>
+    <div class="scroll"><div class="addwrap">
+      <form class="findrow" id="ff"><span class="unwrap dark"><span class="at" data-notr>@</span><input class="search glass" id="fu" maxlength="24" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Friend's username" aria-label="Friend's username" value="${esc(id && id !== S.me?.username ? id : '')}"></span><button class="send" aria-label="Find">${ic('search', 2)}</button></form>
+      <div id="found"></div>
+      <div id="reqs"></div>
+      <div class="mycard glass"><div class="qr" id="qr" aria-label="My QR code"></div><b data-notr>@${esc(S.me?.username || '')}</b><span>Friends scan this code with the camera or open your link to add you.</span>
+        <div class="chips two"><button class="chip" data-act="sharelink">${ic('share')}Share my link</button><button class="chip" data-act="copylink">${ic('copy')}Copy link</button></div></div>
+      <div id="sent"></div>
+    </div></div>
+  </div>
+  <div class="dock"><div id="tabs">${tabbar('chats')}</div></div></div>`;
+};
+V.add.update = () => {
+  const f = $('#found');
+  if (f) {
+    if (addMsg) f.innerHTML = `<div class="rows glass"><div class="empty sm"><span>${esc(addMsg)}</span></div></div>`;
+    else if (addFound) {
+      const p = addFound, id = p.id;
+      const right = id === S.uid ? `<span class="tag">This is you</span>`
+        : S.members.has(id) ? `<button class="pbtn blue sm" data-go="chat/${id}">${ic('chat')}Message</button>`
+        : S.reqOut.has(id) ? `<button class="pbtn glass sm" data-fr="cancel" data-uid="${id}">Request sent</button>`
+        : S.reqIn.some((x) => x.id === id) ? `<button class="pbtn blue sm" data-fr="accept" data-uid="${id}">${ic('check')}Accept</button>`
+        : `<button class="pbtn blue sm" data-fr="add" data-uid="${id}">${ic('useradd')}Add</button>`;
+      f.innerHTML = `<div class="rows glass">${personRow(p, right)}</div>`;
+    } else f.innerHTML = '';
+  }
+  const r = $('#reqs');
+  if (r) r.innerHTML = S.reqIn.length ? `<h3 class="sech">Friend requests</h3><div class="rows glass">${S.reqIn.map((p) => personRow(p, `<button class="pbtn blue sm" data-fr="accept" data-uid="${p.id}">${ic('check')}Accept</button><button class="iconbtn sm" data-fr="decline" data-uid="${p.id}" aria-label="Decline">${ic('x')}</button>`)).join('')}</div>` : '';
+  const sn = $('#sent');
+  if (sn) sn.innerHTML = S.reqOut.size ? `<h3 class="sech">Waiting for an answer</h3><div class="rows glass">${[...S.reqOut].map((id) => { const p = S.people?.get(id) || { id, name: '…' }; return personRow(p, `<button class="pbtn glass sm" data-fr="cancel" data-uid="${id}">Cancel</button>`); }).join('')}</div>` : '';
+  const t = $('#tabs'); if (t) t.innerHTML = tabbar('chats');
+};
+V.add.after = (id) => {
+  V.add.update();
+  const fu = $('#fu');
+  const find = async () => {
+    const q = cleanUser(fu.value); if (q !== fu.value) fu.value = q;
+    if (q.length < 3) { addFound = null; addMsg = 'Type at least 3 letters of the username.'; V.add.update(); return; }
+    addMsg = ''; $('#found').innerHTML = '<div class="center" style="padding:14px"><span class="spinner sm"></span></div>';
+    const { data } = await sb.rpc('find_user', { p_username: q });
+    const p = data?.[0];
+    if (p) { addFound = { ...p, still_path: p.photo }; addMsg = ''; } else { addFound = null; addMsg = `No one with the username @${q}. Check the spelling.`; }
+    V.add.update();
+  };
+  $('#ff').onsubmit = (e) => { e.preventDefault(); fu.blur(); find(); };
+  app.querySelector('.addwrap').addEventListener('click', (e) => { const b = e.target.closest('[data-fr]'); if (b) { b.disabled = true; friendAct(b.dataset.fr, b.dataset.uid); } });
+  if (fu.value) find();
+  loadQR().then(() => {
+    const q = qrcode(0, 'M'); q.addData(myLink()); q.make();
+    const box = $('#qr'); if (box) box.innerHTML = q.createSvgTag({ cellSize: 6, margin: 2, scalable: true });
+  }).catch(() => { const box = $('#qr'); if (box) box.hidden = true; });
+};
+async function reportUser(id) {
+  const reasons = ['Bullying or threats', 'Inappropriate photos or messages', 'Spam or scam', 'Pretending to be someone else', 'Something else'];
+  const k = await dialog(`<h3 class="dh">Report ${esc(nameOf(id))}</h3><p class="dp">Tell us what happened. ${esc(nameOf(id))} will not know who reported.</p>`, [...reasons.map((r, i) => ({ k: String(i), label: r, style: 'out' })), { k: 'x', label: 'Cancel', style: 'soft' }]);
+  if (k === null || k === 'x') return;
+  const { error } = await sb.from('reports').insert({ reporter: S.uid, target: id, reason: reasons[+k] });
+  if (error) { toast('Could not send. Try again.'); return; }
+  const b = await dialog(`<h3 class="dh">Thank you</h3><p class="dp">We will look at it. Do you also want to block ${esc(nameOf(id))}?</p>`, [{ k: 'b', label: 'Block', style: 'red' }, { k: 'n', label: 'Not now', style: 'out' }]);
+  if (b === 'b') await blockUser(id, true);
+}
+async function blockUser(id, sure) {
+  if (!sure) {
+    const k = await dialog(`<h3 class="dh">Block ${esc(nameOf(id))}?</h3><p class="dp">You will no longer be friends. ${esc(nameOf(id))} cannot write to you, find you or add you again. You can unblock later in Settings.</p>`, [{ k: 'b', label: 'Block', style: 'red' }, { k: 'n', label: 'Cancel', style: 'out' }]);
+    if (k !== 'b') return;
+  }
+  const { error } = await sb.rpc('block_user', { p_other: id });
+  if (error) { toast('Something went wrong. Try again.'); return; }
+  toast('Blocked'); await loadAll(); go('chats', true);
+}
+async function removeFriend(id) {
+  const k = await dialog(`<h3 class="dh">Remove ${esc(nameOf(id))} from friends?</h3><p class="dp">You will not be able to write to each other until one of you adds the other again.</p>`, [{ k: 'r', label: 'Remove', style: 'red' }, { k: 'n', label: 'Cancel', style: 'out' }]);
+  if (k !== 'r') return;
+  await sb.rpc('friend_remove', { p_other: id }); await loadAll(); go('chats', true);
+}
+async function blockedList() {
+  if (!S.blocked.length) { toast('You have not blocked anyone'); return; }
+  const { data } = await sb.rpc('blocked_people');
+  sheet('Blocked people', (data || []).map((p) => ({ icon: 'block', label: `${p.name} — unblock`, notr: false, run: async () => { await sb.rpc('unblock_user', { p_other: p.id }); await loadAll(); toast('Unblocked'); } })));
+}
 
 /* Chat */
 /* Chat helpers: translation, voice, talking photo */
@@ -1213,6 +1361,7 @@ V.chat.after = async (id) => {
   V.chat.update(id);
   await loadThread(id); await loadRx(); markRead(id); V.chat.update(id);
   const tx = $('#tx'), f = $('#cf'), box = $('#msgs');
+  if (!tx || !f || route().name !== 'chat' || route().id !== id) return; // left the chat while it was loading
   const slKey = 'magaam-sl-' + id; let sendIn = store.get(slKey) || '';
   const paintSL = () => { const c = $('#sendlang'); if (!c) return; c.hidden = !sendIn; c.innerHTML = sendIn ? `${ic('globe')}<span>Sending in ${esc(langLabel(sendIn))}</span>${ic('x')}` : ''; $('#langb').classList.toggle('on', !!sendIn); };
   paintSL();
@@ -1230,6 +1379,7 @@ V.chat.after = async (id) => {
   });
   const grow = () => { tx.style.height = 'auto'; tx.style.height = Math.min(tx.scrollHeight, 130) + 'px'; const has = !!tx.value.trim(); $('#sendb').hidden = !has; $('#micb').hidden = has; };
   tx.addEventListener('input', () => { grow(); if (tx.value.trim()) sendTyping(id); });
+  if (tx.value) grow(); // text typed while the chat was still loading
   tx.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey && !/mobi/i.test(navigator.userAgent)) { e.preventDefault(); f.requestSubmit(); } });
   $('#micb').onclick = () => startRec(id);
   $('#attb').onclick = () => sendMedia(id);
@@ -1283,7 +1433,7 @@ V.u = async (id) => {
   ${bgMedia(p)}
   <div class="shade"></div>
   <div class="hdr"><button class="iconbtn" data-back="chats" aria-label="Back">${ic('back')}</button>
-    <div class="hname"><b data-notr>${esc(p.name)}</b><span class="pill glass" id="st"></span></div><span style="width:44px"></span></div>
+    <div class="hname"><b data-notr>${esc(p.name)}</b><span class="pill glass" id="st"></span></div><button class="iconbtn" data-act="umore" data-uid="${id}" aria-label="More">${ic('more', 2.4)}</button></div>
   <div class="dock"><div class="cta2"><button class="pbtn blue" data-go="chat/${id}">${ic('chat')}Message</button><button class="pbtn glass" data-go="gallery/${id}" id="gal">${ic('grid')}Gallery</button></div></div></div>`;
 };
 V.u.update = (id) => {
@@ -1455,6 +1605,12 @@ app.addEventListener('click', (e) => {
   const a = t.dataset.act;
   if (a === 'addpost') return sheet('Add to gallery', [{ icon: 'image', label: 'Photo', run: addPost }, { icon: 'video', label: 'Video', run: addVideoPost }]);
   if (a === 'uilang') return pickUiLang();
+  if (a === 'sharelink') return shareLink();
+  if (a === 'copylink') { navigator.clipboard.writeText(myLink()).then(() => toast('Link copied')).catch(() => toast(myLink(), 6000)); return; }
+  if (a === 'umore') { const id = t.dataset.uid; return sheet(nameOf(id), [
+    { icon: 'flag', label: 'Report', run: () => reportUser(id) },
+    { icon: 'x', label: 'Remove from friends', run: () => removeFriend(id) },
+    { icon: 'block', label: 'Block', red: true, run: () => blockUser(id) }]); }
   if (a === 'retryai') return go('look');
   if (a === 'hideinstall') { store.set('magaam-install-hide', '1'); $('#install')?.remove(); return; }
   if (a === 'install' && deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.finally(() => { deferredPrompt = null; $('#install')?.remove(); }); return; }
@@ -1465,7 +1621,10 @@ app.addEventListener('click', (e) => {
     { icon: 'edit', label: `Rename ${aiName()}`, run: () => go('assistant') },
     { icon: 'globe', label: `App language: ${I18N.label}`, run: pickUiLang },
     { icon: 'globe', label: `Translation language: ${langLabel(myLang())}`, run: pickLang },
-    { icon: 'share', label: 'Copy invite link', run: async () => { try { await navigator.clipboard.writeText(location.origin + location.pathname); toast('Link copied'); } catch { toast(location.origin + location.pathname, 5000); } } },
+    { icon: 'useradd', label: 'Add friends', run: () => go('add') },
+    { icon: 'share', label: 'Share my friend link', run: shareLink },
+    { icon: 'edit', label: `My username: @${S.me?.username || ''}`, notr: false, run: () => go('about') },
+    { icon: 'block', label: 'Blocked people', run: blockedList },
     { icon: 'out', label: 'Sign out', red: true, run: async () => { await sb.auth.signOut(); location.hash = '#/welcome'; location.reload(); } }
   ]);
 });
