@@ -28,7 +28,13 @@ const I = {
   out:'<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/>',
   trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
   x:'<path d="M6 6l12 12M18 6L6 18"/>',
-  share:'<path d="M12 3v13M7 8l5-5 5 5M5 14v6h14v-6"/>'
+  share:'<path d="M12 3v13M7 8l5-5 5 5M5 14v6h14v-6"/>',
+  play:'<path d="M8 5l11 7-11 7z"/>',
+  pause:'<path d="M8 5v14M16 5v14"/>',
+  mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+  globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+  copy:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>',
+  check:'<path d="M5 12.5l4.5 4.5L19 7"/>'
 };
 const aiName = () => S.me?.ai_name || 'Your AI';
 const ic = (n, sw = 1.8) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]}</svg>`;
@@ -159,17 +165,17 @@ function startRealtime() {
       const o = m.sender === S.uid ? m.recipient : m.sender;
       S.last.set(o, m);
       if (S.threadWith === o && !S.thread.some((x) => x.id === m.id)) {
-        S.thread = S.thread.filter((x) => !(x.tmp && x.body === m.body && x.sender === m.sender)); S.thread.push(m);
+        S.thread = S.thread.filter((x) => !(x.tmp && x.sender === m.sender && (x.body ? x.body === m.body : !!m.audio_path))); S.thread.push(m);
       }
       if (m.sender !== S.uid) {
         S.typing.delete(o);
         if (route().name === 'chat' && route().id === o && document.visibilityState === 'visible') { sb.rpc('mark_read', { p_other: o }); }
-        else { S.unread.set(o, (S.unread.get(o) || 0) + 1); if (route().name !== 'chat') toast(`${nameOf(o)}: ${m.body.slice(0, 60)}`); }
+        else { S.unread.set(o, (S.unread.get(o) || 0) + 1); if (route().name !== 'chat') toast(`${nameOf(o)}: ${m.body ? m.body.slice(0, 60) : 'Voice message'}`); }
       }
       refresh();
     })
     .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages' }, ({ new: m }) => {
-      const t = S.thread.find((x) => x.id === m.id); if (t) t.read_at = m.read_at;
+      const t = S.thread.find((x) => x.id === m.id); if (t) Object.assign(t, m);
       const o = m.sender === S.uid ? m.recipient : m.sender; const l = S.last.get(o); if (l && l.id === m.id) l.read_at = m.read_at;
       refresh();
     })
@@ -377,7 +383,8 @@ V.assistant.after = () => {
   };
 };
 
-let pendingPhoto = null, draftWish = '';
+let pendingPhoto = null, draftWish = '', lookMode = 'me';
+const AI_DECIDES = '__ai__';
 V.look = () => {
   const editing = !!(S.me?.orig_path || S.me?.photo_path);
   const src = pendingPhoto ? pendingPhoto.preview : (S.me?.orig_path ? url(S.me.orig_path) : S.me?.photo_path ? url(S.me.photo_path) : '');
@@ -387,8 +394,9 @@ V.look = () => {
   <div class="photo-slot sm">${src ? `<img src="${esc(src)}" alt="Your photo">` : `<div class="ph">${ic('camera')}Add your photo</div>`}</div>
   <div class="duo"><button class="btn ${src ? 'out' : ''}" data-act="pick">${ic('image')}${src ? 'Another photo' : 'Upload photo'}</button><button class="btn out" data-act="snap">${ic('camera')}Take a photo</button></div>
   ${src ? `<div class="askbox">${aiMsg(`Hi ${esc(S.me?.name || '')}! I'm ${esc(aiName())}, your AI assistant. Your profile photo must be changed and brought to life. Tell me what you want to see: the place, your outfit and what you are doing.`)}
-    <textarea class="field ta" id="wish" maxlength="400" placeholder="Describe your living photo">${esc(draftWish)}</textarea>
-    <div class="ideas">${IDEAS_AVATAR.map((t) => `<button class="idea" data-idea="${esc(t)}">${esc(t)}</button>`).join('')}</div></div>` : ''}
+    <div class="seg2" role="group" aria-label="Who decides"><button data-mode="me" aria-pressed="${lookMode === 'me'}">I'll describe it</button><button data-mode="ai" aria-pressed="${lookMode === 'ai'}">${ic('spark')}${esc(aiName())} decides</button></div>
+    ${lookMode === 'ai' ? aiMsg(`Great, I'll choose a new place, outfit, pose and movement for you myself. Just press the button.`) : `<textarea class="field ta" id="wish" maxlength="400" placeholder="Describe your living photo">${esc(draftWish)}</textarea>
+    <div class="ideas">${IDEAS_AVATAR.map((t) => `<button class="idea" data-idea="${esc(t)}">${esc(t)}</button>`).join('')}</div>`}</div>` : ''}
   <p class="err" id="err"></p>
   <div class="grow"></div>
   <button class="btn" id="go" disabled>${ic('spark')}Create my living photo</button>
@@ -399,11 +407,13 @@ V.look.after = () => {
   app.querySelector('[data-act="pick"]').onclick = () => choose(false);
   app.querySelector('[data-act="snap"]').onclick = () => choose(true);
   const w = $('#wish'), btn = $('#go');
-  const check = () => { btn.disabled = !w || w.value.trim().length < 3; if (w) draftWish = w.value; };
+  app.querySelectorAll('[data-mode]').forEach((b) => (b.onclick = () => { if (w) draftWish = w.value; lookMode = b.dataset.mode; show(); }));
+  const hasSrc = !!app.querySelector('.photo-slot img');
+  const check = () => { btn.disabled = !hasSrc || (lookMode === 'ai' ? false : (!w || w.value.trim().length < 3)); if (w) draftWish = w.value; };
   if (w) { w.addEventListener('input', check); app.querySelectorAll('[data-idea]').forEach((b) => (b.onclick = () => { w.value = b.dataset.idea; check(); w.focus(); })); }
   check();
   btn.onclick = async () => {
-    const wish = w.value.trim(); if (wish.length < 3) return;
+    const wish = lookMode === 'ai' ? AI_DECIDES : (w ? w.value.trim() : ''); if (wish.length < 3) return;
     btn.disabled = true; btn.textContent = pendingPhoto ? 'Uploading…' : 'Starting…';
     try {
       let path = S.me?.orig_path || S.me?.photo_path;
@@ -415,7 +425,7 @@ V.look.after = () => {
       }
       const job = await startAI('avatar', path, wish);
       if (!job) { btn.disabled = false; btn.innerHTML = `${ic('spark')}Create my living photo`; return; }
-      draftWish = ''; go('me');
+      draftWish = ''; lookMode = 'me'; go('me');
     } catch (e) { $('#err').textContent = e.message || 'Upload failed. Try again.'; btn.disabled = false; btn.innerHTML = `${ic('spark')}Create my living photo`; }
   };
 };
@@ -468,7 +478,7 @@ V.chats.update = () => {
   const box = $('#list'); if (!box) return;
   box.innerHTML = list.length ? `<div class="rows glass">${list.map((p) => {
     const l = S.last.get(p.id), u = S.unread.get(p.id) || 0, ty = S.typing.has(p.id);
-    const prev = ty ? 'typing…' : l ? (l.sender === S.uid ? 'You: ' : '') + l.body : 'Say hello';
+    const prev = ty ? 'typing…' : l ? (l.sender === S.uid ? 'You: ' : '') + (l.body || 'Voice message') : 'Say hello';
     return `<button class="crow" data-go="chat/${p.id}">${thumbHTML(p)}<span class="cmid"><b>${esc(p.name)}</b><span>${esc(prev)}</span></span><span class="cend">${l ? when(l.created_at) : ''}${u ? `<span class="badge">${u}</span>` : ''}</span></button>`;
   }).join('')}</div>` : `<div class="rows glass"><div class="empty"><b>${q ? 'No one found' : 'No friends here yet'}</b><span>${q ? 'Try another name.' : 'Send the MAGAAM link and an invite code to your friends. They appear here as soon as they join.'}</span></div></div>`;
   const t = $('#tabs'); if (t) t.innerHTML = tabbar('chats');
@@ -480,6 +490,125 @@ V.chats.after = () => {
 };
 
 /* Chat */
+/* Chat helpers: translation, voice, talking photo */
+const TR = new Map();
+const LANGS = [['English','English'],['Русский','Russian'],['العربية','Arabic'],['Türkçe','Turkish'],['Español','Spanish'],['Français','French'],['Deutsch','German'],['Italiano','Italian'],['Português','Portuguese'],['中文','Chinese'],['हिन्दी','Hindi'],['Bahasa Indonesia','Indonesian'],['Українська','Ukrainian'],['Қазақша','Kazakh'],['O‘zbekcha','Uzbek'],['فارسی','Persian'],['اردو','Urdu']];
+function myLang() {
+  const v = store.get('magaam-lang'); if (v) return v;
+  const map = { ru:'Russian', ar:'Arabic', tr:'Turkish', es:'Spanish', fr:'French', de:'German', it:'Italian', pt:'Portuguese', zh:'Chinese', hi:'Hindi', id:'Indonesian', uk:'Ukrainian', kk:'Kazakh', uz:'Uzbek', fa:'Persian', ur:'Urdu' };
+  return map[(navigator.language || 'en').slice(0, 2)] || 'English';
+}
+const langLabel = (v) => (LANGS.find((l) => l[1] === v) || [v])[0];
+function pickLang() {
+  sheet('Translate messages to', LANGS.map(([l, v]) => ({ icon: v === myLang() ? 'check' : 'globe', label: l, run: () => { store.set('magaam-lang', v); TR.clear(); toast(`Messages will be translated to ${l}`); refresh(); } })));
+}
+async function aiCall(body) {
+  const { data: { session } } = await sb.auth.getSession();
+  const r = await fetch(SB_URL + '/functions/v1/ai', { method: 'POST', headers: { 'content-type': 'application/json', apikey: SB_KEY, Authorization: 'Bearer ' + (session?.access_token || '') }, body: JSON.stringify(body) });
+  const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || 'ai'); return j;
+}
+const fmtSec = (s) => { s = Math.max(0, Math.round(s)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
+function bars(seed) {
+  let x = 0; for (const c of String(seed)) x = (x * 31 + c.charCodeAt(0)) >>> 0;
+  let h = ''; for (let i = 0; i < 22; i++) { x = (x * 1103515245 + 12345) >>> 0; h += `<i style="height:${30 + (x % 70)}%"></i>`; } return h;
+}
+function msgHTML(m) {
+  const mine = m.sender === S.uid;
+  if (m.audio_path) {
+    const talk = m.talk_status === 'ready' && m.talk_path, making = m.talk_status === 'making';
+    return `<div class="b voice ${mine ? 'me' : 'them'} ${playing === String(m.id) ? 'playing' : ''}" data-msg="${m.id}">
+      <button class="vplay" data-play="${m.id}" aria-label="Play voice message">${ic(playing === String(m.id) ? 'pause' : 'play', 2)}</button>
+      <span class="wave">${bars(m.id)}</span><span class="vlen">${fmtSec((m.audio_ms || 0) / 1000)}</span>
+      ${talk ? `<span class="vtag" title="Living photo">${ic('spark', 2)}</span>` : making ? '<span class="vtag wait" title="Living photo is coming"><span class="spinner xs"></span></span>' : ''}</div>`;
+  }
+  const tr = TR.get(String(m.id));
+  return `<div class="b ${mine ? 'me' : 'them'}" data-msg="${m.id}" title="${hm(m.created_at)}">${esc(tr && tr.show ? tr.text : m.body)}${tr && tr.show ? `<button class="trnote" data-orig="${m.id}">${ic('globe')}${esc(langLabel(myLang()))} · Show original</button>` : ''}</div>`;
+}
+let playing = null, player = null;
+function stopPlayer() {
+  if (!player) return;
+  try { player.audio?.pause(); player.video?.pause(); } catch {}
+  player.pip?.classList.add('out'); const p = player.pip; setTimeout(() => p?.remove(), 250);
+  player = null; playing = null; refresh();
+}
+function playVoice(m) {
+  const id = String(m.id);
+  if (playing === id) return stopPlayer();
+  stopPlayer(); playing = id;
+  if (m.talk_status === 'ready' && m.talk_path) {
+    const who = m.sender === S.uid ? S.me : S.members.get(m.sender);
+    const pip = document.createElement('div'); pip.className = 'talkpip';
+    pip.innerHTML = `<video src="${esc(url(m.talk_path))}" playsinline autoplay ${who?.photo_path ? `poster="${esc(url(who.photo_path))}"` : ''}></video><span class="pipname">${ic('spark')}${esc(who?.name || '')}</span><button class="pipx" aria-label="Close">${ic('x')}</button>`;
+    app.querySelector('.view').appendChild(pip);
+    const v = pip.querySelector('video'); player = { pip, video: v };
+    v.play().catch(() => { v.muted = true; v.play().catch(() => {}); });
+    v.onended = () => setTimeout(stopPlayer, 500);
+    pip.querySelector('.pipx').onclick = stopPlayer;
+  } else {
+    const a = new Audio(url(m.audio_path)); player = { audio: a };
+    a.play().catch(() => { toast('Could not play this voice message.'); stopPlayer(); });
+    a.onended = stopPlayer;
+  }
+  refresh();
+}
+async function translateMsg(m) {
+  const id = String(m.id);
+  TR.set(id, { text: 'Translating…', show: true }); refresh();
+  try { const j = await aiCall({ op: 'translate', text: m.body, to: myLang() }); TR.set(id, { text: j.text || m.body, show: true }); }
+  catch { TR.delete(id); toast('Translation is not available right now.'); }
+  refresh();
+}
+function msgMenu(m) {
+  if (m.audio_path) return sheet('Voice message', [{ icon: 'play', label: 'Play', run: () => playVoice(m) }]);
+  const tr = TR.get(String(m.id));
+  sheet('Message', [
+    tr && tr.show ? { icon: 'globe', label: 'Show original', run: () => { tr.show = false; refresh(); } } : { icon: 'globe', label: `Translate to ${langLabel(myLang())}`, run: () => translateMsg(m) },
+    { icon: 'copy', label: 'Copy', run: async () => { try { await navigator.clipboard.writeText(m.body); toast('Copied'); } catch { toast('Could not copy'); } } },
+    { icon: 'edit', label: 'Change translation language', run: pickLang }
+  ]);
+}
+let rec = null;
+async function startRec(to) {
+  if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) return toast('Voice messages are not supported in this browser.', 4000);
+  let stream; try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch { return toast('Allow microphone access to record a voice message.', 4000); }
+  const mime = ['audio/mp4', 'audio/aac', 'audio/webm;codecs=opus', 'audio/webm'].find((t) => MediaRecorder.isTypeSupported?.(t)) || '';
+  const mr = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined); const chunks = [];
+  mr.ondataavailable = (e) => e.data && e.data.size && chunks.push(e.data);
+  rec = { mr, stream, chunks, t0: Date.now(), to };
+  mr.start(250);
+  $('#cf').hidden = true; $('#rec').hidden = false;
+  const tick = () => { if (!rec) return; const sec = (Date.now() - rec.t0) / 1000; $('#rect').textContent = fmtSec(sec);
+    $('#rechint').textContent = sec <= 10 ? (S.me?.video_path ? 'Your living photo will say it' : 'Voice message') : 'Over 10 s: sent as a normal voice message';
+    if (sec >= 60) stopRec(true); };
+  rec.timer = setInterval(tick, 200); tick();
+}
+function stopRec(send) {
+  if (!rec) return; const r = rec; rec = null; clearInterval(r.timer);
+  r.mr.onstop = async () => {
+    r.stream.getTracks().forEach((t) => t.stop());
+    const cf = $('#cf'), rb = $('#rec'); if (cf) cf.hidden = false; if (rb) rb.hidden = true;
+    if (!send) return;
+    const ms = Date.now() - r.t0; if (ms < 800) return toast('Too short. Hold on a little longer.');
+    const type = (r.mr.mimeType || r.chunks[0]?.type || 'audio/webm').split(';')[0];
+    await sendVoice(r.to, new Blob(r.chunks, { type }), ms);
+  };
+  try { r.mr.stop(); } catch { r.mr.onstop(); }
+}
+async function sendVoice(to, blob, ms) {
+  const ext = /mp4|aac|m4a/.test(blob.type) ? 'm4a' : /ogg/.test(blob.type) ? 'ogg' : 'webm';
+  const ctype = ext === 'm4a' ? 'audio/mp4' : blob.type;
+  const tmp = { id: 'tmp' + Date.now(), tmp: true, sender: S.uid, recipient: to, audio_path: 'pending', audio_ms: Math.round(ms), created_at: new Date().toISOString() };
+  S.thread.push(tmp); V.chat.update(to); const box = $('#msgs'); if (box) box.scrollTop = 1e9;
+  try {
+    const path = `${S.uid}/voice-${Date.now()}.${ext}`;
+    const { error } = await sb.storage.from('media').upload(path, blob, { contentType: ctype, cacheControl: '31536000' }); if (error) throw error;
+    const { data, error: e2 } = await sb.from('messages').insert({ recipient: to, audio_path: path, audio_ms: Math.round(ms) }).select().single(); if (e2) throw e2;
+    S.thread = S.thread.filter((x) => x !== tmp); if (!S.thread.some((x) => x.id === data.id)) { S.thread.push(data); S.last.set(to, data); }
+    V.chat.update(to);
+    if (ms >= 2000 && ms <= 10500 && S.me?.video_path) aiCall({ op: 'talk', message_id: data.id }).catch(() => {});
+  } catch { S.thread = S.thread.filter((x) => x !== tmp); V.chat.update(to); toast('Voice message not sent. Check your connection.'); }
+}
+
 V.chat = async (id) => {
   if (!S.members.has(id)) { await loadAll(); if (!S.members.has(id)) { go('chats', true); return; } }
   if (S.threadWith !== id) { S.thread = []; S.threadWith = id; }
@@ -490,9 +619,13 @@ V.chat = async (id) => {
   <div class="hdr"><button class="iconbtn" data-back="chats" aria-label="Back">${ic('back')}</button>
     <button class="hname" data-go="u/${id}"><b>${esc(p.name)}</b><span class="pill glass" id="st"></span></button>
     <span style="width:44px"></span></div>
-  <div class="you glass">${S.me.photo_path ? `<img src="${esc(thumb(S.me.photo_path))}" alt="">` : ''}<span>You</span></div>
+  <div class="you glass">${S.me.photo_path ? `<img class="${S.me.video_path ? '' : 'raw'}" src="${esc(thumb(S.me.photo_path))}" alt="">` : ''}<span>You</span></div>
   <div class="msgs" id="msgs" aria-live="polite"></div>
-  <form class="composer" id="cf"><textarea class="glass" id="tx" rows="1" placeholder="Message…" aria-label="Message" maxlength="2000"></textarea><button class="send" id="sendb" aria-label="Send">${ic('send', 2)}</button></form>
+  <form class="composer" id="cf"><textarea class="glass" id="tx" rows="1" placeholder="Message…" aria-label="Message" maxlength="2000"></textarea>
+    <button type="button" class="send" id="micb" aria-label="Record a voice message">${ic('mic', 2)}</button><button class="send" id="sendb" aria-label="Send" hidden>${ic('send', 2)}</button></form>
+  <div class="composer recbar" id="rec" hidden><button type="button" class="recx glass" id="reccancel" aria-label="Cancel recording">${ic('x')}</button>
+    <div class="recinfo glass"><span class="recdot"></span><b id="rect">0:00</b><span id="rechint"></span></div>
+    <button type="button" class="send" id="recsend" aria-label="Send voice message">${ic('send', 2)}</button></div>
   </div>`;
 };
 V.chat.update = (id) => {
@@ -504,7 +637,7 @@ V.chat.update = (id) => {
   S.thread.forEach((m) => {
     const d = new Date(m.created_at).toDateString();
     if (d !== lastDay) { html += `<div class="day">${when(m.created_at) === hm(m.created_at) ? 'Today' : when(m.created_at)}</div>`; lastDay = d; }
-    html += `<div class="b ${m.sender === S.uid ? 'me' : 'them'}" title="${hm(m.created_at)}">${esc(m.body)}</div>`;
+    html += msgHTML(m);
     if (lastMine && m === lastMine) html += `<div class="meta">${m.tmp ? 'Sending…' : m.read_at ? 'Read ' + hm(m.read_at) : 'Sent ' + hm(m.created_at)}</div>`;
   });
   if (!S.thread.length) html = `<div class="day">Say hello to ${esc(S.members.get(id)?.name)}</div>`;
@@ -515,15 +648,32 @@ V.chat.update = (id) => {
 V.chat.after = async (id) => {
   V.chat.update(id);
   await loadThread(id); markRead(id); V.chat.update(id);
-  const tx = $('#tx'), f = $('#cf');
-  const grow = () => { tx.style.height = 'auto'; tx.style.height = Math.min(tx.scrollHeight, 130) + 'px'; };
+  const tx = $('#tx'), f = $('#cf'), box = $('#msgs');
+  const grow = () => { tx.style.height = 'auto'; tx.style.height = Math.min(tx.scrollHeight, 130) + 'px'; const has = !!tx.value.trim(); $('#sendb').hidden = !has; $('#micb').hidden = has; };
   tx.addEventListener('input', () => { grow(); if (tx.value.trim()) sendTyping(id); });
   tx.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey && !/mobi/i.test(navigator.userAgent)) { e.preventDefault(); f.requestSubmit(); } });
+  $('#micb').onclick = () => startRec(id);
+  $('#reccancel').onclick = () => stopRec(false);
+  $('#recsend').onclick = () => stopRec(true);
+  // play, show original, long press menu
+  let lp = null, sx = 0, sy = 0;
+  box.addEventListener('click', (e) => {
+    const pl = e.target.closest('[data-play]'); if (pl) { const m = S.thread.find((x) => String(x.id) === pl.dataset.play); if (m && !m.tmp) playVoice(m); return; }
+    const og = e.target.closest('[data-orig]'); if (og) { const t = TR.get(og.dataset.orig); if (t) { t.show = false; V.chat.update(id); } }
+  });
+  box.addEventListener('pointerdown', (e) => {
+    const b = e.target.closest('.b[data-msg]'); if (!b || e.target.closest('button')) return;
+    sx = e.clientX; sy = e.clientY; clearTimeout(lp);
+    lp = setTimeout(() => { const m = S.thread.find((x) => String(x.id) === b.dataset.msg); if (m && !m.tmp) { navigator.vibrate?.(15); msgMenu(m); } }, 450);
+  });
+  box.addEventListener('pointermove', (e) => { if (Math.abs(e.clientX - sx) > 8 || Math.abs(e.clientY - sy) > 8) clearTimeout(lp); });
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach((ev) => box.addEventListener(ev, () => clearTimeout(lp)));
+  box.addEventListener('contextmenu', (e) => { if (e.target.closest('.b[data-msg]')) e.preventDefault(); });
   f.onsubmit = async (e) => {
     e.preventDefault(); const body = tx.value.trim(); if (!body) return;
     tx.value = ''; grow(); tx.focus();
     const tmp = { id: 'tmp' + Date.now(), tmp: true, sender: S.uid, recipient: id, body, created_at: new Date().toISOString() };
-    S.thread.push(tmp); V.chat.update(id); $('#msgs').scrollTop = 1e9;
+    S.thread.push(tmp); V.chat.update(id); box.scrollTop = 1e9;
     const { data, error } = await sb.from('messages').insert({ recipient: id, body }).select().single();
     S.thread = S.thread.filter((x) => x !== tmp);
     if (error) { toast('Message not sent. Check your connection.'); tx.value = body; grow(); }
@@ -531,6 +681,7 @@ V.chat.after = async (id) => {
     V.chat.update(id);
   };
 };
+window.addEventListener('hashchange', () => { stopPlayer(); if (rec) stopRec(false); });
 
 /* Someone's page */
 V.u = async (id) => {
@@ -603,32 +754,39 @@ async function uploadVideo() {
     S.me = data; toast('Your page is alive now'); show();
   } catch (e) { toast(e.message || 'Upload failed. Try again.', 4000); }
 }
-function askAI(msg, ideas, cta) {
+function askAI(msg, ideas, cta, ideasPromise) {
   return new Promise((res) => {
     const bg = document.createElement('div'); bg.className = 'sheet-bg';
+    const chips = (list) => list.map((t) => `<button class="idea" data-idea="${esc(t)}">${esc(t)}</button>`).join('');
     bg.innerHTML = `<div class="sheet ask" role="dialog" aria-label="${esc(aiName())}"><div class="grab"></div>${aiMsg(msg)}
-      <textarea class="field ta" id="askta" maxlength="400" placeholder="Describe what to change"></textarea>
-      <div class="ideas">${ideas.map((t) => `<button class="idea" data-idea="${esc(t)}">${esc(t)}</button>`).join('')}</div>
-      <button class="btn" id="askgo" disabled>${ic('spark')}${esc(cta)}</button><button class="btn out" id="askno" style="margin-top:8px">Cancel</button></div>`;
+      <div class="ideas" id="askideas">${ideasPromise ? `<span class="idea muted"><span class="spinner xs dark"></span>${esc(aiName())} is looking at your photo…</span>` : chips(ideas)}</div>
+      <textarea class="field ta" id="askta" maxlength="400" placeholder="Or write your own idea"></textarea>
+      <button class="btn" id="askgo" disabled>${ic('spark')}${esc(cta)}</button>
+      <button class="btn soft" id="askai">${ic('spark')}Let ${esc(aiName())} decide</button>
+      <button class="btn out" id="askno">Cancel</button></div>`;
     const done = (v) => { bg.remove(); res(v); };
     app.appendChild(bg);
-    const ta = $('#askta', bg), go2 = $('#askgo', bg);
+    const ta = $('#askta', bg), go2 = $('#askgo', bg), box = $('#askideas', bg);
+    const wire = () => box.querySelectorAll('[data-idea]').forEach((b) => (b.onclick = () => { ta.value = b.dataset.idea; go2.disabled = false; }));
+    wire();
+    if (ideasPromise) ideasPromise.then((list) => { box.innerHTML = chips(list && list.length ? list : ideas); wire(); }).catch(() => { box.innerHTML = chips(ideas); wire(); });
     ta.addEventListener('input', () => (go2.disabled = ta.value.trim().length < 3));
-    bg.querySelectorAll('[data-idea]').forEach((b) => (b.onclick = () => { ta.value = b.dataset.idea; go2.disabled = false; ta.focus(); }));
-    go2.onclick = () => done(ta.value.trim()); $('#askno', bg).onclick = () => done(null);
+    go2.onclick = () => done(ta.value.trim());
+    $('#askai', bg).onclick = () => done(AI_DECIDES);
+    $('#askno', bg).onclick = () => done(null);
     bg.addEventListener('click', (e) => { if (e.target === bg) done(null); });
-    setTimeout(() => ta.focus(), 300);
   });
 }
 async function addPost() {
   const f = await pickFile(false); if (!f) return;
-  const wish = await askAI(`Every photo in MAGAAM is made with AI. What should I change in this photo? Your outfit, the place, the light or the style.`, IDEAS_POST, 'Change my photo');
-  if (!wish) return;
   toast('Uploading…', 30000);
-  try {
-    const path = await uploadPhoto(f, 'src');
-    if (await startAI('post_edit', path, wish)) toast(`${aiName()} is changing your photo. About 30 seconds.`, 4000);
-  } catch (e) { toast(e.message || 'Upload failed. Try again.'); }
+  let path;
+  try { path = await uploadPhoto(f, 'src'); } catch (e) { toast(e.message || 'Upload failed. Try again.'); return; }
+  $('#toast').hidden = true;
+  const ideasP = aiCall({ op: 'ideas', path }).then((j) => j.ideas || []);
+  const wish = await askAI(`Every photo in MAGAAM is made with AI. Here are my ideas for this photo. Pick one, write your own, or let me decide.`, IDEAS_POST, 'Change my photo', ideasP);
+  if (!wish) { sb.storage.from('media').remove([path, path.replace(/\.jpg$/, '-t.jpg')]); return; }
+  if (await startAI('post_edit', path, wish)) toast(`${aiName()} is changing your photo. About 30 seconds.`, 4000);
 }
 
 /* ---------- global clicks ---------- */
@@ -646,6 +804,7 @@ app.addEventListener('click', (e) => {
     { icon: 'edit', label: 'Edit name and birthday', run: () => go('about') },
     { icon: 'spark', label: 'New living photo', run: () => go('look') },
     { icon: 'edit', label: `Rename ${aiName()}`, run: () => go('assistant') },
+    { icon: 'globe', label: `Translation language: ${langLabel(myLang())}`, run: pickLang },
     { icon: 'share', label: 'Copy invite link', run: async () => { try { await navigator.clipboard.writeText(location.origin + location.pathname); toast('Link copied'); } catch { toast(location.origin + location.pathname, 5000); } } },
     { icon: 'out', label: 'Sign out', red: true, run: async () => { await sb.auth.signOut(); location.hash = '#/welcome'; location.reload(); } }
   ]);
