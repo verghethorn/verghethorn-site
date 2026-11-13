@@ -287,6 +287,7 @@ function swapBg(p) { const el = app.querySelector(`[data-bgfor="${p.id}"]`); if 
 function previewOf(m) {
   if (m.body) return m.body;
   if (m.sticker === 'x|poke') return T('👉 Poke!');
+  if (m.sticker?.startsWith('x|live|')) return T('🐱 Living sticker');
   if (m.sticker?.startsWith('x|cmp|')) return '✨ ' + T(CMPS[+m.sticker.split('|')[2]] || CMPS[0]);
   if (m.sticker === 'x|fill') return T('📝 Asked you to fill in your profile');
   if (m.sticker) return T('Sticker');
@@ -1312,12 +1313,15 @@ const STK_FUN = [['🔥','pulse'],['😂','shake'],['❤️','beat'],['🥳','bo
 const STK_WORDS = ['YALLA', 'HABIBI', 'MASHALLAH', 'INSHALLAH', 'BRO', 'OMG', 'LOL', 'TAMAM', 'GG', 'VIBE', 'NO WAY', 'SOON', 'АХАХА', 'ПОКА', 'Я ТУТ', 'ОКЕЙ', 'يلا', 'حبيبي', 'ماشاء الله', 'تمام'];
 const STK_ME = [['laugh','😂','Laughing'],['love','🫶','Love'],['wow','😮','Wow'],['cool','😎','Cool'],['sad','😢','Sad'],['angry','😤','Angry'],['sleep','😴','Sleepy'],['hi','👋','Hi'],['party','🥳','Party']];
 const REACTS = ['❤️', '😂', '🔥', '😮', '😢', '👍'];
+const LIVE = { kitten: { label: 'Kitten', emoji: '🐱' } };
+const canLive = () => S.me?.username === 'rashid';
 const CMPS = ['Love your style ✨', 'Always fun with you 😄', 'You inspire me 🌟', 'Best friend 🤝', 'Kind soul 🤍', 'So smart 🧠', 'Your smile is fire 😊', 'Proud of you 🙌'];
 function stickerHTML(code) {
   const [k, a, b] = String(code).split('|');
   if (k === 'e') { const f = STK_FUN.find((x) => x[0] === a); return `<span class="se a-${f ? f[1] : 'bounce'}" data-notr>${esc(f ? f[0] : '✨')}</span>`; }
   if (k === 'w') { const i = Math.max(0, STK_WORDS.indexOf(a)); return `<span class="swd sw${i % 6}" data-notr>${esc(STK_WORDS[i])}</span>`; }
   if (k === 'x' && a === 'poke') return `<span class="poke" data-notr>👉</span><b class="poketx">${esc(T('Poke!'))}</b>`;
+  if (k === 'x' && a === 'live' && LIVE[b]) return `<button class="lvstk" data-live="${b}" aria-label="${esc(T('Play again'))}"><img src="stk/${b}.png" alt=""><span>${ic('play', 2)}</span></button>`;
   if (k === 'x' && a === 'cmp') return `<span class="cmpc"><i>✨</i><small>${esc(T('Compliment'))}</small><b>${esc(T(CMPS[+b] || CMPS[0]))}</b></span>`;
   if (k === 'x' && a === 'fill') return `<span class="cmpc fill"><i>📝</i><small>${esc(T('A little request'))}</small><b>${esc(T('Tell me about yourself: fill in your profile 🙂'))}</b></span>`;
   if (k === 'u' && /^[0-9a-f-]{36}\/sticker-\d+\.png$/.test(a || '')) return `<img class="su" src="${esc(url(a))}" alt="Sticker">`;
@@ -1352,7 +1356,7 @@ async function sendSticker(to, code) {
   S.thread.push(tmp); V.chat.update(to); if (S.aiMode === to) paintAiOv(to); const box = $('#msgs'); if (box) box.scrollTop = 1e9;
   const { data, error } = await sb.from('messages').insert({ recipient: to, sticker: code }).select().single();
   S.thread = S.thread.filter((x) => x !== tmp);
-  if (error) toast('Message not sent. Check your connection.'); else { if (!S.thread.some((x) => x.id === data.id)) { S.thread.push(data); S.last.set(to, data); } if (code.startsWith('e|')) runFx(fxFor(code.slice(2))); }
+  if (error) toast('Message not sent. Check your connection.'); else { if (!S.thread.some((x) => x.id === data.id)) { S.thread.push(data); S.last.set(to, data); } if (code.startsWith('e|')) runFx(fxFor(code.slice(2))); if (code.startsWith('x|live|')) { markPlayed(data.id); playLive(code.split('|')[2]); } }
   V.chat.update(to);
 }
 let myStickers = null;
@@ -1360,9 +1364,11 @@ async function loadMyStickers() { const { data } = await sb.from('stickers').sel
 let stkTab = 'fun', stkBusy = false;
 function stickerPanel(to) {
   const p = $('#stk'); if (!p) return;
-  const tabs = [['fun', 'Fun'], ['words', 'Words'], ['me', 'Me stickers']];
+  const tabs = [...(canLive() ? [['live', 'Living']] : []), ['fun', 'Fun'], ['words', 'Words'], ['me', 'Me stickers']];
+  if (stkTab === 'live' && !canLive()) stkTab = 'fun';
   let body = '';
-  if (stkTab === 'fun') body = `<div class="sgrid">${STK_FUN.map(([e, a]) => `<button class="sbtn" data-stk="e|${e}"><span class="se a-${a}" data-notr>${e}</span></button>`).join('')}</div>`;
+  if (stkTab === 'live') body = `<div class="sgrid live">${Object.entries(LIVE).map(([k, v]) => `<button class="sbtn lvpick" data-stk="x|live|${k}"><img src="stk/${k}.png" alt=""><span>${esc(T(v.label))}</span></button>`).join('')}</div>`;
+  else if (stkTab === 'fun') body = `<div class="sgrid">${STK_FUN.map(([e, a]) => `<button class="sbtn" data-stk="e|${e}"><span class="se a-${a}" data-notr>${e}</span></button>`).join('')}</div>`;
   else if (stkTab === 'words') body = `<div class="sgrid words">${STK_WORDS.map((w, i) => `<button class="sbtn" data-stk="w|${esc(w)}"><span class="swd sw${i % 6}" data-notr>${esc(w)}</span></button>`).join('')}</div>`;
   else {
     if (!myStickers) { loadMyStickers().then(() => stickerPanel(to)); }
@@ -1475,6 +1481,7 @@ function onIncoming(m) {
   if (!fresh) return;
   const here = route().name === 'chat' && route().id === m.sender && document.visibilityState === 'visible';
   if (m.sticker === 'x|poke') { navigator.vibrate?.([90, 60, 90]); shakeView(); if (!here) toast(`${nameOf(m.sender)} poked you 👉`, 3000); return; }
+  if (m.sticker?.startsWith('x|live|')) { if (here) { markPlayed(m.id); playLive(m.sticker.split('|')[2]); } else toast(T('{n} sent you a living kitten 🐱').replace('{n}', nameOf(m.sender)), 3500); return; }
   if (m.sticker?.startsWith('x|cmp|')) { navigator.vibrate?.(30); burst('✨'); toast(`${nameOf(m.sender)}: ${T(CMPS[+m.sticker.split('|')[2]] || CMPS[0])}`, 4000); return; }
   if (m.sticker === 'x|fill') { toast(T('{n} wants to know you better: fill in your profile').replace('{n}', nameOf(m.sender)), 4500); return; }
   if (!here) return;
@@ -2033,6 +2040,8 @@ V.chat.after = async (id) => {
   V.chat.update(id);
   S.aiMode = null; S.aiSkip.delete(id);
   await loadThread(id); await loadRx(); markRead(id); V.chat.update(id);
+  const lvm = [...S.thread].reverse().find((m) => m.sticker?.startsWith('x|live|') && m.sender === id && !played.has(String(m.id)) && Date.now() - new Date(m.created_at) < 86400_000);
+  if (lvm && route().name === 'chat' && route().id === id) { markPlayed(lvm.id); setTimeout(() => playLive(lvm.sticker.split('|')[2]), 600); }
   setTimeout(() => { if (route().name === 'chat' && route().id === id && awayOn(id) && !S.aiSkip.has(id) && !player) enterAi(id); }, 2000);
   const tx = $('#tx'), f = $('#cf'), box = $('#msgs');
   if (!tx || !f || route().name !== 'chat' || route().id !== id) return; // left the chat while it was loading
@@ -2067,6 +2076,7 @@ V.chat.after = async (id) => {
     if (e.target.closest('canvas.scratch')) return;
     const md = e.target.closest('[data-media]'); if (md) { const m = S.thread.find((x) => String(x.id) === md.dataset.media); if (m && !m.tmp) openMedia(m); return; }
     const on = e.target.closest('[data-once]'); if (on) { const m = S.thread.find((x) => String(x.id) === on.dataset.once); if (m && !m.opened_at) openMedia(m); return; }
+    const lvb = e.target.closest('[data-live]'); if (lvb) return playLive(lvb.dataset.live);
     const pl = e.target.closest('[data-play]'); if (pl) { const m = S.thread.find((x) => String(x.id) === pl.dataset.play); if (m && !m.tmp) playVoice(m); return; }
     const og = e.target.closest('[data-orig]'); if (og) { const t = TR.get(og.dataset.orig); if (t) { t.show = false; V.chat.update(id); } }
   });
@@ -2216,6 +2226,18 @@ V.u.after = async (id) => {
       <div class="tg">${faces.length ? `<span class="faces">${faces.slice(0, 4).map((f) => thumbHTML(f)).join('')}</span>` : '<b>0</b>'}<span>${esc(T('mutual friends'))}</span></div>`;
   } else if (t) t.innerHTML = '';
 };
+// A living sticker: a real kitten comes up from the bottom of the screen, looks at you, then goes away.
+const liveBlobs = new Map();
+async function playLive(kind) {
+  if (!LIVE[kind] || $('#livefx')) return;
+  let u = liveBlobs.get(kind);
+  if (!u) { try { const r = await fetch(`stk/${kind}.webp`); u = URL.createObjectURL(await r.blob()); liveBlobs.set(kind, u); } catch { return; } }
+  const fx = document.createElement('div'); fx.className = 'livefx'; fx.id = 'livefx';
+  fx.innerHTML = `<div class="lvwrap"><div class="lvshadow"></div><img alt="" src="${u}#${Date.now()}"></div>`;
+  app.appendChild(fx); navigator.vibrate?.([20, 40, 20]);
+  const end = () => { fx.classList.add('out'); setTimeout(() => fx.remove(), 700); };
+  fx.addEventListener('click', end); setTimeout(end, 10600);
+}
 let lastCmp = 0;
 async function sendCmp(to, code) {
   if (Date.now() - lastCmp < 3000) return; lastCmp = Date.now(); navigator.vibrate?.(20);

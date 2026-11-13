@@ -1142,3 +1142,20 @@ h1{font-weight:700;font-size:38px;letter-spacing:-.035em;line-height:1.05}
 .cmpc small{font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.85;font-weight:700}
 .cmpc b{font-size:17px;font-weight:700;line-height:1.25}
 .cmpc.fill{background:linear-gradient(135deg,#2F6BFF,#6A5CFF)}
+
+/* living sticker: a real kitten on your screen */
+.livefx{position:absolute;inset:0;z-index:60;overflow:hidden;cursor:pointer}
+.livefx .lvwrap{position:absolute;left:50%;bottom:calc(var(--sb) + 70px);width:min(96vw,460px);transform:translateX(-50%);animation:lvIn 10.6s cubic-bezier(.3,.9,.3,1) both}
+.livefx img{position:relative;width:100%;display:block;filter:drop-shadow(0 18px 24px rgba(0,0,0,.45))}
+.livefx .lvshadow{position:absolute;left:12%;right:12%;bottom:-6px;height:26px;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.45),transparent)}
+@keyframes lvIn{0%{transform:translate(-50%,120%) rotate(-4deg)}9%{transform:translate(-50%,-4%) rotate(1deg)}13%{transform:translate(-50%,0) rotate(0)}45%{transform:translate(-50%,-2%) rotate(-1deg)}75%{transform:translate(-50%,0) rotate(.6deg)}90%{transform:translate(-50%,0)}100%{transform:translate(-50%,130%) rotate(3deg)}}
+.livefx.out{transition:opacity .6s;opacity:0}
+.lvstk{position:relative;display:block;width:150px;border-radius:22px;overflow:hidden;background:rgba(255,255,255,.08)}
+.lvstk img{width:100%;display:block;filter:drop-shadow(0 6px 14px rgba(0,0,0,.35))}
+.lvstk span{position:absolute;right:8px;bottom:8px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(0,0,0,.45);color:#fff}
+.lvstk span svg{width:14px;height:14px}
+.sgrid.live{grid-template-columns:repeat(2,1fr)}
+.lvpick{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px;height:auto}
+.lvpick img{width:100%;max-height:90px;object-fit:contain}
+.lvpick span{font-size:13px;color:#fff}
+@media (prefers-reduced-motion:reduce){.livefx .lvwrap{animation:none}}
