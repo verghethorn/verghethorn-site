@@ -1438,7 +1438,7 @@ function stickerPanel(to) {
 function msgHTML(m) {
   const mine = m.sender === S.uid;
   if (m.audio_path) {
-    const talk = m.talk_status === 'ready' && m.talk_path, making = m.talk_status === 'making';
+    const talk = false, making = false; // talking avatars are removed from the messenger: plain voice messages only
     const rxv = rxHTML(m);
     return `<div class="b voice ${mine ? 'me' : 'them'} ${playing === String(m.id) ? 'playing' : ''} ${rxv ? 'has-rx' : ''}" data-msg="${m.id}">
       <button class="vplay" data-play="${m.id}" aria-label="${playing === String(m.id) ? 'Stop' : 'Replay voice message'}">${ic(playing === String(m.id) ? 'pause' : 'play', 2)}</button>
@@ -1701,12 +1701,14 @@ const played = new Set((store.get('magaam-played') || '').split(',').filter(Bool
 const markPlayed = (id) => { played.add(String(id)); store.set('magaam-played', [...played].slice(-300).join(',')); };
 function talkEligible(m) { const p = S.members.get(m.sender) || (m.sender === S.uid ? S.me : null); return m.audio_ms >= 2000 && m.audio_ms <= 10500 && !!p?.video_path; }
 function voiceMode(m) {
+  return 'audio';
   if (m.talk_status === 'ready' && m.talk_path) return 'video';
   if (m.talk_status === 'failed') return 'audio';
   if (talkEligible(m) && Date.now() - new Date(m.created_at) < 180000) return 'wait';
   return 'audio';
 }
 function autoVoices(chatId) {
+  return; // like WhatsApp: a voice message plays only when you tap it
   const r = route(); if (r.name !== 'chat' || r.id !== chatId || document.visibilityState !== 'visible' || talkBusy) return;
   const next = S.thread.find((m) => m.audio_path && !m.tmp && m.sender === chatId && !played.has(String(m.id)));
   if (!next || voiceMode(next) === 'wait') return;
@@ -1731,7 +1733,7 @@ function playVoice(m) {
   if (playing === id) return stopPlayer();
   if (player) stopPlayer();
   playing = id; talkBusy = true; markPlayed(id);
-  if (m.talk_status === 'ready' && m.talk_path && m.sender !== S.uid) {
+  if (false) {
     const host = app.querySelector('.view .dark'); const bg = host?.querySelector(`[data-bgfor="${m.sender}"]`);
     TALKER.classList.remove('out'); TALKER.src = url(m.talk_path); TALKER.muted = false;
     if (bg) bg.after(TALKER); else host?.prepend(TALKER);
@@ -1794,7 +1796,7 @@ function stopRec(send) {
     let blob = new Blob(r.chunks, { type }), len = ms;
     if (blob.size < 800) return toast('The voice message did not record. Try again.', 3500);
     // Short voices become a plain WAV file: iPhone records in a format the talking-photo AI cannot read.
-    if (vfx || ms <= 10500) { try { const out = await applyVfx(blob, vfx); blob = out.blob; len = out.ms; } catch (e) { console.warn('voice convert', e); } }
+    if (vfx) { try { const out = await applyVfx(blob, vfx); blob = out.blob; len = out.ms; } catch (e) { console.warn('voice convert', e); } }
     await sendVoice(r.to, blob, len);
   };
   try { r.mr.stop(); } catch { r.mr.onstop(); }
@@ -1811,7 +1813,6 @@ async function sendVoice(to, blob, ms) {
     markPlayed(data.id);
     S.thread = S.thread.filter((x) => x !== tmp); if (!S.thread.some((x) => x.id === data.id)) { S.thread.push(data); S.last.set(to, data); }
     V.chat.update(to); if (S.aiMode === to) paintAiOv(to);
-    if (ms >= 2000 && ms <= 10500 && S.me?.video_path) aiCall({ op: 'talk', message_id: data.id }).catch(() => {});
     askAway(to);
   } catch { S.thread = S.thread.filter((x) => x !== tmp); V.chat.update(to); if (S.aiMode === to) paintAiOv(to); toast('Voice message not sent. Check your connection.'); }
 }
