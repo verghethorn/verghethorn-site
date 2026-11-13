@@ -163,6 +163,7 @@ function aiError(e) {
     : e === 'video_length' ? 'AI can change videos from 3 to 10 seconds long.'
     : e === 'video_read' ? 'This video could not be read. Try an MP4 or MOV video.'
     : e === 'not_ai' ? 'This photo has no AI changes yet.'
+    : e === 'no_face' ? 'Your profile photo must show your face. Pictures without a person, drawings or animals are not allowed. Choose a photo where your face is visible.'
     : 'AI is not available right now. Try again later.';
 }
 function dayName(iso) { try { return new Date(iso).toLocaleDateString(I18N.lang === 'en' ? 'en-GB' : I18N.lang, { weekday: 'long', day: 'numeric', month: 'long' }); } catch { return String(iso).slice(0, 10); } }
@@ -499,11 +500,13 @@ V.look.after = () => {
     try {
       // Upload, then check whether the photo is already made or changed with AI.
       const [hints, path] = await Promise.all([fileHints(f), uploadPhoto(f, 'avatar')]);
+      const r = await anim({ kind: 'check', path, hints });
+      if (!r.ok) { sb.storage.from('media').remove([path, path.replace(/\.jpg$/, '-t.jpg')]); throw new Error(r.error || 'ai'); }
+      // The rule: a profile photo must show the person's face.
+      if (!r.face) { sb.storage.from('media').remove([path, path.replace(/\.jpg$/, '-t.jpg')]); throw new Error('no_face'); }
       const upd = { orig_path: path }; if (!S.me?.photo_path) upd.photo_path = path;
       const { data, error } = await sb.from('profiles').update(upd).eq('id', S.uid).select().single(); if (error) throw error;
       S.me = data; pendingPhoto = null;
-      const r = await anim({ kind: 'check', path, hints });
-      if (!r.ok) throw new Error(r.error || 'ai');
       if (r.ai) { lookCheck = 'ai'; show(); await bringToLife(path); return; }
       lookCheck = 'real';
     } catch (e) {
@@ -548,7 +551,7 @@ V.look.after = () => {
     } catch (e) {
       lookBusy = false; show();
       const m = String(e.message || '');
-      $('#err').textContent = T(m === 'daily_limit' ? 'You have used today’s AI limit. Try again tomorrow.' : /fetch|network/i.test(m) ? 'AI is not available right now. Check your connection.' : m.startsWith('This photo') ? m : 'AI is not available right now. Try again later.');
+      $('#err').textContent = T(/fetch|network/i.test(m) ? aiError('network') : m.startsWith('This photo') ? m : aiError(m));
       return;
     }
     lookBusy = false; if (route().name === 'look') show();

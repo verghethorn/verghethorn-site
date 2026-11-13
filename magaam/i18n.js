@@ -305,6 +305,9 @@ window.I18N = (() => {
   Object.assign(D.ru, { "{ai} added your new video to the gallery": "{ai} добавил ваше новое видео в галерею" });
   Object.assign(D.ar, { "{ai} added your new video to the gallery": "أضاف {ai} الفيديو الجديد إلى معرضك" });
   Object.assign(D.tr, { "{ai} added your new video to the gallery": "{ai} yeni videonu galeriye ekledi" });
+  Object.assign(D.ru, { "Your profile photo must show your face. Pictures without a person, drawings or animals are not allowed. Choose a photo where your face is visible.": "На фото профиля обязательно должно быть ваше лицо. Картинки без человека, рисунки и животные не подходят. Выберите фото, где видно ваше лицо." });
+  Object.assign(D.ar, { "Your profile photo must show your face. Pictures without a person, drawings or animals are not allowed. Choose a photo where your face is visible.": "يجب أن تُظهر صورة الملف الشخصي وجهك. الصور بدون شخص والرسومات والحيوانات غير مسموحة. اختر صورة يظهر فيها وجهك." });
+  Object.assign(D.tr, { "Your profile photo must show your face. Pictures without a person, drawings or animals are not allowed. Choose a photo where your face is visible.": "Profil fotoğrafında yüzün görünmeli. İnsan olmayan resimler, çizimler veya hayvanlar olmaz. Yüzünün göründüğü bir fotoğraf seç." });
   const tpl = {};
   for (const l of Object.keys(D)) {
     tpl[l] = Object.entries(D[l]).filter(([k]) => /\{\w+\}/.test(k)).map(([k, v]) => {
