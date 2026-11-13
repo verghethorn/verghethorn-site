@@ -1636,7 +1636,9 @@ function stopRec(send) {
     const ms = Date.now() - r.t0; if (ms < 800) return toast('Too short. Hold on a little longer.');
     const type = (r.mr.mimeType || r.chunks[0]?.type || 'audio/webm').split(';')[0];
     let blob = new Blob(r.chunks, { type }), len = ms;
-    if (vfx) { try { const out = await applyVfx(blob, vfx); blob = out.blob; len = out.ms; } catch (e) { console.warn('voice effect', e); } }
+    if (blob.size < 800) return toast('The voice message did not record. Try again.', 3500);
+    // Short voices become a plain WAV file: iPhone records in a format the talking-photo AI cannot read.
+    if (vfx || ms <= 10500) { try { const out = await applyVfx(blob, vfx); blob = out.blob; len = out.ms; } catch (e) { console.warn('voice convert', e); } }
     await sendVoice(r.to, blob, len);
   };
   try { r.mr.stop(); } catch { r.mr.onstop(); }
