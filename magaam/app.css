@@ -953,7 +953,7 @@ h1{font-weight:700;font-size:38px;letter-spacing:-.035em;line-height:1.05}
 .rb.coin svg{width:20px;height:20px;color:#FFD56A}
 .rb.coin small{font-size:11px;font-weight:700;line-height:1}
 .home .digest{top:calc(var(--st) + 120px);right:76px}
-.hai{position:absolute;z-index:4;right:max(14px,var(--sr));bottom:calc(var(--sb) + 224px);width:58px;height:58px;border-radius:50%;padding:0;animation:hfloat 4s ease-in-out infinite;
+.hai{position:absolute;z-index:4;right:max(14px,var(--sr));bottom:calc(var(--sb) + 112px);width:58px;height:58px;border-radius:50%;padding:0;animation:hfloat 4s ease-in-out infinite;
   box-shadow:0 0 0 2px rgba(255,255,255,.6),0 0 26px 6px var(--tint-a),0 12px 26px -10px rgba(0,0,0,.7)}
 .hai .aiface{border-radius:50%}
 .hdot{position:absolute;top:0;right:0;width:14px;height:14px;border-radius:50%;background:#FF4D6D;border:2px solid #0b0d18;animation:pulseg 1.6s infinite}

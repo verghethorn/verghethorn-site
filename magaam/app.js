@@ -51,6 +51,18 @@ const ic = (n, sw = 1.8) => `<svg viewBox="0 0 24 24" fill="none" stroke="curren
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
 const $ = (s, r = document) => r.querySelector(s);
 const app = $('#app');
+// iPhone home-screen app: iOS reports the screen without the status bar, which left an empty strip at the bottom.
+// Stretch the app to the real screen height, except while the keyboard is open.
+(() => {
+  if (!(navigator.standalone || matchMedia('(display-mode: standalone)').matches) || !/iPhone|iPad|iPod/.test(navigator.userAgent)) return;
+  const fit = () => {
+    const vv = window.visualViewport, kb = vv && vv.height < window.innerHeight * 0.8;
+    const full = Math.max(screen.height, screen.width) > 0 && innerWidth < innerHeight ? screen.height : 0;
+    if (!kb && full && full > innerHeight) { app.style.height = full + 'px'; app.style.bottom = 'auto'; }
+    else { app.style.height = ''; app.style.bottom = ''; }
+  };
+  fit(); addEventListener('resize', fit); window.visualViewport?.addEventListener('resize', fit); addEventListener('orientationchange', () => setTimeout(fit, 300));
+})();
 
 /* ---------- state ---------- */
 const S = { extra: new Map(), streaks: new Map(), reqIn: [], reqOut: new Set(), blocked: [], uid:null, me:null, priv:null, members:new Map(), last:new Map(), unread:new Map(), online:new Set(),
@@ -715,6 +727,7 @@ V.me = () => {
   <div class="hrail">
     <button class="rb grad" data-act="hplus" aria-label="Create">${ic('plus', 2.4)}</button>
     <button class="rb" data-go="gallery/${S.uid}" aria-label="Gallery">${ic('grid')}</button>
+    <button class="rb" data-go="u/${S.uid}" aria-label="My profile">${ic('me')}</button>
     <button class="rb coin" data-go="wallet" aria-label="Balance">${ic('coin')}<small data-notr id="coins">${S.coins}</small></button>
     <button class="rb" data-act="settings" aria-label="Settings">${ic('gear')}</button>
   </div>
@@ -722,7 +735,6 @@ V.me = () => {
   <button class="hai" id="hai" aria-label="${esc(aiName())}">${aiFace(m)}<i class="hdot" id="hdot" hidden></i></button>
   <div class="dock">
     ${installBanner()}
-    <div class="shelfwrap"><button class="shelfh" data-go="u/${S.uid}" aria-label="${esc(T('My profile'))}"><span class="shav">${thumbHTML(m, false)}</span><span class="sht"><b>${esc(T('My profile'))}</b><small>${esc(T('How friends see you'))}</small></span><span class="shup"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg></span></button><div class="shelf" id="shelf"></div></div>
     <div id="tabs">${tabbar('me')}</div>
   </div></div>`;
 };
@@ -756,16 +768,6 @@ V.me.after = () => {
     sheet('', [{ icon: 'chat', label: T('All calm, no new messages 🙂'), run: () => go('chats') }, { icon: 'spark', label: T('How {ai} looks').replace('{ai}', aiName()), run: () => go('edit') }, { icon: 'edit', label: `Rename ${aiName()}`, run: () => go('assistant') }],
       { html: `<div class="aihead">${aiFace(m)}<b data-notr>${esc(aiName())}</b></div>`, run: () => {} });
   };
-  // swipe the shelf up to open your full profile
-  // the shelf follows your finger; pull far enough and your profile opens
-  const sw = app.querySelector('.shelfwrap'); let y0 = null, dy = 0;
-  const rest = () => { sw.style.transition = ''; sw.style.transform = ''; sw.style.removeProperty('--pull'); };
-  sw?.addEventListener('touchstart', (e) => { y0 = e.touches[0].clientY; dy = 0; sw.style.transition = 'none'; }, { passive: true });
-  sw?.addEventListener('touchmove', (e) => { if (y0 === null) return; dy = Math.max(0, y0 - e.touches[0].clientY); const k = Math.min(1, dy / 90); sw.style.transform = `translateY(${-dy * 0.55}px) scale(${1 + k * 0.03})`; sw.style.setProperty('--pull', k); }, { passive: true });
-  sw?.addEventListener('touchend', () => { if (y0 === null) return; y0 = null; if (dy > 70) { sw.style.transition = 'transform .25s,opacity .25s'; sw.style.transform = 'translateY(-60px) scale(1.04)'; sw.style.opacity = '0'; setTimeout(() => go('u/' + S.uid), 160); } else rest(); }, { passive: true });
-  // the first few times, the shelf peeks up by itself to show it can be pulled
-  const seen = +(store.get('magaam-peek') || 0);
-  if (seen < 3) { store.set('magaam-peek', String(seen + 1)); setTimeout(() => sw?.classList.add('peek'), 1400); setTimeout(() => sw?.classList.remove('peek'), 3400); }
 };
 // The glass takes its colour from your living photo: sunset orange for one, night blue for another.
 function tintFrom(p, sel = '.home') {
