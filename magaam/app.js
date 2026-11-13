@@ -619,7 +619,9 @@ V.look.after = () => {
   const eb = $('#editb'); if (eb) eb.onclick = () => { lookEdit = !lookEdit; show(); if (lookEdit) setTimeout(() => $('#wish')?.focus(), 50); };
   const w = $('#wish');
   if (w) { w.addEventListener('input', keepWish); app.querySelectorAll('[data-idea]').forEach((b) => (b.onclick = () => { w.value = b.dataset.idea; keepWish(); })); }
-  const g = $('#go'); if (g) g.onclick = () => { keepWish(); if (lookWish.trim().length < 3) return w?.focus(); makeOne(lookWish.trim()); };
+  // "Keep it as it is, just bring it to life" means exactly that: no new look.
+  const KEEP_RE = /(как\s*есть|не\s*меня|ничего\s*не\s*меня|только\s*ожив|просто\s*ожив|as\s*it\s*is|keep\s*it|don'?t\s*change|just\s*(animate|bring)|olduğu\s*gibi|değiştirme|كما\s*هي|لا\s*تغير)/i;
+  const g = $('#go'); if (g) g.onclick = () => { keepWish(); const t = lookWish.trim(); if (t.length < 3) return w?.focus(); if (KEEP_RE.test(t)) { lookEdit = false; lookWish = ''; return $('#liveorig')?.click(); } makeOne(t); };
   const ad = $('#aidec'); if (ad) ad.onclick = () => { lookWish = ''; makeOne(AI_DECIDES); };
 };
 
