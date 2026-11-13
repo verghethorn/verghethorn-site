@@ -390,3 +390,42 @@ html[lang=ar] body{font-family:"IBM Plex Sans Arabic","Geologica",system-ui,sans
 .pack span{font-size:12.5px;color:var(--grey)}
 .pack i{font-style:normal;margin-top:6px;font-size:14px;font-weight:500;color:var(--blue)}
 .tile video{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;background-size:cover;background-position:center;pointer-events:none}
+/* chat magic */
+.fxcv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:40}
+.rxfly{position:absolute;z-index:41;font-size:30px;pointer-events:none;transform:translate(-50%,-50%) scale(.4);animation:rxfly 1.3s cubic-bezier(.2,.7,.3,1) both}
+@keyframes rxfly{0%{opacity:1;transform:translate(-50%,-50%) scale(.4)}20%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.35) rotate(var(--r))}}
+.view.poked,.bg.poked{animation:poke .55s cubic-bezier(.36,.07,.19,.97) both}
+@keyframes poke{10%,90%{transform:translate3d(-2px,0,0)}20%,80%{transform:translate3d(5px,0,0)}30%,50%,70%{transform:translate3d(-9px,2px,0) rotate(-.6deg)}40%,60%{transform:translate3d(9px,-2px,0) rotate(.6deg)}}
+.pokebtn{font-size:22px}
+.poke{font-size:46px;display:inline-block;animation:pokehand 1s ease-in-out 2}
+.poketx{display:block;font-size:13px;font-weight:600;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.5);text-align:center;margin-top:-4px}
+@keyframes pokehand{0%,100%{transform:translateX(0)}30%{transform:translateX(14px) rotate(-8deg)}60%{transform:translateX(-4px)}}
+.b.media{background:none!important;border:0!important;-webkit-backdrop-filter:none;backdrop-filter:none;padding:0;max-width:72%}
+.b.polaroid .pimg{position:relative;display:block;background:#fff;padding:7px 7px 26px;border-radius:6px;box-shadow:0 10px 30px rgba(0,0,0,.35);transform:rotate(-1.5deg)}
+.b.polaroid.me .pimg{transform:rotate(1.5deg)}
+.b.polaroid img{display:block;width:210px;max-width:100%;max-height:300px;object-fit:cover;border-radius:2px;background:#ddd}
+.b.polaroid img.develop{animation:develop 2.6s ease-out both}
+@keyframes develop{0%{filter:brightness(1.9) sepia(1) blur(6px) contrast(.4)}55%{filter:brightness(1.15) sepia(.4) blur(1px)}100%{filter:none}}
+.b.land-them{animation:landthem .9s cubic-bezier(.2,.9,.25,1.15) both}
+.b.land-me{animation:landme .8s cubic-bezier(.2,.9,.25,1.15) both}
+@keyframes landthem{0%{opacity:0;transform:translate(30vw,-45vh) scale(.25) rotate(-25deg)}100%{opacity:1;transform:none}}
+@keyframes landme{0%{opacity:0;transform:translate(-10vw,20vh) scale(.3) rotate(20deg)}100%{opacity:1;transform:none}}
+.pplay{position:absolute;left:50%;top:calc(50% - 10px);transform:translate(-50%,-50%);width:52px;height:52px;border-radius:50%;background:rgba(11,20,48,.55);display:grid;place-items:center;color:#fff}
+.pplay svg{width:24px;height:24px;margin-left:3px}
+.ptag{display:block;font-size:12.5px;color:#fff;opacity:.9;margin-top:6px;text-align:right;text-shadow:0 1px 6px rgba(0,0,0,.5)}
+.b.them .ptag{text-align:left}
+canvas.scratch{position:absolute;left:7px;top:7px;width:calc(100% - 14px);height:calc(100% - 33px);border-radius:2px;touch-action:none;cursor:grab;transition:opacity .45s}
+canvas.scratch.gone{opacity:0}
+.b.once .oncebox{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:22px;color:#fff;background:linear-gradient(135deg,#FF5C8A,#7B61FF);box-shadow:0 8px 24px rgba(123,97,255,.4);text-align:left}
+.b.once.me .oncebox{background:linear-gradient(135deg,var(--blue),#7B61FF)}
+.b.once .oncebox[disabled],.b.once div.oncebox{opacity:.95}
+.oncei{font-size:28px}
+.oncet{display:flex;flex-direction:column;gap:2px;font-size:13px}
+.oncet b{font-size:15.5px;font-weight:600}
+.mview video,.mview img{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.onceflag{margin-top:12px}
+.vfxrow{position:absolute;left:0;right:0;bottom:calc(var(--sb) + 78px);display:flex;gap:8px;overflow-x:auto;padding:0 max(12px,var(--sr)) 0 max(12px,var(--sl));z-index:5;scrollbar-width:none}
+.vfxrow button{flex:none;display:flex;align-items:center;gap:6px;height:38px;padding:0 14px;border-radius:999px;color:#fff;font-size:14.5px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.vfxrow button[aria-pressed="true"]{background:var(--sun);color:var(--navy);border-color:transparent}
+.streak{font-size:13px;font-weight:600;color:var(--sun);margin-inline-start:4px}
+@media (prefers-reduced-motion:reduce){.b.land-them,.b.land-me,.b.polaroid img.develop,.poke,.view.poked,.bg.poked{animation:none!important}}

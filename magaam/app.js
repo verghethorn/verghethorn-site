@@ -46,7 +46,7 @@ const $ = (s, r = document) => r.querySelector(s);
 const app = $('#app');
 
 /* ---------- state ---------- */
-const S = { uid:null, me:null, priv:null, members:new Map(), last:new Map(), unread:new Map(), online:new Set(),
+const S = { streaks: new Map(), uid:null, me:null, priv:null, members:new Map(), last:new Map(), unread:new Map(), online:new Set(),
   typing:new Map(), thread:[], threadWith:null, posts:new Map(), jobs:[], rx:new Map(), phone:'', pres:null, view:'', prevView:'' };
 try { S.phone = localStorage.getItem('magaam-phone') || ''; } catch {}
 const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
@@ -220,6 +220,13 @@ async function startAI(kind, path, prompt) {
   } catch { toast('AI is not available right now. Check your connection.', 4000); return null; }
 }
 function swapBg(p) { const el = app.querySelector(`[data-bgfor="${p.id}"]`); if (!el) return; const t = document.createElement('div'); t.innerHTML = bgMedia(p); el.replaceWith(t.firstElementChild); }
+function previewOf(m) {
+  if (m.body) return m.body;
+  if (m.sticker === 'x|poke') return T('👉 Poke!');
+  if (m.sticker) return T('Sticker');
+  if (m.media_path) return T(m.media_fx === 'once' ? '🔥 View-once photo' : m.media_kind === 'video' ? '🎬 Video' : '📷 Photo');
+  return T('Voice message');
+}
 const totalUnread = () => [...S.unread.values()].reduce((a, b) => a + b, 0);
 
 /* ---------- realtime ---------- */
@@ -232,12 +239,13 @@ function startRealtime() {
       const o = m.sender === S.uid ? m.recipient : m.sender;
       S.last.set(o, m);
       if (S.threadWith === o && !S.thread.some((x) => x.id === m.id)) {
-        S.thread = S.thread.filter((x) => !(x.tmp && x.sender === m.sender && (x.sticker ? x.sticker === m.sticker : x.body ? (x.body === m.body || x.orig === m.orig_body) : !!m.audio_path))); S.thread.push(m);
+        S.thread = S.thread.filter((x) => !(x.tmp && x.sender === m.sender && (x.sticker ? x.sticker === m.sticker : x.media_path ? x.media_path === m.media_path : x.body ? (x.body === m.body || x.orig === m.orig_body) : !!m.audio_path))); S.thread.push(m);
       }
+      if (m.sender !== S.uid) setTimeout(() => onIncoming(m), 60);
       if (m.sender !== S.uid) {
         S.typing.delete(o);
-        if (route().name === 'chat' && route().id === o && document.visibilityState === 'visible') { sb.rpc('mark_read', { p_other: o }); }
-        else { S.unread.set(o, (S.unread.get(o) || 0) + 1); if (route().name !== 'chat') toast(`${nameOf(o)}: ${m.body ? m.body.slice(0, 60) : m.sticker ? T('Sticker') : T('Voice message')}`); }
+        if (route().name === 'chat' && route().id === o && document.visibilityState === 'visible') { sb.rpc('mark_read', { p_other: o }).then(() => {}); }
+        else { S.unread.set(o, (S.unread.get(o) || 0) + 1); if (route().name !== 'chat') toast(`${nameOf(o)}: ${previewOf(m).slice(0, 60)}`); }
       }
       refresh();
     })
@@ -266,6 +274,7 @@ function startRealtime() {
       if (!S.rx.has(k)) S.rx.set(k, new Map());
       if (pl.eventType === 'DELETE') S.rx.get(k).delete(x.user_id); else S.rx.get(k).set(x.user_id, x.emoji);
       refresh();
+      if (pl.eventType !== 'DELETE' && x.user_id !== S.uid && route().name === 'chat') setTimeout(() => burst(x.emoji, app.querySelector(`.b[data-msg="${k}"]`)), 30);
     })
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, ({ new: x }) => {
       const arr = S.posts.get(x.user_id); if (arr && !arr.some((y) => y.id === x.id)) arr.unshift(x);
@@ -279,10 +288,10 @@ function startRealtime() {
       setTimeout(() => { if (Date.now() - (S.typing.get(payload.from) || 0) >= 3500) { S.typing.delete(payload.from); refresh(); } }, 3600);
     })
     .subscribe(async (st) => { if (st === 'SUBSCRIBED') await S.pres.track({ at: Date.now() }); });
-  sb.rpc('touch'); setInterval(() => document.visibilityState === 'visible' && sb.rpc('touch'), 60_000);
+  sb.rpc('touch').then(() => {}); setInterval(() => document.visibilityState === 'visible' && sb.rpc('touch').then(() => {}), 60_000);
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') { S.pres?.track({ at: Date.now() }); sb.rpc('touch'); loadAll().then(refresh); if (route().name === 'chat') loadThread(route().id).then(refresh); }
-    else { sb.rpc('touch'); S.pres?.untrack(); }
+    else { sb.rpc('touch').then(() => {}); S.pres?.untrack(); }
   });
 }
 let lastTyping = 0;
@@ -480,6 +489,7 @@ V.look = () => {
   <div class="duo"><button class="btn ${src ? 'out' : ''}" data-act="pick">${ic('image')}${src ? 'Another photo' : 'Upload photo'}</button><button class="btn out" data-act="snap">${ic('camera')}Take a photo</button></div>
   ${lookCheck === 'checking' ? `<div class="varwait"><span class="spinner"></span><span>${esc(aiName())} is looking at your photo…</span></div>`
     : lookCheck === 'ai' ? `<div class="varwait"><span class="spinner"></span><span>This photo is already made with AI. ${esc(aiName())} is bringing it to life…</span></div>`
+    : lookCheck === 'later' ? `<div class="askbox">${aiMsg(`AI is not available right now, so I saved your photo for now. Others see it blurred until I change it and bring it to life. Come back later: Settings → New living photo.`)}</div>`
     : lookCheck === 'hold' ? `<div class="askbox">${aiMsg(`This photo is already made with AI, so I can bring it to life right away.`)}</div>`
     : src ? `<div class="askbox">${aiMsg(lookCheck === 'real' ? `This photo has no AI changes yet. In MAGAAM every profile photo must be changed with AI. Tell me what to change: the place, your outfit and what you are doing. Or let me decide.` : `Hi ${esc(S.me?.name || '')}! I'm ${esc(aiName())}, your AI assistant. Your profile photo must be changed and brought to life. Tell me what you want to see: the place, your outfit and what you are doing.`)}
     <div class="seg2" role="group" aria-label="Who decides"><button data-mode="me" aria-pressed="${lookMode === 'me'}">I'll describe it</button><button data-mode="ai" aria-pressed="${lookMode === 'ai'}">${ic('spark')}${esc(aiName())} decides</button></div>
@@ -489,10 +499,10 @@ V.look = () => {
     : vars.length ? `<div class="vars"><h3>Pick the one you like</h3><div class="vgrid">${vars.map((v, i) => `<button class="vimg" data-var="${i}" aria-pressed="${i === lookPick}"><img src="${esc(url(v))}" alt="Variant ${i + 1}"></button>`).join('')}</div></div>` : ''}
   <p class="err" id="err">${esc(lookErr)}</p>
   <div class="grow"></div>
-  ${['checking', 'ai'].includes(lookCheck) ? '' : lookCheck === 'hold' ? `<button class="btn" id="live">${ic('spark')}Bring it to life</button>`
+  ${['checking', 'ai'].includes(lookCheck) ? '' : lookCheck === 'later' ? `<button class="btn" data-go="me">${ic('check')}Continue to MAGAAM</button>` : lookCheck === 'hold' ? `<button class="btn" id="live">${ic('spark')}Bring it to life</button>`
     : vars.length && !lookBusy ? `<button class="btn" id="setp" ${lookPick < 0 ? 'disabled' : ''}>${ic('check')}Set as my profile photo</button><button class="btn out" id="go" style="margin-top:8px">${ic('spark')}Make 4 new variants</button>`
     : `<button class="btn" id="go" disabled>${ic('spark')}Create 4 variants</button>`}
-  <p class="fine">${['checking', 'ai', 'hold'].includes(lookCheck) ? 'If a photo was made or changed with AI, it comes to life right away.' : !src ? 'A full-length photo works best' : vars.length ? `${esc(aiName())} will bring it to life once you set it. About 2 minutes.` : 'You can write in any language.'}</p></div>`;
+  <p class="fine">${lookCheck === 'later' ? '' : ['checking', 'ai', 'hold'].includes(lookCheck) ? 'If a photo was made or changed with AI, it comes to life right away.' : !src ? 'A full-length photo works best' : vars.length ? `${esc(aiName())} will bring it to life once you set it. About 2 minutes.` : 'You can write in any language.'}</p></div>`;
 };
 V.look.after = () => {
   const choose = async (cap) => {
@@ -502,6 +512,12 @@ V.look.after = () => {
       // Upload, then check whether the photo is already made or changed with AI.
       const [hints, path] = await Promise.all([fileHints(f), uploadPhoto(f, 'avatar')]);
       const r = await anim({ kind: 'check', path, hints });
+      if (!r.ok && (r.status === 0 || r.status >= 500)) {
+        // AI is down: keep the photo (others only see it blurred) and let the person in.
+        const upd = { orig_path: path }; if (!S.me?.photo_path) upd.photo_path = path;
+        const { data } = await sb.from('profiles').update(upd).eq('id', S.uid).select().single(); if (data) S.me = data;
+        pendingPhoto = null; lookCheck = 'later'; if (route().name === 'look') show(); return;
+      }
       if (!r.ok) { sb.storage.from('media').remove([path, path.replace(/\.jpg$/, '-t.jpg')]); throw new Error(r.error || 'ai'); }
       // The rule: one person, with the face visible (that person speaks in chats).
       if (!r.pass) { sb.storage.from('media').remove([path, path.replace(/\.jpg$/, '-t.jpg')]); throw new Error(r.problem === 'group' ? 'group' : 'no_face'); }
@@ -614,13 +630,14 @@ V.chats.update = () => {
   const box = $('#list'); if (!box) return;
   box.innerHTML = list.length ? `<div class="rows glass">${list.map((p) => {
     const l = S.last.get(p.id), u = S.unread.get(p.id) || 0, ty = S.typing.has(p.id);
-    const prev = ty ? T('typing…') : l ? (l.sender === S.uid ? T('You') + ': ' : '') + (l.body || (l.sticker ? T('Sticker') : T('Voice message'))) : T('Say hello');
-    return `<button class="crow" data-go="chat/${p.id}">${thumbHTML(p)}<span class="cmid"><b data-notr>${esc(p.name)}</b><span data-notr>${esc(prev)}</span></span><span class="cend">${l ? when(l.created_at) : ''}${u ? `<span class="badge">${u}</span>` : ''}</span></button>`;
+    const prev = ty ? T('typing…') : l ? (l.sender === S.uid ? T('You') + ': ' : '') + previewOf(l) : T('Say hello');
+    return `<button class="crow" data-go="chat/${p.id}">${thumbHTML(p)}<span class="cmid"><b data-notr>${esc(p.name)}${S.streaks.get(p.id) ? ` <span class="streak">🔥${S.streaks.get(p.id)}</span>` : ''}</b><span data-notr>${esc(prev)}</span></span><span class="cend">${l ? when(l.created_at) : ''}${u ? `<span class="badge">${u}</span>` : ''}</span></button>`;
   }).join('')}</div>` : `<div class="rows glass"><div class="empty"><b>${q ? 'No one found' : 'No friends here yet'}</b><span>${q ? 'Try another name.' : 'Send the MAGAAM link and an invite code to your friends. They appear here as soon as they join.'}</span></div></div>`;
   const t = $('#tabs'); if (t) t.innerHTML = tabbar('chats');
 };
 V.chats.after = () => {
   V.chats.update();
+  sb.rpc('my_streaks').then(({ data }) => { S.streaks = new Map((data || []).map((x) => [x.other, x.days])); if (route().name === 'chats') V.chats.update(); });
   $('[data-act="search"]').onclick = () => { const q = $('#q'); q.hidden = !q.hidden; if (!q.hidden) q.focus(); else { q.value = ''; V.chats.update(); } };
   $('#q').oninput = V.chats.update;
 };
@@ -657,6 +674,7 @@ function stickerHTML(code) {
   const [k, a, b] = String(code).split('|');
   if (k === 'e') { const f = STK_FUN.find((x) => x[0] === a); return `<span class="se a-${f ? f[1] : 'bounce'}" data-notr>${esc(f ? f[0] : '✨')}</span>`; }
   if (k === 'w') { const i = Math.max(0, STK_WORDS.indexOf(a)); return `<span class="swd sw${i % 6}" data-notr>${esc(STK_WORDS[i])}</span>`; }
+  if (k === 'x' && a === 'poke') return `<span class="poke" data-notr>👉</span><b class="poketx">${esc(T('Poke!'))}</b>`;
   if (k === 'u' && /^[0-9a-f-]{36}\/sticker-\d+\.png$/.test(a || '')) return `<img class="su" src="${esc(url(a))}" alt="Sticker">`;
   return '';
 }
@@ -682,14 +700,14 @@ async function toggleReact(m, e) {
   if (!S.rx.has(k)) S.rx.set(k, new Map());
   const r = S.rx.get(k), cur = r.get(S.uid);
   if (cur === e) { r.delete(S.uid); refresh(); await sb.from('reactions').delete().eq('message_id', m.id).eq('user_id', S.uid); }
-  else { r.set(S.uid, e); refresh(); navigator.vibrate?.(10); await sb.from('reactions').upsert({ message_id: m.id, user_id: S.uid, emoji: e }, { onConflict: 'message_id,user_id' }); }
+  else { r.set(S.uid, e); refresh(); navigator.vibrate?.(10); burst(e, app.querySelector(`.b[data-msg="${k}"]`)); await sb.from('reactions').upsert({ message_id: m.id, user_id: S.uid, emoji: e }, { onConflict: 'message_id,user_id' }); }
 }
 async function sendSticker(to, code) {
   const tmp = { id: 'tmp' + Date.now(), tmp: true, sender: S.uid, recipient: to, sticker: code, created_at: new Date().toISOString() };
   S.thread.push(tmp); V.chat.update(to); const box = $('#msgs'); if (box) box.scrollTop = 1e9;
   const { data, error } = await sb.from('messages').insert({ recipient: to, sticker: code }).select().single();
   S.thread = S.thread.filter((x) => x !== tmp);
-  if (error) toast('Message not sent. Check your connection.'); else if (!S.thread.some((x) => x.id === data.id)) { S.thread.push(data); S.last.set(to, data); }
+  if (error) toast('Message not sent. Check your connection.'); else { if (!S.thread.some((x) => x.id === data.id)) { S.thread.push(data); S.last.set(to, data); } if (code.startsWith('e|')) runFx(fxFor(code.slice(2))); }
   V.chat.update(to);
 }
 let myStickers = null;
@@ -735,6 +753,7 @@ function msgHTML(m) {
       ${talk ? `<span class="vtag" title="Living photo">${ic('spark', 2)}</span>` : making ? '<span class="vtag wait" title="Living photo is coming"><span class="spinner xs"></span></span>' : ''}${rxv}</div>`;
   }
   const rx = rxHTML(m);
+  if (m.media_path || m.media_kind) return mediaHTML(m, mine, rx);
   if (m.sticker) return `<div class="b stk ${mine ? 'me' : 'them'} ${rx ? 'has-rx' : ''}" data-msg="${m.id}">${stickerHTML(m.sticker)}${rx}</div>`;
   const tr = TR.get(String(m.id));
   const text = tr && tr.show ? tr.text : m.body;
@@ -743,6 +762,230 @@ function msgHTML(m) {
     : (mine && m.orig_lang ? `<span class="trnote">${ic('globe')}<span>Sent in ${esc(langLabel(m.orig_lang))}</span></span>` : '');
   return `<div class="b ${jumbo ? 'jumbo' : ''} ${mine ? 'me' : 'them'} ${rx ? 'has-rx' : ''}" data-msg="${m.id}" title="${hm(m.created_at)}"><span class="tx" data-notr>${esc(text)}</span>${note}${rx}</div>`;
 }
+/* ---------- chat magic: screen effects, flying reactions, poke ---------- */
+const FX_WORDS = [
+  ['confetti', /(с\s*д[нн][её]м\s*рождени|happy\s*birthday|doğum\s*günün|عيد\s*ميلاد|كل\s*عام|поздравля|congrat|tebrik|مبروك|🎉|🥳|🎂)/i],
+  ['hearts', /(люблю|love\s*you|i\s*love|seni\s*seviyorum|أحبك|بحبك|❤️|🫶|😍|💕|💖|🥰)/i],
+  ['fireworks', /(^|[\s!.,])(ура+|hooray|yay+|yaşasın|машалла|mashallah|ماشاء\s*الله|с\s*новым\s*годом|happy\s*new\s*year|🎆|🎇|🚀)/i],
+  ['laugh', /(ахах|хаха|lol|lmao|haha|jaja|😂|🤣)/i],
+];
+function fxFor(t) { if (!t) return null; for (const [k, re] of FX_WORDS) if (re.test(t)) return k; return null; }
+const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+let fxOn = false;
+function runFx(kind) {
+  if (!kind || fxOn || reduceMotion()) return;
+  fxOn = true;
+  const c = document.createElement('canvas'); c.className = 'fxcv'; c.setAttribute('aria-hidden', 'true'); app.appendChild(c);
+  const k = Math.min(2, devicePixelRatio || 1), W = c.width = app.clientWidth * k, H = c.height = app.clientHeight * k;
+  const g = c.getContext('2d'); const P = []; const t0 = performance.now();
+  const COL = ['#0A3CFF', '#FFC233', '#2BD46B', '#FF5C8A', '#7B61FF', '#FFFFFF', '#3A63FF'];
+  const R = Math.random;
+  if (kind === 'confetti') for (let i = 0; i < 160; i++) P.push({ t: 'c', x: W * (.15 + R() * .7), y: H * 1.02, vx: (R() - .5) * 9 * k, vy: -(11 + R() * 13) * k, w: (6 + R() * 6) * k, h: (3 + R() * 4) * k, c: COL[R() * COL.length | 0], a: R() * 6, va: (R() - .5) * .35, g: .3 * k, d: R() * 300 });
+  const emo = kind === 'hearts' ? ['❤️', '💖', '💕', '🫶', '❤️'] : kind === 'laugh' ? ['😂', '🤣', '😂'] : null;
+  if (emo) for (let i = 0; i < 30; i++) P.push({ t: 'e', x: R() * W, y: H + R() * H * .6, vx: (R() - .5) * k, vy: -(3.2 + R() * 4) * k, s: (24 + R() * 30) * k, e: emo[i % emo.length], ph: R() * 6, g: 0, d: 0 });
+  const bursts = [];
+  if (kind === 'fireworks') for (let b = 0; b < 6; b++) bursts.push({ at: b * 380, x: W * (.15 + R() * .7), y: H * (.12 + R() * .4), c: COL[R() * 5 | 0], done: false });
+  const life = kind === 'fireworks' ? 3400 : emo ? 3800 : 3000;
+  const step = (now) => {
+    const el = now - t0; g.clearRect(0, 0, W, H);
+    for (const b of bursts) if (!b.done && el >= b.at) { b.done = true; for (let i = 0; i < 70; i++) { const a = (i / 70) * Math.PI * 2, v = (2.5 + R() * 4.5) * k; P.push({ t: 'f', x: b.x, y: b.y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, c: R() < .2 ? '#FFFFFF' : b.c, l: 1, g: .05 * k, d: 0 }); } }
+    for (const p of P) {
+      if (p.d > 0 && el < p.d) continue;
+      p.vy += p.g; p.x += p.vx; p.y += p.vy;
+      if (p.t === 'c') { p.vx *= .985; p.a += p.va; g.save(); g.translate(p.x, p.y); g.rotate(p.a); g.fillStyle = p.c; g.globalAlpha = Math.max(0, 1 - el / life); g.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); g.restore(); }
+      else if (p.t === 'e') { p.ph += .05; g.globalAlpha = Math.max(0, Math.min(1, (life - el) / 600)); g.font = `${p.s}px system-ui, "Apple Color Emoji", "Segoe UI Emoji"`; g.fillText(p.e, p.x + Math.sin(p.ph) * 14 * k, p.y); }
+      else { p.vx *= .97; p.vy *= .97; p.l -= .014; if (p.l <= 0) continue; g.globalAlpha = p.l; g.fillStyle = p.c; g.beginPath(); g.arc(p.x, p.y, 2.4 * k, 0, 7); g.fill(); }
+    }
+    g.globalAlpha = 1;
+    if (el < life) requestAnimationFrame(step); else { c.remove(); fxOn = false; }
+  };
+  requestAnimationFrame(step);
+}
+// An emoji bursts out of a message and flies across the screen.
+function burst(emoji, el) {
+  if (!emoji || reduceMotion()) return;
+  const a = app.getBoundingClientRect(), r = (el || app).getBoundingClientRect();
+  const x0 = r.left - a.left + r.width / 2, y0 = r.top - a.top + r.height / 2;
+  for (let i = 0; i < 12; i++) {
+    const s = document.createElement('span'); s.className = 'rxfly'; s.textContent = emoji; s.setAttribute('aria-hidden', 'true');
+    s.style.left = x0 + 'px'; s.style.top = y0 + 'px';
+    s.style.setProperty('--dx', (Math.random() - .5) * 260 + 'px'); s.style.setProperty('--dy', -(140 + Math.random() * 320) + 'px');
+    s.style.setProperty('--r', (Math.random() - .5) * 120 + 'deg'); s.style.animationDelay = i * 40 + 'ms';
+    app.appendChild(s); setTimeout(() => s.remove(), 1700);
+  }
+}
+let lastPoke = 0;
+function shakeView() { const v = app.querySelector('.view'); if (!v) return; v.classList.remove('poked'); void v.offsetWidth; v.classList.add('poked'); }
+async function sendPoke(to) {
+  if (Date.now() - lastPoke < 4000) return toast('One poke at a time 🙂');
+  lastPoke = Date.now(); navigator.vibrate?.(30);
+  const bg = app.querySelector(`[data-bgfor="${to}"]`); if (bg) { bg.classList.remove('poked'); void bg.offsetWidth; bg.classList.add('poked'); }
+  await sendSticker(to, 'x|poke');
+}
+// What happens on my screen when a friend's message arrives.
+function onIncoming(m) {
+  const fresh = Date.now() - new Date(m.created_at) < 20000;
+  if (!fresh) return;
+  const here = route().name === 'chat' && route().id === m.sender && document.visibilityState === 'visible';
+  if (m.sticker === 'x|poke') { navigator.vibrate?.([90, 60, 90]); shakeView(); if (!here) toast(`${nameOf(m.sender)} poked you 👉`, 3000); return; }
+  if (!here) return;
+  runFx(fxFor(m.body) || (m.sticker?.startsWith('e|') ? fxFor(m.sticker.slice(2)) : null));
+}
+
+/* ---------- photos and videos in chats ---------- */
+const landed = new Set();
+const scratched = new Set((store.get('magaam-scratched') || '').split(',').filter(Boolean));
+const SCR = new Map();
+function mediaHTML(m, mine, rx) {
+  const id = String(m.id);
+  const fresh = !landed.has(id) && Date.now() - new Date(m.created_at) < 15000; if (!m.tmp) landed.add(id);
+  const cls = `b media ${mine ? 'me' : 'them'} ${rx ? 'has-rx' : ''} ${fresh ? (mine ? 'land-me' : 'land-them') : ''}`;
+  const what = m.media_kind === 'video' ? 'View-once video' : 'View-once photo';
+  if (m.media_fx === 'once') {
+    const opened = !!m.opened_at;
+    const inner = `<span class="oncei" data-notr>${opened ? '💨' : '🔥'}</span><span class="oncet"><b>${what}</b><span>${mine ? (m.tmp ? 'Sending…' : opened ? 'Opened' : 'Not opened yet') : opened ? 'Opened' : 'Tap to open. It disappears after viewing'}</span></span>`;
+    return `<div class="${cls} once" data-msg="${m.id}">${mine || opened ? `<div class="oncebox">${inner}</div>` : `<button class="oncebox" data-once="${m.id}">${inner}</button>`}${rx}</div>`;
+  }
+  const src = m.tmp ? m.preview : url(m.media_kind === 'video' ? (m.poster_path || m.media_path) : m.media_path);
+  const cover = m.media_fx === 'scratch' && !mine && !m.tmp && !scratched.has(id);
+  return `<div class="${cls} polaroid" data-msg="${m.id}"><button class="pimg" data-media="${m.id}" aria-label="${m.media_kind === 'video' ? 'Play video' : 'Open photo'}"><img src="${esc(src)}" alt="" ${fresh ? 'class="develop"' : ''}>${m.media_kind === 'video' ? `<i class="pplay">${ic('play', 2)}</i>` : ''}${cover ? `<canvas class="scratch" data-scratch="${m.id}"></canvas>` : ''}</button>${m.media_fx === 'scratch' && mine ? '<span class="ptag">Scratch to reveal</span>' : ''}${m.tmp ? '<span class="ptag">Sending…</span>' : ''}${rx}</div>`;
+}
+// "Scratch to reveal": a silver layer the friend rubs off with a finger. Progress survives re-renders.
+function mountScratch(box) {
+  box.querySelectorAll('canvas[data-scratch]').forEach((ph) => {
+    const id = ph.dataset.scratch;
+    if (SCR.has(id)) { ph.replaceWith(SCR.get(id)); return; }
+    const c = ph; SCR.set(id, c);
+    const paint = () => {
+      const r = c.parentElement.getBoundingClientRect(); if (!r.width) return requestAnimationFrame(paint);
+      const k = 2; c.width = r.width * k; c.height = r.height * k;
+      const g = c.getContext('2d'); const gr = g.createLinearGradient(0, 0, c.width, c.height);
+      gr.addColorStop(0, '#C9CED9'); gr.addColorStop(.5, '#F2F4F8'); gr.addColorStop(1, '#AEB5C4'); g.fillStyle = gr; g.fillRect(0, 0, c.width, c.height);
+      g.fillStyle = 'rgba(11,20,48,.12)'; for (let y = 0; y < c.height; y += 26) for (let x = (y / 26) % 2 ? 13 : 0; x < c.width; x += 26) { g.beginPath(); g.arc(x, y, 3, 0, 7); g.fill(); }
+      g.fillStyle = '#0B1430'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = `600 ${15 * k}px Geologica, system-ui, sans-serif`;
+      g.fillText('✨ ' + T('Scratch me') + ' ✨', c.width / 2, c.height / 2);
+    };
+    let down = false, n = 0;
+    const im = c.parentElement.querySelector('img'); if (im && !im.complete) im.addEventListener('load', () => n || paint(), { once: true }); else requestAnimationFrame(paint);
+    const rub = (e) => {
+      if (!down) return; e.preventDefault();
+      const r = c.getBoundingClientRect(), g = c.getContext('2d'), k = c.width / r.width;
+      g.globalCompositeOperation = 'destination-out'; g.beginPath(); g.arc((e.clientX - r.left) * k, (e.clientY - r.top) * k, 24 * k, 0, 7); g.fill();
+      if (++n % 8) return;
+      const d = g.getImageData(0, 0, c.width, c.height).data; let clear = 0, all = 0;
+      for (let i = 3; i < d.length; i += 64) { all++; if (d[i] === 0) clear++; }
+      if (clear / all > .5) { down = false; c.classList.add('gone'); navigator.vibrate?.(20); scratched.add(id); store.set('magaam-scratched', [...scratched].slice(-300).join(',')); setTimeout(() => { c.remove(); SCR.delete(id); }, 450); }
+    };
+    c.addEventListener('pointerdown', (e) => { down = true; c.setPointerCapture?.(e.pointerId); rub(e); });
+    c.addEventListener('pointermove', rub);
+    ['pointerup', 'pointercancel'].forEach((ev) => c.addEventListener(ev, () => (down = false)));
+  });
+}
+function choose(title, items) { return new Promise((res) => { sheet(title, items.map((it) => ({ ...it, run: () => res(it.k) }))); setTimeout(() => { const bg = [...app.querySelectorAll('.sheet-bg')].pop(); bg?.addEventListener('click', (e) => { if (e.target === bg) res(null); }); }, 0); }); }
+async function sendMedia(to) {
+  const kind = await choose('Send to chat', [{ k: 'image', icon: 'image', label: 'Photo' }, { k: 'video', icon: 'video', label: 'Video' }]); if (!kind) return;
+  const f = kind === 'image' ? await pickFile(false) : await pickVideo(); if (!f) return;
+  if (kind === 'video' && f.size > 50 * 1024 * 1024) return toast('This video is larger than 50 MB. Use a shorter clip.', 4000);
+  const fx = await choose('How should it arrive?', [{ k: 'plain', icon: 'send', label: 'Send' }, { k: 'scratch', icon: 'spark', label: 'Scratch to reveal' }, { k: 'once', icon: 'x', label: 'View once, then it disappears' }]); if (!fx) return;
+  let info = null; if (kind === 'video') { info = await videoInfo(f); if (!info?.poster) return toast('This video could not be read. Try an MP4 or MOV video.', 4000); }
+  const tmp = { id: 'tmp' + Date.now(), tmp: true, sender: S.uid, recipient: to, media_kind: kind, media_fx: fx === 'plain' ? null : fx, preview: URL.createObjectURL(kind === 'image' ? f : info.poster), created_at: new Date().toISOString() };
+  S.thread.push(tmp); V.chat.update(to); const box = $('#msgs'); if (box) box.scrollTop = 1e9;
+  try {
+    let media, poster = null;
+    if (kind === 'image') media = await uploadPhoto(f, 'chat');
+    else {
+      const ext = /quicktime|mov/i.test(f.type) || /\.mov$/i.test(f.name) ? 'mov' : /webm/.test(f.type) ? 'webm' : 'mp4';
+      media = `${S.uid}/chatv-${Date.now()}.${ext}`;
+      const [p] = await Promise.all([uploadPhoto(info.poster, 'chatp'), sb.storage.from('media').upload(media, f, { contentType: f.type || 'video/mp4', cacheControl: '31536000' }).then(({ error }) => { if (error) throw error; })]);
+      poster = p;
+    }
+    tmp.media_path = media;
+    const { data, error } = await sb.from('messages').insert({ recipient: to, media_path: media, media_kind: kind, poster_path: poster, media_fx: tmp.media_fx }).select().single(); if (error) throw error;
+    landed.add(String(data.id));
+    S.thread = S.thread.filter((x) => x !== tmp); if (!S.thread.some((x) => x.id === data.id)) { S.thread.push(data); S.last.set(to, data); }
+  } catch { S.thread = S.thread.filter((x) => x !== tmp); toast('Not sent. Check your connection.'); }
+  V.chat.update(to);
+}
+// Full-screen view. A "view once" photo turns into dust when closed.
+function openMedia(m) {
+  const once = m.media_fx === 'once' && m.sender !== S.uid;
+  const v = document.createElement('div'); v.className = 'viewer mview';
+  const src = url(m.media_path);
+  v.innerHTML = `${m.media_kind === 'video' ? `<video src="${esc(src)}" ${m.poster_path ? `poster="${esc(url(m.poster_path))}"` : ''} autoplay playsinline ${once ? '' : 'controls loop'}></video>` : `<img src="${esc(src)}" alt="" crossorigin="anonymous">`}
+    <div class="hdr"><button class="iconbtn" data-x aria-label="Close">${ic('x')}</button>${once ? `<span class="pill glass onceflag" data-notr>🔥 ${esc(T('View once'))}</span>` : ''}<span style="width:44px"></span></div>`;
+  app.appendChild(v);
+  const close = async () => {
+    if (!once) return v.remove();
+    v.querySelector('.hdr').remove();
+    const media = v.querySelector('img,video');
+    await dissolve(media); v.remove();
+    m.opened_at = new Date().toISOString(); refresh();
+    sb.rpc('open_once', { p_id: m.id }).then(() => {});
+  };
+  v.addEventListener('click', (e) => { if (e.target.closest('[data-x]') || (!once && e.target === v)) close(); });
+  if (once && m.media_kind === 'video') v.querySelector('video').onended = close;
+}
+function dissolve(el) {
+  return new Promise((res) => {
+    if (!el || reduceMotion()) return res();
+    const r = el.getBoundingClientRect(), a = app.getBoundingClientRect();
+    const isImg = el.tagName === 'IMG' && el.naturalWidth;
+    const fw = isImg ? el.naturalWidth : r.width, fh = isImg ? el.naturalHeight : r.height;
+    const sc = Math.min(r.width / fw, r.height / fh), dw = fw * sc, dh = fh * sc, ox = r.left - a.left + (r.width - dw) / 2, oy = r.top - a.top + (r.height - dh) / 2;
+    const c = document.createElement('canvas'), k = Math.min(2, devicePixelRatio || 1); c.className = 'fxcv'; c.style.zIndex = 60;
+    c.width = app.clientWidth * k; c.height = app.clientHeight * k; app.appendChild(c); el.style.visibility = 'hidden';
+    const g = c.getContext('2d'), T0 = performance.now(), N = 14, tw = dw / N, th = tw, rows = Math.ceil(dh / th), tiles = [];
+    for (let y = 0; y < rows; y++) for (let x = 0; x < N; x++) tiles.push({ x, y, d: (x / N) * 500 + Math.random() * 400, vx: (1 + Math.random() * 3), vy: -(1 + Math.random() * 3), rot: (Math.random() - .5) * .2 });
+    const step = (now) => {
+      const t = now - T0; g.clearRect(0, 0, c.width, c.height);
+      for (const p of tiles) {
+        const u = Math.max(0, t - p.d) / 900; if (u >= 1) continue;
+        const dx = p.vx * u * 120, dy = p.vy * u * 120;
+        g.globalAlpha = 1 - u; g.save(); g.translate((ox + p.x * tw + tw / 2 + dx) * k, (oy + p.y * th + th / 2 + dy) * k); g.rotate(p.rot * u * 10);
+        const sw = tw * (1 - u * .6), sh = th * (1 - u * .6);
+        if (isImg) g.drawImage(el, (p.x * tw) / sc, (p.y * th) / sc, tw / sc, th / sc, -sw / 2 * k, -sh / 2 * k, sw * k, sh * k);
+        else { g.fillStyle = '#8A93A8'; g.fillRect(-sw / 2 * k, -sh / 2 * k, sw * k, sh * k); }
+        g.restore();
+      }
+      if (t < 1900) requestAnimationFrame(step); else { c.remove(); res(); }
+    };
+    requestAnimationFrame(step);
+  });
+}
+
+/* ---------- voice effects (made right in the phone) ---------- */
+const VFX = [['', 'Normal', '🎙️'], ['robot', 'Robot', '🤖'], ['chip', 'Chipmunk', '🐿️'], ['deep', 'Deep', '🐻'], ['echo', 'Echo', '🏔️']];
+let vfx = '';
+async function applyVfx(blob, kind) {
+  const AC = window.AudioContext || window.webkitAudioContext; const ac = new AC();
+  const ab = await blob.arrayBuffer();
+  const buf = await new Promise((res, rej) => { const p = ac.decodeAudioData(ab, res, rej); if (p && p.then) p.then(res, rej); });
+  ac.close?.();
+  const rate = kind === 'chip' ? 1.45 : kind === 'deep' ? 0.78 : 1;
+  const sr = 24000, len = buf.duration / rate + (kind === 'echo' ? 0.9 : 0);
+  const OC = window.OfflineAudioContext || window.webkitOfflineAudioContext; const oc = new OC(1, Math.ceil(len * sr), sr);
+  const src = oc.createBufferSource(); src.buffer = buf; src.playbackRate.value = rate;
+  if (kind === 'robot') {
+    const mod = oc.createGain(); mod.gain.value = 0; const osc = oc.createOscillator(); osc.frequency.value = 50; osc.connect(mod.gain); osc.start();
+    const boost = oc.createGain(); boost.gain.value = 1.6; src.connect(mod); mod.connect(boost); boost.connect(oc.destination);
+  } else if (kind === 'echo') {
+    const dl = oc.createDelay(1); dl.delayTime.value = 0.23; const fb = oc.createGain(); fb.gain.value = 0.42; const wet = oc.createGain(); wet.gain.value = 0.6;
+    src.connect(oc.destination); src.connect(dl); dl.connect(fb); fb.connect(dl); dl.connect(wet); wet.connect(oc.destination);
+  } else src.connect(oc.destination);
+  src.start();
+  const out = await new Promise((res, rej) => { oc.oncomplete = (e) => res(e.renderedBuffer); const p = oc.startRendering(); if (p && p.then) p.then(res, rej); });
+  return { blob: wavOf(out), ms: Math.round(out.duration * 1000) };
+}
+function wavOf(b) {
+  const d = b.getChannelData(0), n = d.length, v = new DataView(new ArrayBuffer(44 + n * 2));
+  const w = (o, t) => { for (let i = 0; i < t.length; i++) v.setUint8(o + i, t.charCodeAt(i)); };
+  w(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); w(8, 'WAVE'); w(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, b.sampleRate, true); v.setUint32(28, b.sampleRate * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, n * 2, true);
+  let peak = 0; for (let i = 0; i < n; i++) peak = Math.max(peak, Math.abs(d[i])); const g = peak > 1 ? 1 / peak : 1;
+  for (let i = 0; i < n; i++) v.setInt16(44 + i * 2, Math.max(-1, Math.min(1, d[i] * g)) * 0x7fff, true);
+  return new Blob([v], { type: 'audio/wav' });
+}
+
 let playing = null, player = null, talkBusy = false;
 /* Media elements unlocked by the first tap, so voices can play by themselves later (iOS rule). */
 const TALKER = document.createElement('video'); TALKER.setAttribute('playsinline', ''); TALKER.playsInline = true; TALKER.preload = 'auto'; TALKER.className = 'bg talkbg';
@@ -807,7 +1050,7 @@ function msgMenu(m) {
   const mineE = S.rx.get(String(m.id))?.get(S.uid);
   const top = { html: `<div class="rxrow">${REACTS.map((e) => `<button data-top="${e}" class="${e === mineE ? 'on' : ''}" aria-label="${e}">${e}</button>`).join('')}</div>`, run: (e) => toggleReact(m, e) };
   if (m.audio_path) return sheet('', [{ icon: 'play', label: 'Play', run: () => playVoice(m) }], top);
-  if (m.sticker) return sheet('', [], top);
+  if (m.sticker || m.media_kind) return sheet('', [], top);
   const tr = TR.get(String(m.id));
   if (m.sender === S.uid && m.orig_body) return sheet('', [
     tr && tr.show ? { icon: 'globe', label: 'Hide original', run: () => { tr.show = false; refresh(); } } : { icon: 'globe', label: 'Show original', run: () => { TR.set(String(m.id), { text: m.orig_body, show: true }); refresh(); } },
@@ -828,7 +1071,7 @@ async function startRec(to) {
   mr.ondataavailable = (e) => e.data && e.data.size && chunks.push(e.data);
   rec = { mr, stream, chunks, t0: Date.now(), to };
   mr.start(250);
-  $('#cf').hidden = true; $('#rec').hidden = false;
+  $('#cf').hidden = true; $('#rec').hidden = false; $('#vfx').hidden = false;
   const tick = () => { if (!rec) return; const sec = (Date.now() - rec.t0) / 1000; $('#rect').textContent = fmtSec(sec);
     $('#rechint').textContent = sec <= 10 ? (S.me?.video_path ? 'Your living photo will say it' : 'Voice message') : 'Over 10 s: sent as a normal voice message';
     if (sec >= 60) stopRec(true); };
@@ -838,16 +1081,18 @@ function stopRec(send) {
   if (!rec) return; const r = rec; rec = null; clearInterval(r.timer);
   r.mr.onstop = async () => {
     r.stream.getTracks().forEach((t) => t.stop());
-    const cf = $('#cf'), rb = $('#rec'); if (cf) cf.hidden = false; if (rb) rb.hidden = true;
+    const cf = $('#cf'), rb = $('#rec'), vr = $('#vfx'); if (cf) cf.hidden = false; if (rb) rb.hidden = true; if (vr) vr.hidden = true;
     if (!send) return;
     const ms = Date.now() - r.t0; if (ms < 800) return toast('Too short. Hold on a little longer.');
     const type = (r.mr.mimeType || r.chunks[0]?.type || 'audio/webm').split(';')[0];
-    await sendVoice(r.to, new Blob(r.chunks, { type }), ms);
+    let blob = new Blob(r.chunks, { type }), len = ms;
+    if (vfx) { try { const out = await applyVfx(blob, vfx); blob = out.blob; len = out.ms; } catch (e) { console.warn('voice effect', e); } }
+    await sendVoice(r.to, blob, len);
   };
   try { r.mr.stop(); } catch { r.mr.onstop(); }
 }
 async function sendVoice(to, blob, ms) {
-  const ext = /mp4|aac|m4a/.test(blob.type) ? 'm4a' : /ogg/.test(blob.type) ? 'ogg' : 'webm';
+  const ext = /wav/.test(blob.type) ? 'wav' : /mp4|aac|m4a/.test(blob.type) ? 'm4a' : /ogg/.test(blob.type) ? 'ogg' : 'webm';
   const ctype = ext === 'm4a' ? 'audio/mp4' : blob.type;
   const tmp = { id: 'tmp' + Date.now(), tmp: true, sender: S.uid, recipient: to, audio_path: 'pending', audio_ms: Math.round(ms), created_at: new Date().toISOString() };
   S.thread.push(tmp); V.chat.update(to); const box = $('#msgs'); if (box) box.scrollTop = 1e9;
@@ -871,13 +1116,14 @@ V.chat = async (id) => {
   <div class="shade"></div>
   <div class="hdr"><button class="iconbtn" data-back="chats" aria-label="Back">${ic('back')}</button>
     <button class="hname" data-go="u/${id}"><b data-notr>${esc(p.name)}</b><span class="pill glass" id="st"></span></button>
-    <span style="width:44px"></span></div>
+    <button class="iconbtn pokebtn" id="pokeb" aria-label="Poke ${esc(p.name)}" title="Poke"><span data-notr>👉</span></button></div>
   <div class="you glass">${S.me.photo_path ? `<img class="${S.me.video_path ? '' : 'raw'}" src="${esc(thumb(S.me.photo_path))}" alt="">` : ''}<span>You</span></div>
   <div class="msgs" id="msgs" aria-live="polite"></div>
   <div class="stkpanel glass" id="stk" hidden></div>
   <button class="sendlang glass" id="sendlang" hidden></button>
-  <form class="composer" id="cf"><button type="button" class="tool glass" id="stkb" aria-label="Stickers">${ic('smile')}</button><button type="button" class="tool glass" id="langb" aria-label="Write in">${ic('globe')}</button><textarea class="glass" id="tx" rows="1" placeholder="Message…" aria-label="Message" maxlength="2000"></textarea>
+  <form class="composer" id="cf"><button type="button" class="tool glass" id="attb" aria-label="Send a photo or video">${ic('image')}</button><button type="button" class="tool glass" id="stkb" aria-label="Stickers">${ic('smile')}</button><button type="button" class="tool glass" id="langb" aria-label="Write in">${ic('globe')}</button><textarea class="glass" id="tx" rows="1" placeholder="Message…" aria-label="Message" maxlength="2000"></textarea>
     <button type="button" class="send" id="micb" aria-label="Record a voice message">${ic('mic', 2)}</button><button class="send" id="sendb" aria-label="Send" hidden>${ic('send', 2)}</button></form>
+  <div class="vfxrow" id="vfx" hidden role="group" aria-label="Voice effect">${VFX.map(([k, l, e]) => `<button type="button" data-vfx="${k}" aria-pressed="${k === vfx}"><span data-notr>${e}</span>${l}</button>`).join('')}</div>
   <div class="composer recbar" id="rec" hidden><button type="button" class="recx glass" id="reccancel" aria-label="Cancel recording">${ic('x')}</button>
     <div class="recinfo glass"><span class="recdot"></span><b id="rect">0:00</b><span id="rechint"></span></div>
     <button type="button" class="send" id="recsend" aria-label="Send voice message">${ic('send', 2)}</button></div>
@@ -898,7 +1144,11 @@ V.chat.update = (id) => {
   if (!S.thread.length) html = `<div class="day">Say hello to ${esc(S.members.get(id)?.name)}</div>`;
   if (S.typing.has(id)) html += '<div class="typing"><i></i><i></i><i></i></div>';
   box.innerHTML = html;
-  if (nearBottom || box.dataset.init !== '1') { box.scrollTop = box.scrollHeight; box.dataset.init = '1'; }
+  mountScratch(box);
+  const stick = nearBottom || box.dataset.init !== '1';
+  if (stick) { box.scrollTop = box.scrollHeight; box.dataset.init = '1'; }
+  // Photos load after the list is drawn; keep the newest message in view.
+  if (stick) box.querySelectorAll('img').forEach((im) => { if (!im.complete) im.addEventListener('load', () => { box.scrollTop = box.scrollHeight; }, { once: true }); });
   setTimeout(() => autoVoices(id), 0);
 };
 V.chat.after = async (id) => {
@@ -924,11 +1174,17 @@ V.chat.after = async (id) => {
   tx.addEventListener('input', () => { grow(); if (tx.value.trim()) sendTyping(id); });
   tx.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey && !/mobi/i.test(navigator.userAgent)) { e.preventDefault(); f.requestSubmit(); } });
   $('#micb').onclick = () => startRec(id);
+  $('#attb').onclick = () => sendMedia(id);
+  $('#pokeb').onclick = () => sendPoke(id);
+  $('#vfx').onclick = (e) => { const b = e.target.closest('[data-vfx]'); if (!b) return; vfx = b.dataset.vfx; $('#vfx').querySelectorAll('[data-vfx]').forEach((x) => x.setAttribute('aria-pressed', x === b)); };
   $('#reccancel').onclick = () => stopRec(false);
   $('#recsend').onclick = () => stopRec(true);
   // play, show original, long press menu
   let lp = null, sx = 0, sy = 0;
   box.addEventListener('click', (e) => {
+    if (e.target.closest('canvas.scratch')) return;
+    const md = e.target.closest('[data-media]'); if (md) { const m = S.thread.find((x) => String(x.id) === md.dataset.media); if (m && !m.tmp) openMedia(m); return; }
+    const on = e.target.closest('[data-once]'); if (on) { const m = S.thread.find((x) => String(x.id) === on.dataset.once); if (m && !m.opened_at) openMedia(m); return; }
     const pl = e.target.closest('[data-play]'); if (pl) { const m = S.thread.find((x) => String(x.id) === pl.dataset.play); if (m && !m.tmp) playVoice(m); return; }
     const og = e.target.closest('[data-orig]'); if (og) { const t = TR.get(og.dataset.orig); if (t) { t.show = false; V.chat.update(id); } }
   });
@@ -953,7 +1209,7 @@ V.chat.after = async (id) => {
     const { data, error } = await sb.from('messages').insert(row).select().single();
     S.thread = S.thread.filter((x) => x !== tmp);
     if (error) { toast('Message not sent. Check your connection.'); tx.value = original; grow(); }
-    else if (!S.thread.some((x) => x.id === data.id)) { S.thread.push(data); S.last.set(id, data); }
+    else { if (!S.thread.some((x) => x.id === data.id)) { S.thread.push(data); S.last.set(id, data); } runFx(fxFor(original)); }
     V.chat.update(id);
   };
 };
@@ -1157,7 +1413,7 @@ new MutationObserver((ms) => { if (I18N.lang === 'en') return; for (const m of m
 function pickUiLang() {
   sheet('Choose your language', I18N.LANGS.map(([code, label]) => ({ icon: code === I18N.lang ? 'check' : 'globe', label, notr: true, run: async () => {
     I18N.set(code); if (!store.get('magaam-lang')) TR.clear();
-    if (S.uid) sb.from('profiles').update({ ui_lang: code }).eq('id', S.uid);
+    if (S.uid) sb.from('profiles').update({ ui_lang: code }).eq('id', S.uid).then(() => {});
     show();
   } })));
 }
