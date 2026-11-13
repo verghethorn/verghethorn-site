@@ -1344,7 +1344,7 @@ async function toggleReact(m, e) {
 }
 async function sendSticker(to, code) {
   const tmp = { id: 'tmp' + Date.now(), tmp: true, sender: S.uid, recipient: to, sticker: code, created_at: new Date().toISOString() };
-  S.thread.push(tmp); V.chat.update(to); const box = $('#msgs'); if (box) box.scrollTop = 1e9;
+  S.thread.push(tmp); V.chat.update(to); if (S.aiMode === to) paintAiOv(to); const box = $('#msgs'); if (box) box.scrollTop = 1e9;
   const { data, error } = await sb.from('messages').insert({ recipient: to, sticker: code }).select().single();
   S.thread = S.thread.filter((x) => x !== tmp);
   if (error) toast('Message not sent. Check your connection.'); else { if (!S.thread.some((x) => x.id === data.id)) { S.thread.push(data); S.last.set(to, data); } if (code.startsWith('e|')) runFx(fxFor(code.slice(2))); }
@@ -1533,7 +1533,7 @@ async function sendMedia(to) {
   const fx = await choose('How should it arrive?', [{ k: 'plain', icon: 'send', label: 'Send' }, { k: 'scratch', icon: 'spark', label: 'Scratch to reveal' }, { k: 'once', icon: 'x', label: 'View once, then it disappears' }]); if (!fx) return;
   let info = null; if (kind === 'video') { info = await videoInfo(f); if (!info?.poster) return toast('This video could not be read. Try an MP4 or MOV video.', 4000); }
   const tmp = { id: 'tmp' + Date.now(), tmp: true, sender: S.uid, recipient: to, media_kind: kind, media_fx: fx === 'plain' ? null : fx, preview: URL.createObjectURL(kind === 'image' ? f : info.poster), created_at: new Date().toISOString() };
-  S.thread.push(tmp); V.chat.update(to); const box = $('#msgs'); if (box) box.scrollTop = 1e9;
+  S.thread.push(tmp); V.chat.update(to); if (S.aiMode === to) paintAiOv(to); const box = $('#msgs'); if (box) box.scrollTop = 1e9;
   try {
     let media, poster = null;
     if (kind === 'image') media = await uploadPhoto(f, 'chat');
@@ -1747,16 +1747,17 @@ async function sendVoice(to, blob, ms) {
   const ext = /wav/.test(blob.type) ? 'wav' : /mp4|aac|m4a/.test(blob.type) ? 'm4a' : /ogg/.test(blob.type) ? 'ogg' : 'webm';
   const ctype = ext === 'm4a' ? 'audio/mp4' : blob.type;
   const tmp = { id: 'tmp' + Date.now(), tmp: true, sender: S.uid, recipient: to, audio_path: 'pending', audio_ms: Math.round(ms), created_at: new Date().toISOString() };
-  S.thread.push(tmp); V.chat.update(to); const box = $('#msgs'); if (box) box.scrollTop = 1e9;
+  S.thread.push(tmp); V.chat.update(to); if (S.aiMode === to) paintAiOv(to); const box = $('#msgs'); if (box) box.scrollTop = 1e9;
   try {
     const path = `${S.uid}/voice-${Date.now()}.${ext}`;
     const { error } = await sb.storage.from('media').upload(path, blob, { contentType: ctype, cacheControl: '31536000' }); if (error) throw error;
     const { data, error: e2 } = await sb.from('messages').insert({ recipient: to, audio_path: path, audio_ms: Math.round(ms) }).select().single(); if (e2) throw e2;
     markPlayed(data.id);
     S.thread = S.thread.filter((x) => x !== tmp); if (!S.thread.some((x) => x.id === data.id)) { S.thread.push(data); S.last.set(to, data); }
-    V.chat.update(to);
+    V.chat.update(to); if (S.aiMode === to) paintAiOv(to);
     if (ms >= 2000 && ms <= 10500 && S.me?.video_path) aiCall({ op: 'talk', message_id: data.id }).catch(() => {});
-  } catch { S.thread = S.thread.filter((x) => x !== tmp); V.chat.update(to); toast('Voice message not sent. Check your connection.'); }
+    askAway(to);
+  } catch { S.thread = S.thread.filter((x) => x !== tmp); V.chat.update(to); if (S.aiMode === to) paintAiOv(to); toast('Voice message not sent. Check your connection.'); }
 }
 
 V.chat = async (id) => {
@@ -1809,23 +1810,54 @@ async function enterAi(id) {
     ov.innerHTML = `<div class="aiov-veil"></div>
       <div class="aiov-in">
         <div class="aiov-face"><i class="ring"></i><i class="ring r2"></i>${aiFace(p)}</div>
-        <div class="aiov-tag">${ic('spark', 2)}<span data-notr>${esc(T('{ai} · assistant of {n}').replace('{ai}', p.ai_name).replace('{n}', p.name))}</span></div>
+        <div class="aiov-tag">${ic('spark', 2)}<span data-notr>${esc(T('{ai} · assistant of {n}').replace('{ai}', p.ai_name).replace('{n}', p.name))}</span><button type="button" class="aisnd" id="aisnd" aria-label="${esc(T('Voice'))}"></button></div>
         <div class="aiov-wave" id="aiwave">${'<i></i>'.repeat(9)}</div>
         <p class="aiov-say" id="aisay" data-notr></p>
         <div class="aiov-log" id="ailog"></div>
-        <form class="aiov-form" id="aiform"><input id="aitx" maxlength="2000" autocomplete="off" placeholder="${esc(T('Tell {ai} what to pass on…').replace('{ai}', p.ai_name))}" aria-label="${esc(T('Message'))}"><button class="send" aria-label="Send">${ic('send', 2)}</button></form>
+        <form class="aiov-form" id="aiform"><input id="aitx" maxlength="2000" autocomplete="off" placeholder="${esc(T('Tell {ai} what to pass on…').replace('{ai}', p.ai_name))}" aria-label="${esc(T('Message'))}"><button type="button" class="send aimic" id="aimic" aria-label="${esc(T('Say it by voice'))}">${ic('mic', 2)}</button><button class="send" id="aisend" aria-label="Send" hidden>${ic('send', 2)}</button></form>
+        <div class="aiov-rec" id="airec" hidden><span class="recdot"></span><b id="airect">0:00</b><span>${esc(T('Speak — tap again to send'))}</span><button type="button" class="aircx" id="aircx" aria-label="Cancel">${ic('x')}</button></div>
         <button class="aiov-x" id="aix" type="button">${thumbHTML(p, false)}<span>${esc(T(route().name === 'u' ? 'Back to {n}\'s profile' : 'Back to the chat with {n}').replace('{n}', p.name))}</span></button>
         ${t ? `<small class="aiov-since" data-notr>${esc(T('{n} was here at {t}').replace('{n}', p.name).replace('{t}', t))}</small>` : ''}
       </div>`;
     v.appendChild(ov);
     $('#aix').onclick = () => exitAi(id);
     ov.querySelector('.aiov-veil').onclick = () => exitAi(id);
-    $('#aiform').onsubmit = (e) => { e.preventDefault(); const tx = $('#aitx'); const text = tx.value.trim(); if (!text) return; tx.value = ''; sendToAway(id, text); };
+    const atx = $('#aitx'), paintBtns = () => { const has = !!atx.value.trim(); $('#aisend').hidden = !has; $('#aimic').hidden = has; };
+    atx.addEventListener('input', paintBtns);
+    $('#aiform').onsubmit = (e) => { e.preventDefault(); const text = atx.value.trim(); if (!text) return; atx.value = ''; paintBtns(); sendToAway(id, text); };
+    $('#aimic').onclick = () => (aiRec ? aiRecStop(true) : aiRecStart(id));
+    $('#aircx').onclick = () => aiRecStop(false);
+    const snd = $('#aisnd'), paintSnd = () => { snd.innerHTML = ttsOn ? '🔊' : '🔇'; snd.classList.toggle('off', !ttsOn); };
+    paintSnd(); snd.onclick = () => { ttsOn = !ttsOn; store.set('magaam-tts', ttsOn ? '1' : '0'); paintSnd(); if (!ttsOn) aiHush(); else aiSpeak($('#aisay')?.textContent || ''); };
     chime(true);
     aiSay(T("Oh, hi {me}! I'm {ai}, {n}'s assistant. {n} is away right now. What should I pass on?").replace('{me}', S.me?.name || '').replace('{ai}', p.ai_name).replaceAll('{n}', p.name), 'hello');
     aiRefresh(id);
   });
 }
+// The assistant's voice: the phone's own speech voice, in the language of the words.
+let ttsOn = store.get('magaam-tts') !== '0';
+const ttsLang = (t) => /[\u0600-\u06FF]/.test(t) ? 'ar' : /[\u0400-\u04FF]/.test(t) ? 'ru' : /[ğışçöüĞİŞÇÖÜ]/.test(t) ? 'tr' : (I18N.lang || 'en');
+function pickVoice(lang) {
+  const vs = (window.speechSynthesis?.getVoices() || []).filter((v) => v.lang.toLowerCase().startsWith(lang));
+  return vs.find((v) => /premium|enhanced|neural|natural|google|siri/i.test(v.name)) || vs.find((v) => v.localService) || vs[0] || null;
+}
+function aiSpeak(text) {
+  const ss = window.speechSynthesis; if (!ss || !ttsOn) return;
+  try {
+    ss.cancel();
+    const clean = String(text).replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '').trim(); if (!clean) return;
+    const u = new SpeechSynthesisUtterance(clean); const lang = ttsLang(clean); const v = pickVoice(lang);
+    if (v) u.voice = v; u.lang = v?.lang || lang; u.rate = 1.02; u.pitch = 1.05;
+    const wv = () => $('#aiwave'); u.onstart = () => wv()?.classList.add('on'); u.onend = () => wv()?.classList.remove('on');
+    ss.speak(u);
+  } catch { /* no voice on this phone */ }
+}
+const aiHush = () => { try { window.speechSynthesis?.cancel(); } catch { /* ignore */ } };
+// iPhone lets a page speak only after the first touch: unlock the voice on it.
+document.addEventListener('pointerdown', function unlockTts() {
+  document.removeEventListener('pointerdown', unlockTts, true);
+  try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; window.speechSynthesis?.speak(u); window.speechSynthesis?.getVoices(); } catch { /* ignore */ }
+}, true);
 // The assistant "speaks": words appear one by one, softly, while a little voice wave moves.
 function aiSay(text, key) {
   const el = $('#aisay'); if (!el || el.dataset.k === String(key)) return;
@@ -1833,16 +1865,18 @@ function aiSay(text, key) {
   const words = String(text).split(/\s+/).filter(Boolean);
   el.innerHTML = words.map((w, i) => `<span style="--i:${i}">${esc(w)}</span>`).join(' ');
   const wv = $('#aiwave'); if (wv) { wv.classList.add('on'); clearTimeout(aiSay.t); aiSay.t = setTimeout(() => wv.classList.remove('on'), 300 + words.length * 110); }
+  aiSpeak(text);
 }
 function paintAiOv(id) {
   if (!$('#aiov')) return;
   const p = S.members.get(id), since = aiSince(id);
   const theirs = S.thread.filter((m) => m.ai && m.sender === id && new Date(m.created_at).getTime() > since);
   const mine = S.thread.filter((m) => !m.ai && m.sender === S.uid && new Date(m.created_at).getTime() > since);
+  const lineOf = (m) => m.audio_path ? `🎤 ${esc(T('Voice message'))} · ${fmtSec((m.audio_ms || 0) / 1000)}${m.transcript ? `<em data-notr>«${esc(m.transcript)}»</em>` : ''}` : esc(m.body || previewOf(m));
   if (S.aiTyping.has(id)) { const el = $('#aisay'); if (el) { el.dataset.k = 'typing'; el.innerHTML = '<span class="aidots"><i></i><i></i><i></i></span>'; } $('#aiwave')?.classList.add('on'); }
   else if (theirs.length) { const l = theirs[theirs.length - 1]; aiSay(l.body, l.id); }
   const lg = $('#ailog');
-  if (lg) lg.innerHTML = mine.slice(-3).map((m) => `<div class="ail"><span data-notr>${esc(m.body || previewOf(m))}</span><small>${m.tmp ? esc(T('sending…')) : `${ic('check', 2.4)}${esc(T('{n} will see it').replace('{n}', p.name))}`}</small></div>`).join('');
+  if (lg) lg.innerHTML = mine.slice(-3).map((m) => `<div class="ail"><span data-notr>${lineOf(m)}</span><small>${m.tmp ? esc(T('sending…')) : `${ic('check', 2.4)}${esc(T('{n} will see it').replace('{n}', p.name))}`}</small></div>`).join('');
 }
 // A message written to the assistant still reaches the friend; the assistant answers in the meantime.
 async function sendToAway(id, text) {
@@ -1854,14 +1888,42 @@ async function sendToAway(id, text) {
   if (!S.thread.some((x) => x.id === data.id)) { S.thread.push(data); S.last.set(id, data); }
   askAway(id);
 }
+let aiRec = null;
+async function aiRecStart(id) {
+  if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) return toast('Voice messages are not supported in this browser.', 4000);
+  aiHush();
+  let stream; try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch { return toast('Allow microphone access to record a voice message.', 4000); }
+  const mime = ['audio/mp4', 'audio/aac', 'audio/webm;codecs=opus', 'audio/webm'].find((t) => MediaRecorder.isTypeSupported?.(t)) || '';
+  const mr = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined); const chunks = [];
+  mr.ondataavailable = (e) => e.data && e.data.size && chunks.push(e.data);
+  aiRec = { mr, stream, chunks, t0: Date.now(), to: id }; mr.start(250); navigator.vibrate?.(15);
+  $('#aimic')?.classList.add('on'); const rb = $('#airec'); if (rb) rb.hidden = false; $('#aiwave')?.classList.add('on');
+  aiRec.timer = setInterval(() => { if (!aiRec) return; const sec = (Date.now() - aiRec.t0) / 1000; const t = $('#airect'); if (t) t.textContent = fmtSec(sec); if (sec >= 60) aiRecStop(true); }, 200);
+}
+function aiRecStop(send) {
+  if (!aiRec) return; const r = aiRec; aiRec = null; clearInterval(r.timer);
+  $('#aimic')?.classList.remove('on'); const rb = $('#airec'); if (rb) rb.hidden = true; $('#aiwave')?.classList.remove('on');
+  r.mr.onstop = async () => {
+    r.stream.getTracks().forEach((t) => t.stop()); if (!send) return;
+    const ms = Date.now() - r.t0; if (ms < 800) return toast('Too short. Hold on a little longer.');
+    const type = (r.mr.mimeType || r.chunks[0]?.type || 'audio/webm').split(';')[0];
+    let blob = new Blob(r.chunks, { type }), len = ms;
+    if (blob.size < 800) return toast('The voice message did not record. Try again.', 3500);
+    if (ms <= 10500) { try { const out = await applyVfx(blob, ''); blob = out.blob; len = out.ms; } catch (e) { console.warn('voice convert', e); } }
+    await sendVoice(r.to, blob, len);
+  };
+  try { r.mr.stop(); } catch { r.mr.onstop(); }
+}
 function askAway(id) {
   if (!awayOn(id)) return;
   S.aiTyping.add(id); aiRefresh(id);
-  aiCall({ op: 'away', to: id }).then((j) => { const m = j?.message; if (m && !S.thread.some((x) => x.id === m.id) && S.threadWith === id) { S.thread.push(m); S.last.set(id, m); chime(true); } })
+  aiCall({ op: 'away', to: id }).then(async (j) => { const m = j?.message;
+    const vs = S.thread.filter((x) => x.audio_path && x.sender === S.uid && !x.transcript && !x.tmp).slice(-2).map((x) => x.id);
+    if (vs.length) { const { data: tr } = await sb.from('messages').select('id, transcript').in('id', vs); (tr || []).forEach((t) => { const x = S.thread.find((y) => y.id === t.id); if (x) x.transcript = t.transcript; }); } if (m && !S.thread.some((x) => x.id === m.id) && S.threadWith === id) { S.thread.push(m); S.last.set(id, m); chime(true); } })
     .catch(() => {}).finally(() => { S.aiTyping.delete(id); aiRefresh(id); });
 }
 function exitAi(id, why) {
-  if (S.aiMode !== id) return; S.aiSkip.add(id);
+  if (S.aiMode !== id) return; S.aiSkip.add(id); aiHush(); if (aiRec) aiRecStop(false);
   const ov = $('#aiov'); if (ov) ov.classList.add('out');
   setTimeout(() => {
     S.aiMode = null; app.querySelector('.view')?.classList.remove('aimode'); $('#aiov')?.remove();
@@ -1997,7 +2059,7 @@ V.chat.after = async (id) => {
     V.chat.update(id);
   };
 };
-window.addEventListener('hashchange', () => { if (player) stopPlayer(); if (rec) stopRec(false); S.aiMode = null; });
+window.addEventListener('hashchange', () => { if (player) stopPlayer(); if (rec) stopRec(false); if (aiRec) aiRecStop(false); aiHush(); S.aiMode = null; });
 
 /* Someone's page */
 /* A person's page before you are friends: open or closed profile */

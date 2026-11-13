@@ -373,6 +373,9 @@ window.I18N = (() => {
   Object.assign(D.ru, {"Back to {n}'s profile": "Вернуться в профиль {n}"});
   Object.assign(D.ar, {"Back to {n}'s profile": "العودة إلى ملف {n}"});
   Object.assign(D.tr, {"Back to {n}'s profile": "{n} profiline dön"});
+  Object.assign(D.ru, {"Say it by voice": "Сказать голосом", "Speak — tap again to send": "Говори — нажми ещё раз, чтобы отправить", "Voice": "Голос"});
+  Object.assign(D.ar, {"Say it by voice": "قلها بصوتك", "Speak — tap again to send": "تكلم — اضغط مرة أخرى للإرسال", "Voice": "الصوت"});
+  Object.assign(D.tr, {"Say it by voice": "Sesle söyle", "Speak — tap again to send": "Konuş — göndermek için tekrar dokun", "Voice": "Ses"});
 const tpl = {};
   for (const l of Object.keys(D)) {
     tpl[l] = Object.entries(D[l]).filter(([k]) => /\{\w+\}/.test(k)).map(([k, v]) => {

@@ -1000,19 +1000,19 @@ h1{font-weight:700;font-size:38px;letter-spacing:-.035em;line-height:1.05}
 /* the assistant steps out onto the friend's page: page stays, softly blurred behind */
 .view.aimode .hdr{z-index:16}
 .view.aimode .composer,.view.aimode .aidock{visibility:hidden}
-.aiov{position:absolute;inset:0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:calc(var(--st) + 96px) max(18px,var(--sr)) calc(var(--sb) + 18px) max(18px,var(--sl))}
-.aiov-veil{position:absolute;inset:0;background:radial-gradient(90% 60% at 50% 42%,rgba(40,24,110,.35),rgba(6,7,20,.72));
-  -webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);animation:veilIn .5s ease both}
+.aiov{position:absolute;inset:0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+  padding:calc(var(--st) + 96px) max(16px,var(--sr)) calc(var(--sb) + 14px) max(16px,var(--sl))}
+.aiov-veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,12,60,.05) 0%,rgba(20,12,60,.12) 35%,rgba(8,8,26,.62) 70%,rgba(6,6,20,.85) 100%);
+  -webkit-backdrop-filter:blur(3px) saturate(1.15);backdrop-filter:blur(3px) saturate(1.15);animation:veilIn .5s ease both}
 @keyframes veilIn{from{opacity:0}to{opacity:1}}
-.aiov-in{position:relative;width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;color:#fff}
-.aiov-face{position:relative;width:min(40vw,168px);aspect-ratio:1;animation:aiPop .8s cubic-bezier(.2,1.5,.35,1) both,aifloat 4.5s ease-in-out .8s infinite}
+.aiov-in{position:relative;width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center;color:#fff}
+.aiov-face{position:relative;width:min(24vw,96px);aspect-ratio:1;animation:aiPop .8s cubic-bezier(.2,1.5,.35,1) both,aifloat 4.5s ease-in-out .8s infinite}
 .aiov-face .aiface{position:relative;width:100%;height:100%;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px rgba(255,255,255,.45),0 0 50px 8px rgba(229,92,255,.45),0 24px 60px -16px rgba(0,0,0,.8)}
 .aiov-face .ring{position:absolute;inset:-14%;border-radius:50%;background:conic-gradient(from 0deg,#2F6BFF,#6A5CFF,#E55CFF,#FF6FA8,#FFC233,#2F6BFF);filter:blur(22px);opacity:.6;animation:spin 7s linear infinite}
 .aiov-face .ring.r2{inset:-4%;filter:blur(6px);opacity:.5;animation-duration:11s;animation-direction:reverse}
 @keyframes aiPop{0%{transform:scale(.1) rotate(-200deg);opacity:0;filter:blur(12px)}60%{opacity:1;filter:none}100%{transform:none}}
 @keyframes aifloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-.aiov-tag{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--sun,#FFC233);letter-spacing:.02em;animation:fadeUp .5s .35s both}
+.aiov-tag{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;text-shadow:0 1px 6px rgba(0,0,0,.6);font-weight:600;color:var(--sun,#FFC233);letter-spacing:.02em;animation:fadeUp .5s .35s both}
 .aiov-tag svg{width:14px;height:14px}
 .aiov-wave{display:flex;gap:4px;align-items:center;height:18px;opacity:.35;transition:opacity .3s}
 .aiov-wave.on{opacity:1}
@@ -1020,7 +1020,7 @@ h1{font-weight:700;font-size:38px;letter-spacing:-.035em;line-height:1.05}
 .aiov-wave.on i{animation:wv .9s ease-in-out infinite}
 .aiov-wave i:nth-child(2n){animation-delay:.12s}.aiov-wave i:nth-child(3n){animation-delay:.24s}.aiov-wave i:nth-child(5n){animation-delay:.36s}
 @keyframes wv{0%,100%{height:5px}50%{height:18px}}
-.aiov-say{margin:0;font-size:clamp(22px,6.4vw,28px);line-height:1.28;font-weight:300;letter-spacing:-.01em;min-height:3.9em;text-wrap:balance;text-shadow:0 2px 24px rgba(0,0,0,.45)}
+.aiov-say{margin:0;font-size:clamp(18px,5vw,21px);line-height:1.32;font-weight:400;letter-spacing:-.005em;min-height:2.7em;text-wrap:balance;text-shadow:0 1px 3px rgba(0,0,0,.7),0 2px 18px rgba(0,0,0,.55)}
 .aiov-say>span:not(.aidots){display:inline-block;animation:wordIn .55s cubic-bezier(.2,.9,.3,1) calc(var(--i)*110ms + .5s) both}
 .aiov-say>span:not(.aidots):nth-child(-n+3){font-weight:500;background:linear-gradient(90deg,#FFE7A3,#FF9BD0);-webkit-background-clip:text;background-clip:text;color:transparent}
 @keyframes wordIn{from{opacity:0;filter:blur(8px);transform:translateY(10px) scale(.96)}to{opacity:1;filter:none;transform:none}}
@@ -1030,7 +1030,7 @@ h1{font-weight:700;font-size:38px;letter-spacing:-.035em;line-height:1.05}
 .ail small{display:flex;align-items:center;gap:4px;justify-content:flex-end;font-size:11px;opacity:.85;margin-top:2px}
 .ail small svg{width:12px;height:12px}
 .aiov-form{display:flex;gap:8px;width:100%;margin-top:4px;animation:fadeUp .5s .7s both}
-.aiov-form input{flex:1;min-width:0;height:52px;border-radius:26px;padding:0 18px;font:inherit;font-size:16px;color:#fff;
+.aiov-form input{flex:1;min-width:0;height:50px;border-radius:25px;padding:0 18px;font:inherit;font-size:16px;color:#fff;
   background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.32);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:0 0 0 0 rgba(229,92,255,0);transition:box-shadow .3s}
 .aiov-form input::placeholder{color:rgba(255,255,255,.65)}
 .aiov-form input:focus{outline:none;box-shadow:0 0 0 3px rgba(229,92,255,.45)}
@@ -1057,3 +1057,12 @@ h1{font-weight:700;font-size:38px;letter-spacing:-.035em;line-height:1.05}
 .view.aimode .ubub{display:none}
 .ubub.away{opacity:0;transform:translateY(-10px) scale(.9);pointer-events:none}
 @media (prefers-reduced-motion:reduce){.ubub,.ubub .aiface{animation:none}}
+
+.aisnd{margin-inline-start:4px;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:13px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25)}
+.aisnd.off{opacity:.6}
+.aiov-form .aimic.on{background:#FF4D6D;animation:pulseg 1.4s infinite}
+.aiov-rec{display:flex;align-items:center;gap:8px;font-size:13px;padding:6px 8px 6px 14px;border-radius:999px;background:rgba(255,77,109,.18);border:1px solid rgba(255,77,109,.45)}
+.aiov-rec b{font-variant-numeric:tabular-nums}
+.aircx{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.14)}
+.aircx svg{width:14px;height:14px}
+.ail em{display:block;font-style:normal;font-size:13px;opacity:.85;margin-top:2px}
