@@ -716,43 +716,41 @@ function pageHTML(p, self) {
     <button class="rb" id="rshop" data-go="market/${id}" aria-label="${esc(T('Shop'))}" hidden>${ic('bag')}</button>
     <button class="rb" data-act="umore" data-uid="${id}" aria-label="More">${ic('more', 2.4)}</button>`;
   return `<div class="dark home pg2" style="position:absolute;inset:0">
-  ${bgMedia(p)}
-  <div class="shade"></div>
   <div class="pgs" id="pgs">
-    <section class="pgh">
-      ${self ? '' : `<button class="iconbtn pgback" data-back="chats" aria-label="Back">${ic('back')}</button>`}
-      <div class="ph2 ${self ? '' : 'vis'}">
-        <div class="ph2n"><button class="ph2ring" id="hring" data-act="story" data-uid="${id}" aria-label="Story" hidden>${thumbHTML(p, false)}</button><b data-notr>${esc(p.name)}</b>${vbadge(p)}</div>
-        ${self ? '' : '<span class="ph2st" id="st"></span>'}
-        ${motto ? `<p class="ph2m" data-notr>${esc(motto)}</p>` : self ? `<button class="hvibe add" data-go="edit">${esc(T('+ fill in your profile'))}</button>` : ''}
-        ${tags.length ? `<p class="ph2t" data-notr>${tags.map(esc).join(' · ')}</p>` : ''}
-        ${site ? `<a class="ph2l" href="${esc(site.href)}" target="_blank" rel="noopener noreferrer" data-notr>${LINKSVG}<span>${esc(site.host)}</span></a>` : ''}
-        <div class="ph2s" id="pstat" hidden></div>
-      </div>
-      <div class="hrail">${rail}</div>
-      ${self ? `<div class="digest" id="digest" hidden></div><button class="hai" id="hai" aria-label="${esc(aiName())}">${aiFace(p)}<i class="hdot" id="hdot" hidden></i></button>` : ''}
-      <button class="pgmore" id="pgmore" aria-label="${esc(T('Posts'))}">${UPSVG}<span>${esc(T('Posts'))}</span></button>
-    </section>
+    <section class="pgh">${bgMedia(p)}<div class="shade"></div></section>
     <section class="pgf" id="pgf">
-      <div class="pgabout" id="pgabout"></div>
-      <div class="pgtabs" id="pgtabs">${[['all', 'All'], ['video', 'Videos'], ['photo', 'Photos']].map(([k, l]) => `<button class="${pgTab === k ? 'on' : ''}" data-t="${k}">${esc(T(l))}</button>`).join('')}</div>
       <div class="pggrid" id="pggrid"><span class="spinner"></span></div>
+      <div class="pgabout" id="pgabout"></div>
     </section>
-  </div>${self ? `<div class="pginst">${installBanner()}</div>` : ''}</div>`;
+  </div>
+  <div class="pgscrim" id="pgscrim"></div>
+  ${self ? '' : `<button class="iconbtn pgback" data-back="chats" aria-label="Back">${ic('back')}</button>`}
+  <div class="ph2 ${self ? '' : 'vis'}" id="ph2">
+    <div class="ph2n"><button class="ph2ring" id="hring" data-act="story" data-uid="${id}" aria-label="Story" hidden>${thumbHTML(p, false)}</button><b data-notr>${esc(p.name)}</b>${vbadge(p)}</div>
+    ${self ? '' : '<span class="ph2st" id="st"></span>'}
+    ${motto ? `<p class="ph2m" data-notr>${esc(motto)}</p>` : self ? `<button class="hvibe add" data-go="edit">${esc(T('+ fill in your profile'))}</button>` : ''}
+    ${tags.length ? `<p class="ph2t" data-notr>${tags.map(esc).join(' · ')}</p>` : ''}
+    ${site ? `<a class="ph2l" href="${esc(site.href)}" target="_blank" rel="noopener noreferrer" data-notr>${LINKSVG}<span>${esc(site.host)}</span></a>` : ''}
+    <div class="ph2s" id="pstat" hidden></div>
+  </div>
+  <div class="hrail">${rail}</div>
+  ${self ? `<div class="digest" id="digest" hidden></div><button class="hai" id="hai" aria-label="${esc(aiName())}">${aiFace(p)}<i class="hdot" id="hdot" hidden></i></button>` : ''}
+  <div class="pgup" id="pgup" aria-hidden="true">${UPSVG.repeat(5)}</div>
+  ${self ? `<div class="pginst">${installBanner()}</div>` : ''}</div>`;
 }
 function pageFeed(id, self) {
-  const g = $('#pggrid'); if (!g) return; const all = S.posts.get(id) || [];
-  const posts = all.filter((x) => pgTab === 'all' || (pgTab === 'video') === !!x.video_path);
-  g.innerHTML = (self ? `<button class="pgt add" data-act="hplus" aria-label="Add">${ic('plus', 2.2)}</button>` : '')
-    + posts.map((x) => `<button class="pgt" data-go="gallery/${id}"><img src="${esc(thumb(x.path))}" alt="" loading="lazy" onerror="this.src='${esc(url(x.path))}'">${x.video_path ? `<i class="pgv">${ic('video', 2)}</i>` : ''}</button>`).join('')
-    + (posts.length ? '' : `<p class="pgnone">${esc(T(self ? 'Your photos and videos will live here' : 'No posts yet'))}</p>`);
+  const g = $('#pggrid'); if (!g) return; const posts = S.posts.get(id) || [];
+  g.innerHTML = posts.map((x) => `<button class="pgt" data-go="gallery/${id}"><img src="${esc(thumb(x.path))}" alt="" loading="lazy" onerror="this.src='${esc(url(x.path))}'">${x.video_path ? `<i class="pgv">${ic('video', 2)}</i>` : ''}</button>`).join('')
+    || `<p class="pgnone">${esc(T(self ? 'Your photos and videos will live here' : 'No posts yet'))}</p>`;
 }
 async function pageAfter(id, self) {
   const p = self ? S.me : S.members.get(id);
   tintFrom(p);
   paintStats(id);
-  $('#pgmore').onclick = () => $('#pgf').scrollIntoView({ behavior: 'smooth' });
-  $('#pgtabs').onclick = (e) => { const b = e.target.closest('[data-t]'); if (!b) return; pgTab = b.dataset.t; $('#pgtabs').querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b)); pageFeed(id, self); };
+  // the header and the round buttons stay; the photo goes up and the posts come from below
+  const sc = $('#pgs'), hd = $('#ph2'), view = sc.parentElement;
+  const fit = () => view.style.setProperty('--hh', (hd.offsetTop + hd.offsetHeight + 14) + 'px'); fit(); setTimeout(fit, 900);
+  sc.addEventListener('scroll', () => { const k = Math.min(1, sc.scrollTop / 260); view.style.setProperty('--sk', k); view.classList.toggle('scrolled', sc.scrollTop > 40); }, { passive: true });
   // about: a few lines, interests, and what you two share
   const ints = p.interests || [], mine = new Set(S.me?.interests || []);
   const ab = $('#pgabout');
