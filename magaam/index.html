@@ -1,29 +1,5 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
-<title>MAGAAM</title>
-<meta name="description" content="MAGAAM — your living self. Test version.">
-<meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#0B1430">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="MAGAAM">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="img/icon-192.png" type="image/png">
-<link rel="apple-touch-icon" href="img/icon-180.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geologica:wght@300;400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="app.css?v=66">
-</head>
-<body>
-<div id="app" aria-live="polite"></div>
-<div id="toast" class="toast" hidden></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script src="i18n.js?v=40"></script>
-<script src="app.js?v=71"></script>
-</body>
-</html>
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title></title><style>html,body{margin:0;background:#fff}</style></head><body><script>
+try{navigator.serviceWorker&&navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(x){if(x.scope.indexOf('/magaam')>-1)x.unregister()})});
+Object.keys(localStorage).forEach(function(k){if(k.indexOf('magaam')===0||k.indexOf('sb-')===0)localStorage.removeItem(k)});
+Object.keys(sessionStorage).forEach(function(k){if(k.indexOf('magaam')===0)sessionStorage.removeItem(k)})}catch(e){}
+</script></body></html>
