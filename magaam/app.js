@@ -336,6 +336,7 @@ async function startAI(kind, path, prompt, extra) {
 }
 function swapBg(p) { const el = app.querySelector(`[data-bgfor="${p.id}"]`); if (!el) return; const t = document.createElement('div'); t.innerHTML = bgMedia(p); el.replaceWith(t.firstElementChild); }
 function previewOf(m) {
+  if (m.product_id) return '🛍 ' + (S.prod.get(m.product_id)?.title || T('Item'));
   if (m.body) return m.body;
   if (m.sticker === 'x|poke') return T('👉 Poke!');
   if (m.sticker?.startsWith('x|live|')) return T('🐱 Living sticker');
@@ -456,7 +457,7 @@ async function show() {
     else if (S.me?.name && S.me?.ai_name && !hasPhoto && !['about', 'assistant', 'look'].includes(name)) name = 'look';
     const pend = store.get('magaam-addfriend');
     if (pend && name === 'me' && S.me?.username && S.me?.ai_name && hasPhoto) { store.set('magaam-addfriend', ''); name = 'add'; id = pend; }
-    if (location.hash.replace(/^#\/?/, '').split('/')[0] !== name) history.replaceState(null, '', '#/' + name + (id && ['chat','u','gallery','add','p'].includes(name) ? '/' + id : ''));
+    if (location.hash.replace(/^#\/?/, '').split('/')[0] !== name) history.replaceState(null, '', '#/' + name + (id && ['chat','u','gallery','add','p','item','market','sell'].includes(name) ? '/' + id : ''));
   }
   S.prevView = S.view; S.view = name;
   const fn = V[name] || V.me;
@@ -475,7 +476,7 @@ function refresh() {
 // redraw the tab bar only when something in it changed (redrawing every time made the bottom twitch)
 function setTabs(active) { const t = $('#tabs'); if (!t) return; const h = tabbar(active); if (t.dataset.h !== h) { t.innerHTML = h; t.dataset.h = h; } }
 function tabbar(active) {
-  const t = [['spark', 'Assistant', 'soon'], ['chat', 'Chats', 'chats'], ['video', 'Video', 'video'], ['bag', 'Shop', 'soon'], ['me', 'Me', 'me']];
+  const t = [['spark', 'Assistant', 'soon'], ['chat', 'Chats', 'chats'], ['video', 'Video', 'video'], ['bag', 'Market', 'market'], ['me', 'Me', 'me']];
   const n = totalUnread();
   return `<nav class="tabs glass" aria-label="Sections">${t.map(([i, l, r]) => `<button data-tab="${r}" ${r === active ? 'aria-current="page"' : ''}>${ic(i)}<span class="tl">${l}</span>${r === 'chats' && n ? `<span class="badge">${n}</span>` : ''}</button>`).join('')}</nav>`;
 }
@@ -1440,6 +1441,10 @@ const btHTML = (m) => `<span class="bt" data-notr>${hm(m.created_at)}${m.sender 
 function msgHTML(m) { return msgHTML0(m).replace(/<\/div>\s*$/, btHTML(m) + '</div>'); }
 function msgHTML0(m) {
   const mine = m.sender === S.uid;
+  if (m.product_id) {
+    const x = S.prod.get(m.product_id); if (!x) fetchProd(m.product_id);
+    return `<div class="b prodm ${mine ? 'me' : 'them'}" data-msg="${m.id}"><button class="pcm" data-go="item/${m.product_id}">${x ? `<img src="${esc(thumb(x.photos[0]))}" alt=""><span class="pcmt"><small>${esc(T('Item'))}</small><b data-notr>${esc(x.title)}</b><i data-notr>${esc(money(x))}</i></span>` : `<span class="pcmt"><small>${esc(T('Item'))}</small><b>🛍</b></span>`}</button>${m.body ? `<span class="tx" data-notr>${esc(m.body)}</span>` : ''}</div>`;
+  }
   if (m.audio_path) {
     const talk = false, making = false; // talking avatars are removed from the messenger: plain voice messages only
     const rxv = rxHTML(m);
@@ -2213,7 +2218,7 @@ V.u = async (id) => {
   ${self ? '' : `<button class="ubub" id="ubub" hidden>${aiFace(p)}<span><b data-notr>${esc(T('{ai} is here').replace('{ai}', p.ai_name || ''))}</b><small data-notr>${esc(T('{n} is offline').replace('{n}', p.name))}</small></span></button>`}
   <div class="pbottom">
     <div class="pstat" id="pstat" hidden></div>
-    <div class="pmeta">${p.verified ? `<button class="vbpill vb-${p.verified}" data-vb="${p.verified}">${vbSvg(p.verified)}<span>${esc(T(p.verified === 'founder' ? 'MAGAAM founder' : 'Verified'))}</span></button>` : ''}<span class="pill glass" id="st">${self ? esc(T('This is how friends see you')) : ''}</span><span class="psub2" data-notr>${sub}</span></div>
+    <div class="pmeta"><button class="shoppill" id="shoppill" data-go="market/${id}" hidden></button>${p.verified ? `<button class="vbpill vb-${p.verified}" data-vb="${p.verified}">${vbSvg(p.verified)}<span>${esc(T(p.verified === 'founder' ? 'MAGAAM founder' : 'Verified'))}</span></button>` : ''}<span class="pill glass" id="st">${self ? esc(T('This is how friends see you')) : ''}</span><span class="psub2" data-notr>${sub}</span></div>
     <div class="pdeck" id="pdeck">
       <section class="pcard">${empty ? `<div class="pai">${aiFace(p)}<p data-notr>${esc(self ? T('Your page is waiting for you: add a vibe, interests and a couple of lines about you.') : T('This is {n} 🙂 Still a bit shy, the profile will come alive soon.').replace('{n}', name))}</p></div>
           ${self ? `<button class="pchip" data-go="edit">${ic('edit', 2)}${esc(T('Fill in my profile'))}</button>` : `<button class="pchip" id="askfill">${ic('spark', 2)}${esc(T('Ask {n} to fill it in').replace('{n}', name))}</button>`}`
@@ -2253,6 +2258,7 @@ V.u.after = async (id) => {
   const mine = new Set(S.me?.interests || []);
   if (!self) { let n = 0; app.querySelectorAll('.prof2 [data-int]').forEach((el) => { const k = el.dataset.int; if (k && mine.has(k)) { el.classList.add('same'); n++; } }); const pc = $('#pcom'); if (pc && n) pc.textContent = T('{n} in common').replace('{n}', n); }
   paintStats(id);
+  sb.from('products').select('id', { count: 'exact', head: true }).eq('user_id', id).neq('status', 'hidden').then(({ count }) => { const b = $('#shoppill'); if (!b || (!count && !self)) return; b.hidden = false; b.innerHTML = `🛍 <span>${esc(T(self ? 'My shop' : 'Shop'))}${count ? ' · ' + count : ''}</span>`; });
   const [posts, hl, tg] = await Promise.all([loadPosts(id),
     sb.from('stories').select('*').eq('user_id', id).eq('pinned', true).order('created_at', { ascending: false }).then((r) => r.data || []),
     self ? Promise.resolve(null) : sb.rpc('together', { p_other: id }).then((r) => r.data?.[0] || null)]);
@@ -2417,6 +2423,141 @@ async function startDepth(p) {
   };
   requestAnimationFrame(tick);
 }
+/* ---------- market: people sell real things; you write to the seller in the chat ---------- */
+const CATS = [['clothes', '👕', 'Clothes'], ['shoes', '👟', 'Shoes'], ['watches', '⌚', 'Watches'], ['beauty', '💄', 'Beauty'], ['home', '🍳', 'Home & kitchen'], ['tech', '📱', 'Tech'], ['accessories', '👜', 'Accessories'], ['other', '📦', 'Other']];
+const CURS = ['USD', 'EUR', 'TRY', 'AED', 'SAR', 'EGP', 'RUB', 'KZT', 'UZS', 'GBP'];
+const CSYM = { USD: '$', EUR: '€', TRY: '₺', RUB: '₽', KZT: '₸', GBP: '£', EGP: 'E£' };
+const money = (x) => { const n = Number(x.price), t = n.toLocaleString('en-US', { maximumFractionDigits: n % 1 ? 2 : 0 }).replace(/,/g, ' '), c = CSYM[x.currency]; return c ? c + t : t + ' ' + x.currency; };
+S.prod = new Map(); const prodWait = new Set();
+function fetchProd(id) {
+  if (prodWait.has(id)) return; prodWait.add(id);
+  sb.from('products').select('*').eq('id', id).maybeSingle().then(({ data }) => { if (data) { S.prod.set(id, data); refresh(); } });
+}
+const catOf = (k) => CATS.find((c) => c[0] === k) || CATS[CATS.length - 1];
+const tileHTML = (x) => `<button class="mtile" data-go="item/${x.id}"><span class="mph"><img src="${esc(thumb(x.photos[0]))}" loading="lazy" alt="" onerror="this.src='${esc(url(x.photos[0]))}'">${x.status !== 'active' ? `<i class="msold">${esc(T(x.status === 'sold' ? 'Sold' : 'Hidden'))}</i>` : ''}</span><b data-notr>${esc(money(x))}</b><span class="mtt" data-notr>${esc(x.title)}</span><span class="msel" data-notr>${esc(x.seller_name || '')}${x.seller_verified ? vbSvgSmall(x.seller_verified) : ''}${x.city ? ' · ' + esc(x.city) : ''}</span></button>`;
+const vbSvgSmall = (k) => `<span class="vb vb-${k} sm">${vbSvg(k)}</span>`;
+let mQ = '', mCat = '';
+V.market = async (seller) => {
+  const who = seller ? (seller === S.uid ? S.me : S.members.get(seller) || S.extra.get(seller)) : null;
+  const title = seller ? (seller === S.uid ? T('My shop') : T('Shop of {n}').replace('{n}', who?.name || '')) : T('Market');
+  if (seller) { mQ = ''; mCat = ''; }
+  return `<div class="dark mkt" style="position:absolute;inset:0">
+  <div class="bg-blur" style="background-image:url('${sceneImg(S.me?.scene)}')"></div>
+  <div class="listwrap">
+    <div class="ltitle">${seller ? `<button class="iconbtn" data-back="market" aria-label="Back">${ic('back')}</button>` : ''}<h2 data-notr>${esc(title)}</h2><span class="hright">${!seller ? `<button class="iconbtn" data-go="market/${S.uid}" aria-label="${esc(T('My shop'))}">${ic('me')}</button>` : ''}<button class="msellb" data-go="sell">${ic('plus', 2.4)}<span>${esc(T('Sell'))}</span></button></span></div>
+    ${seller ? '' : `<input class="search glass" id="mq" placeholder="${esc(T('Search things'))}" aria-label="Search" value="${esc(mQ)}">
+    <div class="mcats" id="mcats"><button class="mcat ${mCat ? '' : 'on'}" data-c="">${esc(T('All'))}</button>${CATS.map(([k, e, l]) => `<button class="mcat ${mCat === k ? 'on' : ''}" data-c="${k}"><span data-notr>${e}</span> ${esc(T(l))}</button>`).join('')}</div>`}
+    <div class="scroll"><div class="mgrid" id="mgrid"><span class="spinner"></span></div></div>
+  </div>
+  ${seller ? '' : `<div class="dock"><div id="tabs">${tabbar('market')}</div></div>`}</div>`;
+};
+V.market.after = (seller) => {
+  const load = async () => {
+    const { data, error } = await sb.rpc('market_list', { p_q: seller ? '' : mQ, p_cat: seller ? '' : mCat, p_seller: seller || null });
+    const g = $('#mgrid'); if (!g || route().name !== 'market') return;
+    (data || []).forEach((x) => S.prod.set(x.id, x));
+    g.innerHTML = error ? `<p class="mnone">${esc(T('Could not load. Check your connection.'))}</p>` : (data || []).length ? data.map(tileHTML).join('')
+      : `<div class="mnone"><span data-notr>🛍</span><b>${esc(T(seller === S.uid ? 'Your shop is empty' : mQ || mCat ? 'Nothing found' : 'No things for sale yet'))}</b><p>${esc(T(seller && seller !== S.uid ? 'This person is not selling anything yet.' : 'Put your first thing up for sale: a photo, a price and a couple of words.'))}</p>${seller && seller !== S.uid ? '' : `<button class="pbtn blue" data-go="sell">${ic('plus', 2)}${esc(T('Sell a thing'))}</button>`}</div>`;
+  };
+  load();
+  let t; $('#mq')?.addEventListener('input', (e) => { mQ = e.target.value; clearTimeout(t); t = setTimeout(load, 300); });
+  $('#mcats')?.addEventListener('click', (e) => { const b = e.target.closest('[data-c]'); if (!b) return; mCat = b.dataset.c; $('#mcats').querySelectorAll('.mcat').forEach((x) => x.classList.toggle('on', x === b)); $('#mgrid').innerHTML = '<span class="spinner"></span>'; load(); });
+};
+V.item = async (id) => {
+  const { data } = await sb.rpc('market_item', { p_id: id }); const x = data?.[0];
+  if (!x) { toast('This thing is no longer for sale'); go('market', true); return; }
+  S.prod.set(id, x);
+  const own = x.user_id === S.uid, [, ce, cl] = catOf(x.category);
+  const seller = { id: x.user_id, name: x.seller_name, username: x.seller_username, still_path: x.seller_photo, verified: x.seller_verified };
+  return `<div class="dark itm" style="position:absolute;inset:0">
+  <div class="iph" id="iph">${x.photos.map((ph) => `<img src="${esc(url(ph))}" alt="">`).join('')}</div>
+  ${x.photos.length > 1 ? `<div class="idots" id="idots">${x.photos.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div>` : ''}
+  <div class="hdr"><button class="iconbtn glass" data-back="market" aria-label="Back">${ic('back')}</button><span></span>${own ? `<button class="iconbtn glass" data-go="sell/${id}" aria-label="Edit">${ic('edit')}</button>` : '<span></span>'}</div>
+  <div class="isheet">
+    <div class="iprice"><b data-notr>${esc(money(x))}</b>${x.status !== 'active' ? `<span class="msold st">${esc(T(x.status === 'sold' ? 'Sold' : 'Hidden'))}</span>` : ''}</div>
+    <h2 data-notr>${esc(x.title)}</h2>
+    <div class="ichips"><span><i data-notr>${ce}</i> ${esc(T(cl))}</span>${x.sizes ? `<span data-notr>📏 ${esc(x.sizes)}</span>` : ''}${x.city ? `<span data-notr>📍 ${esc(x.city)}</span>` : ''}</div>
+    ${x.descr ? `<p class="idescr" data-notr>${esc(x.descr)}</p>` : ''}
+    <button class="isel" data-go="${own ? 'u/' + S.uid : S.members.has(x.user_id) ? 'u/' + x.user_id : 'p/' + x.user_id}">${thumbHTML(seller, false)}<span><b data-notr>${esc(x.seller_name || '')}${vbadge(seller, 'sm')}</b><small data-notr>@${esc(x.seller_username || '')}</small></span><em>${esc(T('Seller'))}</em></button>
+    <div id="icta"></div>
+  </div></div>`;
+};
+V.item.after = (id) => {
+  const x = S.prod.get(id); if (!x) return;
+  const ph = $('#iph'), dots = $('#idots');
+  ph?.addEventListener('scroll', () => { const i = Math.round(ph.scrollLeft / Math.max(1, ph.clientWidth)); dots?.querySelectorAll('i').forEach((d, k) => d.classList.toggle('on', k === i)); }, { passive: true });
+  const paint = () => {
+    const c = $('#icta'); if (!c) return; const uid = x.user_id;
+    if (uid === S.uid) c.innerHTML = `<div class="cta2"><button class="pbtn blue" id="isold">${ic('check')}${esc(T(x.status === 'active' ? 'Mark as sold' : 'Back on sale'))}</button><button class="pbtn glass" data-go="sell/${id}">${ic('edit')}${esc(T('Edit'))}</button></div>`;
+    else if (S.members.has(uid)) c.innerHTML = `<button class="pbtn blue wide" id="iwrite">${ic('chat')}${esc(T('Message the seller'))}</button>`;
+    else if (S.reqOut.has(uid)) c.innerHTML = `<button class="pbtn glass wide" disabled>${ic('check')}${esc(T('Request sent'))}</button><p class="inote">${esc(T('You can write as soon as the seller accepts you as a friend.'))}</p>`;
+    else if (S.reqIn.some((r) => r.id === uid)) c.innerHTML = `<button class="pbtn blue wide" id="iacc">${ic('check')}${esc(T('Accept friend request'))}</button>`;
+    else c.innerHTML = `<button class="pbtn blue wide" id="iadd">${ic('useradd')}${esc(T('Add the seller as a friend'))}</button><p class="inote">${esc(T('In MAGAAM only friends can write to each other.'))}</p>`;
+    $('#iwrite') && ($('#iwrite').onclick = async (e) => { e.currentTarget.disabled = true;
+      const { data, error } = await sb.from('messages').insert({ recipient: uid, product_id: id, body: T('Hi! Is this still available?') }).select().single();
+      if (error) { toast('Message not sent. Check your connection.'); return paint(); }
+      S.last.set(uid, data); if (S.threadWith === uid && !S.thread.some((m) => m.id === data.id)) S.thread.push(data); go('chat/' + uid); });
+    const fr = async (k) => { await friendAct(k, uid); await loadAll(); paint(); };
+    $('#iadd') && ($('#iadd').onclick = (e) => { e.currentTarget.disabled = true; fr('add'); });
+    $('#iacc') && ($('#iacc').onclick = (e) => { e.currentTarget.disabled = true; fr('accept'); });
+    $('#isold') && ($('#isold').onclick = async () => { const st = x.status === 'active' ? 'sold' : 'active'; const { error } = await sb.from('products').update({ status: st }).eq('id', id); if (error) return toast('Could not save. Try again.'); x.status = st; toast(st === 'sold' ? 'Marked as sold' : 'It is on sale again'); show(); });
+  };
+  paint();
+};
+let sellSt = null;
+V.sell = async (id) => {
+  let x = null;
+  if (id) { const { data } = await sb.from('products').select('*').eq('id', id).eq('user_id', S.uid).maybeSingle(); x = data; if (!x) { go('market', true); return; } }
+  sellSt = { id: x?.id || null, photos: [...(x?.photos || [])], cat: x?.category || 'clothes', busy: false };
+  return `<div class="light">
+  <div class="topbar"><button class="iconbtn" data-back="market" aria-label="Back">${ic('back')}</button><span class="word">MAGAAM</span><span style="width:44px"></span></div>
+  <div class="lhead" style="margin-top:8px"><h1>${esc(T(x ? 'Edit the thing' : 'Sell a thing'))}</h1><p class="sub">${esc(T('Clothes, shoes, watches, cosmetics, things for home. Buyers will write to you in the chat.'))}</p></div>
+  <div class="stack">
+    <div class="fl"><span>${esc(T('Photos'))} <small id="sphn"></small></span><div class="sphotos" id="sphotos"></div></div>
+    <label class="fl">${esc(T('What is it'))}<input class="field" id="stitle" maxlength="80" placeholder="${esc(T('White sneakers, almost new'))}" value="${esc(x?.title || '')}"></label>
+    <div class="fl"><span>${esc(T('Price'))}</span><div class="sprice"><input class="field" id="sprice" inputmode="decimal" maxlength="12" placeholder="0" value="${x ? esc(String(Number(x.price))) : ''}"><select class="field" id="scur" aria-label="Currency">${CURS.map((c) => `<option ${c === (x?.currency || store.get('magaam-cur') || 'USD') ? 'selected' : ''}>${c}</option>`).join('')}</select></div></div>
+    <div class="fl"><span>${esc(T('Category'))}</span><div class="echips" id="scats">${CATS.map(([k, e, l]) => `<button type="button" class="echip ${sellSt.cat === k ? 'on' : ''}" data-c="${k}"><span data-notr>${e}</span> ${esc(T(l))}</button>`).join('')}</div></div>
+    <label class="fl">${esc(T('Sizes or model (optional)'))}<input class="field" id="ssizes" maxlength="120" placeholder="38, 39, 41" value="${esc(x?.sizes || '')}"></label>
+    <label class="fl">${esc(T('City'))}<input class="field" id="scity" maxlength="60" placeholder="Istanbul" value="${esc(x ? x.city || '' : S.me?.city || '')}"></label>
+    <label class="fl">${esc(T('Description (optional)'))}<textarea class="field ta" id="sdescr" maxlength="1000" rows="4" placeholder="${esc(T('Condition, material, delivery'))}">${esc(x?.descr || '')}</textarea></label>
+    <button class="btn" id="ssave">${ic('check')}${esc(T(x ? 'Save' : 'Put up for sale'))}</button>
+    ${x ? `<button class="btn out red" id="sdel" style="margin-top:0">${ic('x')}${esc(T('Delete the thing'))}</button>` : ''}
+    <p class="fine">${esc(T('For now you agree on payment and delivery with the buyer yourself, in the chat.'))}</p>
+  </div></div>`;
+};
+V.sell.after = () => {
+  const st = sellSt, box = $('#sphotos');
+  const paint = () => { $('#sphn').textContent = `${st.photos.length}/6`;
+    box.innerHTML = st.photos.map((ph, i) => `<span class="sph"><img src="${esc(thumb(ph))}" alt="" onerror="this.src='${esc(url(ph))}'"><button type="button" data-rm="${i}" aria-label="Remove">${ic('x', 2.4)}</button></span>`).join('') + (st.photos.length < 6 ? `<button type="button" class="sph add" id="sadd">${st.busy ? '<span class="spinner xs"></span>' : ic('plus', 2)}</button>` : ''); };
+  paint();
+  box.onclick = async (e) => {
+    const rm = e.target.closest('[data-rm]'); if (rm) { st.photos.splice(+rm.dataset.rm, 1); return paint(); }
+    if (!e.target.closest('#sadd') || st.busy) return;
+    const f = await pickFile(); if (!f) return;
+    st.busy = true; paint();
+    try { st.photos.push(await uploadPhoto(f, 'prod')); } catch (err) { toast(err?.message || 'The photo did not upload. Try again.', 3500); }
+    st.busy = false; if ($('#sphotos')) paint();
+  };
+  $('#scats').onclick = (e) => { const b = e.target.closest('[data-c]'); if (!b) return; st.cat = b.dataset.c; $('#scats').querySelectorAll('.echip').forEach((x) => x.classList.toggle('on', x === b)); };
+  $('#ssave').onclick = async () => {
+    const title = $('#stitle').value.trim(), price = parseFloat($('#sprice').value.replace(/\s/g, '').replace(',', '.'));
+    if (!st.photos.length) return toast('Add at least one photo');
+    if (title.length < 2) return toast('Write what it is');
+    if (!(price >= 0)) return toast('Write the price');
+    const cur = $('#scur').value; store.set('magaam-cur', cur);
+    const row = { title, price, currency: cur, category: st.cat, sizes: $('#ssizes').value.trim() || null, city: $('#scity').value.trim() || null, descr: $('#sdescr').value.trim() || null, photos: st.photos };
+    const b = $('#ssave'); b.disabled = true;
+    const r = st.id ? await sb.from('products').update(row).eq('id', st.id).select().single() : await sb.from('products').insert(row).select().single();
+    if (r.error) { b.disabled = false; return toast('Could not save. Try again.'); }
+    S.prod.delete(r.data.id); toast(st.id ? 'Saved' : 'Your thing is on sale 🎉', 2600); go('item/' + r.data.id, true);
+  };
+  $('#sdel') && ($('#sdel').onclick = async () => {
+    const ok = await new Promise((res) => sheet(T('Delete this thing?'), [{ icon: 'x', label: T('Delete'), red: true, run: () => res(true) }, { icon: 'back', label: T('Cancel'), run: () => res(false) }]));
+    if (!ok) return; const { error } = await sb.from('products').delete().eq('id', st.id); if (error) return toast('Could not delete. Try again.');
+    S.prod.delete(st.id); toast('Deleted'); go('market/' + S.uid, true);
+  });
+};
+
 /* ---------- edit my profile ---------- */
 let greetRec = null;
 V.edit = () => {

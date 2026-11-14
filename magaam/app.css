@@ -1261,3 +1261,70 @@ h1{font-weight:700;font-size:38px;letter-spacing:-.035em;line-height:1.05}
 #list .crow .cmid b{font-size:16.5px}
 .wa .b.stk,.wa .b.media,.wa .b.jumbo{box-shadow:none;padding:0;border-radius:0}
 .wa .b.jumbo{font-size:54px;padding:0 2px}
+
+/* ===== market ===== */
+.mkt .ltitle h2{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.msellb{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 15px 0 11px;border-radius:999px;color:#fff;font-weight:600;font-size:14.5px;background:var(--grad);box-shadow:0 10px 24px -12px rgba(229,92,255,.9)}
+.msellb svg{width:17px;height:17px}
+.mcats{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;margin:0 -14px 10px;padding:0 14px}
+.mcats::-webkit-scrollbar{display:none}
+.mcat{flex:none;padding:8px 13px;border-radius:999px;font-size:14px;color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);white-space:nowrap}
+.mcat.on{background:var(--grad);border-color:transparent}
+.mgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding-bottom:120px}
+.mgrid>.spinner{grid-column:1/-1;margin:40px auto}
+.mtile{display:flex;flex-direction:column;gap:2px;text-align:start;color:#fff;border-radius:22px;padding:6px 6px 10px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);min-width:0}
+.mtile:active{transform:scale(.98)}
+.mph{position:relative;display:block;aspect-ratio:1;border-radius:17px;overflow:hidden;background:rgba(255,255,255,.08);margin-bottom:6px}
+.mph img{width:100%;height:100%;object-fit:cover;display:block}
+.msold{position:absolute;left:8px;top:8px;font-style:normal;font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:999px;background:rgba(0,0,0,.65);color:#fff}
+.msold.st{position:static}
+.mtile b{font-size:17px;font-weight:800;letter-spacing:-.02em;padding:0 5px}
+.mtt{font-size:14px;padding:0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.msel{font-size:12px;opacity:.7;padding:0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mnone{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;color:#fff;padding:36px 20px}
+.mnone>span{font-size:46px}.mnone b{font-size:19px}.mnone p{margin:0 0 8px;opacity:.75;font-size:14.5px;max-width:280px}
+/* one thing */
+.itm{background:#0c0e1c}
+.iph{position:absolute;inset:0 0 38% 0;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.iph::-webkit-scrollbar{display:none}
+.iph img{flex:0 0 100%;width:100%;height:100%;object-fit:cover;scroll-snap-align:start}
+.idots{position:absolute;left:0;right:0;bottom:calc(38% + 30px);display:flex;justify-content:center;gap:6px;z-index:3}
+.idots i{width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,.5);transition:width .3s}.idots i.on{width:18px;background:#fff}
+.itm .hdr{z-index:4}
+.isheet{position:absolute;left:0;right:0;bottom:0;max-height:62%;overflow:auto;z-index:3;display:flex;flex-direction:column;gap:10px;color:#fff;border-radius:30px 30px 0 0;
+  padding:20px max(18px,var(--sr)) calc(var(--sb) + 18px) max(18px,var(--sl));background:linear-gradient(180deg,rgba(24,26,48,.82),rgba(12,14,28,.96));-webkit-backdrop-filter:blur(26px);backdrop-filter:blur(26px);border-top:1px solid rgba(255,255,255,.16)}
+.iprice{display:flex;align-items:center;gap:10px}
+.iprice b{font-size:30px;font-weight:800;letter-spacing:-.03em;background:linear-gradient(90deg,#fff,#E5C8FF);-webkit-background-clip:text;background-clip:text;color:transparent}
+.isheet h2{margin:0;font-size:19px;font-weight:600;line-height:1.25}
+.ichips{display:flex;flex-wrap:wrap;gap:7px}
+.ichips span{padding:6px 11px;border-radius:999px;font-size:13.5px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16)}
+.ichips i{font-style:normal}
+.idescr{margin:0;font-size:15px;line-height:1.42;opacity:.88;white-space:pre-wrap}
+.isel{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:18px;text-align:start;color:#fff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}
+.isel .thumb{width:42px;height:42px;aspect-ratio:auto;border-radius:50%;overflow:hidden;flex:none}
+.isel>span{display:flex;flex-direction:column;min-width:0;flex:1}.isel small{opacity:.65;font-size:12.5px}
+.isel em{font-style:normal;font-size:12px;opacity:.6}
+.pbtn.wide{width:100%}
+.inote{margin:8px 0 0;text-align:center;font-size:12.5px;opacity:.65}
+/* sell form */
+.sphotos{display:flex;gap:8px;flex-wrap:wrap}
+.sph{position:relative;width:86px;height:86px;border-radius:18px;overflow:hidden;background:rgba(11,20,48,.06)}
+.sph img{width:100%;height:100%;object-fit:cover}
+.sph button{position:absolute;right:4px;top:4px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:rgba(0,0,0,.6);color:#fff}
+.sph button svg{width:12px;height:12px}
+.sph.add{display:grid;place-items:center;border:2px dashed rgba(11,20,48,.25);color:var(--navy)}
+.sph.add svg{width:26px;height:26px}
+.sprice{display:flex;gap:8px}.sprice input{flex:1;min-width:0}.sprice select{flex:0 0 104px;width:104px;padding:0 10px}
+.field.ta{height:auto;padding:14px 18px;resize:none;font-family:inherit;line-height:1.35}
+.btn.red{color:#E5484D;border-color:rgba(229,72,77,.4)}
+/* product card in a chat and the shop pill on a profile */
+.wa .b.prodm{padding:5px;display:flex;flex-direction:column;gap:5px;max-width:74%}
+.pcm{display:flex;align-items:center;gap:10px;padding:5px 12px 5px 5px;border-radius:14px;background:rgba(0,0,0,.22);color:#fff;text-align:start;min-width:190px}
+.pcm img{width:56px;height:56px;border-radius:11px;object-fit:cover;flex:none}
+.pcmt{display:flex;flex-direction:column;min-width:0;gap:1px}
+.pcmt small{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;opacity:.75}
+.pcmt b{font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px}
+.pcmt i{font-style:normal;font-weight:800;font-size:15px}
+.b.prodm .tx{padding:0 7px}
+.shoppill{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:999px;color:#fff;font-size:12.5px;font-weight:700;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.b.prodm .bt{float:none;align-self:flex-end;margin:0 3px 0 0}
