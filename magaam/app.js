@@ -694,52 +694,108 @@ V.look.after = () => {
   });
 };
 
+/* ---------- the page of a person ----------
+   A full-screen living photo with the header on it. Scroll up and the posts follow, like a site. Same page for me and for my friends. */
+const LINKSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4.5 4.5 0 006.4 0l3-3a4.5 4.5 0 00-6.4-6.4l-1.2 1.2"/><path d="M14 10a4.5 4.5 0 00-6.4 0l-3 3a4.5 4.5 0 006.4 6.4l1.2-1.2"/></svg>';
+const UPSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14l6-6 6 6"/></svg>';
+const siteOf = (p) => { const u = String(p?.site || '').trim(); if (!/^https?:\/\/[^\s"'<>]+$/i.test(u)) return null; try { return { href: u, host: new URL(u).host }; } catch { return null; } };
+let pgTab = 'all';
+function pageHTML(p, self) {
+  const id = p.id, tags = (p.tags || []).filter(Boolean), motto = p.motto || vibeOf(p) || '', site = siteOf(p);
+  const rail = self ? `
+    <button class="rb grad" data-act="hplus" aria-label="${esc(T('Create'))}">${ic('plus', 2.4)}</button>
+    <button class="rb" data-go="chats" aria-label="${esc(T('Chats'))}">${ic('chat')}<i class="rbn" id="rbn" hidden data-notr></i></button>
+    <button class="rb" data-go="video" aria-label="${esc(T('Video'))}">${ic('video')}</button>
+    <button class="rb" data-go="market" aria-label="${esc(T('Market'))}">${ic('bag')}</button>
+    <button class="rb" data-go="add" aria-label="${esc(T('Friends'))}">${ic('useradd')}</button>
+    <button class="rb coin" data-go="wallet" aria-label="Balance">${ic('coin')}<small data-notr id="coins">${S.coins}</small></button>
+    <button class="rb" data-act="settings" aria-label="${esc(T('Settings'))}">${ic('gear')}</button>` : `
+    <button class="rb grad" data-go="chat/${id}" aria-label="${esc(T('Message'))}">${ic('chat')}</button>
+    <button class="rb" id="cmpb" aria-label="${esc(T('Compliment'))}"><span class="rbe" data-notr>✨</span></button>
+    <button class="rb" data-act="ucircle" data-uid="${id}" aria-label="${esc(T('Circle'))}">${ic('camera')}</button>
+    <button class="rb" id="rshop" data-go="market/${id}" aria-label="${esc(T('Shop'))}" hidden>${ic('bag')}</button>
+    <button class="rb" data-act="umore" data-uid="${id}" aria-label="More">${ic('more', 2.4)}</button>`;
+  return `<div class="dark home pg2" style="position:absolute;inset:0">
+  ${bgMedia(p)}
+  <div class="shade"></div>
+  <div class="pgs" id="pgs">
+    <section class="pgh">
+      ${self ? '' : `<button class="iconbtn pgback" data-back="chats" aria-label="Back">${ic('back')}</button>`}
+      <div class="ph2 ${self ? '' : 'vis'}">
+        <div class="ph2n"><button class="ph2ring" id="hring" data-act="story" data-uid="${id}" aria-label="Story" hidden>${thumbHTML(p, false)}</button><b data-notr>${esc(p.name)}</b>${vbadge(p)}</div>
+        ${self ? '' : '<span class="ph2st" id="st"></span>'}
+        ${motto ? `<p class="ph2m" data-notr>${esc(motto)}</p>` : self ? `<button class="hvibe add" data-go="edit">${esc(T('+ fill in your profile'))}</button>` : ''}
+        ${tags.length ? `<p class="ph2t" data-notr>${tags.map(esc).join(' · ')}</p>` : ''}
+        ${site ? `<a class="ph2l" href="${esc(site.href)}" target="_blank" rel="noopener noreferrer" data-notr>${LINKSVG}<span>${esc(site.host)}</span></a>` : ''}
+        <div class="ph2s" id="pstat" hidden></div>
+      </div>
+      <div class="hrail">${rail}</div>
+      ${self ? `<div class="digest" id="digest" hidden></div><button class="hai" id="hai" aria-label="${esc(aiName())}">${aiFace(p)}<i class="hdot" id="hdot" hidden></i></button>` : ''}
+      <button class="pgmore" id="pgmore" aria-label="${esc(T('Posts'))}">${UPSVG}<span>${esc(T('Posts'))}</span></button>
+    </section>
+    <section class="pgf" id="pgf">
+      <div class="pgabout" id="pgabout"></div>
+      <div class="pgtabs" id="pgtabs">${[['all', 'All'], ['video', 'Videos'], ['photo', 'Photos']].map(([k, l]) => `<button class="${pgTab === k ? 'on' : ''}" data-t="${k}">${esc(T(l))}</button>`).join('')}</div>
+      <div class="pggrid" id="pggrid"><span class="spinner"></span></div>
+    </section>
+  </div>${self ? `<div class="pginst">${installBanner()}</div>` : ''}</div>`;
+}
+function pageFeed(id, self) {
+  const g = $('#pggrid'); if (!g) return; const all = S.posts.get(id) || [];
+  const posts = all.filter((x) => pgTab === 'all' || (pgTab === 'video') === !!x.video_path);
+  g.innerHTML = (self ? `<button class="pgt add" data-act="hplus" aria-label="Add">${ic('plus', 2.2)}</button>` : '')
+    + posts.map((x) => `<button class="pgt" data-go="gallery/${id}"><img src="${esc(thumb(x.path))}" alt="" loading="lazy" onerror="this.src='${esc(url(x.path))}'">${x.video_path ? `<i class="pgv">${ic('video', 2)}</i>` : ''}</button>`).join('')
+    + (posts.length ? '' : `<p class="pgnone">${esc(T(self ? 'Your photos and videos will live here' : 'No posts yet'))}</p>`);
+}
+async function pageAfter(id, self) {
+  const p = self ? S.me : S.members.get(id);
+  tintFrom(p);
+  paintStats(id);
+  $('#pgmore').onclick = () => $('#pgf').scrollIntoView({ behavior: 'smooth' });
+  $('#pgtabs').onclick = (e) => { const b = e.target.closest('[data-t]'); if (!b) return; pgTab = b.dataset.t; $('#pgtabs').querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b)); pageFeed(id, self); };
+  // about: a few lines, interests, and what you two share
+  const ints = p.interests || [], mine = new Set(S.me?.interests || []);
+  const ab = $('#pgabout');
+  ab.innerHTML = `${p.bio ? `<p class="pgbio" data-notr>${esc(p.bio)}</p>` : ''}
+    ${p.city || (p.langs || []).length ? `<p class="pgloc" data-notr>${p.city ? '📍 ' + esc(p.city) : ''} ${(p.langs || []).map(flagOf).join(' ')}</p>` : ''}
+    ${ints.length ? `<div class="pints2">${ints.map((x) => `<span class="pint2 ${!self && mine.has(x) ? 'same' : ''}">${esc(T(x))}</span>`).join('')}</div>` : ''}
+    ${self ? '' : '<div class="ptog2" id="ptog"></div>'}`;
+  if (!S.posts.get(id)) await loadPosts(id); else loadPosts(id).then(() => onPage(id, self) && pageFeed(id, self));
+  if (!onPage(id, self)) return;
+  pageFeed(id, self);
+  if (!self) {
+    $('#cmpb').onclick = () => sheet(T('Send a compliment'), CMPS.map((c, i) => ({ icon: 'spark', label: T(c), run: () => sendCmp(id, 'x|cmp|' + i) })));
+    app.querySelector('[data-act="ucircle"]')?.addEventListener('click', () => { go('chat/' + id); setTimeout(() => recordCircle(id), 600); });
+    sb.from('products').select('id', { count: 'exact', head: true }).eq('user_id', id).neq('status', 'hidden').then(({ count }) => { const b = $('#rshop'); if (b && count) b.hidden = false; });
+    const { data } = await sb.rpc('together', { p_other: id }); const tg = data?.[0], t = $('#ptog');
+    if (t && tg) { const days = S.streaks.get(id), faces = (tg.mutual_ids || []).map((m) => S.members.get(m)).filter(Boolean);
+      t.innerHTML = `<div class="tg"><b data-notr>${tg.since ? esc(sinceTxt(tg.since)) : '—'}</b><span>${esc(T('friends since'))}</span></div>
+        <div class="tg"><b data-notr>${days ? '🔥 ' + days : '—'}</b><span>${esc(T('days in a row'))}</span></div>
+        <div class="tg">${faces.length ? `<span class="faces">${faces.slice(0, 4).map((f) => thumbHTML(f)).join('')}</span>` : '<b>0</b>'}<span>${esc(T('mutual friends'))}</span></div>`; }
+  }
+}
+const onPage = (id, self) => (self ? route().name === 'me' : route().name === 'u' && route().id === id);
+function pageStories(id) {
+  const hr = $('#hring'); if (!hr) return; const st = S.stories.get(id) || [];
+  hr.hidden = !st.length; hr.classList.toggle('on', id === S.uid ? true : unseenSt(id));
+}
+
 /* Own page */
 V.me = () => {
-  const m = S.me; const posts = S.posts.get(S.uid);
-  if (!posts) loadPosts(S.uid).then(() => route().name === 'me' && V.me.update());
   if (!S.stories.size) loadStories().then(() => route().name === 'me' && V.me.update());
-  const vibe = vibeOf(m);
-  return `<div class="dark home" style="position:absolute;inset:0">
-  ${bgMedia(m)}
-  <div class="shade"></div>
-  <div class="hhead">
-    <button class="hring" id="hring" data-act="addstory" data-uid="${S.uid}" aria-label="Your story">${thumbHTML(m)}<i class="hplus">${ic('plus', 3)}</i></button>
-    <div class="hname2"><b data-notr>${esc(m.name)}${vbadge(m)}</b><span data-notr>@${esc(m.username || '')}</span>${vibe ? `<span class="hvibe" data-notr>${esc(vibe)}</span>` : `<button class="hvibe add" data-go="edit">${esc(T('+ vibe for today'))}</button>`}
-      <div class="ailine" id="ailine" hidden></div></div>
-  </div>
-  <div class="hrail">
-    <button class="rb grad" data-act="hplus" aria-label="Create">${ic('plus', 2.4)}</button>
-    <button class="rb" data-go="gallery/${S.uid}" aria-label="Gallery">${ic('grid')}</button>
-    <button class="rb" data-go="u/${S.uid}" aria-label="My profile">${ic('me')}</button>
-    <button class="rb coin" data-go="wallet" aria-label="Balance">${ic('coin')}<small data-notr id="coins">${S.coins}</small></button>
-    <button class="rb" data-act="settings" aria-label="Settings">${ic('gear')}</button>
-  </div>
-  <div class="digest" id="digest" hidden></div>
-  <button class="hai" id="hai" aria-label="${esc(aiName())}">${aiFace(m)}<i class="hdot" id="hdot" hidden></i></button>
-  <div class="dock">
-    ${installBanner()}
-    <div id="tabs">${tabbar('me')}</div>
-  </div></div>`;
+  return pageHTML(S.me, true);
 };
 V.me.cls = 'darkv';
 V.me.update = () => {
   const cn = $('#coins'); if (cn) cn.textContent = S.coins;
-  const posts = S.posts.get(S.uid) || [];
-  const mine = S.stories.get(S.uid) || [];
-  const hr = $('#hring'); if (hr) { hr.classList.toggle('on', !!mine.length); hr.dataset.act = mine.length ? 'story' : 'addstory'; }
-  const sh = $('#shelf');
-  if (sh) sh.innerHTML = `<button class="stile add" data-act="addpost" aria-label="Add to gallery">${ic('plus', 2.4)}</button>` + posts.slice(0, 20).map((x) => `<button class="stile" data-go="gallery/${S.uid}">${x.video_path ? `<video src="${esc(url(x.video_path))}#t=0.1" muted loop playsinline autoplay preload="metadata" poster="${esc(thumb(x.path))}"></video>` : `<img src="${esc(thumb(x.path))}" alt="" loading="lazy">`}</button>`).join('')
-    + (posts.length ? '' : `<span class="sempty">${esc(T('Your photos and videos will live here'))}</span>`);
-  const al = $('#ailine'); const j = avatarJob();
-  if (al) al.hidden = true; // ordinary photos: nothing is being "brought to life" any more
-  const d = $('#hdot'); if (d) d.hidden = !totalUnread();
-  setTabs('me');
+  pageStories(S.uid);
+  const n = totalUnread(), bn = $('#rbn'); if (bn) { bn.hidden = !n; bn.textContent = n > 99 ? '99+' : n; }
+  const d = $('#hdot'); if (d) d.hidden = !n;
   showDigest();
 };
 V.me.after = () => {
   V.me.update();
-  tintFrom(S.me);
+  pageAfter(S.uid, true);
   $('#hai').onclick = () => {
     const dg = $('#digest');
     if (totalUnread()) { store.set('magaam-digest-x', ''); if (dg) { dg.hidden = false; showDigest(); } return; }
@@ -2111,7 +2167,7 @@ V.p = async (id) => {
     <div class="hname"><b data-notr>${esc(c.name)}${vbadge(c)}</b>${c.is_public ? `<span class="pill glass" id="st"></span>` : ''}</div><button class="iconbtn" data-act="umore" data-uid="${id}" aria-label="More">${ic('more', 2.4)}</button></div>
   <div class="dock"><div class="card glass pcard">
     <div class="phead"><span class="puser" data-notr>@${esc(c.username || '')}</span><span class="ptype ${c.is_public ? 'open' : ''}">${ic(c.is_public ? 'globe' : 'lock', 2)}${esc(T(c.is_public ? 'Open profile' : 'Closed profile'))}</span></div>
-    <div class="pstat sm" id="pstat2" hidden></div>
+    <div class="ph2s ctr" id="pstat2" hidden></div>
     ${c.is_public ? `<div class="cta2">${relBtn(id, true)}<button class="pbtn glass" id="followb">${ic('plus', 2)}${esc(T('Follow'))}</button></div><button class="pbtn glass thin" data-go="gallery/${id}">${ic('grid')}Gallery</button>`
       : `<div class="plock">${ic('lock', 2)}<span>Gallery and stories are only for friends.</span></div>${relBtn(id, true)}`}
   </div></div></div>`;
@@ -2133,138 +2189,27 @@ const INTERESTS = ['📚 Books', '🎮 Games', '⚽ Football', '🏀 Basketball'
 const vibeOf = (p) => (p?.vibe && p.vibe_at && Date.now() - new Date(p.vibe_at) < 86400_000 ? p.vibe : '');
 const sinceTxt = (iso) => { try { return new Date(iso).toLocaleDateString(I18N.lang === 'en' ? 'en-GB' : I18N.lang, { day: 'numeric', month: 'long', year: new Date(iso).getFullYear() === new Date().getFullYear() ? undefined : 'numeric' }); } catch { return ''; } };
 V.u = async (id) => {
-  const self = id === S.uid;
-  if (!self && !S.members.has(id)) { await loadAll(); if (!S.members.has(id)) { go('chats', true); return; } }
-  const p = self ? S.me : S.members.get(id);
-  const vibe = vibeOf(p), ints = p.interests || [];
-  const sub = [`@${esc(p.username || '')}`, p.city ? `📍 ${esc(p.city)}` : '', (p.langs || []).map(flagOf).join(' ')].filter(Boolean).join(' · ');
-  const name = String(p.name || '');
-  const fs = Math.max(56, Math.min(150, Math.floor(360 / Math.max(3, [...name].length) * 1.55)));
-  const empty = !vibe && !p.bio && !ints.length;
-  return `<div class="dark prof2" style="position:absolute;inset:0">
-  ${bgMedia(p)}
-  ${p.greet_path ? `<video class="greetv" id="greetv" crossorigin="anonymous" playsinline webkit-playsinline preload="auto" src="${esc(url(p.greet_path))}"></video>` : ''}
-  <canvas class="pbk" id="pbk" aria-hidden="true"></canvas>
-  <h1 class="pname" id="pname" data-notr style="--fs:${fs}px">${[...name].map((c, i) => `<i style="--i:${i}">${esc(c)}</i>`).join('')}${p.verified ? `<span class="pnvb" style="--i:${[...name].length}">${vbSvg(p.verified)}</span>` : ''}</h1>
-  <canvas class="pfg" id="pfg" aria-hidden="true"></canvas>
-  <div class="pshade"></div>
-  <div class="hdr"><button class="iconbtn" data-back="${self ? 'me' : 'chats'}" aria-label="Back">${ic('back')}</button><span></span>
-    ${self ? `<button class="iconbtn" data-go="edit" aria-label="Edit">${ic('edit')}</button>` : `<button class="iconbtn" data-act="umore" data-uid="${id}" aria-label="More">${ic('more', 2.4)}</button>`}</div>
-  ${self ? '' : `<button class="ubub" id="ubub" hidden>${aiFace(p)}<span><b data-notr>${esc(T('{ai} is here').replace('{ai}', p.ai_name || ''))}</b><small data-notr>${esc(T('{n} is offline').replace('{n}', p.name))}</small></span></button>`}
-  <div class="pbottom">
-    <div class="pstat" id="pstat" hidden></div>
-    <div class="pmeta"><button class="shoppill" id="shoppill" data-go="market/${id}" hidden></button>${p.verified ? `<button class="vbpill vb-${p.verified}" data-vb="${p.verified}">${vbSvg(p.verified)}<span>${esc(T(p.verified === 'founder' ? 'MAGAAM founder' : 'Verified'))}</span></button>` : ''}<span class="pill glass" id="st">${self ? esc(T('This is how friends see you')) : ''}</span><span class="psub2" data-notr>${sub}</span></div>
-    <div class="pdeck" id="pdeck">
-      <section class="pcard">${empty ? `<div class="pai">${aiFace(p)}<p data-notr>${esc(self ? T('Your page is waiting for you: add a vibe, interests and a couple of lines about you.') : T('This is {n} 🙂 Still a bit shy, the profile will come alive soon.').replace('{n}', name))}</p></div>
-          ${self ? `<button class="pchip" data-go="edit">${ic('edit', 2)}${esc(T('Fill in my profile'))}</button>` : `<button class="pchip" id="askfill">${ic('spark', 2)}${esc(T('Ask {n} to fill it in').replace('{n}', name))}</button>`}`
-        : `${vibe ? `<div class="pvibe" data-notr>${esc(vibe)}</div>` : `<h4>${esc(T('About'))}</h4>`}${p.bio ? `<p class="pbio2" data-notr>${esc(p.bio)}</p>` : ''}${!p.bio && ints.length ? `<div class="pints2">${ints.slice(0, 6).map((x) => `<span class="pint2" data-int="${esc(x)}">${esc(T(x))}</span>`).join('')}</div>` : ''}`}</section>
-      ${ints.length && p.bio ? `<section class="pcard"><h4>${esc(T('Interests'))} <span class="pcom" id="pcom"></span></h4><div class="pints2" id="pints">${ints.map((x) => `<span class="pint2" data-int="${esc(x)}">${esc(T(x))}</span>`).join('')}</div></section>` : ''}
-      ${self ? '' : `<section class="pcard"><h4>${esc(T('You two'))}</h4><div class="ptog2" id="ptog"><span class="spinner xs"></span></div></section>`}
-      <section class="pcard" id="pgal"><h4>${esc(T('Gallery'))} <span class="pcom" id="pgn"></span><button class="pall" data-go="gallery/${id}">${esc(T('All'))} ›</button></h4><div class="phl2" id="phlr" hidden></div><div class="pgrid2" id="pgrid"><span class="spinner xs"></span></div></section>
-    </div>
-    <div class="pdots" id="pdots"></div>
-    <div class="pdock">${self ? `<button class="pbtn blue grow" data-go="edit">${ic('edit')}${esc(T('Edit profile'))}</button>`
-      : `<button class="pbtn blue grow" data-go="chat/${id}">${ic('chat')}${esc(T('Message'))}</button><button class="pbtn glass sq" data-act="ucircle" data-uid="${id}" aria-label="${esc(T('Circle'))}">${ic('camera')}</button><button class="pbtn glass sq cmpb" id="cmpb" aria-label="${esc(T('Compliment'))}"><span data-notr>✨</span></button>`}
-      ${p.greet_path ? `<button class="pbtn glass sq" id="greetb" aria-label="${esc(T('Hear the greeting'))}">${ic('play', 2)}</button>` : ''}</div>
-  </div></div>`;
+  if (id === S.uid) { go('me', true); return; }
+  if (!S.members.has(id)) { await loadAll(); if (!S.members.has(id)) { go('chats', true); return; } }
+  if (!S.stories.size) loadStories().then(() => route().name === 'u' && V.u.update(id));
+  return pageHTML(S.members.get(id), false);
 };
 V.u.cls = 'darkv';
 V.u.update = (id) => {
-  const st = statusOf(id), s = id === S.uid ? null : $('#st'); if (s) s.innerHTML = `<i class="dot ${st.on ? 'on' : ''}"></i>${esc(T(st.text))}`;
-  const bb = $('#ubub'); if (bb) { bb.hidden = !(AWAY_AI && id !== S.uid && awayOn(id) && S.aiMode !== id); bb.onclick = () => { $('#greetv')?.pause(); enterAi(id); }; const ps = $('#ps'); if (ps && !ps.dataset.bub) { ps.dataset.bub = '1'; ps.addEventListener('scroll', () => bb.classList.toggle('away', ps.scrollTop > 140), { passive: true }); } }
+  const st = statusOf(id), s = $('#st'); if (s) s.innerHTML = `<i class="dot ${st.on ? 'on' : ''}"></i>${esc(T(st.text))}`;
+  pageStories(id);
 };
-V.u.after = async (id) => {
-  V.u.update(id);
-  const self = id === S.uid, p = self ? S.me : S.members.get(id);
-  tintFrom(p, '.prof2');
-  startDepth(p);
-  // her living photo says hello in her own voice
-  const gv = $('#greetv'), gb = $('#greetb');
-  const playGreet = () => { if (!gv) return; gv.currentTime = 0; gv.muted = false; gv.classList.add('on'); gv.play().then(() => gb?.classList.remove('pulse')).catch(() => { gv.classList.remove('on'); gb?.classList.add('pulse'); }); };
-  if (gv) { gv.onended = () => gv.classList.remove('on'); gb.onclick = playGreet; app.querySelector('.prof2 .bg')?.addEventListener('click', playGreet); setTimeout(playGreet, 900); }
-  app.querySelector('[data-act="ucircle"]')?.addEventListener('click', () => { go('chat/' + id); setTimeout(() => recordCircle(id), 600); });
-  // compliments: one tap, kind words only
-  $('#cmpb') && ($('#cmpb').onclick = () => sheet(T('Send a compliment'), CMPS.map((c, i) => ({ icon: 'spark', label: T(c), run: () => sendCmp(id, 'x|cmp|' + i) }))));
-  $('#askfill') && ($('#askfill').onclick = () => sendCmp(id, 'x|fill'));
-  // the cards: swipe sideways like stories
-  const deck = $('#pdeck'), dots = $('#pdots'), cards = [...deck.children];
-  dots.innerHTML = cards.length > 1 ? cards.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('') : '';
-  deck.addEventListener('scroll', () => { const i = Math.round(deck.scrollLeft / Math.max(1, deck.clientWidth * 0.86)); dots.querySelectorAll('i').forEach((d, k) => d.classList.toggle('on', k === i)); }, { passive: true });
-  const mine = new Set(S.me?.interests || []);
-  if (!self) { let n = 0; app.querySelectorAll('.prof2 [data-int]').forEach((el) => { const k = el.dataset.int; if (k && mine.has(k)) { el.classList.add('same'); n++; } }); const pc = $('#pcom'); if (pc && n) pc.textContent = T('{n} in common').replace('{n}', n); }
-  paintStats(id);
-  sb.from('products').select('id', { count: 'exact', head: true }).eq('user_id', id).neq('status', 'hidden').then(({ count }) => { const b = $('#shoppill'); if (!b || (!count && !self)) return; b.hidden = false; b.innerHTML = `🛍 <span>${esc(T(self ? 'My shop' : 'Shop'))}${count ? ' · ' + count : ''}</span>`; });
-  const [posts, hl, tg] = await Promise.all([loadPosts(id),
-    sb.from('stories').select('*').eq('user_id', id).eq('pinned', true).order('created_at', { ascending: false }).then((r) => r.data || []),
-    self ? Promise.resolve(null) : sb.rpc('together', { p_other: id }).then((r) => r.data?.[0] || null)]);
-  if (route().name !== 'u' || route().id !== id) return;
-  const g = $('#pgrid'), n = $('#pgn');
-  if (n) n.textContent = posts.length || '';
-  if (g) g.innerHTML = posts.length ? posts.slice(0, 6).map((x, i) => `<button class="ptile" data-pi="${i}">${x.video_path ? `<video src="${esc(url(x.video_path))}#t=0.1" muted loop playsinline autoplay preload="metadata" poster="${esc(thumb(x.path))}"></video>` : `<img src="${esc(thumb(x.path))}" alt="" loading="lazy">`}</button>`).join('')
-    : `<p class="pnone">${esc(T(self ? 'Your photos and videos will live here' : 'No photos yet'))}</p>`;
-  g?.addEventListener('click', (e) => { const b = e.target.closest('[data-pi]'); if (b) go('gallery/' + id); });
-  if (hl.length) {
-    const r = $('#phlr'); r.hidden = false;
-    r.innerHTML = hl.map((s, i) => `<button class="phli" data-hi="${i}"><span class="ring on"><img src="${esc(thumb(s.path))}" alt=""></span></button>`).join('');
-    r.onclick = (e) => { const b = e.target.closest('[data-hi]'); if (b) openStories(id, hl.slice(+b.dataset.hi).concat(hl.slice(0, +b.dataset.hi))); };
-  }
-  const t = $('#ptog');
-  if (t && tg) {
-    const days = S.streaks.get(id);
-    const faces = (tg.mutual_ids || []).map((m) => S.members.get(m)).filter(Boolean);
-    t.innerHTML = `<div class="tg"><b data-notr>${tg.since ? esc(sinceTxt(tg.since)) : '—'}</b><span>${esc(T('friends since'))}</span></div>
-      <div class="tg"><b data-notr>${days ? '🔥 ' + days : '—'}</b><span>${esc(T('days in a row'))}</span></div>
-      <div class="tg">${faces.length ? `<span class="faces">${faces.slice(0, 4).map((f) => thumbHTML(f)).join('')}</span>` : '<b>0</b>'}<span>${esc(T('mutual friends'))}</span></div>`;
-  } else if (t) t.innerHTML = '';
-};
-// A living sticker: a real kitten comes up from the bottom of the screen, looks at you, then goes away.
-const liveBlobs = new Map();
-async function playLive(kind) {
-  if (!LIVE[kind] || $('#livefx')) return;
-  let u = liveBlobs.get(kind);
-  if (!u) { try { const r = await fetch(`stk/${kind}.webp`); u = URL.createObjectURL(await r.blob()); liveBlobs.set(kind, u); } catch { return; } }
-  const fx = document.createElement('div'); fx.className = 'livefx'; fx.id = 'livefx';
-  fx.innerHTML = `<div class="lvwrap"><div class="lvshadow"></div><img alt="" src="${u}#${Date.now()}"></div>`;
-  app.appendChild(fx); navigator.vibrate?.([20, 40, 20]);
-  const end = () => { fx.classList.add('out'); setTimeout(() => fx.remove(), 700); };
-  fx.addEventListener('click', end); setTimeout(end, 10600);
-}
-// Touch the kitten: a tap and it meows, hold or stroke it and it purrs, with little hearts.
-const KSND = {}; const ksnd = (n) => (KSND[n] ||= Object.assign(new Audio(`stk/${n}.mp3`), { preload: 'auto' }));
-function petKitten(box) {
-  let st = null;
-  const hearts = (el, n) => { const r = el.getBoundingClientRect(), a = app.getBoundingClientRect();
-    for (let i = 0; i < n; i++) { const h = document.createElement('span'); h.className = 'khrt'; h.textContent = ['❤️', '💕', '🩷', '✨'][i % 4];
-      h.style.left = (r.left - a.left + r.width * (.3 + Math.random() * .4)) + 'px'; h.style.top = (r.top - a.top + r.height * .35) + 'px';
-      h.style.setProperty('--dx', (Math.random() - .5) * 120 + 'px'); h.style.animationDelay = i * 90 + 'ms'; app.appendChild(h); setTimeout(() => h.remove(), 1800 + i * 90); } };
-  box.addEventListener('pointerdown', (e) => {
-    const k = e.target.closest('[data-live]'); if (!k) return;
-    ['meow1', 'meow2', 'meow3', 'purr'].forEach(ksnd);
-    st = { k, t: Date.now(), x: e.clientX, moved: 0, purring: false };
-    st.timer = setTimeout(() => startPurr(), 380);
-  });
-  const startPurr = () => { if (!st || st.purring) return; st.purring = true; st.k.classList.add('pet'); const a = ksnd('purr'); a.currentTime = 0; a.loop = true; a.play().catch(() => {}); navigator.vibrate?.([15, 30, 15, 30, 15]); hearts(st.k, 5); st.hi = setInterval(() => hearts(st.k, 2), 700); };
-  box.addEventListener('pointermove', (e) => { if (!st) return; st.moved += Math.abs(e.clientX - st.x); st.x = e.clientX; if (st.moved > 30) startPurr(); });
-  const end = () => {
-    if (!st) return; const s0 = st; st = null; clearTimeout(s0.timer); clearInterval(s0.hi);
-    if (s0.purring) { s0.k.classList.remove('pet'); const a = ksnd('purr'); a.loop = false; setTimeout(() => a.pause(), 250); return; }
-    const a = ksnd(['meow1', 'meow2', 'meow3'][Math.floor(Math.random() * 3)]); a.currentTime = 0; a.play().catch(() => {});
-    s0.k.classList.remove('boop'); void s0.k.offsetWidth; s0.k.classList.add('boop'); navigator.vibrate?.(12); hearts(s0.k, 3);
-  };
-  ['pointerup', 'pointercancel', 'pointerleave'].forEach((ev) => box.addEventListener(ev, end));
-}
-/* Living numbers: friends first, then followers, posts and sparks (compliments). They count up when you open the page. */
-const STATS = [['friends', '👥', 'Friends'], ['followers', '👀', 'Followers'], ['posts', '📸', 'Posts'], ['sparks', '✨', 'Sparks']];
-const nfmt = (n) => (n >= 1e6 ? (n / 1e6).toFixed(n >= 1e7 ? 0 : 1) + 'M' : n >= 1e4 ? Math.round(n / 1e3) + 'K' : n >= 1e3 ? (n / 1e3).toFixed(1) + 'K' : String(n));
+V.u.after = (id) => { V.u.update(id); pageAfter(id, false); };
+/* Numbers in the header: posts, followers, following. They count up when the page opens. */
+const STATS = [['posts', 'Posts'], ['followers', 'Followers'], ['following', 'Following']];
+const nfmt = (n) => (n >= 1e6 ? (n / 1e6).toFixed(n >= 1e7 ? 0 : 1) + 'M' : n >= 1e4 ? (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'K' : String(n));
 async function paintStats(id, into = '#pstat') {
   const { data } = await sb.rpc('profile_stats', { p_id: id }); const st = data?.[0];
   const box = $(into); if (!box || !st) return;
   const show = STATS.filter(([k]) => st[k] !== null && st[k] !== undefined);
-  box.innerHTML = show.map(([k, e, l], i) => { const wk = st[k + '_week'] || 0;
-    return `<button class="ps ps-${k}" data-ps="${k}" style="--i:${i}"><b data-n="${st[k]}" data-notr>0</b><span>${esc(T(l))}${k === 'sparks' ? ' ✨' : ''}</span>${wk ? `<i data-notr>↑ +${wk}</i>` : ''}</button>`; }).join('');
-  box.hidden = false; box.dataset.follow = st.i_follow ? '1' : '';
-  // count up, a little like a slot machine
-  box.querySelectorAll('b[data-n]').forEach((b, i) => { const n = +b.dataset.n, t0 = performance.now() + i * 90, dur = 900;
+  box.innerHTML = show.map(([k, l]) => `<button class="ps2" data-ps="${k}"><b data-n="${st[k]}" data-notr>0</b><span>${esc(T(l))}</span></button>`).join('');
+  box.hidden = !show.length; box.dataset.follow = st.i_follow ? '1' : '';
+  box.querySelectorAll('b[data-n]').forEach((b, i) => { const n = +b.dataset.n, t0 = performance.now() + i * 90, dur = 800;
     const step = (t) => { const k = Math.min(1, Math.max(0, (t - t0) / dur)), e = 1 - Math.pow(1 - k, 3); b.textContent = nfmt(Math.round(n * e)); if (k < 1) requestAnimationFrame(step); };
     requestAnimationFrame(step); });
   box.onclick = (e) => { const b = e.target.closest('[data-ps]'); if (b) statTap(id, b.dataset.ps, st); };
@@ -2277,7 +2222,12 @@ function peopleSheet(title, list, empty) {
 }
 async function statTap(id, k, st) {
   const self = id === S.uid, who = self ? S.me : S.members.get(id) || S.extra.get(id) || {};
-  if (k === 'posts') return go('gallery/' + id);
+  if (k === 'posts') return $('#pgf') ? $('#pgf').scrollIntoView({ behavior: 'smooth' }) : go('gallery/' + id);
+  if (k === 'following') {
+    if (!self) return toast(T('{who} follows {n}').replace('{who}', who.name || '').replace('{n}', st.following), 2500);
+    const { data } = await sb.rpc('my_following'); const ids = new Set((data || []).map((x) => x.id));
+    return peopleSheet(T('Following'), [...(data || []), ...[...S.members.values()].filter((m) => !ids.has(m.id))], T('You do not follow anyone yet'));
+  }
   if (k === 'friends') {
     if (self) return peopleSheet(T('Friends'), [...S.members.values()], T('No friends yet'));
     const { data } = await sb.rpc('together', { p_other: id }); const ids = data?.[0]?.mutual_ids || [];
@@ -2285,7 +2235,8 @@ async function statTap(id, k, st) {
   }
   if (k === 'followers') {
     if (!self) return toast(T('{n} follow {who}').replace('{n}', st.followers).replace('{who}', who.name || ''), 2500);
-    const { data } = await sb.rpc('my_followers'); return peopleSheet(T('Followers'), data || [], T('No followers yet. Open profiles get followers.'));
+    const { data } = await sb.rpc('my_followers'); const ids = new Set((data || []).map((x) => x.id));
+    return peopleSheet(T('Followers'), [...[...S.members.values()].filter((m) => !ids.has(m.id)), ...(data || [])], T('No followers yet'));
   }
   if (k === 'sparks') {
     if (!self) return toast(T('{who} got {n} compliments ✨').replace('{who}', who.name || '').replace('{n}', st.sparks), 2500);
@@ -2507,6 +2458,9 @@ V.edit = () => {
       <div class="erow" id="aidesc" hidden><input class="field" id="aidt" maxlength="300" placeholder="a small glowing fox made of light"><button class="pbtn sm blue" id="aigo">${ic('spark', 2)}</button></div></div></div>
     <div class="ecard" hidden><b>${ic('mic', 2)} Voice greeting</b><p class="fine" style="text-align:left;margin:0">Your living photo says it in your voice when friends open your page. Up to 6 seconds, for example: “Hi, I’m ${esc(m.name)}!”</p>
       <div class="erow" id="grow">${greetState()}</div></div>
+    <label class="fl">${esc(T('Line under your name'))}<textarea class="field ta" id="emotto" maxlength="90" rows="2" placeholder="An Idea Comes First&#10;The Medium Comes Later">${esc(m.motto || '')}</textarea></label>
+    <label class="fl">${esc(T('What you do: up to 3 words, with commas'))}<input class="field" id="etags" maxlength="60" placeholder="Film, Design, Digital" value="${esc((m.tags || []).join(', '))}"></label>
+    <label class="fl">${esc(T('Link to your site'))}<input class="field" id="esite" maxlength="120" inputmode="url" autocapitalize="off" autocorrect="off" placeholder="www.example.com" value="${esc((m.site || '').replace(/^https?:\/\//, ''))}"></label>
     <label class="fl">Vibe for today<input class="field" id="evibe" maxlength="60" placeholder="🎧 learning Turkish" value="${esc(vibeOf(m))}"></label>
     <div class="ideas" id="evq">${['🎧 ', '📚 ', '✈️ ', '🔥 ', '😴 ', '🎮 ', '☕ '].map((e) => `<button class="idea" data-ve="${e}" data-notr>${e.trim()}</button>`).join('')}</div>
     <label class="fl">City<input class="field" id="ecity" maxlength="60" placeholder="Istanbul" value="${esc(m.city || '')}"></label>
@@ -2573,12 +2527,17 @@ V.edit.after = () => {
   $('#esave').onclick = async () => {
     const vibe = $('#evibe').value.trim();
     const upd = { vibe: vibe || null, vibe_at: vibe ? (vibe === vibeOf(S.me) ? S.me.vibe_at : new Date().toISOString()) : null, city: $('#ecity').value.trim() || null,
-      langs: pick('#elangs', 'l'), interests: pick('#eints', 'i'), bio: $('#ebio').value.trim() || null };
+      langs: pick('#elangs', 'l'), interests: pick('#eints', 'i'), bio: $('#ebio').value.trim() || null,
+      motto: $('#emotto').value.split('\n').map((x) => x.trim()).filter(Boolean).slice(0, 2).join('\n').slice(0, 90) || null,
+      tags: $('#etags').value.split(/[,·;]+/).map((x) => x.trim().slice(0, 18)).filter(Boolean).slice(0, 3) };
+    let site = $('#esite').value.trim();
+    if (site) { if (!/^https?:\/\//i.test(site)) site = 'https://' + site; if (!/^https?:\/\/[^\s"'<>]+\.[^\s"'<>]+$/i.test(site)) { $('#eerr').textContent = T('Check the link to your site'); return; } }
+    upd.site = site || null;
     $('#esave').disabled = true;
     const { data, error } = await sb.from('profiles').update(upd).eq('id', S.uid).select().single();
     $('#esave').disabled = false;
     if (error) { $('#eerr').textContent = T('Could not save. Try again.'); return; }
-    S.me = data; toast('Saved'); go('u/' + S.uid);
+    S.me = data; toast('Saved'); go('me');
   };
 };
 
