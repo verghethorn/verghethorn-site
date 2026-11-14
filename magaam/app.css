@@ -1412,3 +1412,24 @@ h1{font-weight:700;font-size:38px;letter-spacing:-.035em;line-height:1.05}
 @media (prefers-reduced-motion:reduce){.pgup svg{animation:none;opacity:.7}}
 .pgf{padding-top:0;scroll-margin-top:var(--hh);min-height:calc(100% - var(--hh))}
 .pgup svg{margin:-6px 0;width:28px;height:28px}
+
+/* between the photo and the posts: saved stories and four tabs */
+.pghl{display:flex;gap:14px;overflow-x:auto;scrollbar-width:none;padding:14px 14px 6px}
+.pghl::-webkit-scrollbar{display:none}
+.hl{flex:none;display:flex;flex-direction:column;align-items:center;gap:5px;color:#fff;width:68px}
+.hl .ring{width:66px;height:66px;flex:none;border-radius:50%;padding:3px;background:rgba(255,255,255,.28);overflow:hidden}
+.hl .ring img{display:block;width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid #07080f}
+.hl.add .ring{background:none;border:1.5px dashed rgba(255,255,255,.45)}
+.hl.add svg{width:24px;height:24px}
+.hl small{font-size:11.5px;opacity:.85;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pgtb{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid rgba(255,255,255,.12);margin-top:4px}
+.pgtb button{height:48px;display:grid;place-items:center;color:#fff;opacity:.5;position:relative}
+.pgtb button svg{width:25px;height:25px}
+.pgtb button.on{opacity:1}
+.pgtb button.on::after{content:"";position:absolute;left:22%;right:22%;bottom:-1px;height:2.5px;border-radius:2px;background:var(--grad)}
+#pgbody{min-height:50vh}
+.pgshop{padding:10px 10px 30px}
+.pgabout{padding:16px 16px 30px}
+/* on my own page the round buttons run lower: tabs and saved stories keep clear of them */
+.pg2.own .pgtb{margin-inline-end:72px}
+.pg2.own .pghl{padding-inline-end:84px}

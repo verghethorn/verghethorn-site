@@ -699,7 +699,7 @@ V.look.after = () => {
 const LINKSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4.5 4.5 0 006.4 0l3-3a4.5 4.5 0 00-6.4-6.4l-1.2 1.2"/><path d="M14 10a4.5 4.5 0 00-6.4 0l-3 3a4.5 4.5 0 006.4 6.4l1.2-1.2"/></svg>';
 const UPSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14l6-6 6 6"/></svg>';
 const siteOf = (p) => { const u = String(p?.site || '').trim(); if (!/^https?:\/\/[^\s"'<>]+$/i.test(u)) return null; try { return { href: u, host: new URL(u).host }; } catch { return null; } };
-let pgTab = 'all';
+let pgTab = 'posts';
 function pageHTML(p, self) {
   const id = p.id, tags = (p.tags || []).filter(Boolean), motto = p.motto || vibeOf(p) || '', site = siteOf(p);
   const rail = self ? `
@@ -713,14 +713,14 @@ function pageHTML(p, self) {
     <button class="rb grad" data-go="chat/${id}" aria-label="${esc(T('Message'))}">${ic('chat')}</button>
     <button class="rb" id="cmpb" aria-label="${esc(T('Compliment'))}"><span class="rbe" data-notr>✨</span></button>
     <button class="rb" data-act="ucircle" data-uid="${id}" aria-label="${esc(T('Circle'))}">${ic('camera')}</button>
-    <button class="rb" id="rshop" data-go="market/${id}" aria-label="${esc(T('Shop'))}" hidden>${ic('bag')}</button>
     <button class="rb" data-act="umore" data-uid="${id}" aria-label="More">${ic('more', 2.4)}</button>`;
-  return `<div class="dark home pg2" style="position:absolute;inset:0">
+  return `<div class="dark home pg2 ${self ? 'own' : ''}" style="position:absolute;inset:0">
   <div class="pgs" id="pgs">
     <section class="pgh">${bgMedia(p)}<div class="shade"></div></section>
     <section class="pgf" id="pgf">
-      <div class="pggrid" id="pggrid"><span class="spinner"></span></div>
-      <div class="pgabout" id="pgabout"></div>
+      <div class="pghl" id="pghl" hidden></div>
+      <div class="pgtb" id="pgtb">${[['posts', 'grid', 'Posts'], ['reels', 'video', 'Videos'], ['shop', 'bag', 'Shop'], ['about', 'me', 'About']].map(([k, i, l]) => `<button class="${pgTab === k ? 'on' : ''}" data-t="${k}" aria-label="${esc(T(l))}">${ic(i)}</button>`).join('')}</div>
+      <div id="pgbody"><div class="pggrid"><span class="spinner"></span></div></div>
     </section>
   </div>
   <div class="pgscrim" id="pgscrim"></div>
@@ -738,10 +738,46 @@ function pageHTML(p, self) {
   <div class="pgup" id="pgup" aria-hidden="true">${UPSVG.repeat(5)}</div>
   ${self ? `<div class="pginst">${installBanner()}</div>` : ''}</div>`;
 }
-function pageFeed(id, self) {
-  const g = $('#pggrid'); if (!g) return; const posts = S.posts.get(id) || [];
-  g.innerHTML = posts.map((x) => `<button class="pgt" data-go="gallery/${id}"><img src="${esc(thumb(x.path))}" alt="" loading="lazy" onerror="this.src='${esc(url(x.path))}'">${x.video_path ? `<i class="pgv">${ic('video', 2)}</i>` : ''}</button>`).join('')
-    || `<p class="pgnone">${esc(T(self ? 'Your photos and videos will live here' : 'No posts yet'))}</p>`;
+// What is under the photo: posts, videos, the person's shop, and a few words about them.
+async function pageFeed(id, self) {
+  const box = $('#pgbody'); if (!box) return; const p = self ? S.me : S.members.get(id), tab = pgTab;
+  const none = (t) => `<p class="pgnone">${esc(T(t))}</p>`;
+  if (tab === 'posts' || tab === 'reels') {
+    const posts = (S.posts.get(id) || []).filter((x) => tab === 'posts' || x.video_path);
+    box.innerHTML = `<div class="pggrid">${posts.map((x) => `<button class="pgt" data-go="gallery/${id}"><img src="${esc(thumb(x.path))}" alt="" loading="lazy" onerror="this.src='${esc(url(x.path))}'">${x.video_path ? `<i class="pgv">${ic('video', 2)}</i>` : ''}</button>`).join('')
+      || none(tab === 'reels' ? 'No videos yet' : self ? 'Your photos and videos will live here' : 'No posts yet')}</div>`;
+    return;
+  }
+  if (tab === 'shop') {
+    box.innerHTML = '<div class="pggrid"><span class="spinner"></span></div>';
+    const { data } = await sb.rpc('market_list', { p_q: '', p_cat: '', p_seller: id }); if (pgTab !== 'shop' || !$('#pgbody')) return;
+    (data || []).forEach((x) => S.prod.set(x.id, x));
+    box.innerHTML = `<div class="mgrid pgshop">${(data || []).map(tileHTML).join('') || `<div class="mnone"><b>${esc(T(self ? 'Your shop is empty' : 'This person is not selling anything yet.'))}</b>${self ? `<button class="pbtn blue" data-go="sell">${ic('plus', 2)}${esc(T('Sell a thing'))}</button>` : ''}</div>`}</div>`;
+    return;
+  }
+  // about
+  const ints = p.interests || [], mine = new Set(S.me?.interests || []);
+  box.innerHTML = `<div class="pgabout">${p.bio ? `<p class="pgbio" data-notr>${esc(p.bio)}</p>` : ''}
+    ${p.city || (p.langs || []).length ? `<p class="pgloc" data-notr>${p.city ? '📍 ' + esc(p.city) : ''} ${(p.langs || []).map(flagOf).join(' ')}</p>` : ''}
+    ${ints.length ? `<div class="pints2">${ints.map((x) => `<span class="pint2 ${!self && mine.has(x) ? 'same' : ''}">${esc(T(x))}</span>`).join('')}</div>` : ''}
+    ${self ? '' : '<div class="ptog2" id="ptog"></div>'}
+    ${!p.bio && !ints.length && !p.city ? none(self ? 'Tell about yourself in Settings → Edit profile' : 'Nothing here yet') : ''}</div>`;
+  if (!self) {
+    const { data } = await sb.rpc('together', { p_other: id }); const tg = data?.[0], t = $('#ptog');
+    if (t && tg) { const days = S.streaks.get(id), faces = (tg.mutual_ids || []).map((m) => S.members.get(m)).filter(Boolean);
+      t.innerHTML = `<div class="tg"><b data-notr>${tg.since ? esc(sinceTxt(tg.since)) : '—'}</b><span>${esc(T('friends since'))}</span></div>
+        <div class="tg"><b data-notr>${days ? '🔥 ' + days : '—'}</b><span>${esc(T('days in a row'))}</span></div>
+        <div class="tg">${faces.length ? `<span class="faces">${faces.slice(0, 4).map((f) => thumbHTML(f)).join('')}</span>` : '<b>0</b>'}<span>${esc(T('mutual friends'))}</span></div>`; }
+  }
+}
+// Saved stories as round covers between the photo and the posts.
+async function pageHighlights(id, self) {
+  const { data } = await sb.from('stories').select('*').eq('user_id', id).eq('pinned', true).order('created_at', { ascending: false }).limit(20);
+  const r = $('#pghl'); if (!r) return; const hl = data || [];
+  r.hidden = !hl.length && !self;
+  r.innerHTML = (self ? `<button class="hl add" data-act="addstory"><span class="ring">${ic('plus', 2.2)}</span><small>${esc(T('New'))}</small></button>` : '')
+    + hl.map((x, i) => `<button class="hl" data-hi="${i}"><span class="ring"><img src="${esc(thumb(x.path))}" alt="" onerror="this.src='${esc(url(x.path))}'"></span><small data-notr>${esc(new Date(x.created_at).toLocaleDateString(I18N.lang || 'en', { day: 'numeric', month: 'short' }))}</small></button>`).join('');
+  r.onclick = (e) => { const b = e.target.closest('[data-hi]'); if (b) openStories(id, hl.slice(+b.dataset.hi).concat(hl.slice(0, +b.dataset.hi))); };
 }
 async function pageAfter(id, self) {
   const p = self ? S.me : S.members.get(id);
@@ -751,25 +787,14 @@ async function pageAfter(id, self) {
   const sc = $('#pgs'), hd = $('#ph2'), view = sc.parentElement;
   const fit = () => view.style.setProperty('--hh', (hd.offsetTop + hd.offsetHeight + 14) + 'px'); fit(); setTimeout(fit, 900);
   sc.addEventListener('scroll', () => { const k = Math.min(1, sc.scrollTop / 260); view.style.setProperty('--sk', k); view.classList.toggle('scrolled', sc.scrollTop > 40); }, { passive: true });
-  // about: a few lines, interests, and what you two share
-  const ints = p.interests || [], mine = new Set(S.me?.interests || []);
-  const ab = $('#pgabout');
-  ab.innerHTML = `${p.bio ? `<p class="pgbio" data-notr>${esc(p.bio)}</p>` : ''}
-    ${p.city || (p.langs || []).length ? `<p class="pgloc" data-notr>${p.city ? '📍 ' + esc(p.city) : ''} ${(p.langs || []).map(flagOf).join(' ')}</p>` : ''}
-    ${ints.length ? `<div class="pints2">${ints.map((x) => `<span class="pint2 ${!self && mine.has(x) ? 'same' : ''}">${esc(T(x))}</span>`).join('')}</div>` : ''}
-    ${self ? '' : '<div class="ptog2" id="ptog"></div>'}`;
+  $('#pgtb').onclick = (e) => { const b = e.target.closest('[data-t]'); if (!b) return; pgTab = b.dataset.t; $('#pgtb').querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b)); pageFeed(id, self); };
+  pageHighlights(id, self);
   if (!S.posts.get(id)) await loadPosts(id); else loadPosts(id).then(() => onPage(id, self) && pageFeed(id, self));
   if (!onPage(id, self)) return;
   pageFeed(id, self);
   if (!self) {
     $('#cmpb').onclick = () => sheet(T('Send a compliment'), CMPS.map((c, i) => ({ icon: 'spark', label: T(c), run: () => sendCmp(id, 'x|cmp|' + i) })));
     app.querySelector('[data-act="ucircle"]')?.addEventListener('click', () => { go('chat/' + id); setTimeout(() => recordCircle(id), 600); });
-    sb.from('products').select('id', { count: 'exact', head: true }).eq('user_id', id).neq('status', 'hidden').then(({ count }) => { const b = $('#rshop'); if (b && count) b.hidden = false; });
-    const { data } = await sb.rpc('together', { p_other: id }); const tg = data?.[0], t = $('#ptog');
-    if (t && tg) { const days = S.streaks.get(id), faces = (tg.mutual_ids || []).map((m) => S.members.get(m)).filter(Boolean);
-      t.innerHTML = `<div class="tg"><b data-notr>${tg.since ? esc(sinceTxt(tg.since)) : '—'}</b><span>${esc(T('friends since'))}</span></div>
-        <div class="tg"><b data-notr>${days ? '🔥 ' + days : '—'}</b><span>${esc(T('days in a row'))}</span></div>
-        <div class="tg">${faces.length ? `<span class="faces">${faces.slice(0, 4).map((f) => thumbHTML(f)).join('')}</span>` : '<b>0</b>'}<span>${esc(T('mutual friends'))}</span></div>`; }
   }
 }
 const onPage = (id, self) => (self ? route().name === 'me' : route().name === 'u' && route().id === id);
