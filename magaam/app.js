@@ -145,7 +145,7 @@ function bgMedia(p) {
   if (p.video_path) { const v = esc(url(p.video_path)), si = still ? `<img class="lvstill" crossorigin="anonymous" src="${esc(url(still))}" alt="">` : ''; return `<div class="bg loopbox" data-bgfor="${p.id}">${si}<video class="lv on" crossorigin="anonymous" src="${v}" autoplay muted playsinline webkit-playsinline disablepictureinpicture disableremoteplayback preload="auto"></video><video class="lv" crossorigin="anonymous" src="${v}" muted playsinline webkit-playsinline disablepictureinpicture disableremoteplayback preload="auto"></video></div>`; }
   // The AI photo shows right away and gently "breathes" while its living video is being made.
   if (p.still_path) return `<div class="bg stillbox" data-bgfor="${p.id}"><img crossorigin="anonymous" src="${esc(url(p.still_path))}" alt=""></div>`;
-  if (p.photo_path) return `<div class="bg rawbox" data-bgfor="${p.id}"><img crossorigin="anonymous" src="${esc(url(p.photo_path))}" alt=""><span class="alive">${ic('spark')}Not alive yet</span></div>`;
+  if (p.photo_path) return `<div class="bg stillbox" data-bgfor="${p.id}"><img crossorigin="anonymous" src="${esc(url(p.photo_path))}" alt=""></div>`;
   return `<div class="bg-blur" data-bgfor="${p.id}" style="background-image:url('${sceneImg(p.scene)}')"></div>`;
 }
 // Crossfade loop for living videos, and a light check on living photos still being made.
@@ -652,104 +652,46 @@ async function loadWeek() {
 // A gentle change used when someone wants to keep the photo as it is: same scene, just a cinematic AI frame.
 const KEEP_AS_IS = 'Keep everything as it is: the same place, pose, outfit, framing and background. Only turn it into a cinematic, high-quality frame with beautiful light.';
 let lookEdit = false, lookWish = '', checkedAI = {};
+let lookUp = false;
 V.look = () => {
-  loadVars();
-  if (!weekInfo) loadWeek().then(() => { if (route().name === 'look' && weekInfo.next) show(); });
-  const editing = !!(S.me?.orig_path || S.me?.photo_path);
-  const orig = pendingPhoto ? pendingPhoto.preview : (S.me?.orig_path ? url(S.me.orig_path) : S.me?.photo_path ? url(S.me.photo_path) : '');
-  const vars = pendingPhoto ? [] : (lookVars || []);
-  const showVar = vars.length > 0 && lookPick >= 0 && lookPick < vars.length;
-  const src = showVar ? url(vars[lookPick]) : orig;
-  const busy = lookBusy || ['checking', 'ai'].includes(lookCheck);
-  const status = lookCheck === 'checking' ? `${esc(aiName())} is checking your photo…`
-    : lookCheck === 'ai' ? `This photo is already made with AI. ${esc(aiName())} is bringing it to life…`
-    : lookBusy ? `${esc(aiName())} is making your photo… about 20 seconds` : '';
-  let actions = '';
-  if (lookCheck === 'later') actions = `<div class="askbox">${aiMsg(`AI is not available right now, so I saved your photo for now. Others see it blurred until I change it and bring it to life. Come back later: Settings → Change profile photo.`)}</div><button class="btn" data-go="me">${ic('check')}Continue to MAGAAM</button>`;
-  else if (busy) actions = '';
-  else if (!orig) actions = `<button class="btn" data-act="pick">${ic('image')}Upload photo</button><button class="btn out" data-act="snap" style="margin-top:10px">${ic('camera')}Take a photo</button>`;
-  else if (showVar) actions = `<button class="btn" id="livevar">${ic('spark')}Bring to life</button>
-    <div class="duo" style="margin-top:10px"><button class="btn out" id="nextvar">${ic('swap')}Another variant</button><button class="btn out" id="backorig">${ic('image')}My photo</button></div>`;
-  else actions = `<button class="btn" id="liveorig">${ic('spark')}Bring to life</button>
-    <div class="duo" style="margin-top:10px"><button class="btn out" id="editb" aria-pressed="${lookEdit}">${ic('edit')}Change with AI</button><button class="btn out" data-act="pick">${ic('image')}Another photo</button></div>
-    ${lookEdit ? `<div class="editbox"><textarea class="field ta" id="wish" maxlength="400" placeholder="What to change? For example: me in Paris at night">${esc(lookWish)}</textarea>
-      <div class="ideas">${IDEAS_AVATAR.slice(1, 4).map((t) => `<button class="idea" data-idea="${esc(t)}">${esc(t)}</button>`).join('')}</div>
-      <div class="duo"><button class="btn" id="go">${ic('spark')}Create</button><button class="btn soft" id="aidec">${ic('spark')}Let ${esc(aiName())} decide</button></div></div>` : ''}`;
+  const m = S.me, editing = !!(m?.orig_path || m?.photo_path), ph = m?.still_path || m?.photo_path;
   return `<div class="light look2">
   <div class="topbar">${editing ? `<button class="iconbtn" data-back="me" aria-label="Back">${ic('back')}</button><span class="word">MAGAAM</span>` : `<span style="width:44px"></span>${progress(3)}`}<span style="width:44px"></span></div>
-  <h1 class="l2title">Living photo</h1>
-  ${weekInfo?.next ? `<div class="weeknote">${ic('coin')}<span>Free once a week. Next free change: ${esc(dayName(weekInfo.next))}. Earlier: 150 coins.</span></div>` : ''}
-  <div class="photo-slot big ${busy ? 'busy' : ''}">${src ? `<img src="${esc(src)}" alt="Your photo">` : `<div class="ph">${ic('camera')}Add your photo</div>`}${busy ? '<span class="spinner"></span>' : ''}</div>
-  ${status ? `<p class="l2status">${status}</p>` : ''}
-  ${showVar && !busy ? `<p class="l2note">Not this one? Tap “Another variant”.</p>` : ''}
+  <h1 class="l2title">Profile photo</h1>
+  <div class="photo-slot big ${lookUp ? 'busy' : ''}">${m?.video_path && !lookUp ? `<video src="${esc(url(m.video_path))}" poster="${esc(url(ph))}" muted loop autoplay playsinline></video>` : ph ? `<img src="${esc(url(ph))}" alt="Your photo">` : `<div class="ph">${ic('camera')}Add your photo</div>`}${lookUp ? '<span class="spinner"></span>' : ''}</div>
+  <p class="l2note">${esc(T('Upload a photo or a short video. Friends see it on your page.'))}</p>
   <p class="err" id="err">${esc(lookErr)}</p>
   <div class="grow"></div>
-  <div class="l2actions">${actions}</div></div>`;
+  <div class="l2actions">${lookUp ? '' : `<button class="btn" id="lpick">${ic('image')}${esc(T(editing ? 'Another photo' : 'Upload photo'))}</button>
+    <div class="duo" style="margin-top:10px"><button class="btn out" id="lsnap">${ic('camera')}Take a photo</button><button class="btn out" id="lvid">${ic('video')}Video</button></div>
+    ${editing ? `<button class="btn soft" style="margin-top:10px" data-go="me">${ic('check')}Done</button>` : ''}`}</div></div>`;
 };
 V.look.after = () => {
-  const keepWish = () => { const w = $('#wish'); if (w) lookWish = w.value; };
-  const fail = (e) => { lookBusy = false; if (lookCheck !== 'later') lookCheck = ''; const m = String(e?.message || e || ''); lookErr = T(/fetch|network/i.test(m) ? aiError('network') : m.startsWith('This photo') ? m : aiError(m)); if (route().name === 'look') show(); };
-  const bringToLife = async (path) => {
-    lookErr = ''; const r = await runPaid({ kind: 'avatar', path }); weekInfo = null;
-    if (!r) { lookCheck = ''; if (route().name === 'look') show(); return false; }
-    lookVars = []; lookPick = -1; saveVars(); lookWish = ''; lookEdit = false; lookCheck = '';
-    go('me'); toast(`${aiName()} is bringing your photo to life. About 2 minutes.`, 4500); return true;
+  const save = async (upd) => {
+    const { data, error } = await sb.from('profiles').update({ greet_path: null, greet_status: null, ...upd }).eq('id', S.uid).select().single();
+    if (error) throw error; S.me = data;
   };
-  // Make one new look of the photo (the AI makes a few at once; they are shown one by one).
-  const makeOne = async (wish) => {
-    lookErr = ''; lookBusy = true; show();
-    try { const v = await makeVariants(S.me.orig_path || S.me.photo_path, wish); lookVars = v; lookPick = 0; saveVars(); }
-    catch (e) { return fail(e); }
-    lookBusy = false; if (route().name === 'look') show();
+  const run = async (fn) => {
+    lookErr = ''; lookUp = true; show();
+    try { await fn(); lookUp = false; go('me'); toast('Profile photo updated'); }
+    catch (e) { lookUp = false; lookErr = T(e?.message || 'Upload failed. Try again.'); if (route().name === 'look') show(); }
   };
-  const choose = async (cap) => {
-    const f = await pickFile(cap); if (!f) return; keepWish();
-    pendingPhoto = { file: f, preview: URL.createObjectURL(f) }; lookVars = []; lookPick = -1; saveVars(); lookCheck = 'checking'; lookErr = ''; show();
-    try {
-      // Upload, then check the photo: one person, a face, and whether it is already made with AI.
-      const [hints, path] = await Promise.all([fileHints(f), uploadPhoto(f, 'avatar')]);
-      const r = await anim({ kind: 'check', path, hints });
-      if (!r.ok && (r.status === 0 || r.status >= 500)) {
-        const upd = { orig_path: path }; if (!S.me?.photo_path) upd.photo_path = path;
-        const { data } = await sb.from('profiles').update(upd).eq('id', S.uid).select().single(); if (data) S.me = data;
-        pendingPhoto = null; lookCheck = 'later'; if (route().name === 'look') show(); return;
-      }
-      if (!r.ok) { sb.storage.from('media').remove([path, path.replace(/\.jpg$/, '-t.jpg')]); throw new Error(r.error || 'ai'); }
-      if (!r.pass) { sb.storage.from('media').remove([path, path.replace(/\.jpg$/, '-t.jpg')]); throw new Error(r.problem === 'group' ? 'group' : 'no_face'); }
-      const upd = { orig_path: path }; if (!S.me?.photo_path) upd.photo_path = path;
-      const { data, error } = await sb.from('profiles').update(upd).eq('id', S.uid).select().single(); if (error) throw error;
-      S.me = data; pendingPhoto = null; checkedAI[path] = !!r.ai;
-      if (r.ai) { lookCheck = 'ai'; show(); await bringToLife(path); return; }
-      lookCheck = '';
-    } catch (e) { pendingPhoto = null; return fail(e); }
-    if (route().name === 'look') show();
-  };
-  app.querySelectorAll('[data-act="pick"]').forEach((b) => (b.onclick = () => choose(false)));
-  app.querySelectorAll('[data-act="snap"]').forEach((b) => (b.onclick = () => choose(true)));
-  // One button: an AI photo comes alive right away; a regular one first gets a gentle AI touch.
-  const lo = $('#liveorig'); if (lo) lo.onclick = async () => {
-    const path = S.me.orig_path || S.me.photo_path; lookErr = '';
-    let ai = checkedAI[path];
-    if (ai === undefined) {
-      lookCheck = 'checking'; show();
-      const r = await anim({ kind: 'check', path, hints: [] });
-      if (!r.ok) return fail(r.error || 'ai');
-      if (!r.pass) return fail(r.problem === 'group' ? 'group' : 'no_face');
-      ai = checkedAI[path] = !!r.ai;
-    }
-    if (ai) { lookCheck = 'ai'; show(); return bringToLife(path); }
-    lookCheck = ''; makeOne(KEEP_AS_IS);
-  };
-  const lv = $('#livevar'); if (lv) lv.onclick = () => { lookCheck = 'ai'; show(); bringToLife(lookVars[lookPick]); };
-  const nv = $('#nextvar'); if (nv) nv.onclick = () => { if (lookPick + 1 < lookVars.length) { lookPick++; show(); } else makeOne(lookWish.trim().length >= 3 ? lookWish.trim() : KEEP_AS_IS); };
-  const bo = $('#backorig'); if (bo) bo.onclick = () => { lookPick = -1; show(); };
-  const eb = $('#editb'); if (eb) eb.onclick = () => { lookEdit = !lookEdit; show(); if (lookEdit) setTimeout(() => $('#wish')?.focus(), 50); };
-  const w = $('#wish');
-  if (w) { w.addEventListener('input', keepWish); app.querySelectorAll('[data-idea]').forEach((b) => (b.onclick = () => { w.value = b.dataset.idea; keepWish(); })); }
-  // "Keep it as it is, just bring it to life" means exactly that: no new look.
-  const KEEP_RE = /(как\s*есть|не\s*меня|ничего\s*не\s*меня|только\s*ожив|просто\s*ожив|as\s*it\s*is|keep\s*it|don'?t\s*change|just\s*(animate|bring)|olduğu\s*gibi|değiştirme|كما\s*هي|لا\s*تغير)/i;
-  const g = $('#go'); if (g) g.onclick = () => { keepWish(); const t = lookWish.trim(); if (t.length < 3) return w?.focus(); if (KEEP_RE.test(t)) { lookEdit = false; lookWish = ''; return $('#liveorig')?.click(); } makeOne(t); };
-  const ad = $('#aidec'); if (ad) ad.onclick = () => { lookWish = ''; makeOne(AI_DECIDES); };
+  const photo = async (cap) => { const f = await pickFile(cap); if (!f) return;
+    run(async () => { const path = await uploadPhoto(f, 'avatar'); await save({ orig_path: path, photo_path: path, still_path: path, video_path: null }); }); };
+  $('#lpick') && ($('#lpick').onclick = () => photo(false));
+  $('#lsnap') && ($('#lsnap').onclick = () => photo(true));
+  $('#lvid') && ($('#lvid').onclick = async () => {
+    const f = await pickVideo(); if (!f) return;
+    if (f.size > 50 * 1024 * 1024) { lookErr = T('This video is larger than 50 MB. Use a shorter clip.'); return show(); }
+    run(async () => {
+      const info = await videoInfo(f); if (!info?.poster) throw new Error('This video could not be read. Try an MP4 or MOV video.');
+      if (info.dur > 30.5) throw new Error('A profile video can be up to 30 seconds long.');
+      const ext = /quicktime|mov/i.test(f.type) || /\.mov$/i.test(f.name) ? 'mov' : /webm/.test(f.type) ? 'webm' : 'mp4';
+      const vpath = `${S.uid}/avatar-${Date.now()}.${ext}`;
+      const [p] = await Promise.all([uploadPhoto(info.poster, 'avatar'), sb.storage.from('media').upload(vpath, f, { contentType: f.type || 'video/mp4', cacheControl: '31536000' }).then(({ error }) => { if (error) throw error; })]);
+      await save({ orig_path: p, photo_path: p, still_path: p, video_path: vpath });
+    });
+  });
 };
 
 /* Own page */
@@ -790,12 +732,7 @@ V.me.update = () => {
   if (sh) sh.innerHTML = `<button class="stile add" data-act="addpost" aria-label="Add to gallery">${ic('plus', 2.4)}</button>` + posts.slice(0, 20).map((x) => `<button class="stile" data-go="gallery/${S.uid}">${x.video_path ? `<video src="${esc(url(x.video_path))}#t=0.1" muted loop playsinline autoplay preload="metadata" poster="${esc(thumb(x.path))}"></video>` : `<img src="${esc(thumb(x.path))}" alt="" loading="lazy">`}</button>`).join('')
     + (posts.length ? '' : `<span class="sempty">${esc(T('Your photos and videos will live here'))}</span>`);
   const al = $('#ailine'); const j = avatarJob();
-  if (al) {
-    if (j && ['editing', 'video', 'queued'].includes(j.status)) { al.hidden = false; al.innerHTML = `<span class="spinner xs"></span><span>${esc(T('Bringing it to life, about 2 minutes…'))}</span>`; }
-    else if (j && j.status === 'error' && j === S.jobs.find((x) => x.kind === 'avatar')) { al.hidden = false; al.innerHTML = `<button data-act="retryai">${ic('spark', 2)}${esc(T('Try another photo or description'))}</button>`; }
-    else if (!S.me.video_path) { al.hidden = false; al.innerHTML = `<button data-act="retryai">${ic('spark', 2)}${esc(T('Your photo is not alive yet'))}</button>`; }
-    else al.hidden = true;
-  }
+  if (al) al.hidden = true; // ordinary photos: nothing is being "brought to life" any more
   const d = $('#hdot'); if (d) d.hidden = !totalUnread();
   setTabs('me');
   showDigest();
@@ -1047,16 +984,14 @@ function storiesRowHTML() {
   return me + storyUsers().map((u) => { const p = S.members.get(u); return `<div class="stit"><button class="ring ${unseenSt(u) ? 'on' : 'seen'}" data-act="story" data-uid="${u}" aria-label="${esc(p?.name || '')}">${thumbHTML(p)}</button><span class="stn" data-notr>${esc(p?.name || '')}</span></div>`; }).join('');
 }
 async function addStory() {
-  const k = await choose('Add to your story', [{ k: 'photo', icon: 'spark', label: 'Photo, changed with AI' }, { k: 'gallery', icon: 'grid', label: 'From my photos' }, { k: 'video', icon: 'video', label: 'Video' }]);
+  const k = await choose('Add to your story', [{ k: 'photo', icon: 'image', label: 'Photo' }, { k: 'gallery', icon: 'grid', label: 'From my photos' }, { k: 'video', icon: 'video', label: 'Video' }]);
   if (k === 'photo') {
     const f = await pickFile(false); if (!f) return;
     toast('Uploading…', 30000);
     let path; try { path = await uploadPhoto(f, 'src'); } catch (e) { toast(e.message || 'Upload failed. Try again.'); return; }
     $('#toast').hidden = true;
-    const ideasP = aiCall({ op: 'ideas', path, lang: I18N.langName }).then((j) => j.ideas || []);
-    const wish = await askAI(`Every photo in MAGAAM is made with AI. How should I change it for your story?`, IDEAS_POST, 'Make my story', ideasP);
-    if (!wish) { sb.storage.from('media').remove([path, path.replace(/\.jpg$/, '-t.jpg')]); return; }
-    if (await startAI('post_edit', path, wish, { story: true })) toast(`${aiName()} is making your story. About 30 seconds.`, 4000);
+    const { error } = await sb.from('stories').insert({ user_id: S.uid, path }); if (error) return toast('Upload failed. Try again.');
+    await loadStories(); toast('Your story is live for 24 hours'); refresh();
     return;
   }
   if (k === 'gallery') {
@@ -1789,7 +1724,7 @@ async function startRec(to) {
   mr.start(250);
   $('#cf').hidden = true; $('#rec').hidden = false; $('#vfx').hidden = false;
   const tick = () => { if (!rec) return; const sec = (Date.now() - rec.t0) / 1000; $('#rect').textContent = fmtSec(sec);
-    $('#rechint').textContent = sec <= 10 ? (S.me?.video_path ? 'Your living photo will say it' : 'Voice message') : 'Over 10 s: sent as a normal voice message';
+    $('#rechint').textContent = 'Voice message';
     if (sec >= 60) stopRec(true); };
   rec.timer = setInterval(tick, 200); tick();
 }
@@ -2570,7 +2505,7 @@ V.edit = () => {
       <p class="fine" style="text-align:left;margin:0">${esc(T('Friends see {ai} when you are away. Send any picture or describe it, and AI will draw a clean avatar.').replace('{ai}', aiName()))}</p>
       <div class="erow"><button class="pbtn sm blue" id="aipic">${ic('image', 2)}<span>From a picture</span></button><button class="pbtn sm out" id="aitxt">${ic('edit', 2)}<span>Describe</span></button></div>
       <div class="erow" id="aidesc" hidden><input class="field" id="aidt" maxlength="300" placeholder="a small glowing fox made of light"><button class="pbtn sm blue" id="aigo">${ic('spark', 2)}</button></div></div></div>
-    <div class="ecard"><b>${ic('mic', 2)} Voice greeting</b><p class="fine" style="text-align:left;margin:0">Your living photo says it in your voice when friends open your page. Up to 6 seconds, for example: “Hi, I’m ${esc(m.name)}!”</p>
+    <div class="ecard" hidden><b>${ic('mic', 2)} Voice greeting</b><p class="fine" style="text-align:left;margin:0">Your living photo says it in your voice when friends open your page. Up to 6 seconds, for example: “Hi, I’m ${esc(m.name)}!”</p>
       <div class="erow" id="grow">${greetState()}</div></div>
     <label class="fl">Vibe for today<input class="field" id="evibe" maxlength="60" placeholder="🎧 learning Turkish" value="${esc(vibeOf(m))}"></label>
     <div class="ideas" id="evq">${['🎧 ', '📚 ', '✈️ ', '🔥 ', '😴 ', '🎮 ', '☕ '].map((e) => `<button class="idea" data-ve="${e}" data-notr>${e.trim()}</button>`).join('')}</div>
@@ -2722,11 +2657,7 @@ async function addVideoPost() {
     path = p;
   } catch (e) { toast(e.message || 'Upload failed. Try again.', 4000); return; }
   $('#toast').hidden = true;
-  const canAI = /\.(mp4|mov)$/.test(vpath) && info.dur >= 3 && info.dur <= 10.05 && Math.min(info.w, info.h) >= 720;
-  const cost = Math.max(3, Math.ceil(info.dur - 0.05)) * 25;
-  const k = await dialog(aiMsg(canAI ? `Nice video! Post it as it is, or I can change it with AI: a new place, style or outfit. For this video it costs ${cost} coins.` : `Nice video! I'll post it as it is. AI can change videos from 3 to 10 seconds long, in at least 720p.`),
-    [{ k: 'post', label: 'Post as it is', icon: 'check' }, ...(canAI ? [{ k: 'ai', label: 'Change with AI', icon: 'spark', style: 'soft' }] : []), { k: 'no', label: 'Cancel', style: 'out' }]);
-  const drop = () => sb.storage.from('media').remove([vpath, path, path.replace(/\.jpg$/, '-t.jpg')]);
+  const k = 'post';
   if (k === 'post') {
     const { error } = await sb.from('posts').insert({ user_id: S.uid, path, video_path: vpath });
     if (error) { toast('Upload failed. Try again.'); return; }
@@ -2772,10 +2703,8 @@ async function addPost() {
   let path;
   try { path = await uploadPhoto(f, 'src'); } catch (e) { toast(e.message || 'Upload failed. Try again.'); return; }
   $('#toast').hidden = true;
-  const ideasP = aiCall({ op: 'ideas', path, lang: I18N.langName }).then((j) => j.ideas || []);
-  const wish = await askAI(`Every photo in MAGAAM is made with AI. Here are my ideas for this photo. Pick one, write your own, or let me decide.`, IDEAS_POST, 'Change my photo', ideasP);
-  if (!wish) { sb.storage.from('media').remove([path, path.replace(/\.jpg$/, '-t.jpg')]); return; }
-  if (await startAI('post_edit', path, wish)) toast(`${aiName()} is changing your photo. About 30 seconds.`, 4000);
+  const { error } = await sb.from('posts').insert({ user_id: S.uid, path }); if (error) return toast('Upload failed. Try again.');
+  await loadPosts(S.uid); toast('Photo added'); show();
 }
 
 /* Balance */
@@ -2786,12 +2715,8 @@ V.wallet = async () => {
   const d = (iso) => { try { return new Date(iso).toLocaleDateString(I18N.lang === 'en' ? 'en-GB' : I18N.lang, { day: 'numeric', month: 'short' }); } catch { return ''; } };
   return `<div class="light">
   <div class="topbar"><button class="iconbtn" data-back="me" aria-label="Back">${ic('back')}</button><span class="word">MAGAAM</span><span style="width:44px"></span></div>
-  <div class="lhead" style="margin-top:14px"><h1>Balance</h1><p class="sub">Coins pay for extra AI magic</p></div>
+  <div class="lhead" style="margin-top:14px"><h1>Balance</h1><p class="sub">${esc(T('Photos, videos, stories and chats are free. We will find a use for coins later.'))}</p></div>
   <div class="wbal">${ic('coin', 1.6)}<b id="wcoins" data-notr>${S.coins}</b><span>coins</span></div>
-  <h3 class="wh">Free</h3>
-  <div class="wlist"><div><span>A new living photo once a week</span><b class="free">Free</b></div><div><span>Photo variants and gallery photo changes</span><b class="free">Free</b></div></div>
-  <h3 class="wh">With coins</h3>
-  <div class="wlist"><div><span>A new living photo before the week is over</span><b>150</b></div><div><span>Change a video with AI, per second</span><b>25</b></div></div>
   <h3 class="wh">Top up</h3>
   <div class="packs">${PACKS.map(([c, p]) => `<button class="pack" data-pack="${c}"><b data-notr>${c}</b><span>coins</span><i data-notr>${p}</i></button>`).join('')}</div>
   <p class="fine">Payments open soon. In the test version the MAGAAM team adds coins for you.</p>
@@ -2832,7 +2757,7 @@ app.addEventListener('click', (e) => {
   if (a === 'settings') return sheet('Settings', [
     { icon: 'me', label: 'Edit profile', run: () => go('edit') },
     { icon: 'edit', label: 'Edit name and birthday', run: () => go('about') },
-    { icon: 'spark', label: 'Change profile photo', run: () => go('look') },
+    { icon: 'image', label: 'Profile photo', run: () => go('look') },
     { icon: 'coin', label: `Balance: ${S.coins} coins`, run: () => go('wallet') },
     { icon: 'edit', label: `Rename ${aiName()}`, run: () => go('assistant') },
     { icon: 'globe', label: `App language: ${I18N.label}`, run: pickUiLang },
