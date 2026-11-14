@@ -112,8 +112,9 @@ const store = { get(k){ try { return localStorage.getItem(k); } catch { return n
 /* ---------- helpers ---------- */
 let toastT;
 function toast(t, ms = 2400) { const n = $('#toast'); n.textContent = T(t); n.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => (n.hidden = true), ms); }
-const url = (p) => (p ? MEDIA + p : '');
-const thumb = (p) => (p ? MEDIA + p.replace(/\.jpg$/, '-t.jpg') : '');
+const local = (p) => /^(demo|img)\//.test(p || '');
+const url = (p) => (p ? (local(p) ? p : MEDIA + p) : '');
+const thumb = (p) => (p ? (local(p) ? '' : MEDIA) + p.replace(/\.jpg$/, '-t.jpg') : '');
 const sceneImg = (k) => `img/scene-${SCENES.some((s) => s[0] === k) ? k : 'plaza'}.jpg`;
 const nameOf = (id) => (id === S.uid ? S.me?.name : S.members.get(id)?.name || S.extra?.get(id)?.name || S.people?.get(id)?.name) || 'Someone';
 const initial = (n) => esc((n || '?').trim().charAt(0).toUpperCase());
@@ -163,7 +164,7 @@ setInterval(() => {
     if (cur.paused && !cur.ended) { box.dataset.x = '1'; lvPlay(cur).then(() => box.classList.add('live')).catch(() => {}).finally(() => delete box.dataset.x); return; }
     if (!cur.paused) box.classList.add('live');
     if (!cur.duration || !isFinite(cur.duration)) return;
-    if (cur.ended || cur.currentTime > cur.duration - 0.75) {
+    if (cur.ended || cur.currentTime > Math.min(cur.duration, 5) - 0.75) {
       box.dataset.x = '1'; nxt.currentTime = 0;
       lvPlay(nxt).then(() => {
         nxt.classList.add('on'); cur.classList.remove('on');
@@ -457,7 +458,7 @@ async function show() {
     else if (S.me?.name && S.me?.ai_name && !hasPhoto && !['about', 'assistant', 'look'].includes(name)) name = 'look';
     const pend = store.get('magaam-addfriend');
     if (pend && name === 'me' && S.me?.username && S.me?.ai_name && hasPhoto) { store.set('magaam-addfriend', ''); name = 'add'; id = pend; }
-    if (location.hash.replace(/^#\/?/, '').split('/')[0] !== name) history.replaceState(null, '', '#/' + name + (id && ['chat','u','gallery','add','p','item','market','sell'].includes(name) ? '/' + id : ''));
+    if (location.hash.replace(/^#\/?/, '').split('/')[0] !== name) history.replaceState(null, '', '#/' + name + (id && ['chat','u','gallery','add','p','item','market','sell','sq'].includes(name) ? '/' + id : ''));
   }
   S.prevView = S.view; S.view = name;
   const fn = V[name] || V.me;
@@ -476,9 +477,8 @@ function refresh() {
 // redraw the tab bar only when something in it changed (redrawing every time made the bottom twitch)
 function setTabs(active) { const t = $('#tabs'); if (!t) return; const h = tabbar(active); if (t.dataset.h !== h) { t.innerHTML = h; t.dataset.h = h; } }
 function tabbar(active) {
-  const t = [['spark', 'Assistant', 'soon'], ['chat', 'Chats', 'chats'], ['video', 'Video', 'video'], ['bag', 'Market', 'market'], ['me', 'Me', 'me']];
-  const n = totalUnread();
-  return `<nav class="tabs glass" aria-label="Sections">${t.map(([i, l, r]) => `<button data-tab="${r}" ${r === active ? 'aria-current="page"' : ''}>${ic(i)}<span class="tl">${l}</span>${r === 'chats' && n ? `<span class="badge">${n}</span>` : ''}</button>`).join('')}</nav>`;
+  const n = totalUnread(), b = (i, l, r) => `<button data-tab="${r}" ${r === active ? 'aria-current="page"' : ''}>${ic(i)}<span class="tl">${esc(T(l))}</span>${r === 'chats' && n ? `<span class="badge">${n}</span>` : ''}</button>`;
+  return `<nav class="tabs t3" aria-label="Sections">${b('home', 'Home', 'video')}${b('bag', 'Market', 'market')}<button class="tcreate" data-act="hplus" aria-label="${esc(T('Create'))}"><span class="tplus">${ic('plus', 2.2)}</span><span class="tl">${esc(T('Create'))}</span></button>${b('chat', 'Inbox', 'chats')}${b('me', 'Profile', 'me')}</nav>`;
 }
 const progress = (n) => `<div class="progress" aria-label="Step ${n} of 3">${[1,2,3].map((i) => `<i class="${i <= n ? 'on' : ''}"></i>`).join('')}</div>`;
 function sheet(title, items, top) {
@@ -659,7 +659,7 @@ V.look = () => {
   <div class="topbar">${editing ? `<button class="iconbtn" data-back="me" aria-label="Back">${ic('back')}</button><span class="word">MAGAAM</span>` : `<span style="width:44px"></span>${progress(3)}`}<span style="width:44px"></span></div>
   <h1 class="l2title">Profile photo</h1>
   <div class="photo-slot big ${lookUp ? 'busy' : ''}">${m?.video_path && !lookUp ? `<video src="${esc(url(m.video_path))}" poster="${esc(url(ph))}" muted loop autoplay playsinline></video>` : ph ? `<img src="${esc(url(ph))}" alt="Your photo">` : `<div class="ph">${ic('camera')}Add your photo</div>`}${lookUp ? '<span class="spinner"></span>' : ''}</div>
-  <p class="l2note">${esc(T('Upload a photo or a short video. Friends see it on your page.'))}</p>
+  <p class="l2note">${esc(T('Upload a photo or a video. On your page its first 5 seconds play in a loop.'))}</p>
   <p class="err" id="err">${esc(lookErr)}</p>
   <div class="grow"></div>
   <div class="l2actions">${lookUp ? '' : `<button class="btn" id="lpick">${ic('image')}${esc(T(editing ? 'Another photo' : 'Upload photo'))}</button>
@@ -694,113 +694,242 @@ V.look.after = () => {
   });
 };
 
+/* ---------- squares: eight sections a person names and fills ---------- */
+Object.assign(I, {
+  home: '<path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/>',
+  crown: '<path d="M4 18h16M4 18L3 8l5 4 4-7 4 7 5-4-1 10"/>',
+  plane: '<path d="M21 3L3 10l7 3 3 7z"/><path d="M10 13l5-5"/>',
+  chart: '<path d="M5 20v-6M11 20V9M17 20V4M3 20h18"/>',
+  heart: '<path d="M12 20s-7-4.6-7-10a4 4 0 0 1 7-2.4A4 4 0 0 1 19 10c0 5.4-7 10-7 10z"/>',
+  pad: '<rect x="3" y="8" width="18" height="10" rx="5"/><path d="M8 11v4M6 13h4M15.5 12h.01M18 14h.01"/>',
+  note: '<path d="M9 18V5l10-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>',
+  car: '<path d="M3 16v-4l2.5-5h13L21 12v4H3zM3 12h18"/><circle cx="7.5" cy="16.5" r="1.5"/><circle cx="16.5" cy="16.5" r="1.5"/>',
+  cup: '<path d="M5 8h12v6a5 5 0 0 1-5 5h-2a5 5 0 0 1-5-5zM17 10h2a2 2 0 0 1 0 4h-2M8 3v2M12 3v2"/>',
+  trophy: '<path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 20h8"/>',
+  gym: '<path d="M3 10v4M6 7v10M18 7v10M21 10v4M6 12h12"/>',
+  laptop: '<rect x="5" y="5" width="14" height="10" rx="1.5"/><path d="M3 19h18"/>',
+  cap: '<path d="M2 9l10-5 10 5-10 5zM6 11.5V16c2 2 10 2 12 0v-4.5"/>',
+  link: '<path d="M10 14a4.5 4.5 0 006.4 0l3-3a4.5 4.5 0 00-6.4-6.4l-1.2 1.2"/><path d="M14 10a4.5 4.5 0 00-6.4 0l-3 3a4.5 4.5 0 006.4 6.4l1.2-1.2"/>'
+});
+// key, Russian, English, icon, cover, ten Russian names, ten English names
+const SQC = [
+  ['about', 'О себе', 'About me', 'me', 'demo/sq-life.jpg',
+    ['Обо мне', 'Моя история', 'Моя жизнь', 'Мой день', 'Мой вайб', 'Мой стиль', 'Мои мысли', 'Мои мечты', 'Мои цели', 'Мои правила'],
+    ['About me', 'My story', 'My life', 'My day', 'My vibe', 'My style', 'My thoughts', 'My dreams', 'My goals', 'My rules']],
+  ['life', 'Лайфстайл', 'Lifestyle', 'crown', 'demo/sq-life.jpg',
+    ['Мой лайфстайл', 'Мой дом', 'Мой гардероб', 'Мои покупки', 'Мой уход', 'Моё утро', 'Мои выходные', 'Мой спорт', 'Моё здоровье', 'Мой отдых'],
+    ['My lifestyle', 'My home', 'My wardrobe', 'My shopping', 'My self-care', 'My morning', 'My weekends', 'My sport', 'My health', 'My rest']],
+  ['travel', 'Путешествия', 'Travel', 'plane', 'demo/sq-travel.jpg',
+    ['Мои путешествия', 'Мои страны', 'Мои города', 'Мои маршруты', 'Мои отели', 'Мои горы', 'Моё море', 'Мои закаты', 'Мои открытия', 'Моя карта мира'],
+    ['My travels', 'My countries', 'My cities', 'My routes', 'My hotels', 'My mountains', 'My sea', 'My sunsets', 'My discoveries', 'My world map']],
+  ['money', 'Деньги и бизнес', 'Money and business', 'chart', 'demo/sq-biz.jpg',
+    ['Мой бизнес', 'Мой бутик', 'Мои услуги', 'Мои проекты', 'Мои клиенты', 'Моя работа', 'Мой доход', 'Мои инвестиции', 'Моё портфолио', 'Мои курсы'],
+    ['My business', 'My boutique', 'My services', 'My projects', 'My clients', 'My work', 'My income', 'My investments', 'My portfolio', 'My courses']],
+  ['people', 'Люди и отношения', 'People', 'heart', 'demo/sq-family.jpg',
+    ['Моя семья', 'Мои друзья', 'Мои дети', 'Моя любовь', 'Мои родители', 'Моя команда', 'Мои наставники', 'Мои встречи', 'Наши моменты', 'Мои близкие'],
+    ['My family', 'My friends', 'My kids', 'My love', 'My parents', 'My team', 'My mentors', 'My meetings', 'Our moments', 'My dear ones']],
+  ['hobby', 'Хобби', 'Hobbies', 'pad', 'demo/sq-games.jpg',
+    ['Мои хобби', 'Мои книги', 'Мои игры', 'Моё творчество', 'Мои рисунки', 'Мои фото', 'Моя рыбалка', 'Мой сад', 'Мои коллекции', 'Мои питомцы'],
+    ['My hobbies', 'My books', 'My games', 'My art', 'My drawings', 'My photos', 'My fishing', 'My garden', 'My collections', 'My pets']],
+  ['music', 'Музыка и медиа', 'Music and media', 'note', 'demo/sq-tech.jpg',
+    ['Моя музыка', 'Мои плейлисты', 'Мои фильмы', 'Мои сериалы', 'Мои видео', 'Мои подкасты', 'Мои клипы', 'Мои съёмки', 'Мои концерты', 'Мои эфиры'],
+    ['My music', 'My playlists', 'My films', 'My series', 'My videos', 'My podcasts', 'My clips', 'My shoots', 'My concerts', 'My streams']],
+  ['auto', 'Авто и техника', 'Cars and tech', 'car', 'demo/sq-life.jpg',
+    ['Мои машины', 'Мой гараж', 'Мои мотоциклы', 'Мои гаджеты', 'Моя техника', 'Мой сетап', 'Мои камеры', 'Мои часы', 'Мои поездки', 'Мой тюнинг'],
+    ['My cars', 'My garage', 'My motorcycles', 'My gadgets', 'My tech', 'My setup', 'My cameras', 'My watches', 'My rides', 'My tuning']],
+  ['food', 'Еда и заведения', 'Food and places', 'cup', 'demo/sq-family.jpg',
+    ['Мои рецепты', 'Моя кухня', 'Мои рестораны', 'Мои кофейни', 'Мои завтраки', 'Мои десерты', 'Мои места', 'Моё меню', 'Мои находки', 'Мой чай'],
+    ['My recipes', 'My kitchen', 'My restaurants', 'My coffee shops', 'My breakfasts', 'My desserts', 'My places', 'My menu', 'My finds', 'My tea']],
+  ['wins', 'Достижения', 'Achievements', 'trophy', 'demo/sq-skills.jpg',
+    ['Мои достижения', 'Мои победы', 'Мои награды', 'Мои дипломы', 'Мои рекорды', 'Мой прогресс', 'Мой путь', 'До и после', 'Мои результаты', 'Мои отзывы'],
+    ['My achievements', 'My wins', 'My awards', 'My diplomas', 'My records', 'My progress', 'My path', 'Before and after', 'My results', 'My reviews']],
+  ['inter', 'Интерактив', 'Interactive', 'chat', 'demo/sq-games.jpg',
+    ['Вопросы и ответы', 'Мои советы', 'Мои подборки', 'Мои ссылки', 'Мои контакты', 'Мои события', 'Мои новости', 'Мои розыгрыши', 'Мои опросы', 'Мои рекомендации'],
+    ['Questions and answers', 'My tips', 'My picks', 'My links', 'My contacts', 'My events', 'My news', 'My giveaways', 'My polls', 'My recommendations']],
+  ['special', 'Особенное', 'Special', 'spark', 'demo/sq-biz.jpg',
+    ['Моя вера', 'Мои ценности', 'Моя благотворительность', 'Мои воспоминания', 'Моё детство', 'Мой город', 'Моя родина', 'Мои традиции', 'Мои праздники', 'Моя благодарность'],
+    ['My faith', 'My values', 'My charity', 'My memories', 'My childhood', 'My city', 'My homeland', 'My traditions', 'My holidays', 'My gratitude']]
+];
+// what a new profile shows until its owner changes it
+const SQDEF = [['chart', 'Бизнес и доход', 'Business and income', 'demo/sq-biz.jpg'], ['plane', 'Путешествия', 'Travel', 'demo/sq-travel.jpg'], ['gym', 'Форма и здоровье', 'Fitness and health', 'demo/sq-health.jpg'], ['crown', 'Свобода и стиль жизни', 'Freedom and lifestyle', 'demo/sq-life.jpg'],
+  ['laptop', 'Технологии и гаджеты', 'Tech and gadgets', 'demo/sq-tech.jpg'], ['heart', 'Отношения и семья', 'Family and love', 'demo/sq-family.jpg'], ['cap', 'Развитие и навыки', 'Growth and skills', 'demo/sq-skills.jpg'], ['pad', 'Игры и творчество', 'Games and art', 'demo/sq-games.jpg']];
+// what can be inside a square
+const SQT = [['media', 'Photos and videos', 'image', 1], ['shop', 'Products', 'bag', 1], ['links', 'Links', 'link', 1], ['book', 'Services and booking', 'edit', 0], ['music', 'Music', 'note', 0], ['qa', 'Questions and answers', 'chat', 0]];
+const sqRu = () => I18N.lang === 'ru';
+const sqDefaults = () => SQDEF.map(([i, ru, en, cover]) => ({ t: sqRu() ? ru : en, i, type: 'media', cover, items: [], links: [] }));
+const sqList = (p) => (Array.isArray(p?.squares) ? p.squares.concat(Array(8).fill(null)).slice(0, 8) : sqDefaults());
+const sqImg = (p) => (local(p) ? p : thumb(p));
+const sqCover = (s) => s.cover || s.items?.[0]?.p || '';
+async function sqSave(arr) {
+  const { data, error } = await sb.from('profiles').update({ squares: arr }).eq('id', S.uid).select().single();
+  if (error) { toast('Could not save. Try again.'); return false; }
+  S.me = data; return true;
+}
+function sqHTML(p, self) {
+  return sqList(p).map((s, i) => { if (!s) return self ? `<button class="sq empty" data-sq="${i}" aria-label="${esc(T('Choose a name'))}">${ic('plus', 2)}</button>` : '';
+    const c = sqCover(s);
+    return `<button class="sq" data-sq="${i}">${c ? `<img src="${esc(sqImg(c))}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${esc(url(c))}'">` : ''}<span class="sql">${ic(I[s.i] ? s.i : 'spark', 1.7)}<b data-notr>${esc(s.t)}</b></span></button>`; }).join('');
+}
+// The catalogue of names: pick a category, then a name (or type your own), then what will be inside.
+function sqPicker(i, done) {
+  const arr = sqList(S.me), cur = arr[i], ru = sqRu(); let cat = 0, step = 1, name = cur?.t || '', icon = cur?.i || '', cover = '';
+  if (cur) SQC.forEach((c, k) => { if (c[5].includes(cur.t) || c[6].includes(cur.t)) cat = k; });
+  const bg = document.createElement('div'); bg.className = 'sheet-bg';
+  bg.innerHTML = '<div class="sheet sqp" role="dialog"><div class="grab"></div><div class="sqpb"></div></div>';
+  const body = bg.querySelector('.sqpb');
+  const guess = () => ((cur && cur.t === name && cur.type) || (/бутик|магазин|товар|shop|boutique|store/i.test(name) ? 'shop' : /ссылк|контакт|link|contact/i.test(name) ? 'links' : 'media'));
+  const draw = () => {
+    body.innerHTML = step === 1 ? `
+      <div class="sqph"><h3>${esc(T('Square'))} №${i + 1}</h3>${cur ? `<button class="sqclr" data-clr>${esc(T('Clear'))}</button>` : ''}</div>
+      <div class="sqcats">${SQC.map((c, k) => `<button class="${k === cat ? 'on' : ''}" data-cat="${k}" data-notr>${esc(ru ? c[1] : c[2])}</button>`).join('')}</div>
+      <div class="sqlist">${(ru ? SQC[cat][5] : SQC[cat][6]).map((n) => `<button data-nm="${esc(n)}" data-notr><span>${esc(n)}</span>${n === name ? ic('check', 2.4) : ''}</button>`).join('')}</div>
+      <div class="sqown"><input class="field" id="sqown" maxlength="28" placeholder="${esc(T('Your own name'))}"><button class="pbtn blue" data-own>${esc(T('Add'))}</button></div>` : `
+      <div class="sqph"><button class="sqclr" data-bk>${ic('back', 2.2)}</button><h3 data-notr>${esc(name)}</h3><span style="width:34px"></span></div>
+      <p class="sqsub">${esc(T('What will be inside'))}</p>
+      <div class="sqlist">${SQT.map(([k, l, icn, on]) => `<button ${on ? `data-ty="${k}"` : 'disabled'}><span class="sqty">${ic(icn)}${esc(T(l))}</span>${on ? (k === guess() ? ic('check', 2.4) : '') : `<small>${esc(T('Soon'))}</small>`}</button>`).join('')}</div>`;
+  };
+  const pick = (n) => { name = n; icon = SQC[cat][3]; cover = SQC[cat][4]; step = 2; draw(); };
+  bg.addEventListener('click', async (e) => {
+    if (e.target === bg) return bg.remove();
+    const t = e.target.closest('button'); if (!t) return;
+    if (t.dataset.cat !== undefined) { cat = +t.dataset.cat; draw(); return; }
+    if (t.dataset.nm) return pick(t.dataset.nm);
+    if (t.dataset.own !== undefined) { const v = body.querySelector('#sqown').value.trim(); if (!v) return body.querySelector('#sqown').focus(); name = v; icon = cur?.i || SQC[cat][3]; cover = SQC[cat][4]; step = 2; draw(); return; }
+    if (t.dataset.bk !== undefined) { step = 1; draw(); return; }
+    if (t.dataset.clr !== undefined) { arr[i] = null; if (await sqSave(arr)) { bg.remove(); done && done(); } return; }
+    if (t.dataset.ty) {
+      const keep = cur?.cover && !local(cur.cover) ? cur.cover : cur?.items?.[0]?.p || cover;
+      arr[i] = { t: name, i: icon, type: t.dataset.ty, cover: keep, items: cur?.items || [], links: cur?.links || [] };
+      if (await sqSave(arr)) { bg.remove(); done && done(); }
+    }
+  });
+  draw(); app.appendChild(bg);
+}
+function sqView(it, self, del) {
+  const v = document.createElement('div'); v.className = 'sqv';
+  v.innerHTML = `${it.v ? `<video src="${esc(url(it.v))}" poster="${esc(url(it.p))}" controls autoplay playsinline loop></video>` : `<img src="${esc(url(it.p))}" alt="">`}<button class="iconbtn sqvx" data-x aria-label="Close">${ic('x')}</button>${self ? `<button class="iconbtn sqvd" data-d aria-label="Delete">${ic('trash')}</button>` : ''}`;
+  v.onclick = (e) => { if (e.target.closest('[data-d]')) { v.remove(); del(); } else if (e.target.closest('[data-x]') || e.target === v) v.remove(); };
+  app.appendChild(v);
+}
+/* One square opened: its photos and videos, its products or its links. */
+V.sq = async (key) => {
+  const [uid, n] = String(key || '').split('_'), i = +n, self = uid === S.uid;
+  const p = self ? S.me : S.members.get(uid), s = p && sqList(p)[i];
+  if (!s) { go(self ? 'me' : 'chats', true); return; }
+  const none = `<p class="pgnone">${esc(T('Nothing here yet'))}</p>`; let body = '';
+  if (s.type === 'shop') {
+    const { data } = await sb.rpc('market_list', { p_q: '', p_cat: '', p_seller: uid }); (data || []).forEach((x) => S.prod.set(x.id, x));
+    body = `<div class="mgrid">${(data || []).map(tileHTML).join('')}</div>${(data || []).length ? '' : none}${self ? `<button class="pbtn blue sqwide" data-go="sell">${ic('plus', 2)}${esc(T('Sell a thing'))}</button>` : ''}`;
+  } else if (s.type === 'links') {
+    const rows = (s.links || []).map((l, k) => { const site = siteOf({ site: l.u }); return site ? `<div class="sqlk"><a href="${esc(site.href)}" target="_blank" rel="noopener noreferrer" data-notr>${ic('link')}<span><b>${esc(l.t || site.host)}</b><small>${esc(site.host)}</small></span></a>${self ? `<button class="iconbtn" data-dl="${k}" aria-label="Delete">${ic('x')}</button>` : ''}</div>` : ''; }).join('');
+    body = `<div class="sqlinks">${rows || none}</div>${self ? `<div class="sqform"><input class="field" id="lkt" maxlength="40" placeholder="${esc(T('Title'))}"><input class="field" id="lku" maxlength="200" inputmode="url" autocapitalize="off" autocorrect="off" placeholder="www.example.com"><button class="pbtn blue" id="lkadd">${ic('plus', 2)}${esc(T('Add link'))}</button></div>` : ''}`;
+  } else {
+    const its = s.items || [];
+    body = `<div class="sqgrid">${self ? `<button class="sqit add" id="sqadd" aria-label="${esc(T('Add'))}">${ic('plus')}</button>` : ''}${its.map((it, k) => `<button class="sqit" data-it="${k}"><img src="${esc(thumb(it.p))}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${esc(url(it.p))}'">${it.v ? `<i>${ic('play', 2)}</i>` : ''}</button>`).join('')}</div>${its.length || self ? '' : none}`;
+  }
+  return `<div class="dark sqpage" style="position:absolute;inset:0"><div class="sqhd"><button class="iconbtn" data-back="${self ? 'me' : 'u/' + uid}" aria-label="Back">${ic('back')}</button><b data-notr>${esc(s.t)}</b>${self ? `<button class="iconbtn" id="sqmore" aria-label="More">${ic('more', 2.4)}</button>` : '<span style="width:44px"></span>'}</div><div class="sqbody">${body}</div></div>`;
+};
+V.sq.cls = 'darkv';
+V.sq.after = (key) => {
+  const [uid, n] = String(key || '').split('_'), i = +n, self = uid === S.uid; if (!self && !S.members.get(uid)) return;
+  const arr = sqList(self ? S.me : S.members.get(uid)), s = arr[i]; if (!s) return;
+  const again = () => route().name === 'sq' && show();
+  const save = async () => { if (await sqSave(arr)) again(); };
+  app.querySelectorAll('[data-it]').forEach((b) => (b.onclick = () => { const k = +b.dataset.it; sqView(s.items[k], self, () => { const gone = s.items.splice(k, 1)[0]; if (s.cover === gone.p) s.cover = s.items[0]?.p || ''; save(); }); }));
+  if (!self) return;
+  const busy = (on) => { const a = $('#sqadd'); if (a) { a.disabled = on; a.innerHTML = on ? '<span class="spinner sm"></span>' : ic('plus'); } };
+  const added = (it) => { s.items = [it].concat(s.items || []); if (!s.cover || local(s.cover)) s.cover = it.p; return save(); };
+  const addPhoto = async () => { const f = await pickFile(false); if (!f) return; busy(true);
+    try { await added({ p: await uploadPhoto(f, 'sq') }); } catch (e) { busy(false); toast(e?.message || 'Upload failed. Try again.'); } };
+  const addVideo = async () => { const f = await pickVideo(); if (!f) return;
+    if (f.size > 50 * 1024 * 1024) return toast('This video is larger than 50 MB. Use a shorter clip.');
+    busy(true);
+    try {
+      const info = await videoInfo(f); if (!info?.poster) throw new Error('This video could not be read. Try an MP4 or MOV video.');
+      const ext = /quicktime|mov/i.test(f.type) || /\.mov$/i.test(f.name) ? 'mov' : /webm/.test(f.type) ? 'webm' : 'mp4', vpath = `${S.uid}/sq-${Date.now()}.${ext}`;
+      const [p] = await Promise.all([uploadPhoto(info.poster, 'sq'), sb.storage.from('media').upload(vpath, f, { contentType: f.type || 'video/mp4', cacheControl: '31536000' }).then(({ error }) => { if (error) throw error; })]);
+      await added({ p, v: vpath });
+    } catch (e) { busy(false); toast(e?.message || 'Upload failed. Try again.'); } };
+  $('#sqadd') && ($('#sqadd').onclick = () => sheet(s.t, [{ icon: 'image', label: T('Photo'), run: addPhoto }, { icon: 'video', label: T('Video'), run: addVideo }]));
+  $('#sqmore').onclick = () => sheet(s.t, [
+    { icon: 'edit', label: T('Name and content'), run: () => sqPicker(i, again) },
+    { icon: 'image', label: T('Cover photo'), run: async () => { const f = await pickFile(false); if (!f) return; try { s.cover = await uploadPhoto(f, 'sq'); save(); toast('Saved'); } catch (e) { toast(e?.message || 'Upload failed. Try again.'); } } },
+    { icon: 'trash', label: T('Clear this square'), red: true, run: async () => { arr[i] = null; if (await sqSave(arr)) go('me', true); } }]);
+  $('#lkadd') && ($('#lkadd').onclick = () => {
+    let u = $('#lku').value.trim(); if (u && !/^https?:\/\//i.test(u)) u = 'https://' + u;
+    if (!siteOf({ site: u })) return toast('Check the link');
+    s.links = (s.links || []).concat([{ t: $('#lkt').value.trim(), u }]); save();
+  });
+  app.querySelectorAll('[data-dl]').forEach((b) => (b.onclick = () => { s.links.splice(+b.dataset.dl, 1); save(); }));
+};
+
 /* ---------- the page of a person ----------
-   A full-screen living photo with the header on it. Scroll up and the posts follow, like a site. Same page for me and for my friends. */
-const LINKSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4.5 4.5 0 006.4 0l3-3a4.5 4.5 0 00-6.4-6.4l-1.2 1.2"/><path d="M14 10a4.5 4.5 0 00-6.4 0l-3 3a4.5 4.5 0 006.4 6.4l1.2-1.2"/></svg>';
-const UPSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14l6-6 6 6"/></svg>';
+   The living photo on top with the name over it, eight squares, then the posts. Same page for me and for everyone else. */
 const siteOf = (p) => { const u = String(p?.site || '').trim(); if (!/^https?:\/\/[^\s"'<>]+$/i.test(u)) return null; try { return { href: u, host: new URL(u).host }; } catch { return null; } };
-let pgTab = 'posts';
+// the small round photo is alive too: the first five seconds of the profile video, in a loop
+const avMedia = (p) => { const ph = p.still_path || p.photo_path;
+  return p.video_path ? `<video class="avv" src="${esc(url(p.video_path))}" ${ph ? `poster="${esc(thumb(ph))}"` : ''} muted loop autoplay playsinline webkit-playsinline disablepictureinpicture disableremoteplayback preload="auto"></video>`
+    : ph ? `<img src="${esc(thumb(ph))}" alt="" onerror="this.onerror=null;this.src='${esc(url(ph))}'">` : `<span class="ini">${initial(p.name)}</span>`; };
+document.addEventListener('timeupdate', (e) => { const v = e.target; if (v.classList?.contains('avv') && v.currentTime > 5) v.currentTime = 0; }, true);
 function pageHTML(p, self) {
-  const id = p.id, tags = (p.tags || []).filter(Boolean), motto = p.motto || vibeOf(p) || '', site = siteOf(p);
-  const rail = self ? `
-    <button class="rb grad" data-act="hplus" aria-label="${esc(T('Create'))}">${ic('plus', 2.4)}</button>
-    <button class="rb" data-go="chats" aria-label="${esc(T('Chats'))}">${ic('chat')}<i class="rbn" id="rbn" hidden data-notr></i></button>
-    <button class="rb" data-go="video" aria-label="${esc(T('Video'))}">${ic('video')}</button>
-    <button class="rb" data-go="market" aria-label="${esc(T('Market'))}">${ic('bag')}</button>
-    <button class="rb" data-go="add" aria-label="${esc(T('Friends'))}">${ic('useradd')}</button>
-    <button class="rb coin" data-go="wallet" aria-label="Balance">${ic('coin')}<small data-notr id="coins">${S.coins}</small></button>
-    <button class="rb" data-act="settings" aria-label="${esc(T('Settings'))}">${ic('gear')}</button>` : `
-    <button class="rb grad" data-go="chat/${id}" aria-label="${esc(T('Message'))}">${ic('chat')}</button>
-    <button class="rb" id="cmpb" aria-label="${esc(T('Compliment'))}"><span class="rbe" data-notr>✨</span></button>
-    <button class="rb" data-act="ucircle" data-uid="${id}" aria-label="${esc(T('Circle'))}">${ic('camera')}</button>
-    <button class="rb" data-act="umore" data-uid="${id}" aria-label="More">${ic('more', 2.4)}</button>`;
-  return `<div class="dark home pg2 ${self ? 'own' : ''}" style="position:absolute;inset:0">
-  <div class="pgs" id="pgs">
-    <section class="pgh">${bgMedia(p)}<div class="shade"></div></section>
-    <section class="pgf" id="pgf">
-      <div class="pghl" id="pghl" hidden></div>
-      <div class="pgtb" id="pgtb">${[['posts', 'grid', 'Posts'], ['reels', 'video', 'Videos'], ['shop', 'bag', 'Shop'], ['about', 'me', 'About']].map(([k, i, l]) => `<button class="${pgTab === k ? 'on' : ''}" data-t="${k}" aria-label="${esc(T(l))}">${ic(i)}</button>`).join('')}</div>
-      <div id="pgbody"><div class="pggrid"><span class="spinner"></span></div></div>
+  const id = p.id, motto = p.motto || vibeOf(p) || '';
+  const top = self ? `<span></span><span class="p3tr">
+      <button class="p3b coin" data-go="wallet" aria-label="Balance">${ic('coin')}<small data-notr id="coins">${S.coins}</small></button>
+      <button class="p3b" data-go="add" aria-label="${esc(T('Friends'))}">${ic('useradd')}</button>
+      <button class="p3b" data-act="settings" aria-label="${esc(T('Settings'))}">${ic('gear')}</button></span>`
+    : `<button class="p3b" data-back="chats" aria-label="Back">${ic('back')}</button><span class="p3tr">
+      <button class="p3b" data-go="chat/${id}" aria-label="${esc(T('Message'))}">${ic('chat')}</button>
+      <button class="p3b" id="cmpb" aria-label="${esc(T('Compliment'))}"><span data-notr>✨</span></button>
+      <button class="p3b" data-act="umore" data-uid="${id}" aria-label="More">${ic('more', 2.4)}</button></span>`;
+  return `<div class="dark home pg3 ${self ? 'own' : ''}" style="position:absolute;inset:0">
+  <div class="p3s" id="pgs">
+    <section class="p3hero">${(p.still_path || p.photo_path) ? `<div class="p3blur" style="background-image:url('${esc(thumb(p.still_path || p.photo_path))}')"></div>` : ''}${bgMedia(p)}<div class="p3shade"></div>
+      ${self ? `<button class="hai" id="hai" aria-label="${esc(aiName())}">${aiFace(p)}<i class="hdot" id="hdot" hidden></i></button>` : ''}
+      <div class="p3top">${top}</div>
+      <div class="p3id">
+        <button class="p3av" id="hring" aria-label="Story"><span class="p3avi">${avMedia(p)}</span></button>
+        <div class="p3n"><b data-notr>${esc(p.name)}</b>${vbadge(p)}</div>
+        <span class="p3u"><span data-notr>@${esc(p.username || '')}</span>${self ? '' : '<span class="p3st" id="st"></span>'}</span>
+        ${motto ? `<p class="p3m" data-notr>${esc(motto)}</p>` : self ? `<button class="hvibe add" data-go="edit">${esc(T('+ fill in your profile'))}</button>` : ''}
+        <div class="p3cta"><button class="p3watch" id="p3watch">${ic('play', 2)}<span>${esc(T('Watch'))}</span></button>${self ? `<button class="p3fol" data-go="edit">${ic('edit', 2)}<span>${esc(T('Edit'))}</span></button>` : `<button class="p3fol" id="followb">${ic('plus', 2)}<span>${esc(T('Follow'))}</span></button>`}</div>
+      </div>
     </section>
+    <div class="p3sq" id="p3sq">${sqHTML(p, self)}</div>
+    <div class="p3h"><i>${ic('play', 2)}</i><b>${esc(T('My posts'))}</b><button data-go="gallery/${id}">${esc(T('See all'))} →</button></div>
+    <div class="p3grid" id="pgbody"><span class="spinner"></span></div>
+    ${self ? `<div class="p3inst">${installBanner()}</div>` : ''}
   </div>
-  <div class="pgscrim" id="pgscrim"></div>
-  ${self ? '' : `<button class="iconbtn pgback" data-back="chats" aria-label="Back">${ic('back')}</button>`}
-  <div class="ph2 ${self ? '' : 'vis'}" id="ph2">
-    <div class="ph2n"><button class="ph2ring" id="hring" data-act="story" data-uid="${id}" aria-label="Story" hidden>${thumbHTML(p, false)}</button><b data-notr>${esc(p.name)}</b>${vbadge(p)}</div>
-    ${self ? '' : '<span class="ph2st" id="st"></span>'}
-    ${motto ? `<p class="ph2m" data-notr>${esc(motto)}</p>` : self ? `<button class="hvibe add" data-go="edit">${esc(T('+ fill in your profile'))}</button>` : ''}
-    ${tags.length ? `<p class="ph2t" data-notr>${tags.map(esc).join(' · ')}</p>` : ''}
-    ${site ? `<a class="ph2l" href="${esc(site.href)}" target="_blank" rel="noopener noreferrer" data-notr>${LINKSVG}<span>${esc(site.host)}</span></a>` : ''}
-    <div class="ph2s" id="pstat" hidden></div>
-  </div>
-  <div class="hrail">${rail}</div>
-  ${self ? `<div class="digest" id="digest" hidden></div><button class="hai" id="hai" aria-label="${esc(aiName())}">${aiFace(p)}<i class="hdot" id="hdot" hidden></i></button>` : ''}
-  <div class="pgup" id="pgup" aria-hidden="true">${UPSVG.repeat(5)}</div>
-  ${self ? `<div class="pginst">${installBanner()}</div>` : ''}</div>`;
+  ${self ? `<div class="digest" id="digest" hidden></div>` : ''}
+  <div class="dock"><div id="tabs">${tabbar(self ? 'me' : '')}</div></div></div>`;
 }
-// What is under the photo: posts, videos, the person's shop, and a few words about them.
-async function pageFeed(id, self) {
-  const box = $('#pgbody'); if (!box) return; const p = self ? S.me : S.members.get(id), tab = pgTab;
-  const none = (t) => `<p class="pgnone">${esc(T(t))}</p>`;
-  if (tab === 'posts' || tab === 'reels') {
-    const posts = (S.posts.get(id) || []).filter((x) => tab === 'posts' || x.video_path);
-    box.innerHTML = `<div class="pggrid">${posts.map((x) => `<button class="pgt" data-go="gallery/${id}"><img src="${esc(thumb(x.path))}" alt="" loading="lazy" onerror="this.src='${esc(url(x.path))}'">${x.video_path ? `<i class="pgv">${ic('video', 2)}</i>` : ''}</button>`).join('')
-      || none(tab === 'reels' ? 'No videos yet' : self ? 'Your photos and videos will live here' : 'No posts yet')}</div>`;
-    return;
-  }
-  if (tab === 'shop') {
-    box.innerHTML = '<div class="pggrid"><span class="spinner"></span></div>';
-    const { data } = await sb.rpc('market_list', { p_q: '', p_cat: '', p_seller: id }); if (pgTab !== 'shop' || !$('#pgbody')) return;
-    (data || []).forEach((x) => S.prod.set(x.id, x));
-    box.innerHTML = `<div class="mgrid pgshop">${(data || []).map(tileHTML).join('') || `<div class="mnone"><b>${esc(T(self ? 'Your shop is empty' : 'This person is not selling anything yet.'))}</b>${self ? `<button class="pbtn blue" data-go="sell">${ic('plus', 2)}${esc(T('Sell a thing'))}</button>` : ''}</div>`}</div>`;
-    return;
-  }
-  // about
-  const ints = p.interests || [], mine = new Set(S.me?.interests || []);
-  box.innerHTML = `<div class="pgabout">${p.bio ? `<p class="pgbio" data-notr>${esc(p.bio)}</p>` : ''}
-    ${p.city || (p.langs || []).length ? `<p class="pgloc" data-notr>${p.city ? '📍 ' + esc(p.city) : ''} ${(p.langs || []).map(flagOf).join(' ')}</p>` : ''}
-    ${ints.length ? `<div class="pints2">${ints.map((x) => `<span class="pint2 ${!self && mine.has(x) ? 'same' : ''}">${esc(T(x))}</span>`).join('')}</div>` : ''}
-    ${self ? '' : '<div class="ptog2" id="ptog"></div>'}
-    ${!p.bio && !ints.length && !p.city ? none(self ? 'Tell about yourself in Settings → Edit profile' : 'Nothing here yet') : ''}</div>`;
-  if (!self) {
-    const { data } = await sb.rpc('together', { p_other: id }); const tg = data?.[0], t = $('#ptog');
-    if (t && tg) { const days = S.streaks.get(id), faces = (tg.mutual_ids || []).map((m) => S.members.get(m)).filter(Boolean);
-      t.innerHTML = `<div class="tg"><b data-notr>${tg.since ? esc(sinceTxt(tg.since)) : '—'}</b><span>${esc(T('friends since'))}</span></div>
-        <div class="tg"><b data-notr>${days ? '🔥 ' + days : '—'}</b><span>${esc(T('days in a row'))}</span></div>
-        <div class="tg">${faces.length ? `<span class="faces">${faces.slice(0, 4).map((f) => thumbHTML(f)).join('')}</span>` : '<b>0</b>'}<span>${esc(T('mutual friends'))}</span></div>`; }
-  }
-}
-// Saved stories as round covers between the photo and the posts.
-async function pageHighlights(id, self) {
-  const { data } = await sb.from('stories').select('*').eq('user_id', id).eq('pinned', true).order('created_at', { ascending: false }).limit(20);
-  const r = $('#pghl'); if (!r) return; const hl = data || [];
-  r.hidden = !hl.length && !self;
-  r.innerHTML = (self ? `<button class="hl add" data-act="addstory"><span class="ring">${ic('plus', 2.2)}</span><small>${esc(T('New'))}</small></button>` : '')
-    + hl.map((x, i) => `<button class="hl" data-hi="${i}"><span class="ring"><img src="${esc(thumb(x.path))}" alt="" onerror="this.src='${esc(url(x.path))}'"></span><small data-notr>${esc(new Date(x.created_at).toLocaleDateString(I18N.lang || 'en', { day: 'numeric', month: 'short' }))}</small></button>`).join('');
-  r.onclick = (e) => { const b = e.target.closest('[data-hi]'); if (b) openStories(id, hl.slice(+b.dataset.hi).concat(hl.slice(0, +b.dataset.hi))); };
+function pageFeed(id, self) {
+  const box = $('#pgbody'); if (!box) return; const posts = S.posts.get(id) || [];
+  box.innerHTML = posts.map((x, i) => `<button class="p3t" data-pv="${i}"><img src="${esc(thumb(x.path))}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${esc(url(x.path))}'">${x.video_path ? `<i>${ic('play', 2)}</i>` : ''}</button>`).join('')
+    || `<p class="pgnone">${esc(T(self ? 'Your photos and videos will live here' : 'No posts yet'))}</p>`;
+  box.onclick = (e) => { const b = e.target.closest('[data-pv]'); if (b) openViewer(id, +b.dataset.pv); };
 }
 async function pageAfter(id, self) {
   const p = self ? S.me : S.members.get(id);
   tintFrom(p);
-  paintStats(id);
-  // the header and the round buttons stay; the photo goes up and the posts come from below
-  const sc = $('#pgs'), hd = $('#ph2'), view = sc.parentElement;
-  const fit = () => view.style.setProperty('--hh', (hd.offsetTop + hd.offsetHeight + 14) + 'px'); fit(); setTimeout(fit, 900);
-  sc.addEventListener('scroll', () => { const k = Math.min(1, sc.scrollTop / 260); view.style.setProperty('--sk', k); view.classList.toggle('scrolled', sc.scrollTop > 40); }, { passive: true });
-  $('#pgtb').onclick = (e) => { const b = e.target.closest('[data-t]'); if (!b) return; pgTab = b.dataset.t; $('#pgtb').querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b)); pageFeed(id, self); };
-  pageHighlights(id, self);
+  $('#hring').onclick = () => { if ((S.stories.get(id) || []).length) openStories(id); else if (self) go('look'); };
+  $('#p3sq').onclick = (e) => { const b = e.target.closest('[data-sq]'); if (!b) return; const i = +b.dataset.sq;
+    if (self && !sqList(S.me)[i]) return sqPicker(i, () => { const q = $('#p3sq'); if (q) q.innerHTML = sqHTML(S.me, true); });
+    go('sq/' + id + '_' + i); };
+  $('#p3watch').onclick = () => { if ((S.posts.get(id) || []).length) openViewer(id, 0); else if ((S.stories.get(id) || []).length) openStories(id); else toast(self ? 'Your photos and videos will live here' : 'No posts yet'); };
+  if (!self) {
+    const fb = $('#followb'), paintF = (on) => { fb.classList.toggle('on', on); fb.innerHTML = on ? `${ic('check', 2)}<span>${esc(T('Following'))}</span>` : `${ic('plus', 2)}<span>${esc(T('Follow'))}</span>`; };
+    sb.rpc('profile_stats', { p_id: id }).then(({ data }) => $('#followb') === fb && paintF(!!data?.[0]?.i_follow));
+    fb.onclick = async () => { fb.disabled = true; const { data, error } = await sb.rpc('follow_toggle', { p_id: id }); fb.disabled = false; if (error) return toast('Could not save. Try again.'); paintF(!!data); navigator.vibrate?.(12); if (data) burst('👀', fb); };
+    $('#cmpb').onclick = () => sheet(T('Send a compliment'), CMPS.map((c, i) => ({ icon: 'spark', label: T(c), run: () => sendCmp(id, 'x|cmp|' + i) })));
+  }
   if (!S.posts.get(id)) await loadPosts(id); else loadPosts(id).then(() => onPage(id, self) && pageFeed(id, self));
   if (!onPage(id, self)) return;
   pageFeed(id, self);
-  if (!self) {
-    $('#cmpb').onclick = () => sheet(T('Send a compliment'), CMPS.map((c, i) => ({ icon: 'spark', label: T(c), run: () => sendCmp(id, 'x|cmp|' + i) })));
-    app.querySelector('[data-act="ucircle"]')?.addEventListener('click', () => { go('chat/' + id); setTimeout(() => recordCircle(id), 600); });
-  }
 }
 const onPage = (id, self) => (self ? route().name === 'me' : route().name === 'u' && route().id === id);
 function pageStories(id) {
   const hr = $('#hring'); if (!hr) return; const st = S.stories.get(id) || [];
-  hr.hidden = !st.length; hr.classList.toggle('on', id === S.uid ? true : unseenSt(id));
+  hr.classList.toggle('has', st.length > 0); hr.classList.toggle('on', st.length > 0 && (id === S.uid ? true : unseenSt(id)));
 }
 
 /* Own page */
@@ -810,6 +939,7 @@ V.me = () => {
 };
 V.me.cls = 'darkv';
 V.me.update = () => {
+  setTabs('me');
   const cn = $('#coins'); if (cn) cn.textContent = S.coins;
   pageStories(S.uid);
   const n = totalUnread(), bn = $('#rbn'); if (bn) { bn.hidden = !n; bn.textContent = n > 99 ? '99+' : n; }
