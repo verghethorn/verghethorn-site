@@ -1419,7 +1419,7 @@ h1{font-weight:700;font-size:38px;letter-spacing:-.035em;line-height:1.05}
 .hl{flex:none;display:flex;flex-direction:column;align-items:center;gap:5px;color:#fff;width:68px}
 .hl .ring{width:66px;height:66px;flex:none;border-radius:50%;padding:3px;background:rgba(255,255,255,.28);overflow:hidden}
 .hl .ring img{display:block;width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid #07080f}
-.hl.add .ring{background:none;border:1.5px dashed rgba(255,255,255,.45)}
+.hl.add .ring{background:none;border:1.5px dashed rgba(255,255,255,.45);display:grid;place-items:center}
 .hl.add svg{width:24px;height:24px}
 .hl small{font-size:11.5px;opacity:.85;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pgtb{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid rgba(255,255,255,.12);margin-top:4px}
