@@ -1033,3 +1033,24 @@ c780|Ad
 c781|Başla
 c782|Artık arkadaşsınız:
 c783|Başka bir e-posta
+c784|Yönetici olarak gir
+c785|Yönetici modundan çık
+c786|Ayrı bir “Nakhlio yönetimi” profili: talepler, şikâyetler, kullanıcılar. Adınız görünmez.
+c787|Yönetici modu
+c788|Yönetici
+c789|“Nakhlio yönetimi” olarak yazıyorsunuz
+c790|Bildirimler ve ses
+c791|Bildirimler
+c792|Yeni mesajlar, yanıtlar ve talepler — uygulama kapalıyken bile
+c793|Ses
+c794|Yeni mesajlarda kısa, yumuşak bir ses
+c795|Bildirimler, uygulama Ana Ekrana eklendiğinde çalışır. Ana Ekrandan açın ve buradan açın.
+c796|Bildirimler telefon ayarlarında engelli: Ayarlar → Bildirimler → uygulamayı bulun ve izin verin.
+c797|Magaam’ı telefonunuza yükleyin
+c798|Magaam normal bir uygulama gibi açılır ve mesaj bildirimleri alırsınız.
+c799|Ekranın altındaki Paylaş düğmesine dokunun
+c800|“Ana Ekrana Ekle”yi seçin
+c801|Magaam’ı Ana Ekrandan açın ve kaydolun
+c802|Bu düğme yok mu? Bağlantıyı Safari’de açın: ⋯ veya pusula simgesine dokunup “Safari’de Aç”ı seçin.
+c803|Yükle
+c804|Tarayıcıda devam et

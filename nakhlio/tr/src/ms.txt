@@ -1033,3 +1033,24 @@ c780|Nama
 c781|Mula
 c782|Kini anda berkawan dengan
 c783|E-mel lain
+c784|Masuk sebagai pentadbir
+c785|Keluar dari mod pentadbir
+c786|Profil berasingan “Pentadbiran Nakhlio”: permintaan, aduan, pengguna. Nama anda tidak kelihatan.
+c787|Mod pentadbir
+c788|Admin
+c789|Anda menulis sebagai “Pentadbiran Nakhlio”
+c790|Pemberitahuan & bunyi
+c791|Pemberitahuan
+c792|Mesej, balasan dan permintaan baharu — walaupun aplikasi ditutup
+c793|Bunyi
+c794|Nada pendek yang lembut untuk mesej baharu
+c795|Pemberitahuan berfungsi apabila aplikasi ditambah ke Skrin Utama. Buka dari Skrin Utama dan hidupkan di sini.
+c796|Pemberitahuan disekat dalam tetapan telefon: Tetapan → Pemberitahuan → cari aplikasi dan benarkan.
+c797|Pasang Magaam pada telefon anda
+c798|Magaam akan dibuka seperti aplikasi biasa dan anda akan menerima pemberitahuan mesej.
+c799|Ketik butang Kongsi di bahagian bawah skrin
+c800|Pilih “Tambah ke Skrin Utama”
+c801|Buka Magaam dari Skrin Utama dan daftar
+c802|Tiada butang ini? Buka pautan dalam Safari: ketik ⋯ atau ikon kompas dan pilih “Buka dalam Safari”.
+c803|Pasang
+c804|Teruskan dalam pelayar

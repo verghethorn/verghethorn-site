@@ -1033,3 +1033,24 @@ c780|Nama
 c781|Mulai
 c782|Sekarang Anda berteman dengan
 c783|Email lain
+c784|Masuk sebagai administrator
+c785|Keluar dari mode administrator
+c786|Profil terpisah “Administrasi Nakhlio”: permintaan, laporan, pengguna. Nama Anda tidak terlihat.
+c787|Mode administrator
+c788|Admin
+c789|Anda menulis sebagai “Administrasi Nakhlio”
+c790|Notifikasi & suara
+c791|Notifikasi
+c792|Pesan, balasan, dan permintaan baru — bahkan saat aplikasi ditutup
+c793|Suara
+c794|Nada singkat yang lembut untuk pesan baru
+c795|Notifikasi berfungsi jika aplikasi ditambahkan ke Layar Utama. Buka dari Layar Utama lalu aktifkan di sini.
+c796|Notifikasi diblokir di pengaturan ponsel: Pengaturan → Notifikasi → cari aplikasinya dan izinkan.
+c797|Pasang Magaam di ponsel Anda
+c798|Magaam akan terbuka seperti aplikasi biasa dan Anda akan menerima notifikasi pesan.
+c799|Ketuk tombol Bagikan di bagian bawah layar
+c800|Pilih “Tambahkan ke Layar Utama”
+c801|Buka Magaam dari Layar Utama lalu daftar
+c802|Tidak ada tombol ini? Buka tautan di Safari: ketuk ⋯ atau ikon kompas lalu pilih “Buka di Safari”.
+c803|Pasang
+c804|Lanjutkan di peramban

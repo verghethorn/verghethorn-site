@@ -1033,3 +1033,24 @@ c780|Nom
 c781|Commencer
 c782|Vous êtes maintenant amis avec
 c783|Autre e-mail
+c784|Passer en mode administrateur
+c785|Quitter le mode administrateur
+c786|Un profil séparé « Administration Nakhlio » : demandes, signalements, utilisateurs. Votre nom n’apparaît pas.
+c787|Mode administrateur
+c788|Admin
+c789|Vous écrivez en tant que « Administration Nakhlio »
+c790|Notifications et son
+c791|Notifications
+c792|Nouveaux messages, réponses et demandes — même quand l’application est fermée
+c793|Son
+c794|Un son court et doux pour les nouveaux messages
+c795|Les notifications fonctionnent quand l’application est ajoutée à l’écran d’accueil. Ouvrez-la depuis l’écran d’accueil et activez-les ici.
+c796|Les notifications sont bloquées dans les réglages du téléphone : Réglages → Notifications → trouvez l’application et autorisez-la.
+c797|Installez Magaam sur votre téléphone
+c798|Magaam s’ouvrira comme une application normale et vous recevrez les notifications de messages.
+c799|Touchez le bouton Partager en bas de l’écran
+c800|Choisissez « Sur l’écran d’accueil »
+c801|Ouvrez Magaam depuis l’écran d’accueil et inscrivez-vous
+c802|Pas de bouton ? Ouvrez le lien dans Safari : touchez ⋯ ou l’icône boussole et choisissez « Ouvrir dans Safari ».
+c803|Installer
+c804|Continuer dans le navigateur

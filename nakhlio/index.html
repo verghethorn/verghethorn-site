@@ -24,9 +24,9 @@
 <link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/splash/s-1170x2532.png">
 <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/splash/s-1125x2436.png">
 <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="img/splash/s-750x1334.png">
-<script>(function(){window.MG_APP=/[?&]mg=1/.test(location.search);if(!window.MG_APP)return;document.title='Magaam';
+<script>(function(){var inMg=location.pathname.indexOf('/magaam')===0;if(!inMg&&/[?&]mg=1/.test(location.search)){location.replace('/magaam/'+location.search.replace(/([?&])mg=1&?/,'$1').replace(/[?&]$/,''));return;}window.MG_APP=inMg;if(!window.MG_APP)return;document.title='Magaam';
 var q=function(s){return document.querySelector(s)};var S={"(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)": "img/mgapp/s-1320x2868.png", "(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)": "img/mgapp/s-1290x2796.png", "(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)": "img/mgapp/s-1284x2778.png", "(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)": "img/mgapp/s-1242x2688.png", "(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)": "img/mgapp/s-828x1792.png", "(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)": "img/mgapp/s-1206x2622.png", "(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)": "img/mgapp/s-1179x2556.png", "(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)": "img/mgapp/s-1170x2532.png", "(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)": "img/mgapp/s-1125x2436.png", "(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)": "img/mgapp/s-750x1334.png"};
-var m=q('link[rel=manifest]');if(m)m.href='manifest-mg.webmanifest';var a=q('link[rel=apple-touch-icon]');if(a)a.href='img/mgapp/icon-180.png';
+var m=q('link[rel=manifest]');if(m)m.href='/magaam/manifest.webmanifest';var a=q('link[rel=apple-touch-icon]');if(a)a.href='img/mgapp/icon-180.png';
 var ic=q('link[rel=icon]');if(ic)ic.href='img/mgapp/icon-192.png';var t=q('meta[name=apple-mobile-web-app-title]');if(t)t.content='Magaam';
 var th=q('meta[name=theme-color]');if(th)th.content='#FFFFFF';var sb=q('meta[name=apple-mobile-web-app-status-bar-style]');if(sb)sb.content='default';
 document.querySelectorAll('link[rel=apple-touch-startup-image]').forEach(function(l){if(S[l.media])l.href=S[l.media]});})();</script>
@@ -730,6 +730,10 @@ body:not(.dsk) .gallery .float .ibtn,body:not(.dsk) .item-head .float .ibtn{box-
 .mgsend{width:42px;height:42px;flex:none;border:0;border-radius:50%;background:var(--mg-grad);color:#fff;display:flex;align-items:center;justify-content:center}.mgsend svg{width:20px;height:20px}.mgcomp .mgic{width:42px;height:42px;flex:none}
 .mgrq{display:flex;align-items:center;gap:8px;border-inline-start:3px solid var(--mg-blue);background:#F4F6FB;border-radius:8px;padding:6px 8px;margin-bottom:6px;font-size:13px}.mgrq span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--mg-ink2)}.mgrq b{display:block;color:var(--mg-blue);font-size:12px}.mgrq button{background:none;border:0}
 .mgmsheet p{background:#F4F6FB;border-radius:12px;padding:10px 12px;margin:0 0 8px;max-height:30vh;overflow:auto}.mgmsheet button{display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;border-bottom:1px solid var(--mg-line);padding:14px 4px;font:inherit;font-weight:700;color:var(--mg-ink)}.mgmsheet button svg{width:20px;height:20px}.mgmsheet .bad{color:#C2352B}
+.admswitch{display:flex;align-items:center;gap:12px;width:100%;text-align:start;background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 14px;margin:0 0 14px;font:inherit;color:var(--ink);box-shadow:var(--shadow)}.admswitch.on{background:var(--palm-tint)}.admsw-ic{width:40px;height:40px;flex:none;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--palm-tint);color:var(--palm)}.admsw-ic svg{width:100%;height:100%}.admswitch.on .admsw-ic svg{width:22px;height:22px}.admswitch .grow{flex:1;min-width:0}.admswitch b{display:block}.admswitch small{display:block;color:var(--ink-2);font-size:12.5px;line-height:1.35;margin-top:2px}
+.admcard{text-align:center;background:var(--card);border-radius:var(--r-lg,22px);padding:22px 16px;box-shadow:var(--shadow)}.admlogo{display:block;width:76px;height:76px;margin:0 auto 10px}.admlogo svg{width:100%;height:100%}.admcard h2{margin:0}.admcard p{margin:4px 0 0;color:var(--palm);font-weight:700}
+.mgadmmode{display:flex;align-items:center;gap:8px;width:100%;border:0;background:#0F5C4C;color:#fff;font:inherit;padding:10px 14px}.mgadmmode span{margin-inline-start:auto;font-size:12.5px;opacity:.85;text-decoration:underline}.mgpact .on{background:#0F5C4C;color:#fff}
+.mgsteps{list-style:none;margin:0;padding:0;display:grid;gap:10px}.mgsteps li{display:flex;align-items:center;gap:10px;font-weight:600;line-height:1.35}.mgsteps li span{width:28px;height:28px;flex:none;border-radius:50%;background:var(--mg-grad);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center}.mgarrow{position:fixed;left:50%;bottom:calc(6px + env(safe-area-inset-bottom));transform:translateX(-50%);font-size:30px;color:var(--mg-blue);animation:mgbob 1.2s ease-in-out infinite}@keyframes mgbob{50%{transform:translate(-50%,-8px)}}@media (prefers-reduced-motion:reduce){.mgarrow{animation:none}}
 </style>
 </head>
 <body>
@@ -760,14 +764,14 @@ body:not(.dsk) .gallery .float .ibtn,body:not(.dsk) .item-head .float .ibtn{box-
 <div id="root"></div>
 <div class="toast-box" id="toasts"></div>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script>window.NAKHLIO_V = 31;</script>
-<script defer src="i18n.js?v=31"></script>
-<script defer src="data.js?v=31"></script>
-<script defer src="community.js?v=31"></script>
-<script defer src="services.js?v=31"></script>
+<script>window.NAKHLIO_V = 32;</script>
+<script defer src="i18n.js?v=32"></script>
+<script defer src="data.js?v=32"></script>
+<script defer src="community.js?v=32"></script>
+<script defer src="services.js?v=32"></script>
 <script defer src="vendor/supabase-2.118.0.js"></script>
-<script defer src="live.js?v=31"></script>
-<script defer src="app.js?v=31"></script>
-<script defer src="magaam.js?v=31"></script>
+<script defer src="live.js?v=32"></script>
+<script defer src="app.js?v=32"></script>
+<script defer src="magaam.js?v=32"></script>
 </body>
 </html>

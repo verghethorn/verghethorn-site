@@ -423,7 +423,7 @@ function commentsBlock(key, list, opts) {
     </div></div>`;
   }).join('');
   const box = opts.collapsed && !openC[key] ? '' : `<div class="cbox"><div class="rchip" ${replyTo[key] ? '' : 'hidden'}>${t('reply_to')} <b>${esc(who(replyTo[key] || ''))}</b><button data-act="unreply" data-k="${key}" aria-label="${t('close')}">${small('x')}</button></div>
-    ${LV && isAdmin() ? `<button class="chip ${S.asAdm ? 'on' : ''}" style="margin:0 0 6px" data-act="asadm">${small('shield')} ${FXL('as_admin_l')}: ${S.asAdm ? FXL('on') : FXL('off')}</button>` : ''}<div class="crow"><textarea rows="1" data-ck="${key}" placeholder="${t('comment_ph')}" aria-label="${t('comment_ph')}"></textarea><button class="send" data-act="csend" data-k="${key}" aria-label="send">${ic('send', 'flip')}</button></div></div>`;
+    ${LV && isAdmin() ? `<div class="note" style="margin:0 0 6px;color:var(--palm);font-weight:700">${small('shield')} ${FXL('writing_admin')}</div>` : ''}<div class="crow"><textarea rows="1" data-ck="${key}" placeholder="${t('comment_ph')}" aria-label="${t('comment_ph')}"></textarea><button class="send" data-act="csend" data-k="${key}" aria-label="send">${ic('send', 'flip')}</button></div></div>`;
   return `<div class="cmts">${items}</div>${box}`;
 }
 const chipsRow = (map, curK, act) => `<div class="chips"><button class="chip ${curK === 'all' ? 'on' : ''}" data-act="${act}" data-v="all">${t('all')}</button>${Object.keys(map).map(k => `<button class="chip ${k === curK ? 'on' : ''}" data-act="${act}" data-v="${k}">${esc(L(map[k]))}</button>`).join('')}</div>`;
@@ -604,8 +604,8 @@ V.room = (p) => {
   const bub = msgs.map(m => m.who === '@me'
     ? `<div class="bubble me">${m.to ? `<span class="rto">${small('chev')}${esc(who(m.to))}</span>` : ''}${esc(txt(m.text))}</div>`
     : `<div class="msg">${pBtn(m.who, avatar(m.who))}<div class="bubble op">${pBtn(m.who, `<b class="nm">${esc(m.who)}${vmark(m.who)}</b>`)}${m.to ? `<span class="rto">${small('chev')}${esc(who(m.to))}</span>` : ''}${esc(txt(m.text))}<div class="ma">${LV && m.mid ? (isAdmin() ? `<button data-act="ldel" data-v="room:${m.mid}">${FXL('act_delete')}</button>${m.uid && m.who !== '@nk' ? `<button data-act="admuser" data-v="${m.uid}">${FXL('act_ban')}</button>` : ''}` : m.who === '@nk' ? '' : `<button data-act="lrep" data-v="room:${m.mid}" data-a="${m.uid || ''}">${t('report')}</button>`) : ''}${m.who === '@nk' ? '' : `<button data-act="rreply" data-v="${esc(m.who)}">${t('reply')}</button><button data-act="dm" data-v="${esc(m.who)}">${t('dm')}</button>`}</div></div></div>`).join('');
-  const wt = watching(sp); const asA = LV && isAdmin() && (wt || S.asAdm);
-  const asBar = LV && isAdmin() ? `<div class="banner ${asA ? 'green' : ''}" style="font-size:12.5px">${ic('shield')}<div style="flex:1">${FXL('as_admin_l')}: <b>${asA ? FXL('on') : FXL('off')}</b></div>${wt ? '' : `<button class="btn sm soft" data-act="asadm">${asA ? FXL('off') : FXL('on')}</button>`}</div>` : '';
+  const wt = watching(sp); const asA = LV && isAdmin();
+  const asBar = LV && isAdmin() ? `<div class="banner ${asA ? 'green' : ''}" style="font-size:12.5px">${ic('shield')}<div style="flex:1">${FXL('writing_admin')}</div></div>` : '';
   return { composer: 'room', html: topbar(L(r.name), { right: `<span class="tag green num">${nf(r.n)} ${tn('members', r.n)}</span>` }) + `<div class="wrap chat-wrap">
     <div class="banner" style="font-size:12.5px">${ic(wt ? 'shield' : 'info')}<div>${wt ? FXL('watch_mode') : t('room_rule')}</div></div>${asBar}
     <div class="msg"><span class="av" style="padding:0;overflow:hidden;background:none">${logo()}</span><div class="bubble op"><b class="nm">${t('operator')}</b>${t('room_hello')}</div></div>
@@ -722,6 +722,7 @@ function onLiveMessage(m) {
   const key = Object.keys(S.chats).find(k => S.chats[k].cid === m.chat_id);
   if (!key) { if (isOwner()) return liveSyncChats(); return liveSyncChats(true); }
   const c = S.chats[key]; if (c.msgs.some(x => x.mid === m.id)) return;
+  chime();
   if (key.startsWith('O:')) { c.msgs.push(liveMsg(m)); if (cur().v === 'chat' && cur().id === key) render(); return; }
   c.msgs.push(liveMsg(m)); c.t = Date.now(); save();
   if (document.querySelector('.sheet-wrap')) return;
@@ -734,6 +735,48 @@ function applyLive(pr) {
   if (pr) { S.me = meFrom(pr); if (pr.ui_lang && pr.ui_lang !== lang && LANGS.some(l => l.code === pr.ui_lang)) { lang = pr.ui_lang; S.lang = lang; } LV.onMessage(onLiveMessage); liveSyncChats(true); }
   else if (S.me) delete S.me;
   save();
+}
+/* ---------- notifications: soft sound, app-icon badge, push ---------- */
+const VAPID = 'BEMztm5XWSXhQxs20u7R8q_sAa9HUhI7MoJs5MHXO-KXn6T4QKfF3NzaKNiigdrdDiQQub8knOsC4BHQW6D-T1Y';
+let actx = null, lastChime = 0;
+const AC = window.AudioContext || window.webkitAudioContext;
+const unlockAudio = () => { try { if (!actx && AC) actx = new AC(); if (actx && actx.state === 'suspended') actx.resume(); } catch (e) {} };
+['touchend', 'click'].forEach(ev => document.addEventListener(ev, unlockAudio, { passive: true }));
+function chime() {
+  if (S.sound === false || !actx || Date.now() - lastChime < 1500) return; lastChime = Date.now();
+  try { const t0 = actx.currentTime + 0.01; [[784, 0], [1175, 0.11]].forEach(([f, d]) => { const o = actx.createOscillator(), g = actx.createGain(); o.type = 'sine'; o.frequency.value = f;
+    g.gain.setValueAtTime(0, t0 + d); g.gain.linearRampToValueAtTime(0.09, t0 + d + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d + 0.6); o.connect(g); g.connect(actx.destination); o.start(t0 + d); o.stop(t0 + d + 0.65); }); } catch (e) {}
+}
+function setBadge(n) { try { if (navigator.setAppBadge) { if (n > 0) navigator.setAppBadge(n); else navigator.clearAppBadge(); } const c = navigator.serviceWorker && navigator.serviceWorker.controller; if (c) c.postMessage({ badge: n > 0 ? n : 0 }); } catch (e) {} }
+const pushOk = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+const u8 = (s) => { const p = '='.repeat((4 - s.length % 4) % 4); const b = atob((s + p).replace(/-/g, '+').replace(/_/g, '/')); return Uint8Array.from(b, c => c.charCodeAt(0)); };
+async function pushEnable() {
+  if (!pushOk()) throw new Error('unsupported');
+  const perm = await Notification.requestPermission(); if (perm !== 'granted') throw new Error('denied');
+  const reg = await navigator.serviceWorker.ready; let sub = await reg.pushManager.getSubscription();
+  if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: u8(VAPID) });
+  const j = sub.toJSON(); await LV.sb.from('push_subs').upsert({ user_id: LV.user.id, app: window.MG_APP ? 'magaam' : 'nakhlio', endpoint: j.endpoint, p256dh: j.keys.p256dh, auth: j.keys.auth }, { onConflict: 'endpoint' });
+}
+async function pushDisable() { try { const reg = await navigator.serviceWorker.ready; const sub = await reg.pushManager.getSubscription(); if (sub) { await LV.sb.from('push_subs').delete().eq('endpoint', sub.endpoint); await sub.unsubscribe(); } } catch (e) { console.warn(e); } }
+function notifSheet() {
+  const on = !!S.notifOn && pushOk() && Notification.permission === 'granted', snd = S.sound !== false;
+  const hint = !pushOk() || !isStandalone() ? `<p class="note" style="margin:10px 0 0">${FXL('notif_install')}</p>` : pushOk() && Notification.permission === 'denied' ? `<p class="note" style="margin:10px 0 0">${FXL('notif_denied')}</p>` : '';
+  const w = sheet(`<h3>${FXL('notif_t')}</h3><div class="plist" style="margin-top:6px">
+    <label class="optrow"><i class="b-sky c-sky">${ic('siren')}</i><span class="grow">${FXL('notif_push')}<small>${FXL('notif_push_d')}</small></span><input type="checkbox" id="ntp" ${on ? 'checked' : ''}></label>
+    <label class="optrow"><i class="b-palm c-palm">${ic('play')}</i><span class="grow">${FXL('notif_sound')}<small>${FXL('notif_sound_d')}</small></span><input type="checkbox" id="nts" ${snd ? 'checked' : ''}></label></div>${hint}
+    <button class="btn green full" style="margin-top:14px" data-close>${t('understood')}</button>`);
+  const p1 = w.querySelector('#ntp'), p2 = w.querySelector('#nts');
+  p1.addEventListener('change', async () => { if (p1.checked) { try { await pushEnable(); S.notifOn = true; save(); if (LV && LV.user) LV.updateProfile({ notify_on: true }).catch(() => {}); toast(t('saved_ok')); } catch (e) { p1.checked = false; toast(String(e.message) === 'denied' ? FXL('notif_denied') : FXL('notif_install')); } }
+    else { await pushDisable(); S.notifOn = false; save(); toast(t('saved_ok')); } });
+  p2.addEventListener('change', () => { S.sound = p2.checked; save(); unlockAudio(); if (S.sound) { lastChime = 0; chime(); } if (LV && LV.user) LV.updateProfile({ notify_sound: S.sound }).catch(() => {}); });
+}
+function openDeep(url) {
+  let u; try { u = new URL(url, location.href); } catch (e) { return; }
+  const g = u.searchParams.get('go'), ch = u.searchParams.get('chat'), uu = u.searchParams.get('u');
+  if (ch && uu) { stack = [{ v: 'mgchats' }, { v: 'mgchat', id: ch, u: uu }]; return render(true); }
+  if (g === 'friends') { stack = [{ v: 'mgfriends' }]; return render(true); }
+  if ((g === 'operator' || g === 'reports') && canAdmin()) { S.adminMode = true; save(); stack = [{ v: 'profile' }, { v: 'operator', k: g === 'reports' ? 'reports' : 'chats' }]; return render(true); }
+  if (g === 'chats') { stack = [{ v: 'chats' }]; return render(true); }
 }
 let unlocked = false;
 const b64u = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
@@ -854,8 +897,9 @@ function eventSheet(space) {
 }
 const OWNER_H = '81d40b4d82d36fea86c23f3b610f9626bb16e35459c65aa15ce8ea88377b5c13';
 async function ownerCheck(phone) { try { const d = String(phone).replace(/\D/g, '').slice(-9); const h = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(d)); return [...new Uint8Array(h)].map(x => x.toString(16).padStart(2, '0')).join('') === OWNER_H; } catch (e) { return false; } }
-const isAdmin = () => !!(S.me && S.me.admin);
-const isOwner = () => !!(LV && S.me && S.me.owner);
+const canAdmin = () => !!(S.me && S.me.admin);
+const isAdmin = () => canAdmin() && !!S.adminMode;
+const isOwner = () => !!(LV && S.me && S.me.owner && S.adminMode);
 const watching = (sp) => isOwner() && S.me.gender !== (sp === 'men' ? 'm' : 'f');
 function testNotice(k) {
   S.testAck = S.testAck || {}; if (S.testAck[k] || document.querySelector('.tmodal')) return;
@@ -1064,10 +1108,12 @@ V.saved = () => {
   const items = S.saved.map(id => HOUSING.find(h => h.id === id) || TRANSPORT.find(x => x.id === id)).filter(Boolean);
   return { tabs: true, html: topbar(t('saved_title'), { noBack: true }) + `<div class="wrap">${items.length ? `<div class="list">${items.map(x => x.kind ? trCard(x) : houseCard(x)).join('')}</div>` : emptyBlock(t('saved_empty'))}</div>` };
 };
-V.profile = () => ({ tabs: true, html: topbar(t('profile_title'), { noBack: true }) + `<div class="wrap narrow">
+const admSwitch = () => canAdmin() && LV ? `<button class="admswitch ${isAdmin() ? 'on' : ''}" data-act="admmode"><span class="admsw-ic">${isAdmin() ? ic('user') : logo()}</span><span class="grow"><b>${FXL(isAdmin() ? 'adm_mode_off' : 'adm_mode_on')}</b><small>${isAdmin() ? esc(S.me.name || '') : FXL('adm_mode_d')}</small></span>${ic('chev', 'flip chev')}</button>` : '';
+V.profile = () => isAdmin() && LV ? adminProfile() : ({ tabs: true, html: topbar(t('profile_title'), { noBack: true }) + `<div class="wrap narrow">${admSwitch()}
   ${S.me ? profileHtml('@me') : `<div class="phead"><div class="pcover">${skyline()}</div><div class="pmain-row"><span class="av xl b-date c-date">${t('guest')[0]}</span><div class="pid"><h2>${t('guest')}</h2></div></div><p class="pabout">${t('guest_d')}</p><div class="pact"><button class="btn primary full" data-act="startreg">${ic('user')}${t('create_profile')}</button></div></div>`}
   <div class="plist" style="margin-top:18px">
     <button data-act="go" data-v="lang"><i class="b-palm c-palm">${ic('globe')}</i><span class="grow">${t('language')}<small>${esc((LANGS.find(l => l.code === lang) || {}).name)}</small></span>${ic('chev', 'flip chev')}</button>
+    ${LV && S.me ? `<button data-act="notifset"><i class="b-sky c-sky">${ic('siren')}</i><span class="grow">${FXL('notif_t')}</span>${ic('chev', 'flip chev')}</button>` : ''}
     <button data-act="go" data-v="saved"><i class="b-rose c-rose">${ic('heart')}</i><span class="grow">${t('saved_title')}<small class="num">${nf(S.saved.length)}</small></span>${ic('chev', 'flip chev')}</button>
     <button data-act="rules"><i class="b-date c-date">${ic('info')}</i><span class="grow">${t('rules')}</span>${ic('chev', 'flip chev')}</button>
     <button data-act="go" data-v="about"><i class="b-sky c-sky">${ic('home')}</i><span class="grow">${t('about')}</span>${ic('chev', 'flip chev')}</button>
@@ -1075,6 +1121,15 @@ V.profile = () => ({ tabs: true, html: topbar(t('profile_title'), { noBack: true
   ${isAdmin() ? '' : '<!--'}<div class="plist" style="margin-top:14px"><button data-act="go" data-v="operator"><i class="b-clay c-clay">${ic('headset')}</i><span class="grow">${t('operator_panel')}<small>${t('operator_panel_d')}</small></span>${ic('chev', 'flip chev')}</button></div>${isAdmin() ? '' : '-->'}
   <div class="plist" style="margin-top:14px">${S.me ? '' : '<!--'}<button data-act="logout"><i class="b-sky c-sky">${ic('back', 'flip')}</i><span class="grow">${t('logout')}<small dir="ltr" style="text-align:start">${esc(S.me ? [S.me.phone, S.me.email].filter(Boolean).join(' · ') : '')}</small></span></button>${isAdmin() ? `<button data-act="reset"><i class="b-rose c-rose">${ic('x')}</i><span class="grow">${t('reset')}</span></button>` : ''}${S.me ? '' : '-->'}</div>
   </div>` });
+function adminProfile() {
+  const st = want('adm:stats', () => LV.stats()) || {};
+  const row = (act, v, k, icn, label, n) => `<button data-act="${act}" ${v ? `data-v="${v}"` : ''} ${k ? `data-k="${k}"` : ''}><i class="b-palm c-palm">${ic(icn)}</i><span class="grow">${label}</span>${n ? `<span class="tag green num">${nf(n)}</span>` : ''}${ic('chev', 'flip chev')}</button>`;
+  return { tabs: true, html: topbar(FXL('adm_badge'), { noBack: true }) + `<div class="wrap narrow">
+    <div class="admcard"><span class="admlogo">${logo()}</span><h2>${FXL('nk_admin')}</h2><p>${isOwner() ? FXL('owner_l') : FXL('adm')}</p></div>
+    <div class="plist" style="margin-top:14px">${row('admop', 'chats', '', 'headset', FXL('tab_chats'), st.support)}${row('admop', 'reports', '', 'flag', FXL('tab_reports'), st.reports)}${row('admop', 'users', '', 'users', FXL('tab_users'), st.users)}</div>
+    <div class="plist" style="margin-top:14px"><button data-act="notifset"><i class="b-sky c-sky">${ic('siren')}</i><span class="grow">${FXL('notif_t')}</span>${ic('chev', 'flip chev')}</button><button data-act="go" data-v="lang"><i class="b-palm c-palm">${ic('globe')}</i><span class="grow">${t('language')}</span>${ic('chev', 'flip chev')}</button></div>
+    <div style="margin-top:14px">${admSwitch()}</div></div>` };
+}
 V.about = () => ({ tabs: true, html: topbar(t('about')) + `<div class="wrap"><div class="card" style="text-align:center"><div style="width:72px;margin:0 auto 10px">${logo()}</div><b style="font-size:20px">Nakhlio</b><p style="margin:10px 0 0;line-height:1.6">${t('about_text')}</p></div>
   <div class="kv" style="margin-top:14px"><div><span>${t('license')}</span><b>FAL-1200000000 (${t('example')})</b></div><div><span>${t('verified').split('·')[0]}</span><b>✓</b></div></div><p class="note" style="margin-top:14px;text-align:center">${t('photo_credit')}</p></div>` });
 V.lang = () => ({ tabs: true, html: topbar(t('language')) + `<div class="wrap"><div class="langs" style="margin-top:4px">${LANGS.map(l => `<button class="lang ${l.code === lang ? 'on' : ''}" data-act="setlang" data-v="${l.code}" dir="${l.dir}"><b>${l.name}</b><small>${l.latin}</small></button>`).join('')}</div></div>` });
@@ -1169,6 +1224,8 @@ root.addEventListener('click', (e) => {
     case 'docedit': docSheet(v); break;
     case 'opk': cur().k = v; render(); break;
     case 'admuser': admUserSheet(v); break;
+    case 'admop': go('operator', { k: v }); break;
+    case 'notifset': notifSheet(); break;
     case 'ldelmsg': if (confirm(FXL('act_delete') + '?')) LV.deleteMessage(v).then(() => { toast(FXL('act_delete') + ' ✓'); }).catch(() => toast(FXL('send_fail'))); break;
     case 'admdone': LV.closeReport(v).then(() => { dropData('reports'); dropData('adm:stats'); render(); }); break;
     case 'admdelpost': if (confirm(FXL('act_delete') + '?')) LV.deletePost(v).then(() => { toast(FXL('act_delete') + ' ✓'); dropData(); render(); }).catch(e => toast(FXL('send_fail'))); break;
@@ -1191,7 +1248,7 @@ root.addEventListener('click', (e) => {
     case 'comment': openC[el.dataset.k] = !openC[el.dataset.k]; render(); if (openC[el.dataset.k]) focusBox(el.dataset.k); break;
     case 'csend': if (LV) { const k = el.dataset.k; const ta = root.querySelector(`textarea[data-ck="${k}"]`); const tx = ta && ta.value.trim(); if (!tx) { ta && ta.focus(); break; }
       const target = k.startsWith('c:') ? 'item:' + k.slice(2) : k.startsWith('f:') ? 'forum:' + k.slice(2) : k.startsWith('e:') ? 'event:' + k.slice(2) : null;
-      if (!target) break; LV.addComment(target, tx, lang, replyTo[k], isAdmin() && S.asAdm).then(() => { replyTo[k] = null; dropData('c:'); render(); }).catch(e => toast(FXL('send_fail'))); ta.value = ''; break; }
+      if (!target) break; LV.addComment(target, tx, lang, replyTo[k], isAdmin()).then(() => { replyTo[k] = null; dropData('c:'); render(); }).catch(e => toast(FXL('send_fail'))); ta.value = ''; break; }
     case 'csend_local': { const k = el.dataset.k; const ta = root.querySelector(`textarea[data-ck="${k}"]`); const tx = ta && ta.value.trim(); if (!tx) { ta && ta.focus(); break; } S.cm[k] = (S.cm[k] || []).concat({ who: '@me', text: tx, to: replyTo[k] || undefined, date: new Date().toISOString().slice(0, 7) }); replyTo[k] = null; save(); render(); break; }
     case 'rreply': cur().replyTo = v; render(); setTimeout(() => { const m = document.getElementById('msg'); if (m) m.focus(); }, 30); break;
     case 'rclear': cur().replyTo = null; render(); break;
@@ -1213,7 +1270,7 @@ root.addEventListener('click', (e) => {
     case 'lhelp': { const on = el.dataset.on !== '1'; LV.setHelpful(v, on).then(() => { dropData('c:forum'); render(); }).catch(er => toast(FXL('send_fail'))); break; }
     case 'lrep': { const box = el.closest('.bubble,.card,.post,.cmt'); const snap = box ? box.innerText.replace(/\s+/g, ' ').trim().slice(0, 500) : ''; const place = (document.querySelector('.topbar h1') || {}).innerText || ''; LV.report('post', v, '', { snapshot: snap, target_author: el.dataset.a || null, place: place.slice(0, 120) }).then(() => toast(t('reported'))).catch(er => toast(FXL('send_fail'))); break; }
     case 'lrepm': { const c = S.chats[cur().id] || {}; const m = c.msgs && c.msgs.find(x => String(x.mid) === v); LV.report('message', v, '', { snapshot: m ? String(m.text).slice(0, 500) : '', target_author: m ? m.who : null, place: 'dm:' + (c.cid || '') }).then(() => toast(t('reported'))).catch(er => toast(FXL('send_fail'))); break; }
-    case 'asadm': S.asAdm = !S.asAdm; save(); render(); break;
+    case 'admmode': S.adminMode = !S.adminMode; save(); toast(S.adminMode ? FXL('adm_badge') : t('saved_ok')); if (window.MG_APP || String(cur().v).startsWith('mg')) render(); else tab('profile'); break;
     case 'udms': go('operator', { k: 'udms', uid: v }); break;
     case 'oprep': { const cid = v; LV.chat(cid).then(c => { if (!c) return toast(FXL('send_fail')); const key = 'O:' + c.id; S.chats[key] = { live: true, cid: c.id, kind: c.kind, user1: c.user1, user2: c.user2, t: Date.now(), msgs: [], watch: true }; LV.prof([c.user1, c.user2]).then(() => go('chat', { id: key })); }); break; }
     case 'umore': cur().n = (cur().n || 50) + 50; render(); break;
@@ -1360,7 +1417,7 @@ function render(scrollTop) {
   setDoc();
   const c = cur(); const fn = V[c.v] || V.home; const r = fn(c);
   const rootTabs = ['home', 'explore', 'chats', 'saved', 'profile'];
-  const tabsHtml = r.tabs ? `<nav class="tabbar">${[['home', 'home'], ['explore', 'grid'], ['chats', 'chat'], ['saved', 'heart'], ['profile', 'user']].map(([v, i]) => { const on = stack[0].v === v; const n = v === 'chats' ? Object.keys(S.chats).length : 0; return `<button class="tab ${on ? 'on' : ''}" data-act="tab" data-v="${v}">${ic(i)}${t('tab_' + v)}${n ? `<span class="dot num">${nf(n)}</span>` : ''}</button>`; }).join('')}</nav>` : '';
+  const tabsHtml = r.tabs ? `<nav class="tabbar">${[['home', 'home'], ['explore', 'grid'], ['chats', 'chat'], ['saved', 'heart'], ['profile', 'user']].map(([v, i]) => { const on = stack[0].v === v; const n = v === 'chats' ? Object.keys(S.chats).length : 0; return `<button class="tab ${on ? 'on' : ''}" data-act="tab" data-v="${v}">${ic(v === 'profile' && isAdmin() ? 'shield' : i)}${v === 'profile' && isAdmin() ? FXL('adm_short') : t('tab_' + v)}${n ? `<span class="dot num">${nf(n)}</span>` : ''}</button>`; }).join('')}</nav>` : '';
   const cta = r.cta ? `<div class="cta-bar">${r.cta}</div>` : '';
   const rchip = r.composer === 'room' && c.replyTo ? `<div class="rchip">${t('reply_to')} <b>${esc(c.replyTo)}</b><button data-act="rclear" aria-label="${t('close')}">${small('x')}</button></div>` : '';
   const comp = r.composer ? `<div class="composer">${rchip}${r.composer === 'chat' && !(S.chats[c.id] && S.chats[c.id].live) ? `<button class="share" data-act="sharenum" aria-label="${t('share_number')}" title="${t('share_number')}">${ic('phone')}</button>` : ''}<textarea id="msg" rows="1" placeholder="${r.composer === 'room' ? t('write_room') : t('type_msg')}" aria-label="${t('type_msg')}">${esc(c.draft || '')}</textarea><button class="send" id="sendBtn" aria-label="send">${ic('send', 'flip')}</button></div>` : '';
@@ -1383,7 +1440,7 @@ function render(scrollTop) {
   if (msg) {
     const auto = () => { msg.style.height = 'auto'; msg.style.height = Math.min(120, msg.scrollHeight) + 'px'; };
     msg.addEventListener('input', () => { c.draft = msg.value; auto(); }); auto();
-    const doSend = () => { const v = msg.value; if (!v.trim()) return; c.draft = ''; if (r.composer === 'chat') sendChat(v); else if (LV) { const room = c.id, to = c.replyTo; c.replyTo = null; LV.roomSend(room, v.trim(), lang, to, isAdmin() && (watching(room.split(':')[0]) || S.asAdm)).then(() => { dropData('c:sp:'); render(); setTimeout(scrollEnd, 50); }).catch(e => toast(FXL('send_fail'))); msg.value = ''; } else { S.rooms = S.rooms || {}; (S.rooms[c.id] = S.rooms[c.id] || []).push({ who: '@me', text: v.trim(), to: c.replyTo || undefined }); c.replyTo = null; save(); render(); } setTimeout(scrollEnd, 50); };
+    const doSend = () => { const v = msg.value; if (!v.trim()) return; c.draft = ''; if (r.composer === 'chat') sendChat(v); else if (LV) { const room = c.id, to = c.replyTo; c.replyTo = null; LV.roomSend(room, v.trim(), lang, to, isAdmin()).then(() => { dropData('c:sp:'); render(); setTimeout(scrollEnd, 50); }).catch(e => toast(FXL('send_fail'))); msg.value = ''; } else { S.rooms = S.rooms || {}; (S.rooms[c.id] = S.rooms[c.id] || []).push({ who: '@me', text: v.trim(), to: c.replyTo || undefined }); c.replyTo = null; save(); render(); } setTimeout(scrollEnd, 50); };
     document.getElementById('sendBtn').addEventListener('click', doSend);
     msg.addEventListener('keydown', ev => { if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); doSend(); } });
     const sn = document.querySelector('[data-act=sharenum]'); if (sn) sn.addEventListener('click', ev => { ev.stopPropagation(); sendChat('', true); });
@@ -1398,6 +1455,7 @@ function render(scrollTop) {
 const TR_LANGS = ['ur', 'id', 'ms', 'tr', 'bn', 'hi', 'fa', 'fr'];
 const trTried = {};
 function boot() {
+  if (!boot.dl) { boot.dl = true; if (/[?&](go|chat)=/.test(location.search)) setTimeout(() => openDeep(location.href), 0); if (!window.MG_APP) setBadge(0); }
   if (window.MG_APP && !boot.inv) { boot.inv = true; const m = location.search.match(/[?&]i=([a-z0-9]+)/i); if (m) { S.mgInvite = m[1].toLowerCase(); save(); } }
   if (LV && !LV.ready && !boot.bg) {
     // signed-in before: show the app from the saved state at once, refresh the session in the background
@@ -1429,8 +1487,11 @@ if (LV) {
   wrapV('room', (pp) => liveSpace(pp.id.split(':')[0])); wrapV('event', () => { if (isOwner()) { liveSpace('men'); liveSpace('women'); } else liveSpace(S.me && S.me.gender === 'f' ? 'women' : 'men'); });
   LV.onRoom && setTimeout(() => LV.onRoom(m => { if (m.author === meU()) return; dropData('c:sp:'); if (cur().v === 'room' && cur().id === m.room) { liveSpace(m.room.split(':')[0]); } }), 0);
 }
-window.NK = { setLang: (l) => { if (!LANGS.some(x => x.code === l)) return; lang = l; S.lang = l; save(); if (LV && LV.user && LV.profile) LV.updateProfile({ ui_lang: l }).catch(() => {}); }, boot: () => boot(), isPhone, isAdmin, want, dropData, liveAv, pname, meFrom, applyLive, liveSyncChats, loadChat, V, t, L, ic, esc, small, img, avatar, vmark, commentsBlock, loc, nf, toast, sheet, go, back, render, save, openDM, authSheet, resizeImg, txt, cur,
+window.NK = { canAdmin, chime, setBadge, isStandalone, isInApp, notifSheet, setLang: (l) => { if (!LANGS.some(x => x.code === l)) return; lang = l; S.lang = l; save(); if (LV && LV.user && LV.profile) LV.updateProfile({ ui_lang: l }).catch(() => {}); }, boot: () => boot(), isPhone, isAdmin, want, dropData, liveAv, pname, meFrom, applyLive, liveSyncChats, loadChat, V, t, L, ic, esc, small, img, avatar, vmark, commentsBlock, loc, nf, toast, sheet, go, back, render, save, openDM, authSheet, resizeImg, txt, cur,
   get S() { return S; }, get lang() { return lang; }, get stack() { return stack; } };
 boot();
-if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !DEMO) navigator.serviceWorker.register('sw.js').catch(() => {});
+if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !DEMO) {
+  navigator.serviceWorker.register(window.MG_APP ? '/magaam/sw.js' : '/nakhlio/sw.js', { scope: window.MG_APP ? '/magaam/' : '/nakhlio/' }).catch(() => {});
+  navigator.serviceWorker.addEventListener('message', (e) => { if (e.data && e.data.open) openDeep(e.data.open); });
+}
 })();
