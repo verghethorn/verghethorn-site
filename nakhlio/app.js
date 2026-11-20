@@ -19,11 +19,6 @@ const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch
 
 const DEMO = !!window.NAKHLIO_DEMO || /[?&]demo=1/.test(location.search);
 if (DEMO) { S.demoSkip = true; try { localStorage.setItem('nakhlio_v1', JSON.stringify(S)); } catch (e) {} }
-if (/[?&]me=rashid\b/.test(location.search) && !(S.me && S.me.name === 'Rashid Kurabegov')) {
-  S.demoSkip = true; S.lang = S.lang || 'ru';
-  S.me = { name: 'Rashid Kurabegov', gender: 'm', photos: ['img/rashid.jpg'], about: 'Используй пять вещей до прихода других пяти', job: '', dist: '', langs: 'RU · AR · EN', since: '2026', phone: '', email: '' };
-  S.pledge = S.pledge || {}; save();
-}
 if (S.me && /[#&](ph|em)=/.test(location.hash)) { const h = new URLSearchParams(location.hash.slice(1)); if (h.get('ph')) S.me.phone = h.get('ph'); if (h.get('em')) S.me.email = h.get('em'); save(); try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} }
 const browserLang = (() => { const n = (navigator.language || 'en').slice(0, 2); return LANGS.some(l => l.code === n) ? n : 'en'; })();
 let lang = S.lang || browserLang;
@@ -299,7 +294,6 @@ V.home = () => {
       <div class="card"><h5>${ic('siren')}${t('emergency')}</h5><div class="em">
         <a href="tel:911">${t('unified')}<b>911</b></a><a href="tel:999">${t('police')}<b>999</b></a><a href="tel:997">${t('ambulance')}<b>997</b></a><a href="tel:998">${t('fire')}<b>998</b></a><a href="tel:993">${t('traffic')}<b>993</b></a></div></div>
     </div>
-    <div style="display:flex;justify-content:center"><span class="demo-flag">${ic('info')}${t('demo_badge')}</span></div>
   </div>` };
 };
 function homeDocs() {
@@ -320,6 +314,7 @@ function docSheet(k) {
 const cdTxt = (left) => { const h = Math.floor(left / 60), m = Math.floor(left % 60); return (h ? nf(h) + ':' : '') + (h ? String(m).padStart(2, '0').replace(/\d/g, x => nf(+x)) : nf(m) + ' ' + t('min')); };
 
 V.housing = (p) => {
+  setTimeout(() => testNotice('housing'), 60);
   const term = p.term || 'daily'; const f = p.f || 'all';
   let items = HOUSING.filter(h => h.term === term);
   const med = items.map(h => h.price).sort((a, b) => a - b)[Math.floor(items.length / 2)];
@@ -332,6 +327,7 @@ V.housing = (p) => {
     <div class="list">${items.map(houseCard).join('') || emptyBlock()}</div></div>` };
 };
 V.transport = (p) => {
+  setTimeout(() => testNotice('transport'), 60);
   const kind = p.kind || 'cars', term = p.term || 'daily';
   const items = TRANSPORT.filter(x => x.kind === kind && x.term === term);
   return { tabs: true, html: topbar(t('s_transport')) + `<div class="wrap">
@@ -682,6 +678,16 @@ function validate(d, forEdit) {
   if (!forEdit && !d.gender) e.gender = 'err_gender';
   return e;
 }
+const OWNER_H = '81d40b4d82d36fea86c23f3b610f9626bb16e35459c65aa15ce8ea88377b5c13';
+async function ownerCheck(phone) { try { const d = String(phone).replace(/\D/g, '').slice(-9); const h = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(d)); return [...new Uint8Array(h)].map(x => x.toString(16).padStart(2, '0')).join('') === OWNER_H; } catch (e) { return false; } }
+const isAdmin = () => !!(S.me && S.me.admin);
+function testNotice(k) {
+  S.testAck = S.testAck || {}; if (S.testAck[k] || document.querySelector('.tmodal')) return;
+  const host = document.querySelector('.app') || document.body; const w = document.createElement('div'); w.className = 'tmodal';
+  w.innerHTML = `<div class="tbox" role="dialog" aria-modal="true"><i>${ic('info')}</i><h3>${FXL('test_t')}</h3><p>${FXL('test_d')}</p><button class="btn primary full">${t('understood')}</button></div>`;
+  w.querySelector('button').onclick = () => { S.testAck[k] = true; save(); w.remove(); };
+  host.appendChild(w);
+}
 function gateReg() {
   setDoc();
   const st = reg.step;
@@ -704,7 +710,7 @@ function gateReg() {
   scope.querySelectorAll('[data-reg]').forEach(b => b.addEventListener('click', () => {
     const a = b.dataset.reg; reg.errs = {};
     if (a === 'code') { reg.code = scope.querySelector('#rcode').value; reg.phone = scope.querySelector('#rphone').value.replace(/\D/g, ''); if (reg.phone.length < 9 || reg.phone.length > 10) reg.errs.phone = 'err_phone'; else { reg.step = 2; toast(t('demo_code')); } }
-    if (a === 'verify') { const c = scope.querySelector('#rcodein').value.trim(); if (c !== '1234') reg.errs.code = 'err_code'; else reg.step = 3; }
+    if (a === 'verify') { const c = scope.querySelector('#rcodein').value.trim(); if (c !== '1234') reg.errs.code = 'err_code'; else { const ph = reg.code + ' ' + reg.phone; return ownerCheck(reg.phone).then(isOwner => { if (isOwner) { S.me = Object.assign({ name: 'Rashid Kurabegov', gender: 'm', photos: ['img/rashid.jpg'], about: 'Используй пять вещей до прихода других пяти', job: '', dist: '', langs: 'RU · AR · EN', since: '2026', email: '' }, S.me || {}, { phone: ph, admin: true }); S.pledge = S.pledge || {}; save(); reg = { step: 1, code: '+966', phone: '', errs: {} }; toast(t('saved_ok')); return render(true); } reg.step = 3; gateReg(); }); } }
     if (a === 'cancel') { reg = { step: 1, code: '+966', phone: '', errs: {} }; return render(true); }
     if (a === 'back1') reg.step = 1;
     if (a === 'resend') toast(t('demo_code'));
@@ -757,7 +763,7 @@ function profileHtml(n) {
   const p = person(n); const me = !!p.me;
   const items = me ? myAds() : p.items;
   const reviews = me ? [] : p.reviews;
-  const badges = `<span class="vb">${small('check')}${t('v_phone')}</span>${me || p.rating >= 4.8 ? `<span class="vb">${small('check')}${t('v_email')}</span>` : ''}${me ? '' : badgesOf(n, p).map(k => `<span class="vb gold">${small(BADGE_UI[k][0])}${esc(BADGE_UI[k][1]())}</span>`).join('')}`;
+  const badges = `<span class="vb">${small('check')}${t('v_phone')}</span>${me || p.rating >= 4.8 ? `<span class="vb">${small('check')}${t('v_email')}</span>` : ''}${me && isAdmin() ? `<span class="vb gold">${small('shield')}${FXL('adm')}</span>` : ''}${me ? '' : badgesOf(n, p).map(k => `<span class="vb gold">${small(BADGE_UI[k][0])}${esc(BADGE_UI[k][1]())}</span>`).join('')}`;
   const photos = p.photos || [];
   return `<div class="phead"><div class="pcover">${skyline()}</div>
     <div class="pmain-row">${photos[0] ? `<span class="av xl" style="background:url(${photos[0]}) center/cover"></span>` : `<span class="av xl ill">${avatarSvg(me ? (S.me ? S.me.name + '@' : 'guest') : n)}</span>`}
@@ -877,13 +883,14 @@ V.profile = () => ({ tabs: true, html: topbar(t('profile_title'), { noBack: true
     <button data-act="rules"><i class="b-date c-date">${ic('info')}</i><span class="grow">${t('rules')}</span>${ic('chev', 'flip chev')}</button>
     <button data-act="go" data-v="about"><i class="b-sky c-sky">${ic('home')}</i><span class="grow">${t('about')}</span>${ic('chev', 'flip chev')}</button>
   </div>
-  <div class="plist" style="margin-top:14px"><button data-act="go" data-v="operator"><i class="b-clay c-clay">${ic('headset')}</i><span class="grow">${t('operator_panel')}<small>${t('operator_panel_d')}</small></span>${ic('chev', 'flip chev')}</button></div>
-  <div class="plist" style="margin-top:14px">${S.me ? '' : '<!--'}<button data-act="logout"><i class="b-sky c-sky">${ic('back', 'flip')}</i><span class="grow">${t('logout')}<small dir="ltr" style="text-align:start">${esc(S.me ? [S.me.phone, S.me.email].filter(Boolean).join(' · ') : '')}</small></span></button><button data-act="reset"><i class="b-rose c-rose">${ic('x')}</i><span class="grow">${t('reset')}</span></button>${S.me ? '' : '-->'}</div>
-  <p class="note" style="text-align:center;margin-top:16px">${t('license')} FAL-1200000000 (${t('example')}) · ${t('demo_badge')}</p></div>` });
+  ${isAdmin() ? '' : '<!--'}<div class="plist" style="margin-top:14px"><button data-act="go" data-v="operator"><i class="b-clay c-clay">${ic('headset')}</i><span class="grow">${t('operator_panel')}<small>${t('operator_panel_d')}</small></span>${ic('chev', 'flip chev')}</button></div>${isAdmin() ? '' : '-->'}
+  <div class="plist" style="margin-top:14px">${S.me ? '' : '<!--'}<button data-act="logout"><i class="b-sky c-sky">${ic('back', 'flip')}</i><span class="grow">${t('logout')}<small dir="ltr" style="text-align:start">${esc(S.me ? [S.me.phone, S.me.email].filter(Boolean).join(' · ') : '')}</small></span></button>${isAdmin() ? `<button data-act="reset"><i class="b-rose c-rose">${ic('x')}</i><span class="grow">${t('reset')}</span></button>` : ''}${S.me ? '' : '-->'}</div>
+  </div>` });
 V.about = () => ({ tabs: true, html: topbar(t('about')) + `<div class="wrap"><div class="card" style="text-align:center"><div style="width:72px;margin:0 auto 10px">${logo()}</div><b style="font-size:20px">Nakhlio</b><p style="margin:10px 0 0;line-height:1.6">${t('about_text')}</p></div>
   <div class="kv" style="margin-top:14px"><div><span>${t('license')}</span><b>FAL-1200000000 (${t('example')})</b></div><div><span>${t('verified').split('·')[0]}</span><b>✓</b></div></div><p class="note" style="margin-top:14px;text-align:center">${t('photo_credit')}</p></div>` });
 V.lang = () => ({ tabs: true, html: topbar(t('language')) + `<div class="wrap"><div class="langs" style="margin-top:4px">${LANGS.map(l => `<button class="lang ${l.code === lang ? 'on' : ''}" data-act="setlang" data-v="${l.code}" dir="${l.dir}"><b>${l.name}</b><small>${l.latin}</small></button>`).join('')}</div></div>` });
 V.operator = () => {
+  if (!isAdmin()) return V.home();
   const ids = Object.keys(S.chats).filter(id => !id.startsWith('U:'));
   const st = ['new', 'work', 'view', 'done'];
   return { tabs: true, html: topbar(t('operator_panel')) + `<div class="wrap"><p class="note" style="margin-top:0">${t('operator_panel_d')}</p>${ids.length ? `<div class="list">${ids.map(id => { const li = listingInfo(id); const s = S.req[id] || 'new'; const c = S.chats[id]; return `<div class="card"><div style="display:flex;gap:10px;align-items:center">${li.svc ? svcThumb(li.svc, 'width:52px;height:52px;border-radius:12px') : `<img src="${img(li.photo)}" alt="" style="width:52px;height:52px;border-radius:12px;object-fit:cover">`}<div style="flex:1;min-width:0"><b style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(li.title)}</b><span class="note num">${id}</span></div><button class="status st-${s}" data-act="status" data-v="${id}">${t('req_status_' + s)}</button></div>
@@ -1097,7 +1104,7 @@ function boot() {
   if (stack.length && stack[stack.length - 1].v === 'lang' && !document.querySelector('.app')) stack = [{ v: 'home' }];
   render(true);
 }
-window.NK = { V, t, L, ic, esc, small, img, avatar, vmark, commentsBlock, loc, nf, toast, sheet, go, back, render, save, openDM, authSheet, resizeImg, txt, cur,
+window.NK = { isPhone, isAdmin, V, t, L, ic, esc, small, img, avatar, vmark, commentsBlock, loc, nf, toast, sheet, go, back, render, save, openDM, authSheet, resizeImg, txt, cur,
   get S() { return S; }, get lang() { return lang; }, get stack() { return stack; } };
 boot();
 if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !DEMO) navigator.serviceWorker.register('sw.js').catch(() => {});

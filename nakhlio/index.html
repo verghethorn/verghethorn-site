@@ -675,18 +675,24 @@ body:not(.dsk) .gallery .float .ibtn,body:not(.dsk) .item-head .float .ibtn{box-
 .mgpick{display:flex;align-items:center;justify-content:center;height:170px;border:2px dashed #C9D3E8;border-radius:16px;cursor:pointer;overflow:hidden;margin-bottom:12px;color:#1456D6}
 .mgpick.err{border-color:#E0475B}.mgpick span{display:flex;flex-direction:column;align-items:center;gap:6px}.mgpick span svg{width:30px;height:30px}.mgpick img,.mgpick video{width:100%;height:170px;object-fit:cover}
 .dsk .mg{max-width:640px;margin:0 auto;padding-bottom:110px}.dsk .mgnav{max-width:640px}.dsk .mgtop{top:64px}.dsk .mgreels,.dsk .mgreel{height:calc(100vh - 190px)}
+.tmodal{position:fixed;inset:0;z-index:90;background:rgba(10,20,18,.45);display:flex;align-items:center;justify-content:center;padding:24px;animation:fadein .2s ease}
+.tbox{background:var(--card);border-radius:24px;padding:24px 20px 20px;max-width:360px;width:100%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.25)}
+.tbox i{width:56px;height:56px;border-radius:18px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;background:var(--date-tint);color:var(--date-2)}.tbox i svg{width:28px;height:28px}
+.mgrbox .mglogo{margin:0 auto 6px;display:block;width:64px;height:56px}.mgrbox ul{text-align:start;margin:0 0 18px;padding-inline-start:20px;color:var(--ink);font-size:14px;line-height:1.5}.mgrbox li{margin-bottom:6px}.mgrbox p{margin-bottom:10px}
+.tbox h3{margin:0 0 8px;font-size:19px}.tbox p{margin:0 0 18px;color:var(--ink-2);line-height:1.55;font-size:14.5px}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
 </style>
 </head>
 <body>
 <div id="root"></div>
 <div class="toast-box" id="toasts"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script>window.NAKHLIO_V = 20;</script>
-<script src="i18n.js?v=20"></script>
-<script src="data.js?v=20"></script>
-<script src="community.js?v=20"></script>
-<script src="services.js?v=20"></script>
-<script src="app.js?v=20"></script>
-<script src="magaam.js?v=20"></script>
+<script>window.NAKHLIO_V = 21;</script>
+<script src="i18n.js?v=21"></script>
+<script src="data.js?v=21"></script>
+<script src="community.js?v=21"></script>
+<script src="services.js?v=21"></script>
+<script src="app.js?v=21"></script>
+<script src="magaam.js?v=21"></script>
 </body>
 </html>

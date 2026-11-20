@@ -933,3 +933,14 @@ c684|Compte et connexion
 c685|Vous seul voyez votre téléphone et votre e-mail. Vous pouvez vous connecter avec l’un ou l’autre.
 c686|Connexion avec Face ID
 c687|Fonctionne dans l’application installée sur votre téléphone
+c688|Règles de Magaam
+c689|L’équipe Magaam demande à chacun de respecter les règles avec respect les uns envers les autres.
+c690|Les photos et vidéos indécentes sont interdites.
+c691|Les photos et vidéos de filles et de femmes sans hijab sont interdites.
+c692|Pas de politique ni de disputes religieuses.
+c693|Si vous voyez une infraction, appuyez sur « Signaler ». Nous vérifierons et la supprimerons.
+c694|J’accepte les règles
+c695|Ce sont des annonces de test
+c696|Toutes les photos, tous les prix et toutes les annonces de cette section sont des exemples de test, pour découvrir l’application. Les vraies offres apparaîtront après le lancement.
+c697|Administrateur
+c698|Magaam fonctionne uniquement dans l’application mobile Nakhlio. Ouvrez-la sur votre téléphone.

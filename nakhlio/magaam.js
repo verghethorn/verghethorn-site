@@ -39,6 +39,13 @@ const T = {
   photo: D('Сменить фото', 'Change photo', 'تغيير الصورة'),
   no_posts: D('Публикаций пока нет', 'No posts yet', 'لا منشورات بعد'),
   rules: D('Без политики и споров о религии. Нарушения скрываем.', 'No politics or religious disputes. Violations are hidden.', 'بلا سياسة ولا جدال ديني. نخفي المخالفات.'),
+  r_t: D('Правила Magaam', 'Magaam rules', 'قواعد Magaam'),
+  r_intro: D('Администрация Magaam просит всех соблюдать правила с уважением друг к другу.', 'The Magaam team asks everyone to follow the rules with respect for one another.', 'تطلب إدارة Magaam من الجميع الالتزام بالقواعد باحترام متبادل.'),
+  r1: D('Запрещено размещать фото и видео непристойного содержания.', 'Indecent photos and videos are not allowed.', 'يُمنع نشر الصور والفيديوهات غير اللائقة.'),
+  r2: D('Запрещено выкладывать фото и видео девушек и женщин без покрытия.', 'Photos and videos of girls and women without hijab are not allowed.', 'يُمنع نشر صور أو فيديوهات لفتيات أو نساء دون حجاب.'),
+  r3: D('Без политики и споров о религии.', 'No politics or religious disputes.', 'بلا سياسة ولا جدال ديني.'),
+  r4: D('Увидели нарушение — нажмите «Пожаловаться». Мы проверим и удалим.', 'If you see a violation, tap “Report”. We will check and remove it.', 'إذا رأيت مخالفة فاضغط «إبلاغ» وسنراجعها ونحذفها.'),
+  r_ok: D('Принимаю правила', 'I accept the rules', 'أوافق على القواعد'),
   open: D('Открыть Magaam', 'Open Magaam', 'افتح Magaam'),
   back_n: D('Nakhlio', 'Nakhlio', 'Nakhlio'),
 };
@@ -92,7 +99,15 @@ const top = (title) => `<header class="mgtop"><button class="mgback" data-act="t
 const nav = (on) => `<nav class="mgnav">${[['mg', 'home', 'feed'], ['mgreels', 'play', 'reels'], ['mgnew', 'plus', 'create'], ['mgfriends', 'users', 'friends'], ['mgme', 'user', null]].map(([v, i, k]) =>
   v === 'mgnew' ? `<button class="mgplus" data-act="mgnew" aria-label="${M('create')}">${ic('plus')}</button>`
   : `<button class="${on === v ? 'on' : ''}" data-act="mggo" data-v="${v}">${v === 'mgme' && NK.S.me ? mgAv('@me', 'xs') : ic(i)}<span>${k ? M(k) : t('profile_l')}</span></button>`).join('')}</nav>`;
-const wrapView = (on, body, title) => ({ html: `<div class="mg">${top(title)}${body}</div>${nav(on)}` });
+function rulesModal() {
+  const g = st(); if (g.rulesOk || document.querySelector('.tmodal')) return;
+  const host = document.querySelector('.app') || document.body; const w = document.createElement('div'); w.className = 'tmodal';
+  w.innerHTML = `<div class="tbox mgrbox" role="dialog" aria-modal="true">${mgLogo('big')}<h3>${M('r_t')}</h3><p>${M('r_intro')}</p><ul>${['r1', 'r2', 'r3', 'r4'].map(k => `<li>${M(k)}</li>`).join('')}</ul><button class="btn primary full mgbtn">${M('r_ok')}</button></div>`;
+  w.querySelector('button').onclick = () => { g.rulesOk = true; save(); w.remove(); };
+  host.appendChild(w);
+}
+const wrapView = (on, body, title) => (setTimeout(rulesModal, 60), { html: `<div class="mg">${top(title)}${body}</div>${nav(on)}` });
+const mobileOnly = () => ({ html: `<div class="mg">${top()}<div class="mgwrap" style="text-align:center;padding-top:40px">${mgLogo('big')}<h2 style="margin:14px 0 6px">MAGAAM</h2><p class="note">${esc(L(FX.mg_mobile))}</p></div></div>` });
 const lock = () => ({ html: `<div class="mg">${top()}<div class="mgwrap" style="text-align:center;padding-top:40px">${mgLogo('big')}<h2 style="margin:14px 0 6px">MAGAAM</h2><p class="note">${M('tag')}</p><p class="note">${t('spaces_guest')}</p><button class="btn primary full mgbtn" data-act="startreg" style="margin-top:16px">${t('create_profile')}</button></div></div>` });
 
 function postCard(p) {
@@ -100,7 +115,7 @@ function postCard(p) {
   return `<article class="mgpost">
     <div class="mgph">${pLink(p.who, mgAv(p.who, 'sm'))}<div class="grow">${pLink(p.who, `<b>${esc(nameOf(p.who))}</b>${vmark(p.who)}`)}${p.dist ? `<small>${small('pin')}${esc(loc(p.dist))}</small>` : ''}</div><small class="num">${agoTxt(p.ago)}</small></div>
     <div class="mgimg" data-act="mgdbl" data-v="${p.id}">${p.vid || sessionMedia[p.id + ':v'] ? `<video src="${sessionMedia[p.id + ':v']}" playsinline muted loop autoplay></video>` : `<img src="${media(p)}" alt="" loading="lazy">`}<i class="mgheart">${ic('heart')}</i></div>
-    <div class="mgact"><button class="${liked ? 'on' : ''}" data-act="mglike" data-v="${p.id}" aria-label="like">${ic('heart')}</button><button data-act="mgpost" data-v="${p.id}" aria-label="${t('comment')}">${ic('chat')}</button><span class="num">${nf(likeN(p))} ${M('likes')}</span></div>
+    <div class="mgact"><button class="${liked ? 'on' : ''}" data-act="mglike" data-v="${p.id}" aria-label="like">${ic('heart')}</button><button data-act="mgpost" data-v="${p.id}" aria-label="${t('comment')}">${ic('chat')}</button><button data-act="mgreport" data-v="${p.id}" aria-label="${t('report')}" title="${t('report')}">${ic('flag')}</button><span class="num">${nf(likeN(p))} ${M('likes')}</span></div>
     <p class="mgcap">${pLink(p.who, `<b>${esc(nameOf(p.who))}</b>`)} ${capHtml(p)}</p>
     ${(p.cm.length + (NK.S.cm['mg:' + p.id] || []).length) ? `<button class="mgmore" data-act="mgpost" data-v="${p.id}">${t('comments_t')} · <span class="num">${nf(p.cm.length + (NK.S.cm['mg:' + p.id] || []).length)}</span></button>` : ''}
   </article>`;
@@ -111,16 +126,16 @@ function storiesRow() {
   return `<div class="mgstories">${meItem}${STORIES.map(([n], i) => `<button class="mgst ${g.seen[n] ? 'seen' : ''}" data-act="mgstory" data-v="${i}">${mgAv(n, 'md')}<span>${esc(n)}</span></button>`).join('')}</div>`;
 }
 
-V.mg = () => { if (!NK.S.me) return lock(); return wrapView('mg', `${storiesRow()}<div class="mgfeed">${allPosts().map(postCard).join('')}</div><p class="note mgrules">${small('info')} ${M('rules')}</p>`); };
+V.mg = () => { if (!NK.isPhone()) return mobileOnly(); if (!NK.S.me) return lock(); return wrapView('mg', `${storiesRow()}<div class="mgfeed">${allPosts().map(postCard).join('')}</div><p class="note mgrules">${small('info')} ${M('rules')}</p>`); };
 
-V.mgpost = (p) => { if (!NK.S.me) return lock(); const x = findPost(p.id); if (!x) return V.mg();
+V.mgpost = (p) => { if (!NK.isPhone()) return mobileOnly(); if (!NK.S.me) return lock(); const x = findPost(p.id); if (!x) return V.mg();
   return wrapView('mg', `<div class="mgfeed">${postCard(Object.assign({ cm: [] }, x))}</div><div class="mgwrap"><h4 style="margin:6px 0 10px">${t('comments_t')}</h4>${commentsBlock('mg:' + x.id, x.cm || [], { nodm: true })}</div>`); };
 
-V.mgreels = () => { if (!NK.S.me) return lock(); const g = st();
+V.mgreels = () => { if (!NK.isPhone()) return mobileOnly(); if (!NK.S.me) return lock(); const g = st(); setTimeout(rulesModal, 60);
   const list = g.mine.filter(x => x.type === 'reel').concat(REELS);
   return { html: `<div class="mg mgdark">${top(M('reels'))}<div class="mgreels">${list.map(r => `<section class="mgreel">
     ${sessionMedia[r.id + ':v'] ? `<video src="${sessionMedia[r.id + ':v']}" playsinline muted loop autoplay></video>` : `<div class="kb" style="background-image:url(${media(r)})"></div>`}
-    <div class="mgrside"><button class="${g.likes[r.id] ? 'on' : ''}" data-act="mglike" data-v="${r.id}">${ic('heart')}<small class="num">${nf(likeN(r))}</small></button><button data-act="mgpost" data-v="${r.id}">${ic('chat')}</button></div>
+    <div class="mgrside"><button class="${g.likes[r.id] ? 'on' : ''}" data-act="mglike" data-v="${r.id}">${ic('heart')}<small class="num">${nf(likeN(r))}</small></button><button data-act="mgpost" data-v="${r.id}">${ic('chat')}</button><button data-act="mgreport" data-v="${r.id}" aria-label="${t('report')}">${ic('flag')}</button></div>
     <div class="mgrinfo">${pLink(r.who, `${mgAv(r.who, 'sm')}<b>${esc(nameOf(r.who))}</b>${vmark(r.who)}`)}<p>${capHtml(r)}</p></div></section>`).join('')}</div></div>${nav('mgreels')}` };
 };
 
@@ -135,7 +150,7 @@ function profileView(n) {
   const actions = me ? `<button class="btn soft mgbtn2" data-act="mgedit">${small('user')}${t('edit_profile')}</button>`
     : `<button class="btn ${g.follow[n] ? 'soft mgbtn2' : 'primary mgbtn'}" data-act="mgfollow" data-v="${esc(n)}">${M(g.follow[n] ? 'unfollow' : 'follow')}</button>
        <button class="btn soft mgbtn2" data-act="mgfriend" data-v="${esc(n)}" ${fr || rq ? 'disabled' : ''}>${small(fr ? 'check' : 'plus')}${M(fr ? 'is_friend' : rq ? 'req_sent' : 'add_friend')}</button>
-       <button class="btn soft mgbtn2 sq ${fr ? '' : 'dim'}" data-act="mgdm" data-v="${esc(n)}" aria-label="${t('dm')}">${ic('send')}</button>`;
+       <button class="btn soft mgbtn2 sq ${fr ? '' : 'dim'}" data-act="mgdm" data-v="${esc(n)}" aria-label="${t('dm')}">${ic('send')}</button><button class="btn soft mgbtn2 sq" data-act="mgreport" data-v="${esc(n)}" aria-label="${t('report')}" title="${t('report')}">${ic('flag')}</button>`;
   return `<div class="mgcover" style="${cover ? `background-image:url(${cover})` : ''}">${me ? `<button class="mgcbtn" data-act="mgcover">${small('camera')}${M('cover')}</button>` : ''}</div>
     <div class="mgwrap mgprof"><div class="mgpav">${mgAv(n, 'xl')}</div>
     <h2>${esc(nameOf(n))}${me ? '' : vmark(n)}</h2>${ab ? `<p class="mgbio">${esc(ab)}</p>` : ''}
@@ -143,10 +158,10 @@ function profileView(n) {
     <div class="mgpact">${actions}</div>${!me && !fr ? `<p class="note" style="text-align:center;margin-top:8px">${small('lock')} ${M('dm_lock')}</p>` : ''}
     <div class="mggrid">${posts.length ? posts.map(x => `<button data-act="mgpost" data-v="${x.id}" style="background-image:url(${media(x)})"></button>`).join('') : `<p class="note" style="grid-column:1/-1;text-align:center;padding:20px 0">${M('no_posts')}</p>`}</div></div>`;
 }
-V.mgme = () => { if (!NK.S.me) return lock(); return wrapView('mgme', profileView('@me'), t('profile_l')); };
-V.mgp = (p) => { if (!NK.S.me) return lock(); return wrapView('', profileView(p.id), esc(p.id)); };
+V.mgme = () => { if (!NK.isPhone()) return mobileOnly(); if (!NK.S.me) return lock(); return wrapView('mgme', profileView('@me'), t('profile_l')); };
+V.mgp = (p) => { if (!NK.isPhone()) return mobileOnly(); if (!NK.S.me) return lock(); return wrapView('', profileView(p.id), esc(p.id)); };
 
-V.mgfriends = () => { if (!NK.S.me) return lock(); const g = st();
+V.mgfriends = () => { if (!NK.isPhone()) return mobileOnly(); if (!NK.S.me) return lock(); const g = st();
   const inc = g.inc.filter(n => !g.friends[n]);
   const fl = Object.keys(g.friends);
   const people = Object.keys(BASE).filter(n => !g.friends[n]);
@@ -229,6 +244,7 @@ window.MGACT = (a, v, el) => {
     case 'mgnew': createSheet(v); return true;
     case 'mgstory': openStory(v); return true;
     case 'mgedit': editSheet(); return true;
+    case 'mgreport': g.rep = g.rep || {}; g.rep[v] = true; save(); toast(t('reported')); return true;
     case 'mgcover': pickImage(d => { g.cover = d; save(); render(); }); return true;
   }
   return false;

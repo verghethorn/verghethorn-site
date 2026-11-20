@@ -933,3 +933,14 @@ c684|Akun & masuk
 c685|Hanya Anda yang melihat nomor telepon dan e-mail Anda. Anda bisa masuk dengan salah satunya.
 c686|Masuk dengan Face ID
 c687|Berfungsi di aplikasi yang terpasang di ponsel Anda
+c688|Aturan Magaam
+c689|Tim Magaam meminta semua orang mematuhi aturan dengan saling menghormati.
+c690|Foto dan video tidak senonoh dilarang.
+c691|Foto dan video anak perempuan dan wanita tanpa hijab dilarang.
+c692|Tanpa politik dan perdebatan agama.
+c693|Jika melihat pelanggaran, ketuk «Laporkan». Kami akan memeriksa dan menghapusnya.
+c694|Saya menerima aturan
+c695|Ini adalah iklan uji coba
+c696|Semua foto, harga, dan iklan di bagian ini masih contoh uji coba untuk pengenalan. Penawaran nyata akan muncul setelah peluncuran.
+c697|Administrator
+c698|Magaam hanya berfungsi di aplikasi seluler Nakhlio. Buka di ponsel Anda.

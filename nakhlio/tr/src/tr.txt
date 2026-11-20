@@ -933,3 +933,14 @@ c684|Hesap ve giriş
 c685|Telefonunuzu ve e-postanızı yalnızca siz görürsünüz. İkisiyle de giriş yapabilirsiniz.
 c686|Face ID ile giriş
 c687|Telefonunuzda yüklü uygulamada çalışır
+c688|Magaam kuralları
+c689|Magaam ekibi herkesten kurallara birbirine saygıyla uymasını rica eder.
+c690|Uygunsuz fotoğraf ve videolar yasaktır.
+c691|Başörtüsüz kız ve kadınların fotoğraf ve videoları yasaktır.
+c692|Siyaset ve dini tartışma yok.
+c693|Bir ihlal görürseniz «Şikâyet et»e dokunun. İnceleyip kaldıracağız.
+c694|Kuralları kabul ediyorum
+c695|Bunlar test ilanlarıdır
+c696|Bu bölümdeki tüm fotoğraflar, fiyatlar ve ilanlar şimdilik tanıtım amaçlı test örnekleridir. Gerçek teklifler lansmandan sonra görünecek.
+c697|Yönetici
+c698|Magaam yalnızca Nakhlio mobil uygulamasında çalışır. Telefonunuzda açın.
