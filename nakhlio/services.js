@@ -7,8 +7,8 @@ const S = (id, title, price, time, inc, need) => ({ id, title, price, time, inc,
 window.SVC_CATS = [
   { k: 'business', icon: 'bank', c: 'clay', name: D('Бизнес в Саудии', 'Business in Saudi', 'الأعمال في السعودية'),
     items: [
-      S('SV-401', D('Открытие компании и лицензия инвестора', 'Company set-up and investor licence', 'تأسيس شركة وترخيص الاستثمار'), D('консультация бесплатно', 'free consultation', 'استشارة مجانية'), D('от 3 недель', 'from 3 weeks', 'من 3 أسابيع'),
-        [D('Выбор формы компании', 'Choosing the company type', 'اختيار نوع الشركة'), D('Лицензия и коммерческая регистрация через партнёра', 'Licence and commercial registration via a partner', 'الترخيص والسجل التجاري عبر شريك'), D('Банковский счёт компании', 'Company bank account', 'الحساب البنكي للشركة')],
+      S('SV-401', D('Открытие компании и регистрация инвестора', 'Company set-up and investor registration', 'تأسيس الشركة وتسجيل المستثمر'), D('консультация бесплатно', 'free consultation', 'استشارة مجانية'), D('от 3 недель', 'from 3 weeks', 'من 3 أسابيع'),
+        [D('Выбор формы компании', 'Choosing the company type', 'اختيار نوع الشركة'), D('Регистрация в MISA и коммерческая регистрация (CR) через партнёра', 'MISA registration and commercial registration (CR) via a partner', 'التسجيل في وزارة الاستثمار والسجل التجاري عبر الشريك'), D('Банковский счёт компании', 'Company bank account', 'الحساب البنكي للشركة')],
         [D('Паспорт', 'Passport', 'جواز السفر'), D('Описание бизнеса', 'Business description', 'وصف النشاط')]),
       S('SV-402', D('Бизнес-виза и деловые поездки', 'Business visa and business trips', 'تأشيرة أعمال ورحلات عمل'), D('сервис от 300 SAR', 'service from 300 SAR', 'الخدمة من 300 ر.س'), D('3–10 дней', '3–10 days', '3–10 أيام'),
         [D('Приглашение и заявка', 'Invitation and application', 'الدعوة والطلب'), D('Встреча и трансфер', 'Meeting and transfer', 'الاستقبال والتوصيل'), D('Переводчик на встречи', 'Interpreter for meetings', 'مترجم للاجتماعات')],
@@ -88,5 +88,39 @@ window.SVC_TEXT = {
   req: D('Заявка', 'Request', 'طلب'),
   popular: D('Популярное', 'Popular', 'الأكثر طلباً'),
   reply: D('Здравствуйте! Заявка принята. Ваш персональный сотрудник уже смотрит детали и скоро свяжется с вами удобным способом. Подготовьте, пожалуйста, документы из списка.', 'Hello! Your request is accepted. Your personal team member is reviewing the details and will contact you soon. Please prepare the documents from the list.', 'أهلاً وسهلاً! تم استلام طلبك، ويراجع الموظف المسؤول التفاصيل وسيتواصل معك قريباً. نرجو تجهيز المستندات المذكورة.'),
+};
+})();
+/* Features: document deadlines + badges */
+(function () {
+const D = (ru, en, ar) => ({ ru, en, ar });
+window.VERIFIED = ['Amina', 'Murad', 'Kamila', 'Olga', 'Leyla', 'Denis', 'Siti'];
+window.DOCS = [
+  { k: 'iqama', icon: 'idcard', name: D('Икама', 'Iqama', 'الإقامة') },
+  { k: 'passport', icon: 'globe', name: D('Паспорт', 'Passport', 'جواز السفر') },
+  { k: 'ejar', icon: 'contract', name: D('Договор аренды (Ejar)', 'Rental contract (Ejar)', 'عقد الإيجار (إيجار)') },
+  { k: 'health', icon: 'shield', name: D('Медстраховка', 'Health insurance', 'التأمين الطبي') },
+  { k: 'licence', icon: 'car', name: D('Водительские права', 'Driving licence', 'رخصة القيادة') },
+  { k: 'istimara', icon: 'contract', name: D('Истимара', 'Istimara', 'الاستمارة') },
+  { k: 'carins', icon: 'shield', name: D('Страховка автомобиля', 'Car insurance', 'تأمين السيارة') },
+];
+window.FX = {
+  docs_t: D('Сроки документов', 'Document deadlines', 'مواعيد انتهاء المستندات'),
+  docs_d: D('Укажите даты окончания — Nakhlio напомнит за 30 и 7 дней. Даты видите только вы.', 'Add expiry dates — Nakhlio will remind you 30 and 7 days before. Only you can see the dates.', 'أضف تواريخ الانتهاء وسيذكّرك نخليو قبل 30 و7 أيام. التواريخ تظهر لك فقط.'),
+  docs_new: D('Новое: напоминания о сроках документов', 'New: document expiry reminders', 'جديد: تذكير بمواعيد المستندات'),
+  docs_new_d: D('Икама, Ejar, страховка, права — добавьте даты в профиле, и вы не пропустите продление.', 'Iqama, Ejar, insurance, licence — add the dates in your profile and never miss a renewal.', 'الإقامة وإيجار والتأمين والرخصة — أضف التواريخ في ملفك ولن تفوّتك مواعيد التجديد.'),
+  docs_add: D('Добавить даты', 'Add dates', 'أضف التواريخ'),
+  exp_date: D('Дата окончания', 'Expiry date', 'تاريخ الانتهاء'),
+  left_n: D('Осталось дней:', 'Days left:', 'الأيام المتبقية:'),
+  expired: D('Срок истёк', 'Expired', 'انتهت الصلاحية'),
+  soon: D('Скоро продление', 'Renewal due soon', 'اقترب موعد التجديد'),
+  b_t: D('Значки Nakhlio', 'Nakhlio badges', 'شارات نخليو'),
+  b_verified_d: D('Личность подтверждена при сделке через Nakhlio.', 'Identity confirmed during a deal through Nakhlio.', 'تم التحقق من الهوية خلال صفقة عبر نخليو.'),
+  b_helper: D('Помощник Меджлиса', 'Majlis helper', 'مساعد المجلس'),
+  b_helper_d: D('Ответы отметили «Помогло» 25+ раз.', 'Answers marked “Helpful” 25+ times.', 'وُسمت إجاباته بـ«أفادني» أكثر من 25 مرة.'),
+  b_mentor: D('Наставник', 'Mentor', 'مرشد'),
+  b_mentor_d: D('Ответы отметили «Помогло» 45+ раз.', 'Answers marked “Helpful” 45+ times.', 'وُسمت إجاباته بـ«أفادني» أكثر من 45 مرة.'),
+  b_seller: D('Надёжный продавец', 'Trusted seller', 'بائع موثوق'),
+  b_seller_d: D('2+ отзыва и рейтинг 4,8+.', '2+ reviews and a 4.8+ rating.', 'تقييمان أو أكثر ومعدل 4.8 فأعلى.'),
+  b_none: D('Пока нет значков — помогайте в Меджлисе и проводите сделки через Nakhlio.', 'No badges yet — help others in the Majlis and make deals through Nakhlio.', 'لا شارات بعد — ساعد الآخرين في المجلس وأتمّ صفقاتك عبر نخليو.'),
 };
 })();

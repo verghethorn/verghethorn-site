@@ -285,6 +285,7 @@ V.home = () => {
       <button class="bigcat svc" data-act="go" data-v="services"><span class="svc-icons">${['bank', 'box', 'palette', 'car', 'user'].map(i => `<i>${ic(i)}</i>`).join('')}</span><span><b>${t('s_services')}</b><small>${t('s_services_d')}</small></span></button>
     </div>
     <div class="cats" style="margin-top:18px">${SECTIONS.filter(s => !['housing', 'transport', 'services'].includes(s.k)).map(s => `<button class="cat" data-act="go" data-v="${s.k}"><i class="b-${s.c} c-${s.c}">${ic(s.ic)}</i>${t('s_' + s.k)}</button>`).join('')}</div>
+    ${homeDocs()}
     <div class="sec"><h3>${t('featured')}</h3><button data-act="go" data-v="housing">${t('see_all')}</button></div>
     <div class="hscroll">${featured.map(x => x.kind ? trCard(x) : houseCard(x)).join('')}</div>
     ${nextDay ? `<button class="card" data-act="go" data-v="days" style="display:flex;gap:14px;align-items:center;width:100%;text-align:start;margin-top:18px"><span class="prayer-ico" style="background:var(--palm-tint);color:var(--palm)">${ic('calendar')}</span><span style="flex:1;min-width:0"><small style="color:var(--ink-2);font-weight:600;font-size:12px">${t('s_days')}</small><b style="display:block">${esc(L(nextDay.d.name))}</b></span><b class="num" style="color:var(--palm);text-align:end">${nf(nextDay.left)}<small style="display:block;font-size:11px;color:var(--ink-2);font-weight:600">${t('days_left')}</small></b></button>` : ''}
@@ -296,6 +297,21 @@ V.home = () => {
     <div style="display:flex;justify-content:center"><span class="demo-flag">${ic('info')}${t('demo_badge')}</span></div>
   </div>` };
 };
+function homeDocs() {
+  if (!S.me) return '';
+  const due = docsDue();
+  if (due.length) return due.map(({ d, n }) => `<button class="card docalert" data-act="godocs"><i>${ic('clock')}</i><span><b>${esc(L(d.name))} · ${n < 0 ? FXL('expired') : FXL('soon')}</b><small>${n < 0 ? '' : FXL('left_n') + ' <span class="num">' + nf(n) + '</span>'}</small></span>${ic('chev', 'flip chev')}</button>`).join('');
+  if (S.docs && Object.keys(S.docs).length) return '';
+  return `<button class="card docnew" data-act="godocs"><i>${ic('calendar')}</i><span><b>${FXL('docs_new')}</b><small>${FXL('docs_new_d')}</small><em>${FXL('docs_add')} →</em></span></button>`;
+}
+function docSheet(k) {
+  const d = DOCS.find(x => x.k === k); const v = (S.docs || {})[k] || '';
+  const w = sheet(`<h3>${esc(L(d.name))}</h3><p class="note">${FXL('docs_d')}</p>
+    <div class="field"><label for="ddate">${FXL('exp_date')}</label><input id="ddate" type="date" value="${esc(v)}"></div>
+    <button class="btn green full" style="margin-top:14px" id="dsave">${t('save_l')}</button>${v ? `<button class="btn line full" style="margin-top:10px" id="ddel">${t('remove')}</button>` : ''}`);
+  w.querySelector('#dsave').addEventListener('click', () => { const val = w.querySelector('#ddate').value; if (!val) { w.querySelector('#ddate').focus(); return; } S.docs = S.docs || {}; S.docs[k] = val; save(); w.remove(); toast(L(d.name) + ' ✓'); render(true); });
+  const del = w.querySelector('#ddel'); if (del) del.addEventListener('click', () => { delete S.docs[k]; save(); w.remove(); render(true); });
+}
 const cdTxt = (left) => { const h = Math.floor(left / 60), m = Math.floor(left % 60); return (h ? nf(h) + ':' : '') + (h ? String(m).padStart(2, '0').replace(/\d/g, x => nf(+x)) : nf(m) + ' ' + t('min')); };
 
 V.housing = (p) => {
@@ -342,7 +358,7 @@ V.house = (p) => {
       <div><span>${t('term_l')}</span><b>${t(h.term)}</b></div><div><span>${t('payment')}</span><b>${esc(L(h.pay))}</b></div>
       <div><span>${t('deposit')}</span><b class="num">${h.dep ? money(h.dep) : '—'}</b></div><div><span>${t('audience')}</span><b>${aud} · ${h.furnished ? t('furnished') : t('unfurnished')}</b></div></div></div>
     <div class="block"><h4>${t('location')}</h4>${mapBlock(h.dist, `<b>${esc(loc(h.dist))}</b> · ${h.walk ? `${nf(h.walk)} ${t('min_walk')}` : `${nf(h.km, 1)} ${t('km_haram')}`}<br>${t('location_note')}`)}</div>
-    <div class="block"><h4>${t('reviews')} <span class="tag">${t('review_example')}</span></h4>${REVIEWS.map(r => `<div class="review"><div class="who">${pBtn(r.who, avatar(r.who, 'sm'))}${pBtn(r.who, esc(r.who))}<span class="stars">${ic('star').repeat(r.stars)}</span></div><p>${esc(L(r.text))}</p></div>`).join('')}</div>
+    <div class="block"><h4>${t('reviews')} <span class="tag">${t('review_example')}</span></h4>${REVIEWS.map(r => `<div class="review"><div class="who">${pBtn(r.who, avatar(r.who, 'sm'))}${pBtn(r.who, esc(r.who) + vmark(r.who))}<span class="stars">${ic('star').repeat(r.stars)}</span></div><p>${esc(L(r.text))}</p></div>`).join('')}</div>
     <p class="note" style="margin-top:18px">${t('listing_no')} <b class="num">${h.id}</b></p>
   </div>` };
 };
@@ -398,7 +414,7 @@ function commentsBlock(key, list, opts) {
   const items = all.map((c) => {
     const mine = c.who === '@me';
     return `<div class="cmt ${c.to ? 'sub' : ''}">${pBtn(c.who, avatar(c.who))}<div class="cb">
-      <div class="cw">${pBtn(c.who, `<b>${esc(who(c.who))}</b>`)}${c.to ? `<span class="to">${small('chev')}${esc(who(c.to))}</span>` : ''}${c.date ? `<small class="num">${c.date}</small>` : ''}</div>
+      <div class="cw">${pBtn(c.who, `<b>${esc(who(c.who))}</b>${vmark(c.who)}`)}${c.to ? `<span class="to">${small('chev')}${esc(who(c.to))}</span>` : ''}${c.date ? `<small class="num">${c.date}</small>` : ''}</div>
       <p>${esc(txt(c.text))}</p>
       ${mine ? '' : `<div class="ca"><button data-act="reply" data-k="${key}" data-v="${esc(c.who)}">${small('chat')}${t('reply')}</button><button data-act="dm" data-v="${esc(c.who)}">${small('send')}${t('dm')}</button>${c.helped != null ? `<span class="num">${small('check')}${nf(c.helped)}</span>` : ''}</div>`}
     </div></div>`;
@@ -445,7 +461,7 @@ V.parcels = (p) => {
 };
 function findItem(id) { return ADS.find(x => x.id === id) || myAds().find(x => x.id === id) || HELP.find(x => x.id === id) || PARCELS.find(x => x.id === id); }
 function sellerCard(s) {
-  return `<div class="seller">${pBtn(s.name, avatar(s.name, 'lg'))}<div class="grow">${pBtn(s.name, `<b>${esc(who(s.name))}</b>`)}<small>${t('langs_spoken')}: ${esc(s.langs || '—')}</small><small>★ ${nf(s.rating || 5, 1)} · ${t('on_since')} ${esc(s.since || '2026')} · ${esc(loc(s.dist))}</small></div>${s.name === '@me' ? '' : `<button class="btn sm soft" data-act="dm" data-v="${esc(s.name)}">${small('chat')}${t('dm')}</button>`}</div>`;
+  return `<div class="seller">${pBtn(s.name, avatar(s.name, 'lg'))}<div class="grow">${pBtn(s.name, `<b>${esc(who(s.name))}</b>${vmark(s.name)}`)}<small>${t('langs_spoken')}: ${esc(s.langs || '—')}</small><small>★ ${nf(s.rating || 5, 1)} · ${t('on_since')} ${esc(s.since || '2026')} · ${esc(loc(s.dist))}</small></div>${s.name === '@me' ? '' : `<button class="btn sm soft" data-act="dm" data-v="${esc(s.name)}">${small('chat')}${t('dm')}</button>`}</div>`;
 }
 V.item = (p) => {
   const x = findItem(p.id); if (!x) return V.home();
@@ -479,7 +495,7 @@ function postHtml(pst, i, k) {
   const id = k + ':' + i; const hl = S.helped[id];
   if (S.reported[id]) return '';
   const key = 'p:' + id; const n = (pst.a || []).length + (S.cm[key] || []).length;
-  return `<div class="post"><div class="who">${pBtn(pst.who, avatar(pst.who, 'sm'))}${pBtn(pst.who, `<b style="color:var(--ink)">${esc(who(pst.who))}</b>`)}${pst.date ? `<span class="num">· ${pst.date}</span>` : ''}<span class="tag ${pst.q ? 'gold' : 'green'}">${pst.q ? t('q_tag') : t('e_tag')}</span></div>
+  return `<div class="post"><div class="who">${pBtn(pst.who, avatar(pst.who, 'sm'))}${pBtn(pst.who, `<b style="color:var(--ink)">${esc(who(pst.who))}</b>${vmark(pst.who)}`)}${pst.date ? `<span class="num">· ${pst.date}</span>` : ''}<span class="tag ${pst.q ? 'gold' : 'green'}">${pst.q ? t('q_tag') : t('e_tag')}</span></div>
     <p>${esc(txt(pst.text))}</p>
     <div class="acts"><button class="${hl ? 'on' : ''}" data-act="helped" data-v="${id}">${ic('check')}${t('helped')} · <span class="num">${nf((pst.helped || 0) + (hl ? 1 : 0))}</span></button>
     <button data-act="comment" data-k="${key}">${ic('chat')}${t('comment')} · <span class="num">${nf(n)}</span></button>
@@ -574,7 +590,7 @@ V.room = (p) => {
   const msgs = r.msgs.concat(mine);
   const bub = msgs.map(m => m.who === '@me'
     ? `<div class="bubble me">${m.to ? `<span class="rto">${small('chev')}${esc(who(m.to))}</span>` : ''}${esc(txt(m.text))}</div>`
-    : `<div class="msg">${pBtn(m.who, avatar(m.who))}<div class="bubble op">${pBtn(m.who, `<b class="nm">${esc(m.who)}</b>`)}${m.to ? `<span class="rto">${small('chev')}${esc(who(m.to))}</span>` : ''}${esc(txt(m.text))}<div class="ma"><button data-act="rreply" data-v="${esc(m.who)}">${t('reply')}</button><button data-act="dm" data-v="${esc(m.who)}">${t('dm')}</button></div></div></div>`).join('');
+    : `<div class="msg">${pBtn(m.who, avatar(m.who))}<div class="bubble op">${pBtn(m.who, `<b class="nm">${esc(m.who)}${vmark(m.who)}</b>`)}${m.to ? `<span class="rto">${small('chev')}${esc(who(m.to))}</span>` : ''}${esc(txt(m.text))}<div class="ma"><button data-act="rreply" data-v="${esc(m.who)}">${t('reply')}</button><button data-act="dm" data-v="${esc(m.who)}">${t('dm')}</button></div></div></div>`).join('');
   return { composer: 'room', html: topbar(L(r.name), { right: `<span class="tag green num">${nf(r.n)} ${tn('members', r.n)}</span>` }) + `<div class="wrap chat-wrap">
     <div class="banner" style="font-size:12.5px">${ic('info')}<div>${t('room_rule')}</div></div>
     <div class="msg"><span class="av" style="background:var(--palm);color:#fff">N</span><div class="bubble op"><b class="nm">${t('operator')}</b>${t('room_hello')}</div></div>
@@ -701,16 +717,36 @@ function person(n) {
   const ab = (window.ABOUT || {})[n] || {};
   return { name: n, display: n, job: ab.job, about: ab.about, dist: s.dist, langs: s.langs, since: s.since || '2025', rating: s.rating, items, reviews: (window.PREVIEWS || {})[n] || [] };
 }
+const FXL = (k) => L(FX[k]);
+const VER = new Set(window.VERIFIED || []);
+const vmark = (n) => VER.has(n) ? `<span class="vmk" title="${t('v_nakhlio')}">${small('check')}</span>` : '';
+let HELPS = null;
+function helpsOf(n) { if (!HELPS) { HELPS = {}; const all = [].concat(...Object.values(POSTS), FAMILY); for (const x of all) { HELPS[x.who] = (HELPS[x.who] || 0) + (x.helped || 0); for (const a of x.a || []) HELPS[a.who] = (HELPS[a.who] || 0) + (a.helped || 0); } } return HELPS[n] || 0; }
+function badgesOf(n, p) { const b = []; if (VER.has(n)) b.push('verified'); const h = helpsOf(n); if (h >= 45) b.push('mentor'); else if (h >= 25) b.push('helper'); if (p && p.rating >= 4.8 && (p.reviews || []).length >= 2) b.push('seller'); return b; }
+const BADGE_UI = { verified: ['shield', () => t('v_nakhlio'), 'b_verified_d'], helper: ['star', () => FXL('b_helper'), 'b_helper_d'], mentor: ['star', () => FXL('b_mentor'), 'b_mentor_d'], seller: ['tag', () => FXL('b_seller'), 'b_seller_d'] };
+const daysTo = (d) => Math.ceil((new Date(d + 'T23:59:59+03:00') - Date.now()) / 864e5);
+function docsDue() { const out = []; for (const d of DOCS) { const v = (S.docs || {})[d.k]; if (v) { const n = daysTo(v); if (n <= 30) out.push({ d, n }); } } return out.sort((a, b) => a.n - b.n); }
+function docsBlock() {
+  const rows = DOCS.map(d => { const v = (S.docs || {})[d.k]; const n = v ? daysTo(v) : null; const st = n == null ? '' : n < 0 ? `<b class="dstat bad">${FXL('expired')}</b>` : `<b class="dstat ${n <= 30 ? 'bad' : n <= 60 ? 'warn' : ''}">${FXL('left_n')} <span class="num">${nf(n)}</span></b>`;
+    return `<button data-act="docedit" data-v="${d.k}"><i class="b-palm c-palm">${ic(d.icon)}</i><span class="grow">${esc(L(d.name))}<small class="num">${v ? esc(v) : t('add')}</small></span>${st || ic('plus', 'chev')}</button>`; }).join('');
+  return `<div class="block" id="docs"><h4>${FXL('docs_t')}</h4><p class="note" style="margin:0 0 10px">${FXL('docs_d')}</p><div class="plist">${rows}</div></div>`;
+}
+function badgesBlock(n, p, me) {
+  const got = badgesOf(n, p);
+  const keys = me ? ['verified', 'helper', 'mentor', 'seller'] : got;
+  if (!keys.length) return '';
+  return `<div class="block"><h4>${FXL('b_t')}</h4><div class="blist">${keys.map(k => { const [i, nm, d] = BADGE_UI[k]; return `<div class="bitem ${got.includes(k) ? 'on' : ''}"><i>${ic(i)}</i><span><b>${esc(nm())}</b><small>${esc(FXL(d))}</small></span></div>`; }).join('')}</div>${me && !got.length ? `<p class="note" style="margin-top:8px">${FXL('b_none')}</p>` : ''}</div>`;
+}
 const pBtn = (n, inner, cls) => `<button class="pbtn ${cls || ''}" data-act="profile" data-v="${esc(n)}">${inner}</button>`;
 function profileHtml(n) {
   const p = person(n); const me = !!p.me;
   const items = me ? myAds() : p.items;
   const reviews = me ? [] : p.reviews;
-  const badges = `<span class="vb">${small('check')}${t('v_phone')}</span>${me || p.rating >= 4.8 ? `<span class="vb">${small('check')}${t('v_email')}</span>` : ''}${!me && p.rating >= 4.9 ? `<span class="vb gold">${small('shield')}${t('v_nakhlio')}</span>` : ''}`;
+  const badges = `<span class="vb">${small('check')}${t('v_phone')}</span>${me || p.rating >= 4.8 ? `<span class="vb">${small('check')}${t('v_email')}</span>` : ''}${me ? '' : badgesOf(n, p).map(k => `<span class="vb gold">${small(BADGE_UI[k][0])}${esc(BADGE_UI[k][1]())}</span>`).join('')}`;
   const photos = p.photos || [];
   return `<div class="phead"><div class="pcover">${skyline()}</div>
     <div class="pmain-row">${photos[0] ? `<span class="av xl" style="background:url(${photos[0]}) center/cover"></span>` : `<span class="av xl ill">${avatarSvg(me ? (S.me ? S.me.name + '@' : 'guest') : n)}</span>`}
-      <div class="pid"><h2>${esc(p.display)}</h2>${p.job ? `<div class="pjob">${esc(txt(p.job))}</div>` : ''}</div></div>
+      <div class="pid"><h2>${esc(p.display)}${me ? '' : vmark(n)}</h2>${p.job ? `<div class="pjob">${esc(txt(p.job))}</div>` : ''}</div></div>
     <div class="badges">${badges}</div>
     <div class="pstats"><div><b class="num">${p.rating ? '★ ' + nf(p.rating, 1) : '—'}</b><small>${t('reviews_l')} · <span class="num">${nf(reviews.length)}</span></small></div><div><b class="num">${nf(items.length)}</b><small>${t('listings_l')}</small></div><div><b class="num">${esc(p.since || '2026')}</b><small>${t('since_l')}</small></div></div>
     <div class="pmeta">${p.dist ? `<span>${small('pin')}${esc(loc(p.dist))}</span>` : ''}${p.langs ? `<span>${small('globe')}${esc(p.langs)}</span>` : ''}</div>
@@ -718,8 +754,9 @@ function profileHtml(n) {
     ${photos.length > 1 ? `<div class="pphotos">${photos.map(u => `<span style="background-image:url(${u})"></span>`).join('')}</div>` : ''}
     <div class="pact">${me ? `<button class="btn soft full" data-act="go" data-v="editprofile">${small('user')}${t('edit_profile')}</button>` : `<button class="btn primary" data-act="dm" data-v="${esc(n)}">${ic('chat')}${t('dm')}</button><button class="btn soft" data-act="reportuser" aria-label="${t('report_user')}">${ic('flag')}</button>`}</div>
   </div>
+  ${me ? docsBlock() : ''}${badgesBlock(n, p, me)}
   <div class="block"><h4>${t('listings_l')}</h4>${items.length ? `<div class="list">${items.map(x => PARCELS.includes(x) ? parcelRow(x) : HELP.includes(x) ? helpRow(x) : adRow(x)).join('')}</div>` : `<p class="note">${t('no_listings')}</p>`}</div>
-  ${me ? '' : `<div class="block"><h4>${t('reviews_l')}</h4>${reviews.length ? reviews.map(r => `<div class="review"><div class="who">${avatar(r.who, 'sm')}${pBtn(r.who, esc(r.who))}<span class="stars">${ic('star').repeat(r.stars)}</span></div><p>${esc(L(r.text))}</p></div>`).join('') : `<p class="note">${t('no_reviews')}</p>`}</div>`}`;
+  ${me ? '' : `<div class="block"><h4>${t('reviews_l')}</h4>${reviews.length ? reviews.map(r => `<div class="review"><div class="who">${avatar(r.who, 'sm')}${pBtn(r.who, esc(r.who) + vmark(r.who))}<span class="stars">${ic('star').repeat(r.stars)}</span></div><p>${esc(L(r.text))}</p></div>`).join('') : `<p class="note">${t('no_reviews')}</p>`}</div>`}`;
 }
 V.person = (p) => ({ tabs: true, html: topbar(t('profile_l')) + `<div class="wrap narrow">${profileHtml(p.id)}</div>` });
 V.editprofile = () => {
@@ -866,6 +903,8 @@ root.addEventListener('click', (e) => {
   switch (a) {
     case 'startreg': gateReg(); break;
     case 'go': go(v, id ? { id } : {}); break;
+    case 'docedit': docSheet(v); break;
+    case 'godocs': tab('profile'); setTimeout(() => { const el = document.getElementById('docs'); if (el) el.scrollIntoView({ block: 'start', behavior: 'smooth' }); }, 120); break;
     case 'back': back(); break;
     case 'tab': tab(v); break;
     case 'term': cur().term = v; render(); break;

@@ -854,3 +854,26 @@ c607|Perekrutan melalui agen berlisensi
 c608|Deskripsi pekerjaan
 c609|Bisnis, logistik, pemasaran, karyawan
 c610|Memasang iklan dan berkirim pesan gratis. Nakhlio tidak mengambil potongan dari transaksi. Hanya promosi yang berbayar, jika Anda mau.
+c611|Pendirian perusahaan dan registrasi investor
+c612|Registrasi MISA dan registrasi komersial (CR) melalui mitra
+c613|Kontrak sewa (Ejar)
+c614|Istimara
+c615|Masa berlaku dokumen
+c616|Tambahkan tanggal kedaluwarsa — Nakhlio akan mengingatkan 30 dan 7 hari sebelumnya. Hanya Anda yang melihat tanggalnya.
+c617|Baru: pengingat masa berlaku dokumen
+c618|Iqama, Ejar, asuransi, SIM — tambahkan tanggalnya di profil dan jangan lewatkan perpanjangan.
+c619|Tambah tanggal
+c620|Tanggal kedaluwarsa
+c621|Sisa hari:
+c622|Kedaluwarsa
+c623|Segera perpanjang
+c624|Lencana Nakhlio
+c625|Identitas dikonfirmasi saat transaksi melalui Nakhlio.
+c626|Penolong Majelis
+c627|Jawaban ditandai «Membantu» 25+ kali.
+c628|Mentor
+c629|Jawaban ditandai «Membantu» 45+ kali.
+c630|Penjual tepercaya
+c631|2+ ulasan dan rating 4,8+.
+c632|Belum ada lencana — bantu orang lain di Majelis dan lakukan transaksi melalui Nakhlio.
+c633|Asuransi kesehatan

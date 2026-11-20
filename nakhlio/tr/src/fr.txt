@@ -854,3 +854,26 @@ c607|Embauche via une agence agréée
 c608|Description du poste
 c609|Entreprise, logistique, marketing, personnel
 c610|La publication d’annonces et les messages sont gratuits. Nakhlio ne prend aucune commission sur les transactions. Seule la promotion est payante, si vous le souhaitez.
+c611|Création de société et enregistrement de l’investisseur
+c612|Enregistrement MISA et registre du commerce (CR) via un partenaire
+c613|Contrat de location (Ejar)
+c614|Istimara
+c615|Échéances des documents
+c616|Ajoutez les dates d’expiration — Nakhlio vous le rappellera 30 et 7 jours avant. Vous seul voyez ces dates.
+c617|Nouveau : rappels d’expiration des documents
+c618|Iqama, Ejar, assurance, permis — ajoutez les dates dans votre profil et ne manquez aucun renouvellement.
+c619|Ajouter les dates
+c620|Date d’expiration
+c621|Jours restants :
+c622|Expiré
+c623|Renouvellement bientôt
+c624|Badges Nakhlio
+c625|Identité confirmée lors d’une transaction via Nakhlio.
+c626|Aide du Majlis
+c627|Réponses marquées « Utile » 25+ fois.
+c628|Mentor
+c629|Réponses marquées « Utile » 45+ fois.
+c630|Vendeur de confiance
+c631|2+ avis et une note de 4,8+.
+c632|Pas encore de badges — aidez les autres au Majlis et passez vos transactions par Nakhlio.
+c633|Assurance maladie

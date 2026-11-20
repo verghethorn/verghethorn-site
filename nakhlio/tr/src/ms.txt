@@ -854,3 +854,26 @@ c607|Pengambilan melalui agensi berlesen
 c608|Huraian tugas
 c609|Perniagaan, logistik, pemasaran, kakitangan
 c610|Memasang iklan dan berutus mesej adalah percuma. Nakhlio tidak mengambil potongan daripada urus niaga. Hanya promosi yang berbayar, jika anda mahu.
+c611|Penubuhan syarikat dan pendaftaran pelabur
+c612|Pendaftaran MISA dan pendaftaran perniagaan (CR) melalui rakan kongsi
+c613|Kontrak sewa (Ejar)
+c614|Istimara
+c615|Tarikh tamat dokumen
+c616|Tambah tarikh tamat — Nakhlio akan mengingatkan 30 dan 7 hari sebelumnya. Hanya anda yang melihat tarikh ini.
+c617|Baharu: peringatan tarikh tamat dokumen
+c618|Iqama, Ejar, insurans, lesen — tambah tarikh dalam profil dan jangan terlepas pembaharuan.
+c619|Tambah tarikh
+c620|Tarikh tamat
+c621|Baki hari:
+c622|Telah tamat
+c623|Pembaharuan hampir tiba
+c624|Lencana Nakhlio
+c625|Identiti disahkan semasa urus niaga melalui Nakhlio.
+c626|Pembantu Majlis
+c627|Jawapan ditanda «Membantu» 25+ kali.
+c628|Mentor
+c629|Jawapan ditanda «Membantu» 45+ kali.
+c630|Penjual dipercayai
+c631|2+ ulasan dan penilaian 4.8+.
+c632|Belum ada lencana — bantu orang lain di Majlis dan buat urus niaga melalui Nakhlio.
+c633|Insurans kesihatan

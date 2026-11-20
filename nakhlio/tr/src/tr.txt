@@ -854,3 +854,26 @@ c607|Lisanslı ajans ile işe alım
 c608|İş tanımı
 c609|İş, lojistik, pazarlama, personel
 c610|İlan vermek ve mesajlaşmak ücretsizdir. Nakhlio işlemlerden pay almaz. Yalnızca öne çıkarma ücretlidir, isterseniz.
+c611|Şirket kuruluşu ve yatırımcı kaydı
+c612|Lisanslı ortak üzerinden MISA kaydı ve ticaret sicili (CR)
+c613|Kira sözleşmesi (Ejar)
+c614|İstimara
+c615|Belge süreleri
+c616|Bitiş tarihlerini ekleyin — Nakhlio 30 ve 7 gün önce hatırlatır. Tarihleri yalnızca siz görürsünüz.
+c617|Yeni: belge süresi hatırlatıcıları
+c618|İkame, Ejar, sigorta, ehliyet — tarihleri profilinize ekleyin, hiçbir yenilemeyi kaçırmayın.
+c619|Tarih ekle
+c620|Bitiş tarihi
+c621|Kalan gün:
+c622|Süresi doldu
+c623|Yenileme yaklaşıyor
+c624|Nakhlio rozetleri
+c625|Kimlik, Nakhlio üzerinden yapılan bir işlemde doğrulandı.
+c626|Meclis yardımcısı
+c627|Cevapları 25+ kez «Faydalı» olarak işaretlendi.
+c628|Rehber
+c629|Cevapları 45+ kez «Faydalı» olarak işaretlendi.
+c630|Güvenilir satıcı
+c631|2+ yorum ve 4,8+ puan.
+c632|Henüz rozet yok — Meclis’te başkalarına yardım edin ve işlemlerinizi Nakhlio üzerinden yapın.
+c633|Sağlık sigortası
