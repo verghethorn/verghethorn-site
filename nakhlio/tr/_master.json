@@ -1062,5 +1062,22 @@
 "c738": "Chief administrator view. Here you can only look and delete violations, not write.",
 "c739": "View only",
 "c740": "To protect people, the Nakhlio administration may view conversations and room messages when checking reports and violations.",
-"c741": "Blocked"
+"c741": "Blocked",
+"c742": "Nakhlio administration",
+"c743": "As the administration",
+"c744": "on",
+"c745": "off",
+"c746": "New in 7 days",
+"c747": "Requests in 7 days",
+"c748": "Verified",
+"c749": "Find",
+"c750": "Found",
+"c751": "shown",
+"c752": "Show more",
+"c753": "Open the conversation",
+"c754": "Reported by",
+"c755": "Reported user",
+"c756": "Private conversation",
+"c757": "Chief administrator view. Here you write only as “Nakhlio administration” and can delete violations.",
+"c758": "You are viewing someone else’s conversation as the chief administrator. You cannot write here."
 }

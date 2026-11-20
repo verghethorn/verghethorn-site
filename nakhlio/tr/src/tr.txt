@@ -988,3 +988,20 @@ c738|Baş yönetici görünümü. Burada yalnızca bakabilir ve ihlalleri silebi
 c739|Yalnızca görüntüleme
 c740|İnsanları korumak için Nakhlio yönetimi, şikâyetleri ve ihlalleri incelerken yazışmaları ve oda mesajlarını görüntüleyebilir.
 c741|Engellendi
+c742|Nakhlio yönetimi
+c743|Yönetim adına
+c744|açık
+c745|kapalı
+c746|Son 7 günde yeni
+c747|Son 7 günde talepler
+c748|Onaylı
+c749|Bul
+c750|Bulunan
+c751|gösterilen
+c752|Daha fazla göster
+c753|Yazışmayı aç
+c754|Şikâyet eden
+c755|Şikâyet edilen
+c756|Özel yazışma
+c757|Baş yönetici görünümü. Burada yalnızca “Nakhlio yönetimi” adına yazarsınız ve ihlalleri silebilirsiniz.
+c758|Başkasının yazışmasını baş yönetici olarak görüntülüyorsunuz. Buraya yazamazsınız.

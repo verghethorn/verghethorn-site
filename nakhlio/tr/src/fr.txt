@@ -988,3 +988,20 @@ c738|Vue de l’administrateur principal. Ici, vous pouvez seulement consulter e
 c739|Lecture seule
 c740|Pour protéger les personnes, l’administration de Nakhlio peut consulter les conversations et les messages des salons lors de l’examen des signalements et des infractions.
 c741|Bloqué
+c742|Administration Nakhlio
+c743|Au nom de l’administration
+c744|activé
+c745|désactivé
+c746|Nouveaux sur 7 jours
+c747|Demandes sur 7 jours
+c748|Vérifiés
+c749|Rechercher
+c750|Trouvés
+c751|affichés
+c752|Afficher plus
+c753|Ouvrir la conversation
+c754|Signalé par
+c755|Personne signalée
+c756|Conversation privée
+c757|Vue de l’administrateur principal. Ici, vous écrivez uniquement au nom de « Administration Nakhlio » et pouvez supprimer les infractions.
+c758|Vous consultez la conversation d’autres personnes en tant qu’administrateur principal. Vous ne pouvez pas écrire ici.

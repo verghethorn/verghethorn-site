@@ -405,7 +405,7 @@ V.explore = (p) => {
 
 /* ---------- community helpers ---------- */
 const loc = (k) => (DIST[k] ? DIST[k].en : (k || ''));
-const who = (n) => (n === '@me' ? t('you') : n);
+const who = (n) => (n === '@me' ? t('you') : n === '@nk' ? FXL('nk_admin') : n);
 const initial = (n) => esc((String(who(n)).replace(/^Ustaz /, '')[0]) || '?');
 const txt = (x) => (typeof x === 'string' ? x : L(x));
 const catLabel = (k, map) => (map[k] ? L(map[k]) : (k || ''));
@@ -423,7 +423,7 @@ function commentsBlock(key, list, opts) {
     </div></div>`;
   }).join('');
   const box = opts.collapsed && !openC[key] ? '' : `<div class="cbox"><div class="rchip" ${replyTo[key] ? '' : 'hidden'}>${t('reply_to')} <b>${esc(who(replyTo[key] || ''))}</b><button data-act="unreply" data-k="${key}" aria-label="${t('close')}">${small('x')}</button></div>
-    <div class="crow"><textarea rows="1" data-ck="${key}" placeholder="${t('comment_ph')}" aria-label="${t('comment_ph')}"></textarea><button class="send" data-act="csend" data-k="${key}" aria-label="send">${ic('send', 'flip')}</button></div></div>`;
+    ${LV && isAdmin() ? `<button class="chip ${S.asAdm ? 'on' : ''}" style="margin:0 0 6px" data-act="asadm">${small('shield')} ${FXL('as_admin_l')}: ${S.asAdm ? FXL('on') : FXL('off')}</button>` : ''}<div class="crow"><textarea rows="1" data-ck="${key}" placeholder="${t('comment_ph')}" aria-label="${t('comment_ph')}"></textarea><button class="send" data-act="csend" data-k="${key}" aria-label="send">${ic('send', 'flip')}</button></div></div>`;
   return `<div class="cmts">${items}</div>${box}`;
 }
 const chipsRow = (map, curK, act) => `<div class="chips"><button class="chip ${curK === 'all' ? 'on' : ''}" data-act="${act}" data-v="all">${t('all')}</button>${Object.keys(map).map(k => `<button class="chip ${k === curK ? 'on' : ''}" data-act="${act}" data-v="${k}">${esc(L(map[k]))}</button>`).join('')}</div>`;
@@ -603,10 +603,11 @@ V.room = (p) => {
   const msgs = r.msgs.concat(mine);
   const bub = msgs.map(m => m.who === '@me'
     ? `<div class="bubble me">${m.to ? `<span class="rto">${small('chev')}${esc(who(m.to))}</span>` : ''}${esc(txt(m.text))}</div>`
-    : `<div class="msg">${pBtn(m.who, avatar(m.who))}<div class="bubble op">${pBtn(m.who, `<b class="nm">${esc(m.who)}${vmark(m.who)}</b>`)}${m.to ? `<span class="rto">${small('chev')}${esc(who(m.to))}</span>` : ''}${esc(txt(m.text))}<div class="ma">${LV && m.mid ? (isAdmin() ? `<button data-act="ldel" data-v="room:${m.mid}">${FXL('act_delete')}</button>` : `<button data-act="lrep" data-v="room:${m.mid}">${t('report')}</button>`) : ''}<button data-act="rreply" data-v="${esc(m.who)}">${t('reply')}</button><button data-act="dm" data-v="${esc(m.who)}">${t('dm')}</button></div></div></div>`).join('');
-  const wt = watching(sp);
-  return { composer: wt ? null : 'room', html: topbar(L(r.name), { right: `<span class="tag green num">${nf(r.n)} ${tn('members', r.n)}</span>` }) + `<div class="wrap chat-wrap">
-    <div class="banner" style="font-size:12.5px">${ic(wt ? 'shield' : 'info')}<div>${wt ? FXL('watch_mode') : t('room_rule')}</div></div>
+    : `<div class="msg">${pBtn(m.who, avatar(m.who))}<div class="bubble op">${pBtn(m.who, `<b class="nm">${esc(m.who)}${vmark(m.who)}</b>`)}${m.to ? `<span class="rto">${small('chev')}${esc(who(m.to))}</span>` : ''}${esc(txt(m.text))}<div class="ma">${LV && m.mid ? (isAdmin() ? `<button data-act="ldel" data-v="room:${m.mid}">${FXL('act_delete')}</button>${m.uid && m.who !== '@nk' ? `<button data-act="admuser" data-v="${m.uid}">${FXL('act_ban')}</button>` : ''}` : m.who === '@nk' ? '' : `<button data-act="lrep" data-v="room:${m.mid}" data-a="${m.uid || ''}">${t('report')}</button>`) : ''}${m.who === '@nk' ? '' : `<button data-act="rreply" data-v="${esc(m.who)}">${t('reply')}</button><button data-act="dm" data-v="${esc(m.who)}">${t('dm')}</button>`}</div></div></div>`).join('');
+  const wt = watching(sp); const asA = LV && isAdmin() && (wt || S.asAdm);
+  const asBar = LV && isAdmin() ? `<div class="banner ${asA ? 'green' : ''}" style="font-size:12.5px">${ic('shield')}<div style="flex:1">${FXL('as_admin_l')}: <b>${asA ? FXL('on') : FXL('off')}</b></div>${wt ? '' : `<button class="btn sm soft" data-act="asadm">${asA ? FXL('off') : FXL('on')}</button>`}</div>` : '';
+  return { composer: 'room', html: topbar(L(r.name), { right: `<span class="tag green num">${nf(r.n)} ${tn('members', r.n)}</span>` }) + `<div class="wrap chat-wrap">
+    <div class="banner" style="font-size:12.5px">${ic(wt ? 'shield' : 'info')}<div>${wt ? FXL('watch_mode') : t('room_rule')}</div></div>${asBar}
     <div class="msg"><span class="av" style="background:var(--palm);color:#fff">N</span><div class="bubble op"><b class="nm">${t('operator')}</b>${t('room_hello')}</div></div>
     ${bub}
   </div>` };
@@ -647,6 +648,7 @@ function avatarSvg(n) {
   return `<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" fill="${bg}"/><path d="M8 64c2-14 12-20 24-20s22 6 24 20z" fill="${cl}"/><rect x="28" y="38" width="8" height="8" fill="${skin}"/><ellipse cx="32" cy="32" rx="9.5" ry="11" fill="${skin}"/>${beard ? `<path d="M23 34c1 8 5 12 9 12s8-4 9-12c-2 3-5 4-9 4s-7-1-9-4z" fill="#3a2a20"/>` : ''}${head}</svg>`;
 }
 function avatar(n, size) {
+  if (n === '@nk') return `<span class="av ${size || ''}" style="background:var(--palm);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:800">N</span>`;
   if (window.LIVE && n !== '@me' && LV.byName(n)) return liveAv(LV.byName(n).id, size);
   const me = n === '@me' && S.me;
   const ph = me && S.me.photos && S.me.photos[0];
@@ -718,7 +720,7 @@ function loadChat(key) { const c = S.chats[key]; if (!c || !c.live) return; LV.m
 function onLiveMessage(m) {
   if (!LV || !LV.user || m.sender === LV.user.id) return;
   const key = Object.keys(S.chats).find(k => S.chats[k].cid === m.chat_id);
-  if (!key) { if (isOwner()) { dropData('adm:dms'); return liveSyncChats(); } return liveSyncChats(true); }
+  if (!key) { if (isOwner()) return liveSyncChats(); return liveSyncChats(true); }
   const c = S.chats[key]; if (c.msgs.some(x => x.mid === m.id)) return;
   if (key.startsWith('O:')) { c.msgs.push(liveMsg(m)); if (cur().v === 'chat' && cur().id === key) render(); return; }
   c.msgs.push(liveMsg(m)); c.t = Date.now(); save();
@@ -810,7 +812,7 @@ const lt = (body, lg) => ({ __live: 1, t: body || '', lang: lg || '' });
 const ym = (d) => (d || '').slice(0, 7);
 const meU = () => LV && LV.user && LV.user.id;
 const nm = (uid) => (uid === meU() ? '@me' : pname(uid));
-function cmMap(rows, hc) { const byT = {}; rows.forEach(c => (byT[c.target] = byT[c.target] || []).push({ who: nm(c.author), uid: c.author, cid: c.id, date: ym(c.created_at), text: lt(c.body, c.lang), to: c.to_name || undefined })); return byT; }
+function cmMap(rows, hc) { const byT = {}; rows.forEach(c => (byT[c.target] = byT[c.target] || []).push({ who: c.as_admin ? '@nk' : nm(c.author), uid: c.author, cid: c.id, date: ym(c.created_at), text: lt(c.body, c.lang), to: c.to_name || undefined })); return byT; }
 function liveCommunity() {
   if (!LV) return;
   want('c:forum', async () => {
@@ -835,7 +837,7 @@ function liveSpace(space) {
   if (!LV || !S.me) return;
   want('c:sp:' + space, async () => {
     const [msgs, evs, cms] = await Promise.all([LV.roomMsgs(space), LV.events(), LV.comments('event:')]); const byT = cmMap(cms);
-    (space === 'men' ? MEN_ROOMS : WOMEN_ROOMS).forEach(r => { r.msgs = msgs.filter(m => m.room === space + ':' + r.id).map(m => ({ who: nm(m.author), uid: m.author, mid: m.id, text: lt(m.body, m.lang), to: m.to_name || undefined })); r.n = new Set(r.msgs.map(m => m.uid)).size; });
+    (space === 'men' ? MEN_ROOMS : WOMEN_ROOMS).forEach(r => { r.msgs = msgs.filter(m => m.room === space + ':' + r.id).map(m => ({ who: m.as_admin ? '@nk' : nm(m.author), uid: m.author, mid: m.id, text: lt(m.body, m.lang), to: m.to_name || undefined })); r.n = new Set(r.msgs.map(m => m.uid)).size; });
     const arr = space === 'men' ? MEN_EVENTS : WOMEN_EVENTS; arr.length = 0;
     evs.filter(e => e.space === space).forEach(e => arr.push({ id: e.id, live: 1, title: lt(e.title, e.lang), when: e.when_text, where: e.place, org: nm(e.author), need: e.need || 10, going: (e.event_going || []).filter(g => g.user_id !== meU()).length, mineG: (e.event_going || []).some(g => g.user_id === meU()), comments: byT['event:' + e.id] || [] }));
     return true; });
@@ -906,7 +908,7 @@ function person(n) {
 }
 const FXL = (k) => L(FX[k]);
 const VER = new Set(window.VERIFIED || []);
-const vmark = (n) => (window.LIVE && LV.byName(n) ? LV.byName(n).verified : VER.has(n)) ? `<span class="vmk" title="${t('v_nakhlio')}">${small('check')}</span>` : '';
+const vmark = (n) => n === '@nk' ? `<span class="vmk">${small('shield')}</span>` : (window.LIVE && LV.byName(n) ? LV.byName(n).verified : VER.has(n)) ? `<span class="vmk" title="${t('v_nakhlio')}">${small('check')}</span>` : '';
 let HELPS = null;
 function helpsOf(n) { if (!HELPS) { HELPS = {}; const all = [].concat(...Object.values(POSTS), FAMILY); for (const x of all) { HELPS[x.who] = (HELPS[x.who] || 0) + (x.helped || 0); for (const a of x.a || []) HELPS[a.who] = (HELPS[a.who] || 0) + (a.helped || 0); } } return HELPS[n] || 0; }
 function badgesOf(n, p) { const b = []; if (VER.has(n)) b.push('verified'); const h = helpsOf(n); if (h >= 45) b.push('mentor'); else if (h >= 25) b.push('helper'); if (p && p.rating >= 4.8 && (p.reviews || []).length >= 2) b.push('seller'); return b; }
@@ -935,7 +937,7 @@ function badgesBlock(n, p, me) {
   if (!keys.length) return '';
   return `<div class="block"><h4>${FXL('b_t')}</h4><div class="blist">${keys.map(k => { const [i, nm, d] = BADGE_UI[k]; return `<div class="bitem ${got.includes(k) ? 'on' : ''}"><i>${ic(i)}</i><span><b>${esc(nm())}</b><small>${esc(FXL(d))}</small></span></div>`; }).join('')}</div>${me && !got.length ? `<p class="note" style="margin-top:8px">${FXL('b_none')}</p>` : ''}</div>`;
 }
-const pBtn = (n, inner, cls) => `<button class="pbtn ${cls || ''}" data-act="profile" data-v="${esc(n)}">${inner}</button>`;
+const pBtn = (n, inner, cls) => n === '@nk' ? `<span class="pbtn ${cls || ''}">${inner}</span>` : `<button class="pbtn ${cls || ''}" data-act="profile" data-v="${esc(n)}">${inner}</button>`;
 function profileHtml(n) {
   const p = person(n); const me = !!p.me;
   const items = me ? myAds() : p.items;
@@ -1046,7 +1048,7 @@ V.chat = (p) => {
   const id = p.id; const c = S.chats[id] || { msgs: [] }; const li = listingInfo(id); const dmChat = !!li.person;
   if (c.live && !p._l) { p._l = 1; loadChat(id); }
   const liveB = (m, i) => { trMsg(m); const shown = m.tr && !m.showOrig ? m.tr : m.text; const who_ = id.startsWith('O:') ? pname(m.who) : id.startsWith('A:') ? pname(c.user1) : id.startsWith('D:') ? li.person : t('operator');
-    return m.from === 'me' ? `<div class="bubble me">${esc(m.text)}</div>` : `<div class="bubble op">${esc(shown)}${m.tr ? `<button class="tr" data-act="orig" data-v="${i}">${small('translate')}${m.showOrig ? t('show_translation') : t('auto_tr') + ' · ' + t('show_original')}</button>` : ''}<small>${esc(m.who && LV && m.who !== c.user1 && id.startsWith('A:') ? pname(m.who) : who_)}</small></div>`; };
+    return m.from === 'me' ? `<div class="bubble me">${esc(m.text)}</div>` : `<div class="bubble op">${esc(shown)}${m.tr ? `<button class="tr" data-act="orig" data-v="${i}">${small('translate')}${m.showOrig ? t('show_translation') : t('auto_tr') + ' · ' + t('show_original')}</button>` : ''}<small>${esc(m.who && LV && m.who !== c.user1 && id.startsWith('A:') ? pname(m.who) : who_)}${id.startsWith('D:') && m.mid ? ` · <button class="tr" style="display:inline" data-act="lrepm" data-v="${m.mid}">${t('report')}</button>` : ''}</small></div>`; };
   const bubbles = c.live ? c.msgs.map(liveB).join('') : c.msgs.map((m, i) => m.from === 'me' ? `<div class="bubble me">${esc(m.text)}${m.num ? `<small>${small('phone')} ${t('number_shared')}</small>` : ''}</div>`
     : `<div class="bubble op">${esc(m.showOrig ? m.text.ar : L(m.text))}${dmChat ? `<span class="tr">${small('translate')}${t('auto_tr')}</span>` : lang !== 'ar' ? `<button class="tr" data-act="orig" data-v="${i}">${small('translate')}${m.showOrig ? t('show_translation') : t('translated') + ' · ' + t('show_original')}</button>` : ''}<small>${esc(dmChat ? li.person : t('operator'))}</small></div>`).join('');
   const head = li.uid ? `<button class="pbtn" data-act="${id.startsWith('D:') ? 'mgp' : 'noop'}" data-v="${li.uid}">${liveAv(li.uid, 'lg')}</button><h1 style="font-size:16px">${esc(li.person)}<small style="display:block;font-size:12px;color:var(--ink-3);font-weight:600">${id.startsWith('A:') ? esc(t('operator_panel')) : id.startsWith('O:') ? esc(FXL('read_only')) : 'Magaam'}</small></h1>` : dmChat ? `${pBtn(li.person, avatar(li.person, 'lg'))}<h1 style="font-size:16px">${pBtn(li.person, esc(li.person))}<small style="display:block;font-size:12px;color:var(--palm);font-weight:700">● ${t('online')}</small></h1>`
@@ -1054,7 +1056,7 @@ V.chat = (p) => {
   return { composer: id.startsWith('O:') ? null : 'chat', html: `<div class="topbar"><button class="ibtn" data-act="back" aria-label="${t('back')}">${ic('back', 'flip')}</button>${head}${homeBtn()}</div>
   <div class="wrap chat-wrap">
     ${dmChat ? '' : `<button class="listing-pin" data-act="openlisting" data-v="${id}">${li.svc ? svcThumb(li.svc, 'width:48px;height:48px;border-radius:10px') : `<img src="${img(li.photo)}" alt="">`}<span style="text-align:start;min-width:0"><b>${esc(li.title)}</b><small class="num">${esc(li.price)}${li.price ? ' · ' : ''}${id}</small></span></button>`}
-    ${id.startsWith('O:') ? `<div class="banner" style="font-size:12.5px">${ic('shield')}<div>${FXL('watch_mode')}</div></div>` : `<div class="banner green" style="font-size:12.5px">${ic('lock')}<div>${t('privacy_note')}</div></div>`}
+    ${id.startsWith('O:') ? `<div class="banner" style="font-size:12.5px">${ic('shield')}<div>${FXL('watch_dm')}</div></div>` : `<div class="banner green" style="font-size:12.5px">${ic('lock')}<div>${t('privacy_note')}</div></div>`}
     ${bubbles}<div id="typing"></div>
   </div>` };
 };
@@ -1081,11 +1083,12 @@ function admUserSheet(uid) {
   const canBan = !u.is_owner && uid !== meId && (isOwner() || !u.is_admin);
   const btn = (act, label, cls) => `<button class="btn ${cls || 'soft'} full" style="margin-top:8px" data-x="${act}">${label}</button>`;
   const w = sheet(`<div style="display:flex;gap:12px;align-items:center">${liveAv(uid, 'lg')}<div><h3 style="margin:0">${esc(u.name || '…')}</h3><small class="note">${u.is_owner ? FXL('owner_l') : u.is_admin ? FXL('adm') : ''}${u.banned ? ' · ' + FXL('banned_l') : ''}</small></div></div>
-    ${btn('open', t('open'))}${uid !== meId ? btn('verify', FXL(u.verified ? 'act_unverify' : 'act_verify')) + btn('warn', FXL('act_warn')) : ''}${canBan ? btn('ban', FXL(u.banned ? 'act_unban' : 'act_ban'), u.banned ? 'soft' : 'soft') : ''}${isOwner() && uid !== meId && !u.is_owner ? btn('admin', FXL(u.is_admin ? 'unmake_admin' : 'make_admin'), u.is_admin ? 'soft' : 'green') : ''}`);
-  const done = () => { w.remove(); dropData('adm:users'); toast(t('saved_ok')); render(); };
+    ${btn('open', t('open'))}${uid !== meId ? btn('verify', FXL(u.verified ? 'act_unverify' : 'act_verify')) + btn('warn', FXL('act_warn')) : ''}${canBan ? btn('ban', FXL(u.banned ? 'act_unban' : 'act_ban'), u.banned ? 'soft' : 'soft') : ''}${isOwner() && uid !== meId ? btn('udms', FXL('tab_dms')) : ''}${isOwner() && uid !== meId && !u.is_owner ? btn('admin', FXL(u.is_admin ? 'unmake_admin' : 'make_admin'), u.is_admin ? 'soft' : 'green') : ''}`);
+  const done = () => { w.remove(); dropData('adm:u:'); dropData('adm:stats'); toast(t('saved_ok')); render(); };
   const fail = (e) => toast(/admin_limit/.test(String(e && e.message)) ? FXL('admin_limit') : FXL('send_fail'));
   w.addEventListener('click', (e) => { const b = e.target.closest('[data-x]'); if (!b) return; const x = b.dataset.x;
     if (x === 'open') { w.remove(); go('person', { id: u.name }); }
+    else if (x === 'udms') { w.remove(); go('operator', { k: 'udms', uid }); }
     else if (x === 'verify') LV.setFlag(uid, { verified: !u.verified }).then(done).catch(fail);
     else if (x === 'ban') { if (u.banned || confirm(FXL('act_ban') + ': ' + u.name + '?')) LV.setFlag(uid, { banned: !u.banned }).then(done).catch(fail); }
     else if (x === 'admin') { if (confirm(FXL(u.is_admin ? 'unmake_admin' : 'make_admin') + ': ' + u.name + '?')) LV.setFlag(uid, { is_admin: !u.is_admin }).then(r => { if (!!r.is_admin === !!u.is_admin) return fail(); done(); }).catch(fail); }
@@ -1097,21 +1100,36 @@ V.operator = (p) => {
   if (!isAdmin()) return V.home();
   if (LV) {
     liveSyncChats(); const k = p.k || 'chats';
-    const seg = `<div class="seg" style="margin:4px 0 14px">${['chats', 'reports', 'users'].concat(isOwner() ? ['dms'] : []).map(x => `<button class="${x === k ? 'on' : ''}" data-act="opk" data-v="${x}">${FXL('tab_' + x)}</button>`).join('')}</div>`;
+    const st = want('adm:stats', () => LV.stats());
+    const stat = (n, label, act, v) => `<button class="opstat" ${act ? `data-act="${act}" data-v="${v}"` : 'data-act="noop"'}><b class="num">${n == null ? '…' : nf(n)}</b><small>${label}</small></button>`;
+    const strip = `<div class="opstats">${stat(st && st.users, FXL('st_users'), 'ufilt', 'all')}${stat(st && st.new7, FXL('st_new7'), 'ufilt', 'all')}${stat(st && st.reports, FXL('tab_reports'), 'opk', 'reports')}${stat(st && st.support, FXL('st_support'), 'opk', 'chats')}${stat(st && st.banned, FXL('st_banned'), 'ufilt', 'banned')}${stat(st && st.verified, FXL('st_verified'), 'ufilt', 'verified')}${stat(st && st.admins, FXL('st_admins') + ' / 5', 'ufilt', 'admins')}</div>`;
+    const seg = `<div class="seg" style="margin:4px 0 14px">${['chats', 'reports', 'users'].map(x => `<button class="${x === k || (k === 'udms' && x === 'users') ? 'on' : ''}" data-act="opk" data-v="${x}">${FXL('tab_' + x)}</button>`).join('')}</div>`;
+    const uRow = (u) => `<button class="row-card" data-act="admuser" data-v="${u.id}">${liveAv(u.id)}<span class="grow"><span class="ttl" style="display:block">${esc(u.name || '…')}${u.verified ? ' ✓' : ''}</span><span class="sub" style="display:block">${u.is_owner ? FXL('owner_l') + ' · ' : u.is_admin ? FXL('adm') + ' · ' : ''}${u.banned ? `<b style="color:var(--rose)">${FXL('banned_l')}</b> · ` : ''}${u.gender === 'f' ? t('female') : t('male')} · ${new Date(u.created_at).toLocaleDateString(locale())}</span></span></button>`;
     let body = '';
     if (k === 'chats') { const ids = Object.keys(S.chats).filter(x => x.startsWith('A:')).sort((a, b) => S.chats[b].t - S.chats[a].t);
       body = ids.length ? `<div class="list one">${ids.map(id => { const c = S.chats[id]; const li = listingInfo(id); const last = c.msgs[c.msgs.length - 1];
-        return `<button class="row-card" data-act="go" data-v="chat" data-id="${id}">${liveAv(c.user1)}<span class="grow"><span class="ttl" style="display:block">${esc(li.title)}</span><span class="sub" style="display:block">${last ? esc(String(last.text).slice(0, 80)) : ''}</span></span><small class="num">${new Date(c.t).toLocaleDateString(locale())}</small></button>`; }).join('')}</div>` : emptyBlock(t('chats_empty'), 'chat').replace(t('nothing_d'), ''); }
-    else if (k === 'users') { const us = want('adm:users', () => LV.people());
-      const nA = (us || []).filter(u => u.is_admin).length;
-      body = us === undefined ? `<p class="note">…</p>` : `<p class="note" style="margin:0 0 10px">${FXL('admins_n')}: <b class="num">${nf(nA)}</b> / 5</p><div class="field" style="margin-bottom:12px"><input type="search" placeholder="${FXL('user_search')}" aria-label="${FXL('user_search')}" oninput="var q=this.value.toLowerCase();document.querySelectorAll('[data-nm]').forEach(function(e){e.hidden=e.dataset.nm.indexOf(q)<0})"></div><div class="list one">${(us || []).map(u => `<button class="row-card" data-act="admuser" data-v="${u.id}" data-nm="${esc((u.name || '').toLowerCase())}">${liveAv(u.id)}<span class="grow"><span class="ttl" style="display:block">${esc(u.name || '…')}${u.verified ? ' ✓' : ''}</span><span class="sub" style="display:block">${u.is_owner ? FXL('owner_l') : u.is_admin ? FXL('adm') : ''}${u.banned ? `<b style="color:var(--rose)">${FXL('banned_l')}</b>` : ''}${!u.is_admin && !u.banned ? (u.gender === 'f' ? t('female') : t('male')) : ''} · ${new Date(u.created_at).toLocaleDateString(locale())}</span></span>${ic('chev', 'flip chev')}</button>`).join('')}</div>`; }
-    else if (k === 'dms' && isOwner()) { const ds = want('adm:dms', () => LV.allDms());
-      body = ds === undefined ? `<p class="note">…</p>` : !ds || !ds.length ? `<p class="note">${FXL('no_dms')}</p>` : `<div class="list one">${ds.map(c => `<button class="row-card" data-act="admdm" data-v="${c.id}">${liveAv(c.user1)}<span class="grow"><span class="ttl" style="display:block">${esc(pname(c.user1))} ↔ ${esc(pname(c.user2))}</span><span class="sub" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.last ? esc(pname(c.last.sender)) + ': ' + esc(String(c.last.body).slice(0, 80)) : ''}</span></span><small class="num">${new Date(c.last_at).toLocaleDateString(locale())}</small></button>`).join('')}</div>`; }
+        return `<button class="row-card" data-act="go" data-v="chat" data-id="${id}">${liveAv(c.user1)}<span class="grow"><span class="ttl" style="display:block">${esc(li.title)}</span><span class="sub" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${last ? esc(String(last.text).slice(0, 80)) : ''}</span></span><small class="num">${new Date(c.t).toLocaleDateString(locale())}</small></button>`; }).join('')}</div>` : emptyBlock(t('chats_empty'), 'chat').replace(t('nothing_d'), ''); }
+    else if (k === 'users') { const f = p.f || 'all', q = p.q || '', n = p.n || 50;
+      const res = want('adm:u:' + f + ':' + q + ':' + n, () => LV.searchUsers(q, f, n));
+      const chips = `<div class="chips" style="margin-top:0">${['all', 'admins', 'banned', 'verified'].map(x => `<button class="chip ${x === f ? 'on' : ''}" data-act="ufilt" data-v="${x}">${x === 'all' ? t('all') : x === 'admins' ? FXL('st_admins') : x === 'banned' ? FXL('st_banned') : FXL('st_verified')}</button>`).join('')}</div>`;
+      const search = `<div class="crow" style="margin:6px 0 10px"><input id="usq" type="search" value="${esc(q)}" placeholder="${FXL('user_search')}" aria-label="${FXL('user_search')}" style="flex:1;min-width:0;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font:inherit;background:var(--card)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.nextElementSibling.click()}"><button class="btn sm primary" data-act="usearch">${FXL('find')}</button></div>`;
+      body = search + chips + (res === undefined ? `<p class="note">…</p>` : !res ? `<p class="note">${FXL('send_fail')}</p>` : `<p class="note" style="margin:8px 0">${FXL('found')}: <b class="num">${nf(res.count)}</b>${res.count > res.rows.length ? ` · ${FXL('shown')} <span class="num">${nf(res.rows.length)}</span>` : ''}</p><div class="list one">${res.rows.map(uRow).join('')}</div>${res.count > res.rows.length ? `<button class="btn soft full" style="margin-top:12px" data-act="umore">${FXL('more')}</button>` : ''}`); }
+    else if (k === 'udms' && isOwner()) { const ds = want('adm:udms:' + p.uid, () => LV.userDms(p.uid));
+      body = `<h3 style="margin:0 0 10px">${esc(pname(p.uid))} · ${FXL('tab_dms')}</h3>` + (ds === undefined ? `<p class="note">…</p>` : !ds || !ds.length ? `<p class="note">${FXL('no_dms')}</p>` : `<div class="list one">${ds.map(c => `<button class="row-card" data-act="oprep" data-v="${c.id}">${liveAv(c.user1 === p.uid ? c.user2 : c.user1)}<span class="grow"><span class="ttl" style="display:block">${esc(pname(c.user1))} ↔ ${esc(pname(c.user2))}</span><span class="sub" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.last ? esc(pname(c.last.sender)) + ': ' + esc(String(c.last.body).slice(0, 80)) : ''}</span></span><small class="num">${new Date(c.last_at).toLocaleDateString(locale())}</small></button>`).join('')}</div>`); }
     else { const reps = want('reports', () => LV.reports());
-      body = reps === undefined ? `<p class="note">…</p>` : !reps || !reps.length ? `<p class="note">${FXL('no_reports')}</p>` : `<div class="list one">${reps.map(r => `<div class="card rep ${r.status}"><div class="sub" style="margin:0 0 4px">${esc(r.target_type)} · ${new Date(r.created_at).toLocaleString(locale())} · ${esc(pname(r.reporter))}</div>
-        <b>${r.target_type === 'user' ? esc(pname(r.target_id)) : esc(r.target_id)}</b>${r.reason ? `<p style="margin:4px 0 0">${esc(r.reason)}</p>` : ''}
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">${r.target_type === 'post' ? (r.target_id.includes(':') ? `${r.target_id.startsWith('item:') ? `<button class="btn sm soft" data-act="go" data-v="item" data-id="${r.target_id.slice(5)}">${t('open')}</button>` : ''}<button class="btn sm soft" data-act="ldel" data-v="${r.target_id}">${FXL('act_delete')}</button>` : `<button class="btn sm soft" data-act="mgpost" data-v="${r.target_id}">${t('open')}</button><button class="btn sm soft" data-act="admdelpost" data-v="${r.target_id}">${FXL('act_delete')}</button>`) : ''}${r.target_type === 'user' ? `<button class="btn sm soft" data-act="mgp" data-v="${r.target_id}">${t('open')}</button>` : ''}${r.status === 'open' ? `<button class="btn sm green" data-act="admdone" data-v="${r.id}">${FXL('act_done')}</button>` : `<span class="tag green">${FXL('act_done')}</span>`}</div></div>`).join('')}</div>`; }
-    return { tabs: true, html: topbar(t('operator_panel')) + `<div class="wrap">${seg}${body}</div>` };
+      const openBtn = (r) => { const tid = r.target_id;
+        if (r.target_type === 'user') return `<button class="btn sm soft" data-act="admuser" data-v="${tid}">${t('open')}</button>`;
+        if (r.target_type === 'message') return isOwner() && r.place.startsWith('dm:') ? `<button class="btn sm soft" data-act="oprep" data-v="${r.place.slice(3)}">${FXL('open_chat')}</button>` : '';
+        if (tid.startsWith('item:')) return `<button class="btn sm soft" data-act="go" data-v="item" data-id="${tid.slice(5)}">${t('open')}</button>`;
+        if (!tid.includes(':')) return `<button class="btn sm soft" data-act="mgpost" data-v="${tid}">${t('open')}</button>`;
+        return ''; };
+      const delBtn = (r) => r.target_type === 'user' ? '' : r.target_type === 'message' ? `<button class="btn sm soft" data-act="ldelmsg" data-v="${r.target_id}">${FXL('act_delete')}</button>` : r.target_id.includes(':') ? `<button class="btn sm soft" data-act="ldel" data-v="${r.target_id}">${FXL('act_delete')}</button>` : `<button class="btn sm soft" data-act="admdelpost" data-v="${r.target_id}">${FXL('act_delete')}</button>`;
+      body = reps === undefined ? `<p class="note">…</p>` : !reps || !reps.length ? `<p class="note">${FXL('no_reports')}</p>` : `<div class="list one">${reps.map(r => { const au = r.target_type === 'user' ? r.target_id : r.target_author;
+        return `<div class="card rep ${r.status}"><div class="sub" style="margin:0 0 6px">${new Date(r.created_at).toLocaleString(locale())} · ${FXL('reported_by')}: ${esc(pname(r.reporter))}</div>
+        ${au ? `<b>${FXL('violator')}: ${esc(pname(au))}</b>` : ''}${r.place ? `<div class="sub">${esc(r.place.startsWith('dm:') ? FXL('in_dm') : r.place)}</div>` : ''}
+        ${r.snapshot ? `<p style="margin:8px 0 0;padding:8px 10px;background:var(--sand);border-radius:10px;white-space:pre-wrap">${esc(r.snapshot)}</p>` : ''}${r.reason ? `<p style="margin:6px 0 0">${esc(r.reason)}</p>` : ''}
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">${openBtn(r)}${r.status === 'open' ? delBtn(r) : ''}${au && r.status === 'open' ? `<button class="btn sm soft" data-act="admuser" data-v="${au}">${FXL('act_ban')} / ${FXL('act_warn')}</button>` : ''}${r.status === 'open' ? `<button class="btn sm green" data-act="admdone" data-v="${r.id}">${FXL('act_done')}</button>` : `<span class="tag green">${FXL('act_done')}</span>`}</div></div>`; }).join('')}</div>`; }
+    return { tabs: true, html: topbar(t('operator_panel')) + `<div class="wrap">${strip}${seg}${body}</div>` };
   }
   const ids = Object.keys(S.chats).filter(id => !id.startsWith('U:'));
   const st = ['new', 'work', 'view', 'done'];
@@ -1151,9 +1169,8 @@ root.addEventListener('click', (e) => {
     case 'docedit': docSheet(v); break;
     case 'opk': cur().k = v; render(); break;
     case 'admuser': admUserSheet(v); break;
-    case 'admdm': { const ds = (DATA['adm:dms'] || {}).v || []; const c = ds.find(x => x.id === v); if (!c) break; const key = 'O:' + c.id;
-      S.chats[key] = { live: true, cid: c.id, kind: 'dm', user1: c.user1, user2: c.user2, t: new Date(c.last_at).getTime(), msgs: [], watch: true }; go('chat', { id: key }); break; }
-    case 'admdone': LV.closeReport(v).then(() => { dropData('reports'); render(); }); break;
+    case 'ldelmsg': if (confirm(FXL('act_delete') + '?')) LV.deleteMessage(v).then(() => { toast(FXL('act_delete') + ' ✓'); }).catch(() => toast(FXL('send_fail'))); break;
+    case 'admdone': LV.closeReport(v).then(() => { dropData('reports'); dropData('adm:stats'); render(); }); break;
     case 'admdelpost': if (confirm(FXL('act_delete') + '?')) LV.deletePost(v).then(() => { toast(FXL('act_delete') + ' ✓'); dropData(); render(); }).catch(e => toast(FXL('send_fail'))); break;
     case 'accedit': accSheet(v); break;
     case 'godocs': tab('profile'); setTimeout(() => { const el = document.getElementById('docs'); if (el) el.scrollIntoView({ block: 'start', behavior: 'smooth' }); }, 120); break;
@@ -1174,7 +1191,7 @@ root.addEventListener('click', (e) => {
     case 'comment': openC[el.dataset.k] = !openC[el.dataset.k]; render(); if (openC[el.dataset.k]) focusBox(el.dataset.k); break;
     case 'csend': if (LV) { const k = el.dataset.k; const ta = root.querySelector(`textarea[data-ck="${k}"]`); const tx = ta && ta.value.trim(); if (!tx) { ta && ta.focus(); break; }
       const target = k.startsWith('c:') ? 'item:' + k.slice(2) : k.startsWith('f:') ? 'forum:' + k.slice(2) : k.startsWith('e:') ? 'event:' + k.slice(2) : null;
-      if (!target) break; LV.addComment(target, tx, lang, replyTo[k]).then(() => { replyTo[k] = null; dropData('c:'); render(); }).catch(e => toast(FXL('send_fail'))); ta.value = ''; break; }
+      if (!target) break; LV.addComment(target, tx, lang, replyTo[k], isAdmin() && S.asAdm).then(() => { replyTo[k] = null; dropData('c:'); render(); }).catch(e => toast(FXL('send_fail'))); ta.value = ''; break; }
     case 'csend_local': { const k = el.dataset.k; const ta = root.querySelector(`textarea[data-ck="${k}"]`); const tx = ta && ta.value.trim(); if (!tx) { ta && ta.focus(); break; } S.cm[k] = (S.cm[k] || []).concat({ who: '@me', text: tx, to: replyTo[k] || undefined, date: new Date().toISOString().slice(0, 7) }); replyTo[k] = null; save(); render(); break; }
     case 'rreply': cur().replyTo = v; render(); setTimeout(() => { const m = document.getElementById('msg'); if (m) m.focus(); }, 30); break;
     case 'rclear': cur().replyTo = null; render(); break;
@@ -1194,7 +1211,15 @@ root.addEventListener('click', (e) => {
     case 'compose': composeSheet(v, id); break;
     case 'going': if (LV) { const e = allEvents().find(x => x.id === v); if (!e) break; e.mineG = !e.mineG; render(); LV.going(v, e.mineG).then(() => dropData('c:sp:')).catch(er => toast(FXL('send_fail'))); break; } S.going[v] = !S.going[v]; save(); render(); break;
     case 'lhelp': { const on = el.dataset.on !== '1'; LV.setHelpful(v, on).then(() => { dropData('c:forum'); render(); }).catch(er => toast(FXL('send_fail'))); break; }
-    case 'lrep': LV.report('post', v).then(() => toast(t('reported'))).catch(er => toast(FXL('send_fail'))); break;
+    case 'lrep': { const box = el.closest('.bubble,.card,.post,.cmt'); const snap = box ? box.innerText.replace(/\s+/g, ' ').trim().slice(0, 500) : ''; const place = (document.querySelector('.topbar h1') || {}).innerText || ''; LV.report('post', v, '', { snapshot: snap, target_author: el.dataset.a || null, place: place.slice(0, 120) }).then(() => toast(t('reported'))).catch(er => toast(FXL('send_fail'))); break; }
+    case 'lrepm': { const c = S.chats[cur().id] || {}; const m = c.msgs && c.msgs.find(x => String(x.mid) === v); LV.report('message', v, '', { snapshot: m ? String(m.text).slice(0, 500) : '', target_author: m ? m.who : null, place: 'dm:' + (c.cid || '') }).then(() => toast(t('reported'))).catch(er => toast(FXL('send_fail'))); break; }
+    case 'asadm': S.asAdm = !S.asAdm; save(); render(); break;
+    case 'udms': go('operator', { k: 'udms', uid: v }); break;
+    case 'oprep': { const cid = v; LV.chat(cid).then(c => { if (!c) return toast(FXL('send_fail')); const key = 'O:' + c.id; S.chats[key] = { live: true, cid: c.id, kind: c.kind, user1: c.user1, user2: c.user2, t: Date.now(), msgs: [], watch: true }; LV.prof([c.user1, c.user2]).then(() => go('chat', { id: key })); }); break; }
+    case 'umore': cur().n = (cur().n || 50) + 50; render(); break;
+    case 'ufilt': cur().k = 'users'; cur().f = v; cur().n = 50; render(); break;
+    case 'usearch': { const inp = document.querySelector('#usq'); cur().q = inp ? inp.value.trim() : ''; cur().n = 50; render(); break; }
+    case 'lrep_old': LV.report('post', v).then(() => toast(t('reported'))).catch(er => toast(FXL('send_fail'))); break;
     case 'ldel': { if (!confirm(FXL('act_delete') + '?')) break; const [ty, id2] = [v.slice(0, v.indexOf(':')), v.slice(v.indexOf(':') + 1)];
       const fn = { item: LV.delItem, forum: LV.delForum, room: LV.delRoomMsg, event: LV.delEvent, cm: LV.delComment2 }[ty]; if (!fn) break;
       fn(ty === 'room' || ty === 'cm' ? +id2 : id2).then(() => { toast(FXL('act_delete') + ' ✓'); dropData('c:'); if (ty === 'item' && cur().v === 'item') back(); else render(); }).catch(er => toast(FXL('send_fail'))); break; }
@@ -1358,7 +1383,7 @@ function render(scrollTop) {
   if (msg) {
     const auto = () => { msg.style.height = 'auto'; msg.style.height = Math.min(120, msg.scrollHeight) + 'px'; };
     msg.addEventListener('input', () => { c.draft = msg.value; auto(); }); auto();
-    const doSend = () => { const v = msg.value; if (!v.trim()) return; c.draft = ''; if (r.composer === 'chat') sendChat(v); else if (LV) { const room = c.id, to = c.replyTo; c.replyTo = null; LV.roomSend(room, v.trim(), lang, to).then(() => { dropData('c:sp:'); render(); setTimeout(scrollEnd, 50); }).catch(e => toast(FXL('send_fail'))); msg.value = ''; } else { S.rooms = S.rooms || {}; (S.rooms[c.id] = S.rooms[c.id] || []).push({ who: '@me', text: v.trim(), to: c.replyTo || undefined }); c.replyTo = null; save(); render(); } setTimeout(scrollEnd, 50); };
+    const doSend = () => { const v = msg.value; if (!v.trim()) return; c.draft = ''; if (r.composer === 'chat') sendChat(v); else if (LV) { const room = c.id, to = c.replyTo; c.replyTo = null; LV.roomSend(room, v.trim(), lang, to, isAdmin() && (watching(room.split(':')[0]) || S.asAdm)).then(() => { dropData('c:sp:'); render(); setTimeout(scrollEnd, 50); }).catch(e => toast(FXL('send_fail'))); msg.value = ''; } else { S.rooms = S.rooms || {}; (S.rooms[c.id] = S.rooms[c.id] || []).push({ who: '@me', text: v.trim(), to: c.replyTo || undefined }); c.replyTo = null; save(); render(); } setTimeout(scrollEnd, 50); };
     document.getElementById('sendBtn').addEventListener('click', doSend);
     msg.addEventListener('keydown', ev => { if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); doSend(); } });
     const sn = document.querySelector('[data-act=sharenum]'); if (sn) sn.addEventListener('click', ev => { ev.stopPropagation(); sendChat('', true); });

@@ -71,12 +71,6 @@ L.myChats = async () => {
   rows.forEach((c, i) => c.last = last[i]);
   return { mine, all: rows };
 };
-L.allDms = async () => {
-  const rows = ok(await sb.from('chats').select('*').eq('kind', 'dm').order('last_at', { ascending: false }).limit(100));
-  await L.prof(rows.flatMap(c => [c.user1, c.user2]));
-  const last = await Promise.all(rows.map(c => sb.from('messages').select('*').eq('chat_id', c.id).order('created_at', { ascending: false }).limit(1).then(r => (r.data || [])[0] || null)));
-  rows.forEach((c, i) => c.last = last[i]); return rows;
-};
 L.supportChat = async (topic) => {
   const me = L.user.id; topic = topic || '';
   let c = ok(await sb.from('chats').select('*').eq('kind', 'support').eq('user1', me).eq('topic', topic).maybeSingle());
@@ -137,10 +131,17 @@ L.post = async (id) => { const p = ok(await sb.from('mg_posts').select(POSTSEL).
 L.createPost = async (f) => ok(await sb.from('mg_posts').insert(Object.assign({ author: L.user.id }, f)).select().single());
 L.like = async (id, on) => { if (on) await sb.from('mg_likes').insert({ post_id: id, user_id: L.user.id }); else await sb.from('mg_likes').delete().eq('post_id', id).eq('user_id', L.user.id); };
 L.comment = async (id, body, lang) => ok(await sb.from('mg_comments').insert({ post_id: id, author: L.user.id, body, lang }).select().single());
-L.report = async (type, id, reason) => ok(await sb.from('reports').insert({ reporter: L.user.id, target_type: type, target_id: String(id), reason: reason || '' }));
+L.report = async (type, id, reason, extra) => ok(await sb.from('reports').insert(Object.assign({ reporter: L.user.id, target_type: type, target_id: String(id), reason: reason || '' }, extra || {})));
 
 /* admin */
-L.reports = async () => { const rows = ok(await sb.from('reports').select('*').order('created_at', { ascending: false }).limit(200)); await L.prof(rows.map(r => r.reporter).concat(rows.filter(r => r.target_type === 'user').map(r => r.target_id))); return rows; };
+L.reports = async () => { const rows = ok(await sb.from('reports').select('*').order('status', { ascending: false }).order('created_at', { ascending: false }).limit(100)); await L.prof(rows.map(r => r.reporter).concat(rows.map(r => r.target_author), rows.filter(r => r.target_type === 'user').map(r => r.target_id))); return rows; };
+L.stats = async () => ok(await sb.rpc('admin_stats'));
+L.searchUsers = async (q, f, n) => { let s = sb.from('profiles').select('*', { count: 'exact' });
+  if (q) s = s.ilike('name', '%' + q.replace(/[%_]/g, '') + '%');
+  if (f === 'admins') s = s.eq('is_admin', true); else if (f === 'banned') s = s.eq('banned', true); else if (f === 'verified') s = s.eq('verified', true);
+  const r = await s.order('created_at', { ascending: false }).range(0, (n || 50) - 1); if (r.error) throw r.error; r.data.forEach(p => PC[p.id] = p); return { rows: r.data, count: r.count || 0 }; };
+L.userDms = async (uid) => { const rows = ok(await sb.from('chats').select('*').eq('kind', 'dm').or(`user1.eq.${uid},user2.eq.${uid}`).order('last_at', { ascending: false }).limit(100)); await L.prof(rows.flatMap(c => [c.user1, c.user2]));
+  const last = await Promise.all(rows.map(c => sb.from('messages').select('*').eq('chat_id', c.id).order('created_at', { ascending: false }).limit(1).then(r => (r.data || [])[0] || null))); rows.forEach((c, i) => c.last = last[i]); return rows; };
 L.closeReport = async (id) => ok(await sb.from('reports').update({ status: 'done' }).eq('id', id));
 L.hidePost = async (id, hidden) => ok(await sb.from('mg_posts').update({ hidden }).eq('id', id));
 L.deletePost = async (id) => ok(await sb.from('mg_posts').delete().eq('id', id));
@@ -170,12 +171,12 @@ L.addItem = async (f) => ok(await sb.from('items').insert(Object.assign({ author
 L.delItem = async (id) => ok(await sb.from('items').delete().eq('id', id));
 L.delForum = async (id) => ok(await sb.from('forum_posts').delete().eq('id', id));
 L.comments = async (prefix) => { const rows = ok(await sb.from('comments').select('*').like('target', prefix + '%').order('created_at').limit(2000)); await L.prof(rows.map(r => r.author)); return rows; };
-L.addComment = async (target, body, lang, to_name) => ok(await sb.from('comments').insert({ target, author: L.user.id, body, lang, to_name: to_name || '' }).select().single());
+L.addComment = async (target, body, lang, to_name, as_admin) => ok(await sb.from('comments').insert({ target, author: L.user.id, body, lang, to_name: to_name || '', as_admin: !!as_admin }).select().single());
 L.delComment2 = async (id) => ok(await sb.from('comments').delete().eq('id', id));
 L.helpful = async () => ok(await sb.from('helpful').select('*').limit(5000));
 L.setHelpful = async (target, on) => { if (on) await sb.from('helpful').insert({ target, user_id: L.user.id }); else await sb.from('helpful').delete().eq('target', target).eq('user_id', L.user.id); };
 L.roomMsgs = async (space) => { const rows = ok(await sb.from('room_messages').select('*').like('room', space + ':%').order('created_at').limit(2000)); await L.prof(rows.map(r => r.author)); return rows; };
-L.roomSend = async (room, body, lang, to_name) => ok(await sb.from('room_messages').insert({ room, author: L.user.id, body, lang, to_name: to_name || '' }).select().single());
+L.roomSend = async (room, body, lang, to_name, as_admin) => ok(await sb.from('room_messages').insert({ room, author: L.user.id, body, lang, to_name: to_name || '', as_admin: !!as_admin }).select().single());
 L.delRoomMsg = async (id) => ok(await sb.from('room_messages').delete().eq('id', id));
 L.events = async () => { const rows = ok(await sb.from('events').select('*, event_going(user_id)').order('created_at', { ascending: false }).limit(200)); await L.prof(rows.map(r => r.author)); return rows; };
 L.addEvent = async (f) => ok(await sb.from('events').insert(Object.assign({ author: L.user.id }, f)).select().single());

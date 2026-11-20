@@ -988,3 +988,20 @@ c738|Paparan pentadbir utama. Di sini anda hanya boleh melihat dan memadam pelan
 c739|Lihat sahaja
 c740|Untuk melindungi orang ramai, pentadbiran Nakhlio boleh melihat perbualan dan mesej bilik semasa menyemak aduan dan pelanggaran.
 c741|Disekat
+c742|Pentadbiran Nakhlio
+c743|Bagi pihak pentadbiran
+c744|hidup
+c745|mati
+c746|Baharu dalam 7 hari
+c747|Permintaan dalam 7 hari
+c748|Disahkan
+c749|Cari
+c750|Ditemui
+c751|dipaparkan
+c752|Tunjuk lagi
+c753|Buka perbualan
+c754|Pengadu
+c755|Yang diadukan
+c756|Perbualan peribadi
+c757|Paparan pentadbir utama. Di sini anda hanya menulis sebagai “Pentadbiran Nakhlio” dan boleh memadam pelanggaran.
+c758|Anda sedang melihat perbualan orang lain sebagai pentadbir utama. Anda tidak boleh menulis di sini.

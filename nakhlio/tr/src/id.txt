@@ -988,3 +988,20 @@ c738|Tampilan administrator utama. Di sini Anda hanya dapat melihat dan menghapu
 c739|Hanya lihat
 c740|Untuk melindungi pengguna, administrasi Nakhlio dapat melihat percakapan dan pesan di ruang saat memeriksa laporan dan pelanggaran.
 c741|Diblokir
+c742|Administrasi Nakhlio
+c743|Atas nama administrasi
+c744|aktif
+c745|nonaktif
+c746|Baru dalam 7 hari
+c747|Permintaan dalam 7 hari
+c748|Terverifikasi
+c749|Cari
+c750|Ditemukan
+c751|ditampilkan
+c752|Tampilkan lagi
+c753|Buka percakapan
+c754|Pelapor
+c755|Yang dilaporkan
+c756|Percakapan pribadi
+c757|Tampilan administrator utama. Di sini Anda hanya menulis atas nama “Administrasi Nakhlio” dan dapat menghapus pelanggaran.
+c758|Anda melihat percakapan orang lain sebagai administrator utama. Anda tidak dapat menulis di sini.
