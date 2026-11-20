@@ -877,3 +877,59 @@ c630|Güvenilir satıcı
 c631|2+ yorum ve 4,8+ puan.
 c632|Henüz rozet yok — Meclis’te başkalarına yardım edin ve işlemlerinizi Nakhlio üzerinden yapın.
 c633|Sağlık sigortası
+u:s_mg|Magaam
+u:s_mg_d|Fotoğraf, hikâye, reels
+c634|Medine’de yaşayanlardan fotoğraflar, hikâyeler ve reels
+c635|Akış
+c636|Reels
+c637|Oluştur
+c638|Arkadaşlar
+c639|Hikâyen
+c640|Gönderiler
+c641|Takipçiler
+c642|Takip
+c643|Takip et
+c644|Arkadaş ekle
+c645|İstek gönderildi
+c646|Sizi arkadaş olarak eklediğinde mesaj yazabilirsiniz
+c647|arkadaşlık isteğinizi kabul etti
+c648|Arkadaşlık istekleri
+c649|Kabul et
+c650|Reddet
+c651|Henüz arkadaş yok. Akışta insanları bulun ve ekleyin.
+c652|Magaam’daki kişiler
+c653|beğeni
+c654|Yeni gönderi
+c655|Fotoğraf
+c656|Hikâye
+c657|Reel
+c658|Fotoğraf veya video seç
+c659|Açıklama
+c660|Bir şeyler yazın…
+c661|Prototipte videolar sayfa kapanana kadar saklanır.
+c662|Kapağı değiştir
+c663|Fotoğrafı değiştir
+c664|Henüz gönderi yok
+c665|Siyaset ve dini tartışma yok. İhlaller gizlenir.
+c666|Magaam’ı aç
+c667|Nakhlio
+c668|Cumartesi, 20:00 — okulun yanındaki sahada yine buluşuyoruz. Kim var?
+c669|Ben varım, kardeşimi de getiriyorum!
+c670|20:00’de oradayım 💪
+c671|Bugünün doğum günü ballı pastası ❤️
+c672|Çok güzel! Maşallah
+c673|Kakuleli sabah kahvesi — güne başlamanın en iyi yolu
+c674|Harem yakınındaki pazardan Acve hurması. Siz hangisini seversiniz?
+c675|AlUla yolunda. Gelecek hafta yine gidiyoruz — 2 yer var
+c676|Beni de götürün!
+c677|Cuma için biryani hazır
+c678|Çölün sessizliği
+c679|Yeni dönem, yeni kitaplar
+c680|Mescid-i Nebevi’de akşam ﷺ
+c681|AlUla yolunda develer
+c682|Kum tepelerinde gün batımı
+c683|Arap kahvesini nasıl yapıyoruz
+c684|Hesap ve giriş
+c685|Telefonunuzu ve e-postanızı yalnızca siz görürsünüz. İkisiyle de giriş yapabilirsiniz.
+c686|Face ID ile giriş
+c687|Telefonunuzda yüklü uygulamada çalışır

@@ -877,3 +877,59 @@ c630|Vendeur de confiance
 c631|2+ avis et une note de 4,8+.
 c632|Pas encore de badges — aidez les autres au Majlis et passez vos transactions par Nakhlio.
 c633|Assurance maladie
+u:s_mg|Magaam
+u:s_mg_d|Photos, stories, reels
+c634|Photos, stories et reels des habitants de Médine
+c635|Fil
+c636|Reels
+c637|Créer
+c638|Amis
+c639|Votre story
+c640|Publications
+c641|Abonnés
+c642|Abonnements
+c643|S’abonner
+c644|Ajouter en ami
+c645|Demande envoyée
+c646|Vous pourrez écrire quand cette personne vous aura ajouté en ami
+c647|a accepté votre demande d’ami
+c648|Demandes d’ami
+c649|Accepter
+c650|Refuser
+c651|Pas encore d’amis. Trouvez des personnes dans le fil et ajoutez-les.
+c652|Personnes sur Magaam
+c653|j’aime
+c654|Nouvelle publication
+c655|Photo
+c656|Story
+c657|Reel
+c658|Choisir une photo ou une vidéo
+c659|Légende
+c660|Dites-en un mot…
+c661|Dans le prototype, les vidéos sont conservées jusqu’à la fermeture de la page.
+c662|Changer la couverture
+c663|Changer la photo
+c664|Aucune publication
+c665|Pas de politique ni de disputes religieuses. Les infractions sont masquées.
+c666|Ouvrir Magaam
+c667|Nakhlio
+c668|Samedi, 20 h — on se retrouve au terrain près de l’école. Qui vient ?
+c669|Je viens, avec mon frère !
+c670|J’y serai à 20 h 💪
+c671|Le gâteau au miel du jour pour un anniversaire ❤️
+c672|Magnifique ! MashaAllah
+c673|Café du matin à la cardamome — la meilleure façon de commencer la journée
+c674|Dattes Ajwa du marché près du Haram. Lesquelles préférez-vous ?
+c675|En route pour AlUla. On y retourne la semaine prochaine — 2 places libres
+c676|Emmenez-moi !
+c677|Le biryani est prêt pour vendredi
+c678|Le silence du désert
+c679|Nouveau semestre, nouveaux livres
+c680|Soirée à la Mosquée du Prophète ﷺ
+c681|Des chameaux sur la route d’AlUla
+c682|Coucher de soleil dans les dunes
+c683|Comment nous préparons le café arabe
+c684|Compte et connexion
+c685|Vous seul voyez votre téléphone et votre e-mail. Vous pouvez vous connecter avec l’un ou l’autre.
+c686|Connexion avec Face ID
+c687|Fonctionne dans l’application installée sur votre téléphone

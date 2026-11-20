@@ -877,3 +877,59 @@ c630|Penjual tepercaya
 c631|2+ ulasan dan rating 4,8+.
 c632|Belum ada lencana — bantu orang lain di Majelis dan lakukan transaksi melalui Nakhlio.
 c633|Asuransi kesehatan
+u:s_mg|Magaam
+u:s_mg_d|Foto, story, reels
+c634|Foto, story, dan reels dari warga Madinah
+c635|Beranda
+c636|Reels
+c637|Buat
+c638|Teman
+c639|Story Anda
+c640|Postingan
+c641|Pengikut
+c642|Mengikuti
+c643|Ikuti
+c644|Tambah teman
+c645|Permintaan terkirim
+c646|Anda bisa mengirim pesan setelah dia menambahkan Anda sebagai teman
+c647|menerima permintaan pertemanan Anda
+c648|Permintaan pertemanan
+c649|Terima
+c650|Tolak
+c651|Belum ada teman. Temukan orang di beranda dan tambahkan mereka.
+c652|Orang di Magaam
+c653|suka
+c654|Postingan baru
+c655|Foto
+c656|Story
+c657|Reel
+c658|Pilih foto atau video
+c659|Keterangan
+c660|Ceritakan sesuatu…
+c661|Di prototipe, video disimpan sampai halaman ditutup.
+c662|Ganti sampul
+c663|Ganti foto
+c664|Belum ada postingan
+c665|Tanpa politik dan perdebatan agama. Pelanggaran disembunyikan.
+c666|Buka Magaam
+c667|Nakhlio
+c668|Sabtu, pukul 20.00 — kumpul lagi di lapangan dekat sekolah. Siapa ikut?
+c669|Saya ikut, ajak adik saya!
+c670|Saya datang jam 8 💪
+c671|Kue madu hari ini untuk ulang tahun ❤️
+c672|Cantik sekali! MasyaAllah
+c673|Kopi pagi dengan kapulaga — cara terbaik memulai hari
+c674|Kurma Ajwa dari pasar dekat Haram. Kalian suka yang mana?
+c675|Dalam perjalanan ke AlUla. Minggu depan pergi lagi — sisa 2 kursi
+c676|Ajak saya!
+c677|Biryani siap untuk hari Jumat
+c678|Sunyinya gurun
+c679|Semester baru, buku baru
+c680|Senja di Masjid Nabawi ﷺ
+c681|Unta di jalan menuju AlUla
+c682|Matahari terbenam di bukit pasir
+c683|Cara kami membuat kopi Arab
+c684|Akun & masuk
+c685|Hanya Anda yang melihat nomor telepon dan e-mail Anda. Anda bisa masuk dengan salah satunya.
+c686|Masuk dengan Face ID
+c687|Berfungsi di aplikasi yang terpasang di ponsel Anda

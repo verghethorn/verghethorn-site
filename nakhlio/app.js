@@ -24,6 +24,7 @@ if (/[?&]me=rashid\b/.test(location.search) && !(S.me && S.me.name === 'Rashid K
   S.me = { name: 'Rashid Kurabegov', gender: 'm', photos: ['img/rashid.jpg'], about: 'Используй пять вещей до прихода других пяти', job: '', dist: '', langs: 'RU · AR · EN', since: '2026', phone: '', email: '' };
   S.pledge = S.pledge || {}; save();
 }
+if (S.me && /[#&](ph|em)=/.test(location.hash)) { const h = new URLSearchParams(location.hash.slice(1)); if (h.get('ph')) S.me.phone = h.get('ph'); if (h.get('em')) S.me.email = h.get('em'); save(); try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} }
 const browserLang = (() => { const n = (navigator.language || 'en').slice(0, 2); return LANGS.some(l => l.code === n) ? n : 'en'; })();
 let lang = S.lang || browserLang;
 const TRL = () => (window.TR && window.TR[lang]) || { u: {}, c: {} };
@@ -69,7 +70,7 @@ const P = {
   gear: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM12 2v3M12 19v3M4.9 4.9 7 7M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1', battery: 'M3 8h15v8H3zM21 11v2M6 11v2M9 11v2',
   seat: 'M7 4h6l1 9H6zM5 13h11l1 4H5zM7 17v3M15 17v3', share: 'M12 15V3M8 7l4-4 4 4M5 11v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8', dots: 'M5 12h.01M12 12h.01M19 12h.01',
   copy: 'M9 9h11v11H9zM5 15H4V4h11v1', siren: 'M7 18v-5a5 5 0 0 1 10 0v5M5 18h14v3H5zM12 3v2M4.2 6.2l1.4 1.4M19.8 6.2l-1.4 1.4',
-  translate: 'M4 5h8M8 3v2M6 5c0 4 2.5 7 6 8M10 5c-.5 3.5-3 7-6 8M13 21l4-9 4 9M14.5 18h5', camera: 'M4 8h3l2-3h6l2 3h3v12H4zM12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z',
+  play: 'M8 5.5v13l11-6.5z', translate: 'M4 5h8M8 3v2M6 5c0 4 2.5 7 6 8M10 5c-.5 3.5-3 7-6 8M13 21l4-9 4 9M14.5 18h5', camera: 'M4 8h3l2-3h6l2 3h3v12H4zM12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z',
   coin: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM15 9.5c-.5-1-1.6-1.5-3-1.5-1.7 0-3 .8-3 2s1.3 1.7 3 2 3 .8 3 2-1.3 2-3 2c-1.4 0-2.5-.5-3-1.5M12 6.5v1.5M12 16v1.5',
   headset: 'M4 14v-2a8 8 0 0 1 16 0v2M4 14h3v6H5a1 1 0 0 1-1-1zM20 14h-3v6h2a1 1 0 0 0 1-1zM17 20a4 4 0 0 1-4 2h-1', book: 'M4 4h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4zM20 4h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z',
   bank: 'M3 6h18v12H3zM3 10h18M7 15h3', sim: 'M7 3h7l4 4v14H7zM10 12h5v5h-5z', idcard: 'M3 5h18v14H3zM8.5 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM5.5 16a3 3 0 0 1 6 0M14 9h4M14 13h4',
@@ -258,7 +259,7 @@ function trCard(x) {
 const SECTIONS = [
   { k: 'housing', ic: 'home', c: 'palm' }, { k: 'transport', ic: 'car', c: 'sky' }, { k: 'services', ic: 'headset', c: 'date' }, { k: 'ads', ic: 'tag', c: 'date' }, { k: 'parcels', ic: 'box', c: 'clay' },
   { k: 'majlis', ic: 'majlis', c: 'date' }, { k: 'men', ic: 'male', c: 'sky' }, { k: 'women', ic: 'female', c: 'rose' },
-  { k: 'family', ic: 'family', c: 'clay' }, { k: 'days', ic: 'calendar', c: 'palm' },
+  { k: 'family', ic: 'family', c: 'clay' }, { k: 'days', ic: 'calendar', c: 'palm' }, { k: 'mg', ic: 'users', c: 'mg' },
 ];
 
 /* ---------- views ---------- */
@@ -289,7 +290,7 @@ V.home = () => {
       <button class="bigcat" data-act="go" data-v="transport"><img src="${img('car2')}" alt=""><span><b>${t('s_transport')}</b><small>${t('s_transport_d')}</small></span></button>
       <button class="bigcat svc" data-act="go" data-v="services"><span class="svc-icons">${['bank', 'box', 'palette', 'car', 'user'].map(i => `<i>${ic(i)}</i>`).join('')}</span><span><b>${t('s_services')}</b><small>${t('s_services_d')}</small></span></button>
     </div>
-    <div class="cats" style="margin-top:18px">${SECTIONS.filter(s => !['housing', 'transport', 'services'].includes(s.k)).map(s => `<button class="cat" data-act="go" data-v="${s.k}"><i class="b-${s.c} c-${s.c}">${ic(s.ic)}</i>${t('s_' + s.k)}</button>`).join('')}</div>
+    <div class="cats" style="margin-top:18px">${SECTIONS.filter(s => !['housing', 'transport', 'services'].includes(s.k)).map(s => `<button class="cat" data-act="go" data-v="${s.k}"><i class="b-${s.c} c-${s.c}">${s.k === 'mg' && window.mgLogo ? mgLogo('sec') : ic(s.ic)}</i>${t('s_' + s.k)}</button>`).join('')}</div>
     <div class="sec"><h3>${t('featured')}</h3><button data-act="go" data-v="housing">${t('see_all')}</button></div>
     <div class="hscroll">${featured.map(x => x.kind ? trCard(x) : houseCard(x)).join('')}</div>
     ${nextDay ? `<button class="card" data-act="go" data-v="days" style="display:flex;gap:14px;align-items:center;width:100%;text-align:start;margin-top:18px"><span class="prayer-ico" style="background:var(--palm-tint);color:var(--palm)">${ic('calendar')}</span><span style="flex:1;min-width:0"><small style="color:var(--ink-2);font-weight:600;font-size:12px">${t('s_days')}</small><b style="display:block">${esc(L(nextDay.d.name))}</b></span><b class="num" style="color:var(--palm);text-align:end">${nf(nextDay.left)}<small style="display:block;font-size:11px;color:var(--ink-2);font-weight:600">${t('days_left')}</small></b></button>` : ''}
@@ -400,7 +401,7 @@ V.explore = (p) => {
     <label class="search" style="box-shadow:var(--shadow)">${ic('search')}<input id="q2" type="search" value="${esc(p.q || '')}" placeholder="${t('search_ph')}" enterkeyhint="search" aria-label="${t('search_ph')}"></label>
     ${res}
     <div class="sec"><h3>${t('all_sections')}</h3></div>
-    <div class="list">${SECTIONS.map(s => `<button class="row-card" data-act="go" data-v="${s.k}"><span class="thumb b-${s.c} c-${s.c}" style="display:flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:16px">${ic(s.ic).replace('<svg', '<svg style="width:26px;height:26px"')}</span><span class="grow"><span class="ttl" style="display:block">${t('s_' + s.k)}</span><span class="sub" style="display:block">${t('s_' + s.k + '_d')}</span></span>${ic('chev', 'flip').replace('<svg', '<svg style="width:18px;height:18px;color:var(--ink-3)"')}</button>`).join('')}</div>
+    <div class="list">${SECTIONS.map(s => `<button class="row-card" data-act="go" data-v="${s.k}"><span class="thumb b-${s.c} c-${s.c}" style="display:flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:16px">${s.k === 'mg' && window.mgLogo ? mgLogo('sec') : ic(s.ic).replace('<svg', '<svg style="width:26px;height:26px"')}</span><span class="grow"><span class="ttl" style="display:block">${t('s_' + s.k)}</span><span class="sub" style="display:block">${t('s_' + s.k + '_d')}</span></span>${ic('chev', 'flip').replace('<svg', '<svg style="width:18px;height:18px;color:var(--ink-3)"')}</button>`).join('')}</div>
   </div>` };
 };
 
@@ -420,7 +421,7 @@ function commentsBlock(key, list, opts) {
     return `<div class="cmt ${c.to ? 'sub' : ''}">${pBtn(c.who, avatar(c.who))}<div class="cb">
       <div class="cw">${pBtn(c.who, `<b>${esc(who(c.who))}</b>${vmark(c.who)}`)}${c.to ? `<span class="to">${small('chev')}${esc(who(c.to))}</span>` : ''}${c.date ? `<small class="num">${c.date}</small>` : ''}</div>
       <p>${esc(txt(c.text))}</p>
-      ${mine ? '' : `<div class="ca"><button data-act="reply" data-k="${key}" data-v="${esc(c.who)}">${small('chat')}${t('reply')}</button><button data-act="dm" data-v="${esc(c.who)}">${small('send')}${t('dm')}</button>${c.helped != null ? `<span class="num">${small('check')}${nf(c.helped)}</span>` : ''}</div>`}
+      ${mine ? '' : `<div class="ca"><button data-act="reply" data-k="${key}" data-v="${esc(c.who)}">${small('chat')}${t('reply')}</button>${opts.nodm ? '' : `<button data-act="dm" data-v="${esc(c.who)}">${small('send')}${t('dm')}</button>`}${c.helped != null ? `<span class="num">${small('check')}${nf(c.helped)}</span>` : ''}</div>`}
     </div></div>`;
   }).join('');
   const box = opts.collapsed && !openC[key] ? '' : `<div class="cbox"><div class="rchip" ${replyTo[key] ? '' : 'hidden'}>${t('reply_to')} <b>${esc(who(replyTo[key] || ''))}</b><button data-act="unreply" data-k="${key}" aria-label="${t('close')}">${small('x')}</button></div>
@@ -735,6 +736,16 @@ function docsBlock() {
     return `<button data-act="docedit" data-v="${d.k}"><i class="b-palm c-palm">${ic(d.icon)}</i><span class="grow">${esc(L(d.name))}<small class="num">${v ? esc(v) : t('add')}</small></span>${st || ic('plus', 'chev')}</button>`; }).join('');
   return `<div class="block" id="docs"><h4>${FXL('docs_t')}</h4><p class="note" style="margin:0 0 10px">${FXL('docs_d')}</p><div class="plist">${rows}</div></div>`;
 }
+function accBlock() {
+  const m = S.me || {};
+  const row = (k, icn, label, val) => `<button data-act="accedit" data-v="${k}"><i class="b-sky c-sky">${ic(icn)}</i><span class="grow">${label}<small dir="ltr" style="text-align:start">${val ? esc(val) : t('add')}</small></span>${ic('chev', 'flip chev')}</button>`;
+  return `<div class="block"><h4>${FXL('acc_t')}</h4><p class="note" style="margin:0 0 10px">${FXL('acc_d')}</p><div class="plist">${row('phone', 'phone', t('phone_l'), m.phone)}${row('email', 'globe', t('email_l'), m.email)}
+    <label class="optrow"><i class="b-palm c-palm">${ic('shield')}</i><span class="grow">${FXL('faceid')}<small>${FXL('faceid_d')}</small></span><input type="checkbox" id="faceid" ${m.faceid ? 'checked' : ''}></label></div></div>`;
+}
+function accSheet(k) {
+  const w = sheet(`<h3>${k === 'phone' ? t('phone_l') : t('email_l')}</h3><div class="field"><input id="accv" dir="ltr" ${k === 'phone' ? 'type="tel" inputmode="tel" placeholder="+966 5X XXX XXXX"' : 'type="email" inputmode="email" placeholder="name@mail.com"'} value="${esc(S.me[k] || '')}"></div><button class="btn green full" id="accsave" style="margin-top:12px">${t('save_l')}</button>`);
+  w.querySelector('#accsave').addEventListener('click', () => { const v = w.querySelector('#accv').value.trim(); const ok = k === 'phone' ? /^\+?[\d\s-]{9,16}$/.test(v) : /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); if (!ok) { w.querySelector('#accv').focus(); w.querySelector('#accv').style.borderColor = 'var(--rose)'; return; } S.me[k] = v; save(); w.remove(); toast(t('saved_ok')); render(); });
+}
 function badgesBlock(n, p, me) {
   const got = badgesOf(n, p);
   const keys = me ? ['verified', 'helper', 'mentor', 'seller'] : got;
@@ -758,7 +769,7 @@ function profileHtml(n) {
     ${photos.length > 1 ? `<div class="pphotos">${photos.map(u => `<span style="background-image:url(${u})"></span>`).join('')}</div>` : ''}
     <div class="pact">${me ? `<button class="btn soft full" data-act="go" data-v="editprofile">${small('user')}${t('edit_profile')}</button>` : `<button class="btn primary" data-act="dm" data-v="${esc(n)}">${ic('chat')}${t('dm')}</button><button class="btn soft" data-act="reportuser" aria-label="${t('report_user')}">${ic('flag')}</button>`}</div>
   </div>
-  ${me ? docsBlock() : ''}${badgesBlock(n, p, me)}
+  ${me ? docsBlock() + accBlock() : ''}${badgesBlock(n, p, me)}
   <div class="block"><h4>${t('listings_l')}</h4>${items.length ? `<div class="list">${items.map(x => PARCELS.includes(x) ? parcelRow(x) : HELP.includes(x) ? helpRow(x) : adRow(x)).join('')}</div>` : `<p class="note">${t('no_listings')}</p>`}</div>
   ${me ? '' : `<div class="block"><h4>${t('reviews_l')}</h4>${reviews.length ? reviews.map(r => `<div class="review"><div class="who">${avatar(r.who, 'sm')}${pBtn(r.who, esc(r.who) + vmark(r.who))}<span class="stars">${ic('star').repeat(r.stars)}</span></div><p>${esc(L(r.text))}</p></div>`).join('') : `<p class="note">${t('no_reviews')}</p>`}</div>`}`;
 }
@@ -904,10 +915,12 @@ root.addEventListener('click', (e) => {
   const el = e.target.closest('[data-act]'); if (!el) return;
   const a = el.dataset.act, v = el.dataset.v, id = el.dataset.id;
   if (!S.me && AUTH.includes(a)) { e.preventDefault(); return authSheet(); }
+  if (window.MGACT && MGACT(a, v, el)) return;
   switch (a) {
     case 'startreg': gateReg(); break;
     case 'go': go(v, id ? { id } : {}); break;
     case 'docedit': docSheet(v); break;
+    case 'accedit': accSheet(v); break;
     case 'godocs': tab('profile'); setTimeout(() => { const el = document.getElementById('docs'); if (el) el.scrollIntoView({ block: 'start', behavior: 'smooth' }); }, 120); break;
     case 'back': back(); break;
     case 'tab': tab(v); break;
@@ -1045,6 +1058,7 @@ function render(scrollTop) {
   const sc = document.querySelector('.scroller');
   window.scrollTo(0, keep);
   if (rootTabs.includes(c.v) && stack.length === 1) stack[0] = c;
+  const fid = document.getElementById('faceid'); if (fid) fid.addEventListener('change', () => { S.me.faceid = fid.checked; save(); toast(t('saved_ok')); });
   const oath = document.getElementById('oath'); if (oath) oath.addEventListener('change', () => { document.getElementById('oathgo').disabled = !oath.checked; });
   // gallery dots
   const tr = document.getElementById('gtrack');
@@ -1083,6 +1097,8 @@ function boot() {
   if (stack.length && stack[stack.length - 1].v === 'lang' && !document.querySelector('.app')) stack = [{ v: 'home' }];
   render(true);
 }
+window.NK = { V, t, L, ic, esc, small, img, avatar, vmark, commentsBlock, loc, nf, toast, sheet, go, back, render, save, openDM, authSheet, resizeImg, txt, cur,
+  get S() { return S; }, get lang() { return lang; }, get stack() { return stack; } };
 boot();
 if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !DEMO) navigator.serviceWorker.register('sw.js').catch(() => {});
 })();
