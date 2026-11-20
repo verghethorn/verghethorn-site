@@ -103,6 +103,7 @@ L.mgInbox = async () => { const rows = ok(await sb.rpc('mg_inbox')); await L.pro
 L.mgChat = async (other) => { const me = L.user.id;
   const rows = ok(await sb.from('mg_chats').select('*').or(`and(user1.eq.${me},user2.eq.${other}),and(user1.eq.${other},user2.eq.${me})`));
   if (rows[0]) return rows[0]; return ok(await sb.from('mg_chats').insert({ user1: me, user2: other }).select().single()); };
+L.mgUserChats = async (uid) => { const rows = ok(await sb.from('mg_chats').select('*').or(`user1.eq.${uid},user2.eq.${uid}`).order('last_at', { ascending: false }).limit(100)); await L.prof(rows.flatMap(c => [c.user1, c.user2])); return rows; };
 L.mgChatById = async (id) => ok(await sb.from('mg_chats').select('*').eq('id', id).maybeSingle());
 L.mgMessages = async (chatId) => { const rows = ok(await sb.from('mg_messages').select('*').eq('chat_id', chatId).order('created_at', { ascending: false }).limit(300)); return rows.reverse(); };
 L.mgSend = async (chatId, body, lang, media_url, reply_to, media_kind, media_meta) => ok(await sb.from('mg_messages').insert({ chat_id: chatId, sender: L.user.id, body: body || '', lang: lang || '', media_url: media_url || null, reply_to: reply_to || null, media_kind: media_kind || (media_url ? 'image' : null), media_meta: media_meta || null }).select().single());

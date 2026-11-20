@@ -451,18 +451,18 @@ if (LV) {
       if (b.dataset.x === 'copy') { (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject()).then(() => toast(M('copied'))).catch(() => { const ta = document.createElement('textarea'); ta.value = link; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast(M('copied')); }); } }); };
 
   /* ===== messenger ===== */
-  const MGM = {}, OTHER_READ = {}, DRAFT = {}, REPLY = {}; let openChat = null, typingCh = null, typingT = null;
+  const MGM = {}, OTHER_READ = {}, DRAFT = {}, REPLY = {}, WATCH = {}; let openChat = null, typingCh = null, typingT = null;
   const hm = (d) => new Date(d).toLocaleTimeString(NK.lang === 'ar' ? 'ar' : NK.lang, { hour: '2-digit', minute: '2-digit' });
   const dayLabel = (d) => { const x = new Date(d), n = new Date(); const k = (y) => y.toDateString(); const yd = new Date(Date.now() - 864e5);
     return k(x) === k(n) ? M('today') : k(x) === k(yd) ? M('yesterday') : x.toLocaleDateString(NK.lang, { day: 'numeric', month: 'long' }); };
   const shortTime = (d) => { const x = new Date(d); return x.toDateString() === new Date().toDateString() ? hm(d) : x.toLocaleDateString(NK.lang, { day: 'numeric', month: 'short' }); };
   const inboxTick = () => { const inb = want('mg:inbox', () => LV.mgInbox()); if (inb) { window.__mgUnread = inb.reduce((s, c) => s + Number(c.unread || 0), 0); if (window.MG_APP) NK.setBadge(window.__mgUnread); } };
   const ticks = (m, chatId) => { const rd = OTHER_READ[chatId]; return `<i class="mgtick ${rd && new Date(rd) >= new Date(m.created_at) ? 'rd' : ''}">${rd && new Date(rd) >= new Date(m.created_at) ? '✓✓' : '✓'}</i>`; };
-  const bubble = (m, chatId) => { const mine = m.sender === meId(); const list = MGM[chatId] || []; const kindTxt = (x) => x.media_kind === 'audio' ? '🎤 ' + M('voice') : x.media_kind === 'video' ? '🎬' : M('photo_msg');
+  const bubble = (m, chatId) => { const W_ = WATCH[chatId]; const mine = m.sender === (W_ ? W_.a : meId()); const list = MGM[chatId] || []; const kindTxt = (x) => x.media_kind === 'audio' ? '🎤 ' + M('voice') : x.media_kind === 'video' ? '🎬' : M('photo_msg');
     if (m.deleted) return `<div class="mgb ${mine ? 'me' : ''} del" data-mid="${m.id}"><span>${M('deleted')}</span><small>${hm(m.created_at)}</small></div>`;
     const rq = m.reply_to ? list.find(x => x.id === m.reply_to) : null;
     const txtv = mine ? m.body : trText('mg' + m.id, m.body, m.lang);
-    return `<div class="mgb ${mine ? 'me' : ''} ${m.media_url && !m.body && m.media_kind !== 'audio' ? 'media' : ''}" data-act="mgbtap" data-v="${m.id}" data-mid="${m.id}">${rq ? `<span class="mgq"><b>${esc(mname(rq.sender))}</b>${esc(rq.deleted ? M('deleted') : rq.body || kindTxt(rq))}</span>` : ''}${mediaInBubble(m)}${m.body ? `<span class="mgtx">${esc(txtv)}</span>` : ''}${!mine && TRC['mg' + m.id] && TRC['mg' + m.id].tr ? `<em class="mgtrs">${small('translate')}${t('auto_tr')}</em>` : ''}<small>${hm(m.created_at)}${mine ? ticks(m, chatId) : ''}</small></div>`; };
+    return `<div class="mgb ${mine ? 'me' : ''} ${m.media_url && !m.body && m.media_kind !== 'audio' ? 'media' : ''}" data-act="${W_ ? 'noop' : 'mgbtap'}" data-v="${m.id}" data-mid="${m.id}">${W_ ? `<b class="mgwho">${esc(mname(m.sender))}</b>` : ''}${rq ? `<span class="mgq"><b>${esc(mname(rq.sender))}</b>${esc(rq.deleted ? M('deleted') : rq.body || kindTxt(rq))}</span>` : ''}${mediaInBubble(m)}${m.body ? `<span class="mgtx">${esc(txtv)}</span>` : ''}${!mine && TRC['mg' + m.id] && TRC['mg' + m.id].tr ? `<em class="mgtrs">${small('translate')}${t('auto_tr')}</em>` : ''}<small>${hm(m.created_at)}${mine && !W_ ? ticks(m, chatId) : ''}</small></div>`; };
   const threadHtml = (chatId) => { const list = MGM[chatId] || []; let last = ''; return list.map(m => { const d = new Date(m.created_at).toDateString(); const sep = d !== last ? `<div class="mgday"><span>${dayLabel(m.created_at)}</span></div>` : ''; last = d; return sep + bubble(m, chatId); }).join(''); };
   const paintThread = () => { if (!openChat) return; const th = document.getElementById('mgthread'); if (!th) return; const atEnd = window.innerHeight + window.scrollY >= document.body.scrollHeight - 120; th.innerHTML = threadHtml(openChat.id); if (atEnd) scrollEnd(); };
   const scrollEnd = () => setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 20);
@@ -478,6 +478,10 @@ if (LV) {
       ${inb === undefined ? loading : rows || `<div class="mgempty">${mgLogo()}<p>${M('no_chats')}</p></div>`}${inviteCard()}</div>`, M('chats')); };
 
   V.mgchat = (p) => { const r = ready(); if (r) return r; const id = p.id, other = p.u;
+    if (p.w) { WATCH[id] = { a: p.u, b: p.w };
+      if (!MGM[id] && !p._l) { p._l = 1; Promise.all([LV.mgMessages(id), LV.prof([p.u, p.w])]).then(([ms]) => { MGM[id] = ms; if (cur().v === 'mgchat' && cur().id === id) { render(); scrollEnd(); } }).catch(e => { console.warn(e); toast(FXM('send_fail')); }); }
+      return { html: `<div class="mg mgchatv"><header class="mgctop"><button class="mgic" data-act="mgchatback" aria-label="${t('back')}">${ic('back', 'flip')}</button>${av(p.u, 'sm')}<div class="grow"><b>${esc(mname(p.u))} ↔ ${esc(mname(p.w))}</b><small>${FXM('read_only')}</small></div></header>
+        <div class="mgwatch">${small('shield')} ${FXM('watch_dm')}</div><div class="mgthread" id="mgthread" style="padding-bottom:30px">${MGM[id] ? threadHtml(id) : loading}</div></div>` }; }
     if (!MGM[id] && !p._l) { p._l = 1; Promise.all([LV.mgMessages(id), LV.mgOtherRead(id), LV.prof([other])]).then(([ms, rd]) => { MGM[id] = ms; OTHER_READ[id] = rd; if (cur().v === 'mgchat' && cur().id === id) { if (document.getElementById('mgthread')) paintThread(); else render(); scrollEnd(); } markRead(id); }).catch(e => { console.warn(e); toast(FXM('send_fail')); }); }
     const rq = REPLY[id] ? (MGM[id] || []).find(x => x.id === REPLY[id]) : null;
     return { html: `<div class="mg mgchatv"><header class="mgctop"><button class="mgic" data-act="mgchatback" aria-label="${t('back')}">${ic('back', 'flip')}</button>${link(other, av(other, 'sm'))}<div class="grow">${link(other, `<b>${esc(mname(other))}</b>${vm(other)}`)}<small id="mgsub"></small></div></header>
@@ -491,6 +495,7 @@ if (LV) {
     catch (e) { console.warn(e); toast(FXM('send_fail')); ta.value = tx; } };
   window.MGAFTER = (c) => {
     if (c.v !== 'mgchat') { if (REC) recStop(false); if (openChat) { if (typingCh) typingCh.leave(); typingCh = null; openChat = null; dropData('mg:inbox'); } return; }
+    if (c.w) { openChat = { id: c.id, u: c.u, watch: true }; if (typingCh) { typingCh.leave(); typingCh = null; } return; }
     if (!openChat || openChat.id !== c.id) { if (typingCh) typingCh.leave(); openChat = { id: c.id, u: c.u };
       typingCh = LV.mgTyping(c.id, () => { const s = document.getElementById('mgsub'); if (s) { s.textContent = M('typing'); clearTimeout(typingT); typingT = setTimeout(() => { const s2 = document.getElementById('mgsub'); if (s2) s2.textContent = ''; }, 3000); } }); scrollEnd(); }
     const ta = document.getElementById('mgmsg'); if (!ta) return; ta.value = DRAFT[c.id] || '';
@@ -505,7 +510,7 @@ if (LV) {
     const list = MGM[row.chat_id];
     if (ev === 'UPDATE') { if (list) { const i = list.findIndex(x => x.id === row.id); if (i >= 0) list[i] = row; } if (openChat && openChat.id === row.chat_id) paintThread(); return; }
     if (list && !list.some(x => x.id === row.id)) list.push(row);
-    if (openChat && openChat.id === row.chat_id) { paintThread(); if (row.sender !== meId()) { NK.chime(); markRead(row.chat_id); const s = document.getElementById('mgsub'); if (s) s.textContent = ''; } return; }
+    if (openChat && openChat.id === row.chat_id) { paintThread(); if (openChat.watch) return; if (row.sender !== meId()) { NK.chime(); markRead(row.chat_id); const s = document.getElementById('mgsub'); if (s) s.textContent = ''; } return; }
     if (row.sender === meId()) return;
     NK.chime();
     dropData('mg:inbox'); LV.mgInbox().then(inb => { DATA_SET(inb); }).catch(() => {});
