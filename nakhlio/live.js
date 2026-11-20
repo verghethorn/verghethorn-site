@@ -95,6 +95,27 @@ L.deleteMessage = async (id) => ok(await sb.from('messages').delete().eq('id', i
 let chan = null;
 L.onMessage = (cb) => { L.listeners.push(cb); if (chan) return; chan = sb.channel('msgs').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (p) => L.listeners.forEach(f => { try { f(p.new); } catch (e) {} })).subscribe(); };
 
+/* Magaam: invites, own profile, messenger */
+L.inviteInfo = async (code) => { const r = await sb.rpc('invite_info', { code }); return r.error ? null : r.data; };
+L.acceptInvite = async (code) => ok(await sb.rpc('accept_invite', { code }));
+L.mgPeople = async (q) => { let s = sb.from('profiles').select('*').eq('mg_on', true).eq('banned', false); if (q) s = s.or(`mg_name.ilike.%${q.replace(/[%_,()]/g, '')}%,name.ilike.%${q.replace(/[%_,()]/g, '')}%`); const rows = ok(await s.order('created_at', { ascending: false }).limit(60)); rows.forEach(r => PC[r.id] = r); return rows; };
+L.mgInbox = async () => { const rows = ok(await sb.rpc('mg_inbox')); await L.prof(rows.map(r => r.other)); return rows; };
+L.mgChat = async (other) => { const me = L.user.id;
+  const rows = ok(await sb.from('mg_chats').select('*').or(`and(user1.eq.${me},user2.eq.${other}),and(user1.eq.${other},user2.eq.${me})`));
+  if (rows[0]) return rows[0]; return ok(await sb.from('mg_chats').insert({ user1: me, user2: other }).select().single()); };
+L.mgChatById = async (id) => ok(await sb.from('mg_chats').select('*').eq('id', id).maybeSingle());
+L.mgMessages = async (chatId) => { const rows = ok(await sb.from('mg_messages').select('*').eq('chat_id', chatId).order('created_at', { ascending: false }).limit(300)); return rows.reverse(); };
+L.mgSend = async (chatId, body, lang, media_url, reply_to) => ok(await sb.from('mg_messages').insert({ chat_id: chatId, sender: L.user.id, body: body || '', lang: lang || '', media_url: media_url || null, reply_to: reply_to || null }).select().single());
+L.mgDelete = async (id) => ok(await sb.from('mg_messages').update({ deleted: true, body: '', media_url: null }).eq('id', id));
+L.mgRead = async (chatId) => sb.from('mg_reads').upsert({ chat_id: chatId, user_id: L.user.id, read_at: new Date().toISOString() });
+L.mgOtherRead = async (chatId) => { const r = await sb.from('mg_reads').select('*').eq('chat_id', chatId).neq('user_id', L.user.id).maybeSingle(); return r.data ? r.data.read_at : null; };
+let mgchan = null; L.mgListeners = [];
+L.onMg = (cb) => { L.mgListeners.push(cb); if (mgchan) return; mgchan = sb.channel('mgmsg')
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'mg_messages' }, (p) => L.mgListeners.forEach(f => { try { f('msg', p.new, p.eventType); } catch (e) {} }))
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'mg_reads' }, (p) => L.mgListeners.forEach(f => { try { f('read', p.new, p.eventType); } catch (e) {} })).subscribe(); };
+L.mgTyping = (chatId, onTyping) => { const ch = sb.channel('mgt:' + chatId, { config: { broadcast: { self: false } } }); ch.on('broadcast', { event: 't' }, (p) => { if (p.payload && p.payload.u !== L.user.id) onTyping(); }).subscribe();
+  let last = 0; return { send: () => { if (Date.now() - last < 2500) return; last = Date.now(); ch.send({ type: 'broadcast', event: 't', payload: { u: L.user.id } }); }, leave: () => sb.removeChannel(ch) }; };
+
 /* friends & follows */
 L.rel = async () => {
   const me = L.user.id;

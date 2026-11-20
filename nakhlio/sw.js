@@ -1,5 +1,5 @@
-const CACHE = 'nakhlio-v30';
-const V = 'v=30';
+const CACHE = 'nakhlio-v31';
+const V = 'v=31';
 const CORE = ['./', './index.html', './app.js?' + V, './data.js?' + V, './community.js?' + V, './services.js?' + V, './magaam.js?' + V, './live.js?' + V, './vendor/supabase-2.118.0.js', './i18n.js?' + V, './manifest.webmanifest', './icon-192.png', './apple-touch-icon.png'];
 self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting())));
 self.addEventListener('activate', e => e.waitUntil(caches.keys().then(k => Promise.all(k.filter(x => x !== CACHE).map(x => caches.delete(x)))).then(() => self.clients.claim())));

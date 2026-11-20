@@ -164,12 +164,12 @@ addEventListener('appinstalled', () => { S.installed = true; save(); boot(); });
 
 /* ---------- routing ---------- */
 const root = document.getElementById('root');
-let stack = [{ v: 'home' }];
+let stack = [{ v: window.MG_APP ? 'mg' : 'home' }];
 const cur = () => stack[stack.length - 1];
 function go(v, p) { stack.push(Object.assign({ v }, p || {})); try { history.pushState({ n: stack.length }, ''); } catch (e) {} render(true); }
 function back() { if (stack.length > 1) { stack.pop(); render(true); } }
 addEventListener('popstate', () => { if (stack.length > 1) { stack.pop(); render(true); } });
-function tab(v) { stack = [{ v }]; render(true); }
+function tab(v) { if (window.MG_APP && !String(v).startsWith('mg')) v = 'mg'; stack = [{ v }]; render(true); }
 
 function toast(msg) { const b = document.getElementById('toasts'); const el = document.createElement('div'); el.className = 'toast'; el.textContent = msg; b.appendChild(el); setTimeout(() => el.remove(), 2600); }
 
@@ -1126,7 +1126,7 @@ V.operator = (p) => {
       const delBtn = (r) => r.target_type === 'user' ? '' : r.target_type === 'message' ? `<button class="btn sm soft" data-act="ldelmsg" data-v="${r.target_id}">${FXL('act_delete')}</button>` : r.target_id.includes(':') ? `<button class="btn sm soft" data-act="ldel" data-v="${r.target_id}">${FXL('act_delete')}</button>` : `<button class="btn sm soft" data-act="admdelpost" data-v="${r.target_id}">${FXL('act_delete')}</button>`;
       body = reps === undefined ? `<p class="note">…</p>` : !reps || !reps.length ? `<p class="note">${FXL('no_reports')}</p>` : `<div class="list one">${reps.map(r => { const au = r.target_type === 'user' ? r.target_id : r.target_author;
         return `<div class="card rep ${r.status}"><div class="sub" style="margin:0 0 6px">${new Date(r.created_at).toLocaleString(locale())} · ${FXL('reported_by')}: ${esc(pname(r.reporter))}</div>
-        ${au ? `<b>${FXL('violator')}: ${esc(pname(au))}</b>` : ''}${r.place ? `<div class="sub">${esc(r.place.startsWith('dm:') ? FXL('in_dm') : r.place)}</div>` : ''}
+        ${au ? `<b>${FXL('violator')}: ${esc(pname(au))}</b>` : ''}${r.place ? `<div class="sub">${esc(r.place.startsWith('dm:') || r.place.startsWith('mg:') ? FXL('in_dm') + (r.place.startsWith('mg:') ? ' · Magaam' : '') : r.place)}</div>` : ''}
         ${r.snapshot ? `<p style="margin:8px 0 0;padding:8px 10px;background:var(--sand);border-radius:10px;white-space:pre-wrap">${esc(r.snapshot)}</p>` : ''}${r.reason ? `<p style="margin:6px 0 0">${esc(r.reason)}</p>` : ''}
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">${openBtn(r)}${r.status === 'open' ? delBtn(r) : ''}${au && r.status === 'open' ? `<button class="btn sm soft" data-act="admuser" data-v="${au}">${FXL('act_ban')} / ${FXL('act_warn')}</button>` : ''}${r.status === 'open' ? `<button class="btn sm green" data-act="admdone" data-v="${r.id}">${FXL('act_done')}</button>` : `<span class="tag green">${FXL('act_done')}</span>`}</div></div>`; }).join('')}</div>`; }
     return { tabs: true, html: topbar(t('operator_panel')) + `<div class="wrap">${strip}${seg}${body}</div>` };
@@ -1389,6 +1389,7 @@ function render(scrollTop) {
     const sn = document.querySelector('[data-act=sharenum]'); if (sn) sn.addEventListener('click', ev => { ev.stopPropagation(); sendChat('', true); });
     if (c.v === 'chat' && S.chats[c.id] && S.chats[c.id].msgs.length) setTimeout(scrollEnd, 30);
   }
+  if (window.MGAFTER) { try { window.MGAFTER(c); } catch (e) { console.warn(e); } }
   clearInterval(prayerTimer);
   if (c.v === 'home') prayerTimer = setInterval(() => { const el = document.getElementById('cd'); if (!el) return; const np = nextPrayer(); el.textContent = cdTxt(np.left); }, 20000);
 }
@@ -1397,6 +1398,7 @@ function render(scrollTop) {
 const TR_LANGS = ['ur', 'id', 'ms', 'tr', 'bn', 'hi', 'fa', 'fr'];
 const trTried = {};
 function boot() {
+  if (window.MG_APP && !boot.inv) { boot.inv = true; const m = location.search.match(/[?&]i=([a-z0-9]+)/i); if (m) { S.mgInvite = m[1].toLowerCase(); save(); } }
   if (LV && !LV.ready && !boot.bg) {
     // signed-in before: show the app from the saved state at once, refresh the session in the background
     if (S.me && S.me.live) { boot.bg = true; LV.init().then(pr => { applyLive(pr); dropData(); if (!pr || (S.faceidCred && !unlocked) || !document.querySelector('.app')) boot(); else render(); }).catch(e => { console.warn(e); LV.ready = true; }); }
@@ -1411,10 +1413,10 @@ function boot() {
   const desk = !isPhone();
   document.body.classList.toggle('dsk', desk);
   if (!desk) {
-    if (isInApp() && !isStandalone() && !(DEMO && S.demoSkip)) return gateInApp();
-    if (!isStandalone() && !(DEMO && S.demoSkip) && !S.installed) return gateInstall();
+    if (!window.MG_APP && isInApp() && !isStandalone() && !(DEMO && S.demoSkip)) return gateInApp();
+    if (!window.MG_APP && !isStandalone() && !(DEMO && S.demoSkip) && !S.installed) return gateInstall();
   }
-  if (!S.lang) return gateLang(false);
+  if (!S.lang) { if (window.MG_APP) { S.lang = lang; save(); } else return gateLang(false); }
   if (stack.length && stack[stack.length - 1].v === 'lang' && !document.querySelector('.app')) stack = [{ v: 'home' }];
   render(true);
 }
@@ -1427,7 +1429,7 @@ if (LV) {
   wrapV('room', (pp) => liveSpace(pp.id.split(':')[0])); wrapV('event', () => { if (isOwner()) { liveSpace('men'); liveSpace('women'); } else liveSpace(S.me && S.me.gender === 'f' ? 'women' : 'men'); });
   LV.onRoom && setTimeout(() => LV.onRoom(m => { if (m.author === meU()) return; dropData('c:sp:'); if (cur().v === 'room' && cur().id === m.room) { liveSpace(m.room.split(':')[0]); } }), 0);
 }
-window.NK = { isPhone, isAdmin, want, dropData, liveAv, pname, meFrom, applyLive, liveSyncChats, loadChat, V, t, L, ic, esc, small, img, avatar, vmark, commentsBlock, loc, nf, toast, sheet, go, back, render, save, openDM, authSheet, resizeImg, txt, cur,
+window.NK = { setLang: (l) => { if (!LANGS.some(x => x.code === l)) return; lang = l; S.lang = l; save(); if (LV && LV.user && LV.profile) LV.updateProfile({ ui_lang: l }).catch(() => {}); }, boot: () => boot(), isPhone, isAdmin, want, dropData, liveAv, pname, meFrom, applyLive, liveSyncChats, loadChat, V, t, L, ic, esc, small, img, avatar, vmark, commentsBlock, loc, nf, toast, sheet, go, back, render, save, openDM, authSheet, resizeImg, txt, cur,
   get S() { return S; }, get lang() { return lang; }, get stack() { return stack; } };
 boot();
 if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !DEMO) navigator.serviceWorker.register('sw.js').catch(() => {});

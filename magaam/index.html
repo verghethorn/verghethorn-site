@@ -1,5 +1,23 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title></title><style>html,body{margin:0;background:#fff}</style></head><body><script>
-try{navigator.serviceWorker&&navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(x){if(x.scope.indexOf('/magaam')>-1)x.unregister()})});
-Object.keys(localStorage).forEach(function(k){if(k.indexOf('magaam')===0||k.indexOf('sb-')===0)localStorage.removeItem(k)});
-Object.keys(sessionStorage).forEach(function(k){if(k.indexOf('magaam')===0)sessionStorage.removeItem(k)})}catch(e){}
-</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Magaam — join me</title>
+<meta name="description" content="Photos, reels and chats with your people. Open the link to join.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Magaam">
+<meta property="og:description" content="Photos, reels and chats with your people. Open the link to join.">
+<meta property="og:image" content="https://verghethorn.com/magaam/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="icon" href="/nakhlio/img/mgapp/icon-192.png">
+<style>html,body{margin:0;height:100%;background:#fff}</style>
+<script>
+  (function () { var m = location.search.match(/[?&]i=([A-Za-z0-9]+)/); location.replace('/nakhlio/?mg=1' + (m ? '&i=' + m[1].toLowerCase() : '')); })();
+</script>
+</head>
+<body></body>
+</html>

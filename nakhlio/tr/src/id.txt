@@ -1005,3 +1005,31 @@ c755|Yang dilaporkan
 c756|Percakapan pribadi
 c757|Tampilan administrator utama. Di sini Anda hanya menulis atas nama “Administrasi Nakhlio” dan dapat menghapus pelanggaran.
 c758|Anda melihat percakapan orang lain sebagai administrator utama. Anda tidak dapat menulis di sini.
+c712|Obrolan
+c759|Belum ada obrolan. Kirim pesan ke teman atau undang teman Anda.
+c760|Cari
+c761|Anda
+c762|sedang mengetik…
+c763|Pesan
+c764|Pesan dihapus
+c765|Hari ini
+c766|Kemarin
+c767|Salin
+c768|Disalin
+c715|Hapus
+c655|Foto
+c769|Undang teman
+c770|Kirim tautan Anda lewat WhatsApp atau Telegram. Siapa pun yang mendaftar lewat tautan itu langsung menjadi teman Anda.
+c771|Bagikan
+c772|Salin tautan
+c773|Gabung bersamaku di Magaam — foto, reels, dan obrolan dengan teman:
+c774|mengundang Anda ke Magaam
+c775|Foto, reels, dan obrolan dengan teman
+c776|Kode dari email
+c777|Masuk
+c778|Profil Magaam Anda
+c779|Nama dan foto Anda di sini boleh berbeda dari Nakhlio.
+c780|Nama
+c781|Mulai
+c782|Sekarang Anda berteman dengan
+c783|Email lain

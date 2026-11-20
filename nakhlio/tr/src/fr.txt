@@ -1005,3 +1005,31 @@ c755|Personne signalée
 c756|Conversation privée
 c757|Vue de l’administrateur principal. Ici, vous écrivez uniquement au nom de « Administration Nakhlio » et pouvez supprimer les infractions.
 c758|Vous consultez la conversation d’autres personnes en tant qu’administrateur principal. Vous ne pouvez pas écrire ici.
+c712|Discussions
+c759|Pas encore de discussions. Écrivez à un ami ou invitez vos amis.
+c760|Rechercher
+c761|Vous
+c762|écrit…
+c763|Message
+c764|Message supprimé
+c765|Aujourd’hui
+c766|Hier
+c767|Copier
+c768|Copié
+c715|Supprimer
+c655|Photo
+c769|Inviter des amis
+c770|Envoyez votre lien par WhatsApp ou Telegram. Toute personne qui s’inscrit avec devient aussitôt votre ami.
+c771|Partager
+c772|Copier le lien
+c773|Rejoins-moi sur Magaam — photos, reels et discussions entre amis :
+c774|vous invite sur Magaam
+c775|Photos, reels et discussions entre amis
+c776|Code reçu par e-mail
+c777|Se connecter
+c778|Votre profil Magaam
+c779|Votre nom et votre photo ici peuvent différer de Nakhlio.
+c780|Nom
+c781|Commencer
+c782|Vous êtes maintenant amis avec
+c783|Autre e-mail

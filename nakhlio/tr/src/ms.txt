@@ -1005,3 +1005,31 @@ c755|Yang diadukan
 c756|Perbualan peribadi
 c757|Paparan pentadbir utama. Di sini anda hanya menulis sebagai “Pentadbiran Nakhlio” dan boleh memadam pelanggaran.
 c758|Anda sedang melihat perbualan orang lain sebagai pentadbir utama. Anda tidak boleh menulis di sini.
+c712|Sembang
+c759|Belum ada sembang. Hantar mesej kepada rakan atau jemput rakan anda.
+c760|Cari
+c761|Anda
+c762|sedang menaip…
+c763|Mesej
+c764|Mesej dipadam
+c765|Hari ini
+c766|Semalam
+c767|Salin
+c768|Disalin
+c715|Padam
+c655|Foto
+c769|Jemput rakan
+c770|Hantar pautan anda melalui WhatsApp atau Telegram. Sesiapa yang mendaftar melaluinya terus menjadi rakan anda.
+c771|Kongsi
+c772|Salin pautan
+c773|Sertai saya di Magaam — foto, reels dan sembang dengan rakan:
+c774|menjemput anda ke Magaam
+c775|Foto, reels dan sembang dengan rakan
+c776|Kod daripada e-mel
+c777|Log masuk
+c778|Profil Magaam anda
+c779|Nama dan foto anda di sini boleh berbeza daripada Nakhlio.
+c780|Nama
+c781|Mula
+c782|Kini anda berkawan dengan
+c783|E-mel lain

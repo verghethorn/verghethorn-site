@@ -1005,3 +1005,31 @@ c755|Şikâyet edilen
 c756|Özel yazışma
 c757|Baş yönetici görünümü. Burada yalnızca “Nakhlio yönetimi” adına yazarsınız ve ihlalleri silebilirsiniz.
 c758|Başkasının yazışmasını baş yönetici olarak görüntülüyorsunuz. Buraya yazamazsınız.
+c712|Sohbetler
+c759|Henüz sohbet yok. Bir arkadaşınıza yazın veya arkadaşlarınızı davet edin.
+c760|Ara
+c761|Siz
+c762|yazıyor…
+c763|Mesaj
+c764|Mesaj silindi
+c765|Bugün
+c766|Dün
+c767|Kopyala
+c768|Kopyalandı
+c715|Sil
+c655|Fotoğraf
+c769|Arkadaşlarını davet et
+c770|Bağlantınızı WhatsApp veya Telegram ile gönderin. Bu bağlantıyla kaydolan herkes hemen arkadaşınız olur.
+c771|Paylaş
+c772|Bağlantıyı kopyala
+c773|Magaam’da bana katıl — arkadaşlarla fotoğraflar, reels ve sohbetler:
+c774|sizi Magaam’a davet ediyor
+c775|Arkadaşlarla fotoğraflar, reels ve sohbetler
+c776|E-postadaki kod
+c777|Giriş yap
+c778|Magaam profiliniz
+c779|Buradaki adınız ve fotoğrafınız Nakhlio’dakinden farklı olabilir.
+c780|Ad
+c781|Başla
+c782|Artık arkadaşsınız:
+c783|Başka bir e-posta
