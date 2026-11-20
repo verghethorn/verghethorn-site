@@ -252,7 +252,7 @@ u:guest_d|Parcourez librement. Créez un profil pour écrire, commenter et publi
 u:chats_guest|Vos messages apparaîtront ici après la création de votre profil.
 u:spaces_guest|Cet espace est réservé aux membres. Créez un profil pour entrer.
 u:s_services|Services Nakhlio
-u:s_services_d|Documents, visas, entreprise, déménagement
+u:s_services_d|Documents, visas, entreprise, assurance
 c0|Wi-Fi
 c1|Climatisation
 c2|Eau
@@ -774,3 +774,10 @@ c527|Je suis une femme. Allah est témoin de mes paroles.
 c528|Je suis un homme. Allah est témoin de mes paroles.
 c529|Entrer
 c530|Retour
+c531|Installation du logement
+c532|Documents, visas, entreprise, assurance
+c533|Ici, uniquement les démarches officielles assurées par des partenaires agréés. Transferts, interprètes, déménagement, ménage et cours sont proposés par les membres dans Aide et Annonces.
+c534|Traduction certifiée, Iqama, visas, assurance — ces démarches sont assurées par des partenaires agréés dans les Services Nakhlio.
+c535|Interprète par téléphone ou appel vidéo
+c536|Je rejoins votre appel avec un médecin, un propriétaire ou un artisan et je traduis. Ourdou, arabe, anglais.
+c537|Il m’a aidé à m’entendre avec un plombier au téléphone, merci !

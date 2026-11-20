@@ -252,7 +252,7 @@ u:guest_d|Serbestçe gezinin. Mesaj yazmak, yorum yapmak ve ilan vermek için pr
 u:chats_guest|Profil oluşturduktan sonra mesajlarınız burada görünecek.
 u:spaces_guest|Bu alan sadece üyeler içindir. Katılmak için profil oluşturun.
 u:s_services|Nakhlio Hizmetleri
-u:s_services_d|Belgeler, vizeler, iş, taşınma
+u:s_services_d|Belgeler, vizeler, iş, sigorta
 c0|Wi-Fi
 c1|Klima
 c2|Su
@@ -774,3 +774,10 @@ c527|Ben bir kadınım. Allah sözlerime şahittir.
 c528|Ben bir erkeğim. Allah sözlerime şahittir.
 c529|Gir
 c530|Geri dön
+c531|Ev kurulumu
+c532|Belgeler, vizeler, iş, sigorta
+c533|Burada yalnızca lisanslı ortaklarla yapılan resmi işlemler var. Transfer, tercüman, taşınma, temizlik ve dersleri üyeler Yardım ve İlanlar bölümlerinde sunuyor.
+c534|Onaylı tercüme, ikame, vize, sigorta — bunları Nakhlio Hizmetleri’nde lisanslı ortaklar yapar.
+c535|Telefon veya görüntülü aramada tercüman
+c536|Doktor, ev sahibi veya ustayla görüşmenize katılıp tercüme ederim. Urduca, Arapça, İngilizce.
+c537|Telefonda tesisatçıyla anlaşmama yardım etti, teşekkürler!

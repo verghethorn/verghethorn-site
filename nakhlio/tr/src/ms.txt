@@ -252,7 +252,7 @@ u:guest_d|Layari dengan bebas. Cipta profil untuk menulis mesej, memberi komen d
 u:chats_guest|Mesej anda akan muncul di sini selepas anda mencipta profil.
 u:spaces_guest|Ruang ini khas untuk ahli. Cipta profil untuk menyertai.
 u:s_services|Perkhidmatan Nakhlio
-u:s_services_d|Dokumen, visa, perniagaan, pindah rumah
+u:s_services_d|Dokumen, visa, perniagaan, insurans
 c0|Wi-Fi
 c1|Penghawa dingin
 c2|Air
@@ -774,3 +774,10 @@ c527|Saya seorang wanita. Allah menjadi saksi atas kata-kata saya.
 c528|Saya seorang lelaki. Allah menjadi saksi atas kata-kata saya.
 c529|Masuk
 c530|Kembali
+c531|Persediaan rumah
+c532|Dokumen, visa, perniagaan, insurans
+c533|Di sini hanya urusan rasmi yang dikendalikan rakan kongsi berlesen. Pemindahan, jurubahasa, pindah rumah, pembersihan dan kelas ditawarkan oleh ahli dalam Bantuan dan Iklan.
+c534|Terjemahan disahkan, iqama, visa, insurans — ini dikendalikan rakan kongsi berlesen dalam Perkhidmatan Nakhlio.
+c535|Jurubahasa melalui telefon atau panggilan video
+c536|Saya menyertai panggilan anda dengan doktor, pemilik rumah atau tukang dan menterjemah. Urdu, Arab, Inggeris.
+c537|Membantu saya berurusan dengan tukang paip melalui telefon, terima kasih!

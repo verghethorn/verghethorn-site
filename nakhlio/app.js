@@ -431,6 +431,7 @@ V.help = (p) => {
   const items = HELP.filter(x => c === 'all' || x.cat === c);
   return { tabs: true, html: topbar(t('s_help')) + `<div class="wrap"><p class="note" style="margin-top:0">${t('s_help_d')}</p>
   ${chipsRow(HELPCATS, c, 'c')}<div class="list" style="margin-top:12px">${items.map(helpRow).join('')}</div>
+  <button class="banner green" style="margin-top:14px;width:100%;text-align:start;border:0;cursor:pointer" data-act="go" data-v="services">${ic('shield')}<div><b>${ST('title')}</b>${ST('to_svc')}</div></button>
   <button class="btn soft full" style="margin-top:16px" data-act="postad">${ic('plus')}${t('help_post')}</button></div>` };
 };
 const parcelRow = (x) => `<button class="row-card" data-act="go" data-v="item" data-id="${x.id}"><span class="thumb b-${x.kind === 'flying' ? 'date c-date' : 'clay c-clay'}" style="display:flex;align-items:center;justify-content:center">${ic(x.kind === 'flying' ? 'plane' : 'box').replace('<svg', '<svg style="width:30px;height:30px"')}</span><span class="grow">
@@ -746,6 +747,7 @@ const svcRow = (c, it) => `<button class="row-card" data-act="go" data-v="svc" d
   <span style="display:flex;justify-content:space-between;gap:8px;margin-top:5px"><span class="price">${esc(L(it.price))}</span><span class="sub" style="display:inline-flex;gap:4px;align-items:center;margin:0">${small('clock')}${esc(L(it.time))}</span></span></span></button>`;
 V.services = () => ({ tabs: true, html: topbar(ST('title')) + `<div class="wrap">
   <div class="card svc-hero"><span class="svc-badge">${logo('rgba(255,255,255,.14)')}</span><div><b>${ST('title')}</b><p>${ST('intro')}</p></div></div>
+  <div class="banner" style="margin-top:12px">${ic('hand')}<div>${ST('only')}<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn soft sm" data-act="go" data-v="help">${t('s_help')}</button><button class="btn soft sm" data-act="go" data-v="ads">${t('s_ads')}</button></div></div></div>
   <div class="topics" style="margin-top:14px">${SVC_CATS.map(svcTile).join('')}</div>
   <div class="sec"><h3>${ST('popular')}</h3></div>
   <div class="list">${SVC_CATS.map(c => svcRow(c, c.items[0])).join('')}</div></div>` });
