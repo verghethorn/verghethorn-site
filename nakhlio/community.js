@@ -341,3 +341,31 @@ window.WOMEN_EVENTS = [
 
 window.PERSON_REPLY = D('Ва алейкум ассалам! Да, конечно. Давайте договоримся, когда вам удобно?', 'Wa alaikum assalam! Yes, of course. Let’s arrange it — when suits you?', 'وعليكم السلام! نعم بالتأكيد، متى يناسبك نتفق؟');
 })();
+
+/* ---------- public profiles of community members ---------- */
+(function () {
+const D = (ru, en, ar) => ({ ru, en, ar });
+window.ABOUT = {
+  'Amina': { job: D('Домашний кондитер', 'Home baker', 'صانعة حلويات منزلية'), about: D('Из Казани, в Медине 4 года с мужем и тремя детьми. Пеку на заказ и веду кулинарные встречи для сестёр.', 'From Kazan, in Medina for 4 years with my husband and three kids. I bake to order and host cooking meetups for sisters.', 'من قازان، أعيش في المدينة منذ 4 سنوات مع زوجي وأطفالي الثلاثة. أخبز حسب الطلب وأنظم لقاءات طبخ للأخوات.') },
+  'Gulnara': { job: D('Домашняя кухня', 'Home cooking', 'طبخ منزلي'), about: D('Из Ташкента. Готовлю узбекскую еду по маминым рецептам.', 'From Tashkent. I cook Uzbek food from my mother’s recipes.', 'من طشقند، أطبخ الأكل الأوزبكي على وصفات أمي.') },
+  'Sana': { job: D('Пакистанская кухня', 'Pakistani cooking', 'مطبخ باكستاني'), about: D('Из Лахора, готовлю для семейных встреч и праздников.', 'From Lahore, I cook for family gatherings and celebrations.', 'من لاهور، أطبخ للمناسبات العائلية والاحتفالات.') },
+  'Usman': { job: D('Электрик, 12 лет опыта', 'Electrician, 12 years’ experience', 'كهربائي، خبرة 12 سنة'), about: D('Работаю по всей Медине. Розетки, свет, водонагреватели и кондиционеры. Даю гарантию на работу 3 месяца.', 'I work all over Medina: sockets, lights, water heaters and AC. 3-month guarantee on my work.', 'أعمل في كل المدينة: أفياش وإنارة وسخانات ومكيفات. ضمان 3 أشهر على العمل.') },
+  'Timur': { job: D('Переезды и грузоперевозки', 'Moving and transport', 'نقل عفش'), about: D('Есть закрытая машина и двое помощников. Перевозим аккуратно, собираем мебель.', 'I have a closed van and two helpers. We move carefully and assemble furniture.', 'عندي سيارة مغلقة ومساعدان، ننقل بعناية ونركّب الأثاث.') },
+  'Ustaz Khalid': { job: D('Преподаватель арабского', 'Arabic teacher', 'معلم لغة عربية'), about: D('Выпускник Islamic University of Madinah. 8 лет преподаю арабский иностранцам, говорю по-английски и по-русски.', 'Islamic University of Madinah graduate. 8 years teaching Arabic to foreigners; I speak English and Russian.', 'خريج الجامعة الإسلامية بالمدينة، أدرّس العربية لغير الناطقين بها منذ 8 سنوات وأتحدث الإنجليزية والروسية.') },
+  'Zarina': { job: D('Переводчик RU · AR · EN', 'Interpreter RU · AR · EN', 'مترجمة روسي · عربي · إنجليزي'), about: D('Живу в Медине 9 лет. Сопровождаю к врачам, в банки и госучреждения.', 'I’ve lived in Medina for 9 years. I accompany people to doctors, banks and government offices.', 'أعيش في المدينة منذ 9 سنوات، أرافق الناس إلى الأطباء والبنوك والدوائر الحكومية.') },
+  'Abdullah': { job: D('Водитель, трансферы', 'Driver, transfers', 'سائق وتوصيل'), about: D('Встречаю гостей в аэропорту и вожу на зиярат. Машина на 6 мест.', 'I meet guests at the airport and drive them on Ziyarah. 6-seat car.', 'أستقبل الضيوف في المطار وأوصلهم للزيارة. سيارة 6 مقاعد.') },
+  'Yusuf': { job: D('Студент Islamic University, гид', 'Islamic University student, guide', 'طالب في الجامعة الإسلامية ومرشد'), about: D('Провожу экскурсии по истории Медины и организую футбол по субботам.', 'I run history tours of Medina and organise football on Saturdays.', 'أنظم جولات تاريخية في المدينة وكرة قدم كل سبت.') },
+  'Muhammad': { job: D('Сопровождение пожилых', 'Elderly companion', 'مرافق لكبار السن'), about: D('Помогаю пожилым паломникам, есть кресло-коляска.', 'I help elderly pilgrims; I have a wheelchair.', 'أساعد الزوار كبار السن، ولدي كرسي متحرك.') },
+  'Ruslan': { job: D('IT-специалист', 'IT specialist', 'مختص تقنية'), about: D('Работаю удалённо, люблю поездки по Саудии. Часто организую выезды в AlUla.', 'I work remotely and love trips around Saudi. I often organise outings to AlUla.', 'أعمل عن بعد وأحب الرحلات في المملكة، أنظم طلعات إلى العلا كثيراً.') },
+  'Ibrahim': { job: D('Инженер', 'Engineer', 'مهندس'), about: D('Переезжаю в Jeddah, распродаю мебель.', 'Moving to Jeddah, selling my furniture.', 'منتقل إلى جدة وأبيع أثاثي.') },
+};
+const R = (who, stars, text) => ({ who, stars, text });
+window.PREVIEWS = {
+  'Amina': [R('Leyla', 5, D('Торт был просто сказка, дети в восторге!', 'The cake was a dream, the kids loved it!', 'الكيك كان رائعاً والأطفال انبسطوا!')), R('Fatima', 5, D('Всё вовремя и очень вкусно.', 'On time and delicious.', 'في الوقت ولذيذ جداً.'))],
+  'Usman': [R('Kamila', 5, D('Аккуратно, быстро, убрал за собой.', 'Neat, fast, cleaned up after himself.', 'مرتب وسريع ونظّف بعده.')), R('Denis', 5, D('Приехал в тот же день, цена как договорились.', 'Came the same day, price as agreed.', 'حضر في نفس اليوم والسعر كما اتفقنا.'))],
+  'Timur': [R('Olga', 5, D('Перевезли без единой царапины.', 'Moved everything without a scratch.', 'نقلوا كل شيء بدون خدش.'))],
+  'Ustaz Khalid': [R('Ruslan', 5, D('Лучший преподаватель, объясняет просто.', 'The best teacher, explains things simply.', 'أفضل معلم، يشرح ببساطة.'))],
+  'Zarina': [R('Leyla', 5, D('Очень спокойная и внимательная.', 'Very calm and attentive.', 'هادئة جداً ومهتمة.'))],
+  'Gulnara': [R('Daniyar', 5, D('Манты как дома!', 'Manti just like home!', 'مانتي مثل البيت!'))],
+};
+})();

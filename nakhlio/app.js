@@ -265,7 +265,7 @@ V.home = () => {
   <div class="hero">${skyline()}
     <div class="hero-top"><div class="brand">${logo('rgba(255,255,255,.14)')}Nakhlio</div>
     <button class="lang-pill" data-act="go" data-v="lang">${ic('globe')}${esc((LANGS.find(l => l.code === lang) || {}).name)}</button></div>
-    <h2>${t('hello')}</h2><p>${t('hello_sub')}</p>
+    <h2>${t('hello')}${S.me && S.me.name ? ', ' + esc(S.me.name) : ''}</h2><p>${t('hello_sub')}</p>
     <label class="search">${ic('search')}<input id="q" type="search" placeholder="${t('search_ph')}" enterkeyhint="search" aria-label="${t('search_ph')}"></label>
   </div>
   <div class="prayer" id="prayerCard">
@@ -390,8 +390,8 @@ function commentsBlock(key, list, opts) {
   const all = (list || []).concat(S.cm[key] || []);
   const items = all.map((c) => {
     const mine = c.who === '@me';
-    return `<div class="cmt ${c.to ? 'sub' : ''}"><span class="av ${mine ? 'me' : ''}">${initial(c.who)}</span><div class="cb">
-      <div class="cw"><b>${esc(who(c.who))}</b>${c.to ? `<span class="to">${small('chev')}${esc(who(c.to))}</span>` : ''}${c.date ? `<small class="num">${c.date}</small>` : ''}</div>
+    return `<div class="cmt ${c.to ? 'sub' : ''}">${pBtn(c.who, avatar(c.who))}<div class="cb">
+      <div class="cw">${pBtn(c.who, `<b>${esc(who(c.who))}</b>`)}${c.to ? `<span class="to">${small('chev')}${esc(who(c.to))}</span>` : ''}${c.date ? `<small class="num">${c.date}</small>` : ''}</div>
       <p>${esc(txt(c.text))}</p>
       ${mine ? '' : `<div class="ca"><button data-act="reply" data-k="${key}" data-v="${esc(c.who)}">${small('chat')}${t('reply')}</button><button data-act="dm" data-v="${esc(c.who)}">${small('send')}${t('dm')}</button>${c.helped != null ? `<span class="num">${small('check')}${nf(c.helped)}</span>` : ''}</div>`}
     </div></div>`;
@@ -444,7 +444,7 @@ V.parcels = (p) => {
 };
 function findItem(id) { return ADS.find(x => x.id === id) || myAds().find(x => x.id === id) || HELP.find(x => x.id === id) || PARCELS.find(x => x.id === id); }
 function sellerCard(s) {
-  return `<div class="seller"><span class="av lg">${initial(s.name)}</span><div class="grow"><b>${esc(who(s.name))}</b><small>${t('langs_spoken')}: ${esc(s.langs || '—')}</small><small>★ ${nf(s.rating || 5, 1)} · ${t('on_since')} ${esc(s.since || '2026')} · ${esc(loc(s.dist))}</small></div>${s.name === '@me' ? '' : `<button class="btn sm soft" data-act="dm" data-v="${esc(s.name)}">${small('chat')}${t('dm')}</button>`}</div>`;
+  return `<div class="seller">${pBtn(s.name, avatar(s.name, 'lg'))}<div class="grow">${pBtn(s.name, `<b>${esc(who(s.name))}</b>`)}<small>${t('langs_spoken')}: ${esc(s.langs || '—')}</small><small>★ ${nf(s.rating || 5, 1)} · ${t('on_since')} ${esc(s.since || '2026')} · ${esc(loc(s.dist))}</small></div>${s.name === '@me' ? '' : `<button class="btn sm soft" data-act="dm" data-v="${esc(s.name)}">${small('chat')}${t('dm')}</button>`}</div>`;
 }
 V.item = (p) => {
   const x = findItem(p.id); if (!x) return V.home();
@@ -478,7 +478,7 @@ function postHtml(pst, i, k) {
   const id = k + ':' + i; const hl = S.helped[id];
   if (S.reported[id]) return '';
   const key = 'p:' + id; const n = (pst.a || []).length + (S.cm[key] || []).length;
-  return `<div class="post"><div class="who"><span class="av sm">${initial(pst.who)}</span><b style="color:var(--ink)">${esc(who(pst.who))}</b>${pst.date ? `<span class="num">· ${pst.date}</span>` : ''}<span class="tag ${pst.q ? 'gold' : 'green'}">${pst.q ? t('q_tag') : t('e_tag')}</span></div>
+  return `<div class="post"><div class="who">${pBtn(pst.who, avatar(pst.who, 'sm'))}${pBtn(pst.who, `<b style="color:var(--ink)">${esc(who(pst.who))}</b>`)}${pst.date ? `<span class="num">· ${pst.date}</span>` : ''}<span class="tag ${pst.q ? 'gold' : 'green'}">${pst.q ? t('q_tag') : t('e_tag')}</span></div>
     <p>${esc(txt(pst.text))}</p>
     <div class="acts"><button class="${hl ? 'on' : ''}" data-act="helped" data-v="${id}">${ic('check')}${t('helped')} · <span class="num">${nf((pst.helped || 0) + (hl ? 1 : 0))}</span></button>
     <button data-act="comment" data-k="${key}">${ic('chat')}${t('comment')} · <span class="num">${nf(n)}</span></button>
@@ -509,7 +509,7 @@ V.family = () => ({ tabs: true, html: topbar(t('s_family')) + `<div class="wrap 
 const allEvents = () => MEN_EVENTS.concat(WOMEN_EVENTS);
 function eventCard(e, full) {
   const g = S.going[e.id]; const n = e.going + (g ? 1 : 0); const cn = (e.comments || []).length + (S.cm['e:' + e.id] || []).length;
-  return `<div class="event"><div class="top"><span class="date">${ic('calendar')}</span><div style="flex:1;min-width:0"><b>${esc(L(e.title))}</b><small>${esc(L(e.when))}</small><small>${small('pin')} ${esc(e.where)}</small><small>${t('event_org')}: ${esc(e.org)}</small></div></div>
+  return `<div class="event"><div class="top"><span class="date">${ic('calendar')}</span><div style="flex:1;min-width:0"><b>${esc(L(e.title))}</b><small>${esc(L(e.when))}</small><small>${small('pin')} ${esc(e.where)}</small><small>${t('event_org')}: ${pBtn(e.org, `<b style="color:var(--palm)">${esc(e.org)}</b>`)}</small></div></div>
     <div class="progress"><i style="width:${Math.min(100, n / e.need * 100)}%"></i></div>
     <div class="foot"><span class="num">${nf(n)} / ${nf(e.need)} ${t('going_n')}</span>${full ? '' : `<button class="btn sm soft" data-act="go" data-v="event" data-id="${e.id}">${small('chat')}<span class="num">${nf(cn)}</span></button>`}<button class="btn sm ${g ? 'green' : 'primary'}" data-act="going" data-v="${e.id}">${g ? ic('check') : '✋'} ${t('going')}</button></div></div>`;
 }
@@ -524,8 +524,9 @@ function spaceView(which) {
     ${k === 'events' ? `<button class="btn soft full" style="margin-top:14px" data-act="toastdemo">${ic('plus')}${t('create_event')}</button>` : ''}
   </div>` };
 }
-V.men = () => spaceView('men');
+V.men = () => (S.me && S.me.gender === 'f') ? { tabs: true, html: topbar(t('s_men')) + `<div class="wrap"><div class="empty">${emptyIllus('lock')}<b>${t('men_only')}</b></div></div>` } : spaceView('men');
 V.women = () => {
+  if (S.me && S.me.gender === 'm') return { tabs: true, html: topbar(t('s_women')) + `<div class="wrap"><div class="empty">${emptyIllus('lock')}<b>${t('women_only_m')}</b></div></div>` };
   if (!S.womenOk) return { tabs: true, html: topbar(t('s_women')) + `<div class="wrap"><div class="empty">${emptyIllus('lock')}<b>${t('women_lock')}</b><p style="margin:6px auto 18px;max-width:32ch">${t('women_lock_text')}</p><button class="btn primary" data-act="verify">${ic('shield')}${t('verify_btn')}</button></div></div>` };
   return spaceView('women');
 };
@@ -540,7 +541,7 @@ V.room = (p) => {
   const msgs = r.msgs.concat(mine);
   const bub = msgs.map(m => m.who === '@me'
     ? `<div class="bubble me">${m.to ? `<span class="rto">${small('chev')}${esc(who(m.to))}</span>` : ''}${esc(txt(m.text))}</div>`
-    : `<div class="msg"><span class="av">${initial(m.who)}</span><div class="bubble op"><b class="nm">${esc(m.who)}</b>${m.to ? `<span class="rto">${small('chev')}${esc(who(m.to))}</span>` : ''}${esc(txt(m.text))}<div class="ma"><button data-act="rreply" data-v="${esc(m.who)}">${t('reply')}</button><button data-act="dm" data-v="${esc(m.who)}">${t('dm')}</button></div></div></div>`).join('');
+    : `<div class="msg">${pBtn(m.who, avatar(m.who))}<div class="bubble op">${pBtn(m.who, `<b class="nm">${esc(m.who)}</b>`)}${m.to ? `<span class="rto">${small('chev')}${esc(who(m.to))}</span>` : ''}${esc(txt(m.text))}<div class="ma"><button data-act="rreply" data-v="${esc(m.who)}">${t('reply')}</button><button data-act="dm" data-v="${esc(m.who)}">${t('dm')}</button></div></div></div>`).join('');
   return { composer: 'room', html: topbar(L(r.name), { right: `<span class="tag green num">${nf(r.n)} ${t('members')}</span>` }) + `<div class="wrap chat-wrap">
     <div class="banner" style="font-size:12.5px">${ic('info')}<div>${t('room_rule')}</div></div>
     <div class="msg"><span class="av" style="background:var(--palm);color:#fff">N</span><div class="bubble op"><b class="nm">${t('operator')}</b>${t('room_hello')}</div></div>
@@ -551,6 +552,134 @@ V.room = (p) => {
 V.days = () => ({ tabs: true, html: topbar(t('days_title')) + `<div class="wrap">
   <div class="banner green">${ic('calendar')}<div>${t('weekend_note')}</div></div>
   <div class="list" style="margin-top:14px">${DAYS.map(d => { const left = Math.ceil((new Date(d.date + 'T00:00:00+03:00') - Date.now()) / 864e5); return `<div class="event"><div class="top"><span class="date" style="flex-direction:column;width:58px;height:58px;font-weight:800;line-height:1.05"><span class="num" style="font-size:19px">${nf(new Date(d.date).getDate())}</span><span style="font-size:11px">${new Date(d.date).toLocaleDateString(locale(), { month: 'short' })}</span></span><div style="flex:1;min-width:0"><b>${esc(L(d.name))}</b><small>${esc(L(d.note))}</small>${d.moon ? `<small style="color:var(--ink-3)">≈ ${t('approx')}</small>` : ''}</div><b class="num" style="color:var(--palm);text-align:end;flex:none">${nf(Math.max(0, left))}<small style="font-size:11px;color:var(--ink-2)">${t('days_left')}</small></b></div></div>`; }).join('')}</div></div>` });
+
+/* ---------- registration & profiles ---------- */
+const REGX = {
+  en: { reg_title: 'Create your profile', reg_sub: 'One minute, no passwords. Your phone and e-mail are never shown to other people.', step: 'Step', of: 'of', phone_l: 'Phone number', phone_ph: '5X XXX XXXX', get_code: 'Get the code', code_title: 'Enter the code', code_sub: 'We sent an SMS to', demo_code: 'Demo: the code is 1234', code_l: 'Code from SMS', change_num: 'Change number', resend: 'Send again', name_l: 'Your name', name_ph: 'How should people call you?', email_l: 'E-mail', gender_l: 'I am', male: 'a man', female: 'a woman', gender_note: 'Needed for the men’s and women’s spaces. Not shown on your profile.', photos_l: 'Profile photos', photos_hint: 'Up to 3. The first one is your main photo. You can use a picture instead of your face.', add: 'Add', about_l: 'About me', about_ph: 'For example: from Kazan, in Medina with my family, I bake cakes to order', job_l: 'What I do', job_ph: 'For example: student, electrician, home baker', optional: 'optional', next: 'Continue', finish: 'Done — open Nakhlio', err_phone: 'Enter the number without the country code: 9–10 digits.', err_code: 'The code has 4 digits. Demo code: 1234.', err_name: 'Enter your name, at least 2 letters.', err_email: 'Check the e-mail: it should look like name@mail.com', err_gender: 'Choose one option.', edit_profile: 'Edit profile', logout: 'Log out', save_l: 'Save', saved_ok: 'Profile saved', v_phone: 'Phone verified', v_email: 'E-mail verified', v_nakhlio: 'Checked by Nakhlio', since_l: 'On Nakhlio since', reviews_l: 'Reviews', listings_l: 'Listings', no_listings: 'No listings yet', no_reviews: 'No reviews yet', report_user: 'Report', profile_l: 'Profile', district_l: 'District', langs_l: 'Languages', men_only: 'This space is for men only', women_only_m: 'This space is for women only', main_photo: 'main', remove: 'Remove' },
+  ru: { reg_title: 'Создайте профиль', reg_sub: 'Одна минута, без паролей. Телефон и e-mail никогда не показываются другим людям.', step: 'Шаг', of: 'из', phone_l: 'Номер телефона', phone_ph: '5X XXX XXXX', get_code: 'Получить код', code_title: 'Введите код', code_sub: 'Мы отправили SMS на', demo_code: 'Демо: код 1234', code_l: 'Код из SMS', change_num: 'Изменить номер', resend: 'Отправить ещё раз', name_l: 'Ваше имя', name_ph: 'Как к вам обращаться?', email_l: 'E-mail', gender_l: 'Я', male: 'мужчина', female: 'женщина', gender_note: 'Нужно для мужского и женского пространства. В профиле не показывается.', photos_l: 'Фото профиля', photos_hint: 'До 3 фото. Первое — главное. Можно поставить не своё фото, а картинку.', add: 'Добавить', about_l: 'О себе', about_ph: 'Например: из Казани, в Медине с семьёй, пеку торты на заказ', job_l: 'Чем занимаюсь', job_ph: 'Например: студент, электрик, домашний кондитер', optional: 'по желанию', next: 'Дальше', finish: 'Готово — открыть Nakhlio', err_phone: 'Введите номер без кода страны: 9–10 цифр.', err_code: 'Код — 4 цифры. Демо-код: 1234.', err_name: 'Введите имя, хотя бы 2 буквы.', err_email: 'Проверьте e-mail: он должен быть вида name@mail.com', err_gender: 'Выберите вариант.', edit_profile: 'Редактировать профиль', logout: 'Выйти', save_l: 'Сохранить', saved_ok: 'Профиль сохранён', v_phone: 'Телефон подтверждён', v_email: 'E-mail подтверждён', v_nakhlio: 'Проверен Nakhlio', since_l: 'На Nakhlio с', reviews_l: 'Отзывы', listings_l: 'Объявления', no_listings: 'Пока нет объявлений', no_reviews: 'Пока нет отзывов', report_user: 'Пожаловаться', profile_l: 'Профиль', district_l: 'Район', langs_l: 'Языки', men_only: 'Этот раздел только для мужчин', women_only_m: 'Этот раздел только для женщин', main_photo: 'главное', remove: 'Убрать' },
+  ar: { reg_title: 'أنشئ ملفك الشخصي', reg_sub: 'دقيقة واحدة بدون كلمات مرور. رقمك وبريدك لا يظهران للآخرين أبداً.', step: 'الخطوة', of: 'من', phone_l: 'رقم الجوال', phone_ph: '5X XXX XXXX', get_code: 'أرسل الرمز', code_title: 'أدخل الرمز', code_sub: 'أرسلنا رسالة إلى', demo_code: 'تجريبي: الرمز 1234', code_l: 'رمز التحقق', change_num: 'تغيير الرقم', resend: 'إعادة الإرسال', name_l: 'اسمك', name_ph: 'بماذا يناديك الناس؟', email_l: 'البريد الإلكتروني', gender_l: 'أنا', male: 'رجل', female: 'امرأة', gender_note: 'مطلوب لمساحة الرجال ومساحة النساء، ولا يظهر في ملفك.', photos_l: 'صور الملف', photos_hint: 'حتى 3 صور، الأولى هي الرئيسية. يمكنك وضع صورة رمزية بدل صورتك.', add: 'إضافة', about_l: 'نبذة عني', about_ph: 'مثال: من قازان، أعيش في المدينة مع عائلتي وأخبز الكيك حسب الطلب', job_l: 'ماذا أعمل', job_ph: 'مثال: طالب، كهربائي، صانعة حلويات', optional: 'اختياري', next: 'متابعة', finish: 'تم — افتح نخليو', err_phone: 'أدخل الرقم بدون رمز الدولة: 9–10 أرقام.', err_code: 'الرمز 4 أرقام. الرمز التجريبي: 1234.', err_name: 'أدخل اسمك، حرفان على الأقل.', err_email: 'تحقق من البريد: يجب أن يكون مثل name@mail.com', err_gender: 'اختر أحد الخيارين.', edit_profile: 'تعديل الملف', logout: 'تسجيل الخروج', save_l: 'حفظ', saved_ok: 'تم حفظ الملف', v_phone: 'الجوال موثّق', v_email: 'البريد موثّق', v_nakhlio: 'موثّق من نخليو', since_l: 'في نخليو منذ', reviews_l: 'التقييمات', listings_l: 'الإعلانات', no_listings: 'لا توجد إعلانات بعد', no_reviews: 'لا توجد تقييمات بعد', report_user: 'إبلاغ', profile_l: 'الملف', district_l: 'الحي', langs_l: 'اللغات', men_only: 'هذه المساحة للرجال فقط', women_only_m: 'هذه المساحة للنساء فقط', main_photo: 'رئيسية', remove: 'حذف' },
+};
+for (const k in REGX) Object.assign(I18N[k], REGX[k]);
+const CODES = [['+966', 'SA'], ['+7', 'RU / KZ'], ['+92', 'PK'], ['+62', 'ID'], ['+60', 'MY'], ['+90', 'TR'], ['+880', 'BD'], ['+91', 'IN'], ['+98', 'IR'], ['+20', 'EG'], ['+998', 'UZ'], ['+33', 'FR'], ['+44', 'UK'], ['+1', 'US']];
+let reg = { step: 1, code: '+966', phone: '', errs: {} };
+const AV_C = ['b-palm c-palm', 'b-date c-date', 'b-sky c-sky', 'b-rose c-rose', 'b-clay c-clay'];
+const avCls = (n) => { let h = 0; for (const ch of String(n)) h = (h * 31 + ch.charCodeAt(0)) % 997; return AV_C[h % AV_C.length]; };
+function avatar(n, size) {
+  const me = n === '@me' && S.me;
+  const ph = me && S.me.photos && S.me.photos[0];
+  return ph ? `<span class="av ${size || ''}" style="background:url(${ph}) center/cover"></span>` : `<span class="av ${size || ''} ${avCls(who(n))}">${initial(n)}</span>`;
+}
+function resizeImg(file) {
+  return new Promise((res) => {
+    const fr = new FileReader(); fr.onload = () => { const im = new Image(); im.onload = () => {
+      const k = Math.min(1, 480 / Math.max(im.width, im.height)); const c = document.createElement('canvas');
+      c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+      res(c.toDataURL('image/jpeg', 0.78)); }; im.onerror = () => res(null); im.src = fr.result; }; fr.onerror = () => res(null); fr.readAsDataURL(file);
+  });
+}
+const fieldErr = (k) => reg.errs[k] ? `<span class="ferr">${ic('info')}${t(reg.errs[k])}</span>` : '';
+function profileForm(d, forEdit) {
+  const photos = d.photos || [];
+  return `
+    <div class="field"><label for="rname">${t('name_l')} *</label><input id="rname" value="${esc(d.name || '')}" placeholder="${t('name_ph')}" autocomplete="given-name">${fieldErr('name')}</div>
+    <div class="field"><label for="remail">${t('email_l')} *</label><input id="remail" type="email" inputmode="email" value="${esc(d.email || '')}" placeholder="name@mail.com" autocomplete="email">${fieldErr('email')}</div>
+    ${forEdit ? '' : `<div class="field"><label>${t('gender_l')} *</label><div class="seg gsel"><button type="button" class="${d.gender === 'm' ? 'on' : ''}" data-g="m">${t('male')}</button><button type="button" class="${d.gender === 'f' ? 'on' : ''}" data-g="f">${t('female')}</button></div><small class="hint">${t('gender_note')}</small>${fieldErr('gender')}</div>`}
+    <div class="field"><label>${t('photos_l')} <span class="opt-l">${t('optional')}</span></label>
+      <div class="pgrid">${[0, 1, 2].map(i => photos[i] ? `<div class="pslot" style="background-image:url(${photos[i]})">${i === 0 ? `<span class="pmain">${t('main_photo')}</span>` : ''}<button type="button" class="prm" data-rm="${i}" aria-label="${t('remove')}">${ic('x')}</button></div>` : `<label class="pslot empty">${ic('camera')}<span>${t('add')}</span><input type="file" accept="image/*" data-pi="${i}" hidden></label>`).join('')}</div>
+      <small class="hint">${t('photos_hint')}</small></div>
+    <div class="field"><label for="rjob">${t('job_l')} <span class="opt-l">${t('optional')}</span></label><input id="rjob" value="${esc(d.job || '')}" placeholder="${t('job_ph')}"></div>
+    <div class="field"><label for="rabout">${t('about_l')} <span class="opt-l">${t('optional')}</span></label><textarea id="rabout" rows="3" placeholder="${t('about_ph')}">${esc(d.about || '')}</textarea></div>
+    <div class="field"><label for="rdist">${t('district_l')} <span class="opt-l">${t('optional')}</span></label><select id="rdist"><option value="">—</option>${Object.keys(DIST).map(k => `<option value="${k}" ${d.dist === k ? 'selected' : ''}>${esc(DIST[k].en)}</option>`).join('')}</select></div>`;
+}
+function bindProfileForm(scope, d) {
+  scope.querySelectorAll('input, textarea').forEach(el => el.addEventListener('input', () => { const fe = el.parentElement.querySelector('.ferr'); if (fe) fe.remove(); }));
+  scope.querySelectorAll('.gsel button').forEach(b => b.addEventListener('click', () => { const fe = b.closest('.field').querySelector('.ferr'); if (fe) fe.remove(); }));
+  scope.querySelectorAll('.gsel button').forEach(b => b.addEventListener('click', () => { d.gender = b.dataset.g; scope.querySelectorAll('.gsel button').forEach(x => x.classList.toggle('on', x === b)); }));
+  scope.querySelectorAll('input[data-pi]').forEach(inp => inp.addEventListener('change', async () => { const f = inp.files[0]; if (!f) return; const u = await resizeImg(f); if (!u) return; d.photos = (d.photos || []).concat(u).slice(0, 3); collect(scope, d); reg.errs = {}; d._rerender(); }));
+  scope.querySelectorAll('[data-rm]').forEach(b => b.addEventListener('click', () => { d.photos.splice(+b.dataset.rm, 1); collect(scope, d); reg.errs = {}; d._rerender(); }));
+}
+function collect(scope, d) {
+  const v = (id) => { const el = scope.querySelector('#' + id); return el ? el.value.trim() : ''; };
+  d.name = v('rname'); d.email = v('remail'); d.job = v('rjob'); d.about = v('rabout'); d.dist = v('rdist');
+}
+function validate(d, forEdit) {
+  const e = {};
+  if (!d.name || d.name.length < 2) e.name = 'err_name';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email || '')) e.email = 'err_email';
+  if (!forEdit && !d.gender) e.gender = 'err_gender';
+  return e;
+}
+function gateReg() {
+  setDoc();
+  const st = reg.step;
+  const prog = `<div class="rprog"><span>${t('step')} ${nf(st)} ${t('of')} ${nf(3)}</span><div class="progress"><i style="width:${st / 3 * 100}%"></i></div></div>`;
+  let body = '';
+  if (st === 1) body = `<h1>${t('reg_title')}</h1><p class="lead">${t('reg_sub')}</p>
+    <div class="field"><label for="rphone">${t('phone_l')} *</label><div class="phone-row"><select id="rcode" aria-label="code">${CODES.map(([c, n]) => `<option value="${c}" ${c === reg.code ? 'selected' : ''}>${c} ${n}</option>`).join('')}</select><input id="rphone" type="tel" inputmode="numeric" autocomplete="tel-national" value="${esc(reg.phone)}" placeholder="${t('phone_ph')}"></div>${fieldErr('phone')}</div>
+    <button class="btn primary full" style="margin-top:18px" data-reg="code">${t('get_code')}</button>`;
+  else if (st === 2) body = `<h1>${t('code_title')}</h1><p class="lead">${t('code_sub')} <b dir="ltr">${esc(reg.code + ' ' + reg.phone)}</b></p>
+    <div class="banner" style="margin-top:12px">${ic('info')}<div>${t('demo_code')}</div></div>
+    <div class="field"><label for="rcodein">${t('code_l')} *</label><input id="rcodein" class="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="4" placeholder="• • • •">${fieldErr('code')}</div>
+    <button class="btn primary full" style="margin-top:18px" data-reg="verify">${t('next')}</button>
+    <div style="display:flex;justify-content:space-between;margin-top:14px"><button class="link" data-reg="back1">${t('change_num')}</button><button class="link" data-reg="resend">${t('resend')}</button></div>`;
+  else body = `<h1>${t('reg_title')}</h1><p class="lead">${t('reg_sub')}</p><div id="pform">${profileForm(reg)}</div>
+    <button class="btn primary full" style="margin-top:20px" data-reg="finish">${t('finish')}</button>`;
+  root.innerHTML = `<div class="gate light reg"><div class="brand" style="color:var(--palm)">${logo()}Nakhlio</div>${prog}${body}</div>`;
+  const scope = root.querySelector('.reg');
+  if (st === 3) { reg._rerender = () => gateReg(); bindProfileForm(scope, reg); }
+  const f = scope.querySelector('#rphone, #rcodein, #rname'); if (f && st < 3) setTimeout(() => f.focus(), 50);
+  scope.querySelectorAll('[data-reg]').forEach(b => b.addEventListener('click', () => {
+    const a = b.dataset.reg; reg.errs = {};
+    if (a === 'code') { reg.code = scope.querySelector('#rcode').value; reg.phone = scope.querySelector('#rphone').value.replace(/\D/g, ''); if (reg.phone.length < 9 || reg.phone.length > 10) reg.errs.phone = 'err_phone'; else { reg.step = 2; toast(t('demo_code')); } }
+    if (a === 'verify') { const c = scope.querySelector('#rcodein').value.trim(); if (c !== '1234') reg.errs.code = 'err_code'; else reg.step = 3; }
+    if (a === 'back1') reg.step = 1;
+    if (a === 'resend') toast(t('demo_code'));
+    if (a === 'finish') { collect(scope, reg); reg.errs = validate(reg); if (!Object.keys(reg.errs).length) {
+      S.me = { name: reg.name, email: reg.email, phone: reg.code + ' ' + reg.phone, gender: reg.gender, photos: reg.photos || [], about: reg.about, job: reg.job, dist: reg.dist || '', langs: (LANGS.find(l => l.code === lang) || {}).latin, since: new Date().getFullYear() + '' };
+      save(); reg = { step: 1, code: '+966', phone: '', errs: {} }; stack = [{ v: 'home' }]; return boot(); } }
+    gateReg();
+  }));
+}
+/* person data for any name */
+function person(n) {
+  if (n === '@me') { const m = S.me || {}; return { name: '@me', display: m.name || t('you'), job: m.job, about: m.about, dist: m.dist, langs: m.langs, since: m.since, rating: null, photos: m.photos || [], me: true }; }
+  const items = ADS.concat(HELP, PARCELS).filter(x => x.seller && x.seller.name === n);
+  const s = (items[0] && items[0].seller) || {};
+  const ab = (window.ABOUT || {})[n] || {};
+  return { name: n, display: n, job: ab.job, about: ab.about, dist: s.dist, langs: s.langs, since: s.since || '2025', rating: s.rating, items, reviews: (window.PREVIEWS || {})[n] || [] };
+}
+const pBtn = (n, inner, cls) => `<button class="pbtn ${cls || ''}" data-act="profile" data-v="${esc(n)}">${inner}</button>`;
+function profileHtml(n) {
+  const p = person(n); const me = !!p.me;
+  const items = me ? myAds() : p.items;
+  const reviews = me ? [] : p.reviews;
+  const badges = `<span class="vb">${small('check')}${t('v_phone')}</span>${me || p.rating >= 4.8 ? `<span class="vb">${small('check')}${t('v_email')}</span>` : ''}${!me && p.rating >= 4.9 ? `<span class="vb gold">${small('shield')}${t('v_nakhlio')}</span>` : ''}`;
+  const photos = p.photos || [];
+  return `<div class="phead"><div class="pcover">${skyline()}</div>
+    <div class="pmain-row">${photos[0] ? `<span class="av xl" style="background:url(${photos[0]}) center/cover"></span>` : `<span class="av xl ${avCls(p.display)}">${esc(String(p.display).replace(/^Ustaz /, '')[0] || '?')}</span>`}
+      <div class="pid"><h2>${esc(p.display)}</h2>${p.job ? `<div class="pjob">${esc(txt(p.job))}</div>` : ''}</div></div>
+    <div class="badges">${badges}</div>
+    <div class="pstats"><div><b class="num">${p.rating ? '★ ' + nf(p.rating, 1) : '—'}</b><small>${t('reviews_l')} · <span class="num">${nf(reviews.length)}</span></small></div><div><b class="num">${nf(items.length)}</b><small>${t('listings_l')}</small></div><div><b class="num">${esc(p.since || '2026')}</b><small>${t('since_l')}</small></div></div>
+    <div class="pmeta">${p.dist ? `<span>${small('pin')}${esc(loc(p.dist))}</span>` : ''}${p.langs ? `<span>${small('globe')}${esc(p.langs)}</span>` : ''}</div>
+    ${p.about ? `<p class="pabout">${esc(txt(p.about))}</p>` : ''}
+    ${photos.length > 1 ? `<div class="pphotos">${photos.map(u => `<span style="background-image:url(${u})"></span>`).join('')}</div>` : ''}
+    <div class="pact">${me ? `<button class="btn soft full" data-act="go" data-v="editprofile">${small('user')}${t('edit_profile')}</button>` : `<button class="btn primary" data-act="dm" data-v="${esc(n)}">${ic('chat')}${t('dm')}</button><button class="btn soft" data-act="reportuser" aria-label="${t('report_user')}">${ic('flag')}</button>`}</div>
+  </div>
+  <div class="block"><h4>${t('listings_l')}</h4>${items.length ? `<div class="list">${items.map(x => PARCELS.includes(x) ? parcelRow(x) : HELP.includes(x) ? helpRow(x) : adRow(x)).join('')}</div>` : `<p class="note">${t('no_listings')}</p>`}</div>
+  ${me ? '' : `<div class="block"><h4>${t('reviews_l')}</h4>${reviews.length ? reviews.map(r => `<div class="review"><div class="who">${avatar(r.who, 'sm')}${pBtn(r.who, esc(r.who))}<span class="stars">${ic('star').repeat(r.stars)}</span></div><p>${esc(L(r.text))}</p></div>`).join('') : `<p class="note">${t('no_reviews')}</p>`}</div>`}`;
+}
+V.person = (p) => ({ tabs: true, html: topbar(t('profile_l')) + `<div class="wrap narrow">${profileHtml(p.id)}</div>` });
+V.editprofile = () => {
+  const d = Object.assign({}, S.me, { photos: (S.me.photos || []).slice(), errs: {} });
+  setTimeout(() => {
+    const scope = root.querySelector('#pform'); if (!scope) return;
+    d._rerender = () => { scope.innerHTML = profileForm(d, true); bindProfileForm(scope, d); };
+    bindProfileForm(scope, d);
+    root.querySelector('#psave').addEventListener('click', () => { collect(scope, d); const e = validate(d, true); if (Object.keys(e).length) { reg.errs = e; scope.innerHTML = profileForm(d, true); bindProfileForm(scope, d); reg.errs = {}; return; }
+      Object.assign(S.me, { name: d.name, email: d.email, photos: d.photos, about: d.about, job: d.job, dist: d.dist }); save(); toast(t('saved_ok')); back(); });
+  }, 0);
+  return { html: topbar(t('edit_profile')) + `<div class="wrap narrow"><div id="pform">${profileForm(d, true)}</div><button class="btn primary full" id="psave" style="margin-top:18px">${t('save_l')}</button></div>` };
+};
 
 /* chats */
 function listingInfo(id) {
@@ -568,7 +697,7 @@ V.chat = (p) => {
   const id = p.id; const c = S.chats[id] || { msgs: [] }; const li = listingInfo(id); const dmChat = !!li.person;
   const bubbles = c.msgs.map((m, i) => m.from === 'me' ? `<div class="bubble me">${esc(m.text)}${m.num ? `<small>${small('phone')} ${t('number_shared')}</small>` : ''}</div>`
     : `<div class="bubble op">${esc(m.showOrig ? m.text.ar : L(m.text))}${dmChat ? `<span class="tr">${small('translate')}${t('auto_tr')}</span>` : lang !== 'ar' ? `<button class="tr" data-act="orig" data-v="${i}">${small('translate')}${m.showOrig ? t('show_translation') : t('translated') + ' · ' + t('show_original')}</button>` : ''}<small>${esc(dmChat ? li.person : t('operator'))}</small></div>`).join('');
-  const head = dmChat ? `<span class="av lg" style="width:40px;height:40px;border-radius:14px">${initial(li.person)}</span><h1 style="font-size:16px">${esc(li.person)}<small style="display:block;font-size:12px;color:var(--palm);font-weight:700">● ${t('online')}</small></h1>`
+  const head = dmChat ? `${pBtn(li.person, avatar(li.person, 'lg'))}<h1 style="font-size:16px">${pBtn(li.person, esc(li.person))}<small style="display:block;font-size:12px;color:var(--palm);font-weight:700">● ${t('online')}</small></h1>`
     : `<span style="width:40px;height:40px;flex:none">${logo()}</span><h1 style="font-size:16px">${t('operator')}<small style="display:block;font-size:12px;color:var(--palm);font-weight:700">● ${t('online')}</small></h1>`;
   return { composer: 'chat', html: `<div class="topbar"><button class="ibtn" data-act="back" aria-label="${t('back')}">${ic('back', 'flip')}</button>${head}${homeBtn()}</div>
   <div class="wrap chat-wrap">
@@ -581,16 +710,16 @@ V.saved = () => {
   const items = S.saved.map(id => HOUSING.find(h => h.id === id) || TRANSPORT.find(x => x.id === id)).filter(Boolean);
   return { tabs: true, html: topbar(t('saved_title'), { noBack: true }) + `<div class="wrap">${items.length ? `<div class="list">${items.map(x => x.kind ? trCard(x) : houseCard(x)).join('')}</div>` : emptyBlock(t('saved_empty'))}</div>` };
 };
-V.profile = () => ({ tabs: true, html: topbar(t('profile_title'), { noBack: true }) + `<div class="wrap">
-  <div class="card" style="display:flex;gap:14px;align-items:center"><span class="avatar">${t('guest')[0]}</span><div><b style="font-size:17px">${t('guest')}</b><div class="note">${t('privacy_note')}</div></div></div>
-  <div class="plist" style="margin-top:14px">
+V.profile = () => ({ tabs: true, html: topbar(t('profile_title'), { noBack: true }) + `<div class="wrap narrow">
+  ${profileHtml('@me')}
+  <div class="plist" style="margin-top:18px">
     <button data-act="go" data-v="lang"><i class="b-palm c-palm">${ic('globe')}</i><span class="grow">${t('language')}<small>${esc((LANGS.find(l => l.code === lang) || {}).name)}</small></span>${ic('chev', 'flip chev')}</button>
     <button data-act="go" data-v="saved"><i class="b-rose c-rose">${ic('heart')}</i><span class="grow">${t('saved_title')}<small class="num">${nf(S.saved.length)}</small></span>${ic('chev', 'flip chev')}</button>
     <button data-act="rules"><i class="b-date c-date">${ic('info')}</i><span class="grow">${t('rules')}</span>${ic('chev', 'flip chev')}</button>
     <button data-act="go" data-v="about"><i class="b-sky c-sky">${ic('home')}</i><span class="grow">${t('about')}</span>${ic('chev', 'flip chev')}</button>
   </div>
   <div class="plist" style="margin-top:14px"><button data-act="go" data-v="operator"><i class="b-clay c-clay">${ic('headset')}</i><span class="grow">${t('operator_panel')}<small>${t('operator_panel_d')}</small></span>${ic('chev', 'flip chev')}</button></div>
-  <div class="plist" style="margin-top:14px"><button data-act="reset"><i class="b-rose c-rose">${ic('x')}</i><span class="grow">${t('reset')}</span></button></div>
+  <div class="plist" style="margin-top:14px"><button data-act="logout"><i class="b-sky c-sky">${ic('back', 'flip')}</i><span class="grow">${t('logout')}<small dir="ltr" style="text-align:start">${esc(S.me ? S.me.phone + ' · ' + S.me.email : '')}</small></span></button><button data-act="reset"><i class="b-rose c-rose">${ic('x')}</i><span class="grow">${t('reset')}</span></button></div>
   <p class="note" style="text-align:center;margin-top:16px">${t('license')} FAL-1200000000 (${t('example')}) · ${t('demo_badge')}</p></div>` });
 V.about = () => ({ tabs: true, html: topbar(t('about')) + `<div class="wrap"><div class="card" style="text-align:center"><div style="width:72px;margin:0 auto 10px">${logo()}</div><b style="font-size:20px">Nakhlio</b><p style="margin:10px 0 0;line-height:1.6">${t('about_text')}</p></div>
   <div class="kv" style="margin-top:14px"><div><span>${t('license')}</span><b>FAL-1200000000 (${t('example')})</b></div><div><span>${t('verified').split('·')[0]}</span><b>✓</b></div></div><p class="note" style="margin-top:14px;text-align:center">${t('photo_credit')}</p></div>` });
@@ -629,6 +758,9 @@ root.addEventListener('click', (e) => {
     case 'pk': cur().k = v; render(); break;
     case 'c': cur().c = v; render(); break;
     case 'dm': openDM(v); break;
+    case 'profile': if (v === '@me') tab('profile'); else go('person', { id: v }); break;
+    case 'reportuser': toast(t('reported')); break;
+    case 'logout': delete S.me; save(); stack = [{ v: 'home' }]; boot(); break;
     case 'reply': replyTo[el.dataset.k] = v; openC[el.dataset.k] = true; render(); focusBox(el.dataset.k); break;
     case 'unreply': replyTo[el.dataset.k] = null; render(); break;
     case 'comment': openC[el.dataset.k] = !openC[el.dataset.k]; render(); if (openC[el.dataset.k]) focusBox(el.dataset.k); break;
@@ -781,6 +913,7 @@ function boot() {
     if (!isStandalone() && !(DEMO && S.demoSkip) && !S.installed) return gateInstall();
   }
   if (!S.lang) return gateLang(false);
+  if (!S.me) return gateReg();
   if (stack.length && stack[stack.length - 1].v === 'lang' && !document.querySelector('.app')) stack = [{ v: 'home' }];
   render(true);
 }
