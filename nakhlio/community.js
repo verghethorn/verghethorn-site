@@ -369,3 +369,20 @@ window.PREVIEWS = {
   'Gulnara': [R('Daniyar', 5, D('Манты как дома!', 'Manti just like home!', 'مانتي مثل البيت!'))],
 };
 })();
+(function () {
+const D = (ru, en, ar) => ({ ru, en, ar });
+Object.assign(window.ABOUT, {
+  'Fatima': { job: D('Мама двоих детей', 'Mother of two', 'أم لطفلين'), about: D('Из Махачкалы, в Медине второй год. Ищу хороших врачей и кружки для детей.', 'From Makhachkala, second year in Medina. Looking for good doctors and kids’ clubs.', 'من محج قلعة، في المدينة للسنة الثانية. أبحث عن أطباء جيدين ونوادٍ للأطفال.') },
+  'Leyla': { job: D('Преподаватель английского', 'English teacher', 'معلمة إنجليزي'), about: D('Преподаю английский онлайн. Люблю делиться полезными местами Медины.', 'I teach English online and love sharing useful places in Medina.', 'أدرّس الإنجليزية عن بعد وأحب مشاركة الأماكن المفيدة في المدينة.') },
+  'Kamila': { job: D('Мама и домохозяйка', 'Mum and homemaker', 'أم وربة منزل'), about: D('Из Алматы, живём в Медине с мужем 3 года.', 'From Almaty, living in Medina with my husband for 3 years.', 'من ألماتي، نعيش في المدينة مع زوجي منذ 3 سنوات.') },
+  'Murad': { job: D('Инженер-строитель', 'Civil engineer', 'مهندس مدني'), about: D('Из Дагестана. Помогаю новичкам с Absher и правами.', 'From Dagestan. I help newcomers with Absher and driving licences.', 'من داغستان، أساعد القادمين الجدد في أبشر والرخص.') },
+  'Denis': { job: D('Программист', 'Software developer', 'مبرمج'), about: D('Переехал с семьёй в 2026, всё узнаю впервые и делюсь опытом.', 'Moved here with my family in 2026; learning everything for the first time and sharing.', 'انتقلت مع عائلتي في 2026، أتعلم كل شيء لأول مرة وأشارك تجربتي.') },
+  'Hasan': { job: D('Студент', 'Student', 'طالب'), about: D('Учусь в Islamic University, подрабатываю переводами.', 'Studying at the Islamic University and doing translations part-time.', 'أدرس في الجامعة الإسلامية وأعمل بالترجمة جزئياً.') },
+  'Daniyar': { job: D('Логист', 'Logistics manager', 'مسؤول لوجستيات'), about: D('Из Ташкента. Бегаю по утрам, приглашаю на пробежки.', 'From Tashkent. I run in the mornings — join the runs!', 'من طشقند، أجري صباحاً وأدعوكم للجري معي.') },
+  'Imran': { job: D('Водитель, трансферы на умру', 'Driver, Umrah transfers', 'سائق ورحلات عمرة'), about: D('Из Лахора, вожу семьи в Мекку и по Медине.', 'From Lahore; I drive families to Makkah and around Medina.', 'من لاهور، أنقل العائلات إلى مكة وداخل المدينة.') },
+  'Siti': { job: D('Медсестра', 'Nurse', 'ممرضة'), about: D('Из Индонезии, работаю в больнице в Медине.', 'From Indonesia, working at a hospital in Medina.', 'من إندونيسيا، أعمل في مستشفى في المدينة.') },
+  'Olga': { job: D('Бухгалтер', 'Accountant', 'محاسبة'), about: D('Приняла ислам 5 лет назад, в Медине с мужем.', 'Embraced Islam 5 years ago, living in Medina with my husband.', 'أسلمت قبل 5 سنوات وأعيش في المدينة مع زوجي.') },
+  'Aliya': { job: D('Дизайнер', 'Designer', 'مصممة'), about: D('Из Казахстана, ждём второго малыша.', 'From Kazakhstan, expecting our second baby.', 'من كازاخستان، ننتظر مولودنا الثاني.') },
+  'Saeed': { job: D('Менеджер', 'Manager', 'مدير'), about: D('Из Египта, работаю в Медине 6 лет.', 'From Egypt, working in Medina for 6 years.', 'من مصر، أعمل في المدينة منذ 6 سنوات.') },
+});
+})();

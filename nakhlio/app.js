@@ -336,7 +336,7 @@ V.house = (p) => {
       <div><span>${t('term_l')}</span><b>${t(h.term)}</b></div><div><span>${t('payment')}</span><b>${esc(L(h.pay))}</b></div>
       <div><span>${t('deposit')}</span><b class="num">${h.dep ? money(h.dep) : '—'}</b></div><div><span>${t('audience')}</span><b>${aud} · ${h.furnished ? t('furnished') : t('unfurnished')}</b></div></div></div>
     <div class="block"><h4>${t('location')}</h4>${mapBlock(h.dist, `<b>${esc(loc(h.dist))}</b> · ${h.walk ? `${nf(h.walk)} ${t('min_walk')}` : `${nf(h.km, 1)} ${t('km_haram')}`}<br>${t('location_note')}`)}</div>
-    <div class="block"><h4>${t('reviews')} <span class="tag">${t('review_example')}</span></h4>${REVIEWS.map(r => `<div class="review"><div class="who"><i>${esc(r.who[0])}</i>${esc(r.who)}<span class="stars">${ic('star').repeat(r.stars)}</span></div><p>${esc(L(r.text))}</p></div>`).join('')}</div>
+    <div class="block"><h4>${t('reviews')} <span class="tag">${t('review_example')}</span></h4>${REVIEWS.map(r => `<div class="review"><div class="who">${pBtn(r.who, avatar(r.who, 'sm'))}${pBtn(r.who, esc(r.who))}<span class="stars">${ic('star').repeat(r.stars)}</span></div><p>${esc(L(r.text))}</p></div>`).join('')}</div>
     <p class="note" style="margin-top:18px">${t('listing_no')} <b class="num">${h.id}</b></p>
   </div>` };
 };
@@ -596,10 +596,28 @@ const CODES = [['+966', 'SA'], ['+7', 'RU / KZ'], ['+92', 'PK'], ['+62', 'ID'], 
 let reg = { step: 1, code: '+966', phone: '', errs: {} };
 const AV_C = ['b-palm c-palm', 'b-date c-date', 'b-sky c-sky', 'b-rose c-rose', 'b-clay c-clay'];
 const avCls = (n) => { let h = 0; for (const ch of String(n)) h = (h * 31 + ch.charCodeAt(0)) % 997; return AV_C[h % AV_C.length]; };
+const WOMEN = ['Amina', 'Gulnara', 'Sana', 'Maryam', 'Mariam', 'Olga', 'Fatima', 'Leyla', 'Kamila', 'Siti', 'Aisha', 'Ayesha', 'Nur', 'Zaynab', 'Zainab', 'Aliya', 'Farida', 'Zarina', 'Svetlana'];
+const isWoman = (n) => /@$/.test(n) ? !!(S.me && S.me.gender === 'f') : n === '@me' ? !!(S.me && S.me.gender === 'f') : WOMEN.includes(n);
+const AVBG = ['#E2EFEA', '#FBF0DC', '#E3F0F7', '#F8E6EC', '#F7E7DF', '#EDE7F6'];
+const SKIN = ['#E8C3A0', '#D9A77F', '#B98462', '#8D5E42', '#F1D3B8'];
+const CLOTH = ['#0F5C4C', '#2F7DA8', '#B8613F', '#5B6C66', '#7A4E8C', '#C2577A', '#1F3B4D'];
+function avatarSvg(n) {
+  let h = 7; for (const ch of String(n)) h = (h * 33 + ch.charCodeAt(0)) >>> 0;
+  const bg = AVBG[h % AVBG.length], skin = SKIN[(h >>> 3) % SKIN.length], cl = CLOTH[(h >>> 5) % CLOTH.length];
+  if (isWoman(n)) {
+    const hj = CLOTH[(h >>> 7) % CLOTH.length];
+    return `<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" fill="${bg}"/><path d="M8 64c2-14 12-21 24-21s22 7 24 21z" fill="${hj}"/><path d="M14 40c0-13 8-24 18-24s18 11 18 24c0 6-3 10-6 12H20c-3-2-6-6-6-12z" fill="${hj}"/><ellipse cx="32" cy="34" rx="9" ry="11" fill="${skin}"/><path d="M21 31c1-8 5-12 11-12s10 4 11 12c-3-5-7-7-11-7s-8 2-11 7z" fill="${hj}" opacity=".85"/></svg>`;
+  }
+  const hat = (h >>> 9) % 3, beard = (h >>> 11) % 2;
+  const head = hat === 0 ? `<path d="M19 30c0-9 6-15 13-15s13 6 13 15c-4-2-8-3-13-3s-9 1-13 3z" fill="#fff"/><path d="M15 31c3 9 6 17 9 22l3-20zM49 31c-3 9-6 17-9 22l-3-20z" fill="#fff"/><rect x="18" y="26" width="28" height="4" rx="2" fill="#2b2b2b"/>`
+    : hat === 1 ? `<path d="M22 25a10 9 0 0 1 20 0z" fill="#fff"/><path d="M22 25h20" stroke="#d8d0c2" stroke-width="1.5"/>`
+    : `<path d="M22 26c0-7 4-11 10-11s10 4 10 11c-3-3-6-4-10-4s-7 1-10 4z" fill="#2b2b2b"/>`;
+  return `<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" fill="${bg}"/><path d="M8 64c2-14 12-20 24-20s22 6 24 20z" fill="${cl}"/><rect x="28" y="38" width="8" height="8" fill="${skin}"/><ellipse cx="32" cy="32" rx="9.5" ry="11" fill="${skin}"/>${beard ? `<path d="M23 34c1 8 5 12 9 12s8-4 9-12c-2 3-5 4-9 4s-7-1-9-4z" fill="#3a2a20"/>` : ''}${head}</svg>`;
+}
 function avatar(n, size) {
   const me = n === '@me' && S.me;
   const ph = me && S.me.photos && S.me.photos[0];
-  return ph ? `<span class="av ${size || ''}" style="background:url(${ph}) center/cover"></span>` : `<span class="av ${size || ''} ${avCls(who(n))}">${initial(n)}</span>`;
+  return ph ? `<span class="av ${size || ''}" style="background:url(${ph}) center/cover"></span>` : `<span class="av ill ${size || ''}">${avatarSvg(n === '@me' && S.me ? S.me.name + '@' : n)}</span>`;
 }
 function resizeImg(file) {
   return new Promise((res) => {
@@ -689,7 +707,7 @@ function profileHtml(n) {
   const badges = `<span class="vb">${small('check')}${t('v_phone')}</span>${me || p.rating >= 4.8 ? `<span class="vb">${small('check')}${t('v_email')}</span>` : ''}${!me && p.rating >= 4.9 ? `<span class="vb gold">${small('shield')}${t('v_nakhlio')}</span>` : ''}`;
   const photos = p.photos || [];
   return `<div class="phead"><div class="pcover">${skyline()}</div>
-    <div class="pmain-row">${photos[0] ? `<span class="av xl" style="background:url(${photos[0]}) center/cover"></span>` : `<span class="av xl ${avCls(p.display)}">${esc(String(p.display).replace(/^Ustaz /, '')[0] || '?')}</span>`}
+    <div class="pmain-row">${photos[0] ? `<span class="av xl" style="background:url(${photos[0]}) center/cover"></span>` : `<span class="av xl ill">${avatarSvg(me ? (S.me ? S.me.name + '@' : 'guest') : n)}</span>`}
       <div class="pid"><h2>${esc(p.display)}</h2>${p.job ? `<div class="pjob">${esc(txt(p.job))}</div>` : ''}</div></div>
     <div class="badges">${badges}</div>
     <div class="pstats"><div><b class="num">${p.rating ? '★ ' + nf(p.rating, 1) : '—'}</b><small>${t('reviews_l')} · <span class="num">${nf(reviews.length)}</span></small></div><div><b class="num">${nf(items.length)}</b><small>${t('listings_l')}</small></div><div><b class="num">${esc(p.since || '2026')}</b><small>${t('since_l')}</small></div></div>
@@ -721,7 +739,7 @@ function listingInfo(id) {
   const x = TRANSPORT.find(v => v.id === id); if (x) return { title: x.model, photo: x.photo, price: money(x.price) + ' ' + termSuffix(x.term, 1), agency: 'Madinah Rent Partners' };
   return { title: id, photo: 'liv8', price: '', agency: '—' };
 }
-const chatThumb = (li) => li.person ? `<span class="thumb av lg" style="width:56px;height:56px;border-radius:18px;font-size:20px">${initial(li.person)}</span>` : `<span class="thumb"><img src="${img(li.photo)}" alt=""></span>`;
+const chatThumb = (li) => li.person ? `<span class="thumb av ill" style="width:56px;height:56px;border-radius:18px">${avatarSvg(li.person)}</span>` : `<span class="thumb"><img src="${img(li.photo)}" alt=""></span>`;
 V.chats = () => {
   if (!S.me) return guestLock(t('chats_title'), t('chats_guest'));
   const ids = Object.keys(S.chats).sort((a, b) => (S.chats[b].t || 0) - (S.chats[a].t || 0));

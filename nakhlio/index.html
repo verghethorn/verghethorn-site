@@ -258,7 +258,7 @@ a{color:inherit;text-decoration:none}
 .post .who{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-2);font-weight:600}
 .post .who .tag{margin-inline-start:auto}
 .post p{margin:8px 0 0;font-size:14.5px;line-height:1.55}
-.post .acts{display:flex;align-items:center;gap:14px;margin-top:10px;font-size:13px;font-weight:700;color:var(--ink-2)}
+.post .acts{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;white-space:nowrap;margin-top:10px;font-size:13px;font-weight:700;color:var(--ink-2)}
 .post .acts button{display:inline-flex;align-items:center;gap:5px}
 .post .acts svg{width:17px;height:17px}
 .post .acts .on{color:var(--palm)}
@@ -565,6 +565,12 @@ a{color:inherit;text-decoration:none}
 .ayah .ar{margin:0;font-family:'IBM Plex Sans Arabic',serif;font-size:19px;line-height:1.9;color:var(--palm-2);text-align:right}
 .ayah .tr{margin:8px 0 0;font-size:14.5px;line-height:1.55}
 .ayah figcaption{margin-top:6px;font-size:12px;color:var(--ink-3);font-weight:700}
+
+.av.ill{padding:0;overflow:hidden;background:none}
+.av.ill svg{width:100%;height:100%;display:block}
+.av.xl.ill{border:4px solid var(--card)}
+body:not(.dsk) .gallery .float,body:not(.dsk) .item-head .float{position:fixed;top:calc(10px + var(--sat));left:max(14px,calc(50% - 226px));right:max(14px,calc(50% - 226px));z-index:35}
+body:not(.dsk) .gallery .float .ibtn,body:not(.dsk) .item-head .float .ibtn{box-shadow:0 4px 14px rgba(19,37,31,.18)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
