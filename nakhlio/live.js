@@ -1,8 +1,8 @@
 /* Nakhlio live backend (Supabase). Data access only — UI lives in app.js / magaam.js.
    The publishable key is meant to be public; access is enforced by row-level security on the server. */
 (function () {
-const URL_ = 'https://csjkfdrsmmlcufcrcwbs.supabase.co';
-const KEY = 'sb_publishable_40ItdNlD24ixrpJyHidAYw_xzyVKWdk';
+const URL_ = 'https://agabolhotzwytvsbwhmw.supabase.co';
+const KEY = 'sb_publishable_0nRVs3oYxFw8merCHgTs0g_a_AXYWLC';
 const DEMO = !!window.NAKHLIO_DEMO || /[?&]demo=1/.test(location.search);
 if (DEMO || !window.supabase) { window.LIVE = null; return; }
 const sb = window.supabase.createClient(URL_, KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false, storageKey: 'nakhlio_auth' } });
