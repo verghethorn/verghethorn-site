@@ -252,7 +252,7 @@ u:guest_d|Parcourez librement. Créez un profil pour écrire, commenter et publi
 u:chats_guest|Vos messages apparaîtront ici après la création de votre profil.
 u:spaces_guest|Cet espace est réservé aux membres. Créez un profil pour entrer.
 u:s_services|Services Nakhlio
-u:s_services_d|Interprètes, transferts, documents, visas
+u:s_services_d|Entreprise, accueil à l’aéroport, installation du logement
 c0|Wi-Fi
 c1|Climatisation
 c2|Eau
@@ -805,3 +805,5 @@ c558|La Sîra dans votre langue
 c559|Interprètes, transferts, documents, visas
 c560|Tous les services passent par des partenaires Nakhlio vérifiés et agréés. Les particuliers ne proposent pas ces services ici. Nakhlio veille à la qualité et traite chaque réclamation.
 c561|Objets et livres
+c562|Accueil à l’aéroport
+c563|Entreprise, accueil à l’aéroport, installation du logement

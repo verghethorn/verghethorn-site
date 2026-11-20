@@ -279,7 +279,7 @@ V.home = () => {
     <div class="bigcats">
       <button class="bigcat" data-act="go" data-v="housing"><img src="${img('liv1')}" alt=""><span><b>${t('s_housing')}</b><small>${t('s_housing_d')}</small></span></button>
       <button class="bigcat" data-act="go" data-v="transport"><img src="${img('car2')}" alt=""><span><b>${t('s_transport')}</b><small>${t('s_transport_d')}</small></span></button>
-      <button class="bigcat svc" data-act="go" data-v="services"><span class="svc-icons">${['contract', 'idcard', 'bank', 'plane', 'box'].map(i => `<i>${ic(i)}</i>`).join('')}</span><span><b>${t('s_services')}</b><small>${t('s_services_d')}</small></span></button>
+      <button class="bigcat svc" data-act="go" data-v="services"><span class="svc-icons">${['bank', 'plane', 'box'].map(i => `<i>${ic(i)}</i>`).join('')}</span><span><b>${t('s_services')}</b><small>${t('s_services_d')}</small></span></button>
     </div>
     <div class="cats" style="margin-top:18px">${SECTIONS.filter(s => !['housing', 'transport', 'services'].includes(s.k)).map(s => `<button class="cat" data-act="go" data-v="${s.k}"><i class="b-${s.c} c-${s.c}">${ic(s.ic)}</i>${t('s_' + s.k)}</button>`).join('')}</div>
     <div class="sec"><h3>${t('featured')}</h3><button data-act="go" data-v="housing">${t('see_all')}</button></div>
@@ -749,7 +749,7 @@ V.scat = (p) => { const c = SVC_CATS.find(x => x.k === p.id); return { tabs: tru
   <div class="banner green">${ic('shield')}<div>${ST('intro')}</div></div>
   <div class="list" style="margin-top:14px">${c.items.map(it => svcRow(c, it)).join('')}</div></div>` }; };
 V.svc = (p) => {
-  const f = svcFind(p.id); const c = f.cat, it = f.item;
+  const f = svcFind(p.id); if (!f) return V.services(); const c = f.cat, it = f.item;
   return { raw: true, cta: `<div class="p"><b class="num">${esc(L(it.price))}</b><small>${esc(L(it.time))}</small></div><button class="btn primary" data-act="sorder" data-v="${it.id}">${ic('send', 'flip')}${ST('order')}</button>`, html: `<div class="item-head svc-head b-${c.c}"><div class="float"><button class="ibtn" data-act="back" aria-label="${t('back')}">${ic('back', 'flip')}</button><span class="fr">${homeBtn()}</span></div><span class="big-ic c-${c.c}">${ic(c.icon)}</span></div>
   <div class="sheetbody wrap">
     <span class="tag green">${small('shield')}${ST(c.vetted ? 'vetted' : 'licensed')}</span>
@@ -762,7 +762,7 @@ V.svc = (p) => {
   </div>` };
 };
 function orderSheet(id) {
-  const f = svcFind(id); const it = f.item; let how = 'chat', when = 't_now';
+  const f = svcFind(id); if (!f) return; const it = f.item; let how = 'chat', when = 't_now';
   const w = sheet(`<h3>${ST('order')}</h3><p class="note">${esc(L(it.title))} · ${esc(L(it.price))}</p>
     <div class="field"><label>${ST('contact_how')}</label><div class="seg" id="ohow"><button type="button" class="on" data-v="chat">${small('chat')} ${ST('by_chat')}</button><button type="button" data-v="call">${small('phone')} ${ST('by_call')}</button></div>
       <small class="hint" dir="ltr" style="text-align:start">${esc(S.me ? S.me.phone : '')}</small></div>

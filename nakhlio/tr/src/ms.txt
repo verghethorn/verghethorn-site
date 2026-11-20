@@ -252,7 +252,7 @@ u:guest_d|Layari dengan bebas. Cipta profil untuk menulis mesej, memberi komen d
 u:chats_guest|Mesej anda akan muncul di sini selepas anda mencipta profil.
 u:spaces_guest|Ruang ini khas untuk ahli. Cipta profil untuk menyertai.
 u:s_services|Perkhidmatan Nakhlio
-u:s_services_d|Jurubahasa, pemindahan, dokumen, visa
+u:s_services_d|Perniagaan, sambutan di lapangan terbang, persediaan rumah
 c0|Wi-Fi
 c1|Penghawa dingin
 c2|Air
@@ -805,3 +805,5 @@ c558|Sirah dalam bahasa anda
 c559|Jurubahasa, pemindahan, dokumen, visa
 c560|Semua perkhidmatan melalui rakan kongsi Nakhlio yang disahkan dan berlesen. Individu tidak menawarkan perkhidmatan ini di sini. Nakhlio memantau kualiti dan menangani setiap aduan.
 c561|Barangan & buku
+c562|Sambutan di lapangan terbang
+c563|Perniagaan, sambutan di lapangan terbang, persediaan rumah

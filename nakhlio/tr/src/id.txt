@@ -252,7 +252,7 @@ u:guest_d|Lihat-lihat dengan bebas. Buat profil untuk menulis pesan, berkomentar
 u:chats_guest|Pesan Anda akan muncul di sini setelah membuat profil.
 u:spaces_guest|Ruang ini khusus anggota. Buat profil untuk bergabung.
 u:s_services|Layanan Nakhlio
-u:s_services_d|Penerjemah, antar-jemput, dokumen, visa
+u:s_services_d|Bisnis, penjemputan bandara, persiapan rumah
 c0|Wi-Fi
 c1|AC
 c2|Air
@@ -805,3 +805,5 @@ c558|Sirah dalam bahasa Anda
 c559|Penerjemah, antar-jemput, dokumen, visa
 c560|Semua layanan melalui mitra Nakhlio yang terverifikasi dan berlisensi. Perorangan tidak menawarkan layanan ini di sini. Nakhlio menjaga kualitas dan menangani setiap keluhan.
 c561|Barang & buku
+c562|Penjemputan bandara
+c563|Bisnis, penjemputan bandara, persiapan rumah
