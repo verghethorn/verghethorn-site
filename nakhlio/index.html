@@ -32,7 +32,7 @@
   color-scheme:light;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;background:var(--sand);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;overscroll-behavior:none}
+html,body{max-width:100%;overflow-x:hidden;margin:0;height:100%;background:var(--sand);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;overscroll-behavior:none}
 [dir=rtl] body,[dir=rtl] input,[dir=rtl] textarea{font-family:'IBM Plex Sans Arabic','Manrope',system-ui,sans-serif}
 button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
 input,textarea,select{font:inherit;color:inherit}
@@ -688,20 +688,22 @@ body:not(.dsk) .gallery .float .ibtn,body:not(.dsk) .item-head .float .ibtn{box-
 .mggrid button{display:flex;align-items:center;justify-content:center;color:#fff}.mggrid button svg{width:28px;height:28px}
 .mgstview .stcap{position:absolute;bottom:40px;left:16px;right:16px;color:#fff;text-align:center;font-size:15px;text-shadow:0 1px 6px rgba(0,0,0,.6);z-index:3}.mgstview video{max-width:100%;max-height:100%}
 .card.rep{padding:14px}.card.rep.done{opacity:.6}
+.view,.wrap,.phead,.block,.plist{max-width:100%;min-width:0}.view{overflow-x:clip}.phead,.plist,.pstats>div,.pid,.grow{min-width:0}.pabout,.block p,.pid h2{overflow-wrap:anywhere}
+.list:not(.dsk .list){grid-template-columns:minmax(0,1fr)}.list>*,.bigcats>*,.cats>*,.facts>*,.amen>*,.mini>*,.topics>*,.langs>*,.pgrid>*,.pstats>*,.pphotos>*,.mgcounts>*,.mggrid>*,.two-btn>*{min-width:0}.pstats small{overflow-wrap:anywhere}
 </style>
 </head>
 <body>
 <div id="root"></div>
 <div class="toast-box" id="toasts"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script>window.NAKHLIO_V = 25;</script>
-<script src="i18n.js?v=25"></script>
-<script src="data.js?v=25"></script>
-<script src="community.js?v=25"></script>
-<script src="services.js?v=25"></script>
+<script>window.NAKHLIO_V = 26;</script>
+<script src="i18n.js?v=26"></script>
+<script src="data.js?v=26"></script>
+<script src="community.js?v=26"></script>
+<script src="services.js?v=26"></script>
 <script src="vendor/supabase-2.118.0.js"></script>
-<script src="live.js?v=25"></script>
-<script src="app.js?v=25"></script>
-<script src="magaam.js?v=25"></script>
+<script src="live.js?v=26"></script>
+<script src="app.js?v=26"></script>
+<script src="magaam.js?v=26"></script>
 </body>
 </html>

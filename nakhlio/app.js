@@ -934,7 +934,7 @@ function profileHtml(n) {
   const p = person(n); const me = !!p.me;
   const items = me ? myAds() : p.items;
   const reviews = me ? [] : p.reviews;
-  const badges = `<span class="vb">${small('check')}${t('v_phone')}</span>${me || p.rating >= 4.8 ? `<span class="vb">${small('check')}${t('v_email')}</span>` : ''}${me && isAdmin() ? `<span class="vb gold">${small('shield')}${FXL('adm')}</span>` : ''}${me ? '' : badgesOf(n, p).map(k => `<span class="vb gold">${small(BADGE_UI[k][0])}${esc(BADGE_UI[k][1]())}</span>`).join('')}`;
+  const badges = `${LV ? '' : `<span class="vb">${small('check')}${t('v_phone')}</span>`}${LV || me || p.rating >= 4.8 ? `<span class="vb">${small('check')}${t('v_email')}</span>` : ''}${me && isAdmin() ? `<span class="vb gold">${small('shield')}${FXL('adm')}</span>` : ''}${me ? '' : badgesOf(n, p).map(k => `<span class="vb gold">${small(BADGE_UI[k][0])}${esc(BADGE_UI[k][1]())}</span>`).join('')}`;
   const photos = p.photos || [];
   return `<div class="phead"><div class="pcover">${skyline()}</div>
     <div class="pmain-row">${photos[0] ? `<span class="av xl" style="background:url(${photos[0]}) center/cover"></span>` : `<span class="av xl ill">${avatarSvg(me ? (S.me ? S.me.name + '@' : 'guest') : n)}</span>`}
