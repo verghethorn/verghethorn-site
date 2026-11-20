@@ -1091,3 +1091,6 @@ c837|Gönderiliyor…
 c838|Gönder
 c839|Rehberden davet et
 c840|son 7 günde yeni
+c841|Magaam yalnızca telefonda uygulama olarak çalışır. verghethorn.com/magaam adresini telefonunuzda açın ve Ana Ekrana ekleyin.
+c842|Telefonunuzu ve e-postanızı yalnızca siz görürsünüz. Girişi e-postanıza gelen kodla yaparsınız.
+c843|Test konut ve ulaşım ilanlarındaki fotoğraflar: Unsplash.

@@ -1091,3 +1091,6 @@ c837|Mengirim…
 c838|Kirim
 c839|Undang dari kontak
 c840|baru dalam 7 hari
+c841|Magaam hanya berfungsi sebagai aplikasi di ponsel. Buka verghethorn.com/magaam di ponsel dan tambahkan ke Layar Utama.
+c842|Hanya Anda yang melihat telepon dan email Anda. Masuk dengan kode yang dikirim ke email.
+c843|Foto di iklan uji coba hunian dan transportasi: Unsplash.

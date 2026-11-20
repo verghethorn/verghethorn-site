@@ -988,7 +988,7 @@ function docsBlock() {
 function accBlock() {
   const m = S.me || {};
   const row = (k, icn, label, val) => `<button data-act="accedit" data-v="${k}"><i class="b-sky c-sky">${ic(icn)}</i><span class="grow">${label}<small dir="ltr" style="text-align:start">${val ? esc(val) : t('add')}</small></span>${ic('chev', 'flip chev')}</button>`;
-  return `<div class="block"><h4>${FXL('acc_t')}</h4><p class="note" style="margin:0 0 10px">${FXL('acc_d')}</p><div class="plist">${row('phone', 'phone', t('phone_l'), m.phone)}${row('email', 'globe', t('email_l'), m.email)}
+  return `<div class="block"><h4>${FXL('acc_t')}</h4><p class="note" style="margin:0 0 10px">${FXL(LV ? 'acc_d_live' : 'acc_d')}</p><div class="plist">${row('phone', 'phone', t('phone_l'), m.phone)}${row('email', 'globe', t('email_l'), m.email)}
     <label class="optrow"><i class="b-palm c-palm">${ic('shield')}</i><span class="grow">${FXL('faceid')}<small>${FXL('faceid_d')}</small></span><input type="checkbox" id="faceid" ${S.faceidCred ? 'checked' : ''}></label></div></div>`;
 }
 function accSheet(k) {
@@ -1152,7 +1152,7 @@ function adminProfile() {
     <div style="margin-top:14px">${admSwitch()}</div></div>` };
 }
 V.about = () => ({ tabs: true, html: topbar(t('about')) + `<div class="wrap"><div class="card" style="text-align:center"><div style="width:72px;margin:0 auto 10px">${logo()}</div><b style="font-size:20px">Nakhlio</b><p style="margin:10px 0 0;line-height:1.6">${t('about_text')}</p></div>
-  <div class="kv" style="margin-top:14px"><div><span>${t('license')}</span><b>FAL-1200000000 (${t('example')})</b></div><div><span>${t('verified').split('·')[0]}</span><b>✓</b></div></div><p class="note" style="margin-top:14px;text-align:center">${t('photo_credit')}</p></div>` });
+  <div class="kv" style="margin-top:14px">${LV ? '' : `<div><span>${t('license')}</span><b>FAL-1200000000 (${t('example')})</b></div>`}<div><span>${t('verified').split('·')[0]}</span><b>✓</b></div></div><p class="note" style="margin-top:14px;text-align:center">${LV ? FXL('photo_credit_live') : t('photo_credit')}</p></div>` });
 V.lang = () => ({ tabs: true, html: topbar(t('language')) + `<div class="wrap"><div class="langs" style="margin-top:4px">${LANGS.map(l => `<button class="lang ${l.code === lang ? 'on' : ''}" data-act="setlang" data-v="${l.code}" dir="${l.dir}"><b>${l.name}</b><small>${l.latin}</small></button>`).join('')}</div></div>` });
 function admUserSheet(uid) {
   const u = LV.cached(uid); if (!u) return; const meId = meU();
