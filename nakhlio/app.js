@@ -608,7 +608,7 @@ V.room = (p) => {
   const asBar = LV && isAdmin() ? `<div class="banner ${asA ? 'green' : ''}" style="font-size:12.5px">${ic('shield')}<div style="flex:1">${FXL('as_admin_l')}: <b>${asA ? FXL('on') : FXL('off')}</b></div>${wt ? '' : `<button class="btn sm soft" data-act="asadm">${asA ? FXL('off') : FXL('on')}</button>`}</div>` : '';
   return { composer: 'room', html: topbar(L(r.name), { right: `<span class="tag green num">${nf(r.n)} ${tn('members', r.n)}</span>` }) + `<div class="wrap chat-wrap">
     <div class="banner" style="font-size:12.5px">${ic(wt ? 'shield' : 'info')}<div>${wt ? FXL('watch_mode') : t('room_rule')}</div></div>${asBar}
-    <div class="msg"><span class="av" style="background:var(--palm);color:#fff">N</span><div class="bubble op"><b class="nm">${t('operator')}</b>${t('room_hello')}</div></div>
+    <div class="msg"><span class="av" style="padding:0;overflow:hidden;background:none">${logo()}</span><div class="bubble op"><b class="nm">${t('operator')}</b>${t('room_hello')}</div></div>
     ${bub}
   </div>` };
 };
@@ -648,7 +648,7 @@ function avatarSvg(n) {
   return `<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" fill="${bg}"/><path d="M8 64c2-14 12-20 24-20s22 6 24 20z" fill="${cl}"/><rect x="28" y="38" width="8" height="8" fill="${skin}"/><ellipse cx="32" cy="32" rx="9.5" ry="11" fill="${skin}"/>${beard ? `<path d="M23 34c1 8 5 12 9 12s8-4 9-12c-2 3-5 4-9 4s-7-1-9-4z" fill="#3a2a20"/>` : ''}${head}</svg>`;
 }
 function avatar(n, size) {
-  if (n === '@nk') return `<span class="av ${size || ''}" style="background:var(--palm);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:800">N</span>`;
+  if (n === '@nk') return `<span class="av ${size || ''}" style="padding:0;overflow:hidden;background:none">${logo()}</span>`;
   if (window.LIVE && n !== '@me' && LV.byName(n)) return liveAv(LV.byName(n).id, size);
   const me = n === '@me' && S.me;
   const ph = me && S.me.photos && S.me.photos[0];
@@ -942,7 +942,7 @@ function profileHtml(n) {
   const p = person(n); const me = !!p.me;
   const items = me ? myAds() : p.items;
   const reviews = me ? [] : p.reviews;
-  const badges = `${LV ? '' : `<span class="vb">${small('check')}${t('v_phone')}</span>`}${LV || me || p.rating >= 4.8 ? `<span class="vb">${small('check')}${t('v_email')}</span>` : ''}${me && isAdmin() ? `<span class="vb gold">${small('shield')}${FXL('adm')}</span>` : ''}${me ? '' : badgesOf(n, p).map(k => `<span class="vb gold">${small(BADGE_UI[k][0])}${esc(BADGE_UI[k][1]())}</span>`).join('')}`;
+  const badges = `${LV ? '' : `<span class="vb">${small('check')}${t('v_phone')}</span>`}${LV || me || p.rating >= 4.8 ? `<span class="vb">${small('check')}${t('v_email')}</span>` : ''}${me ? '' : badgesOf(n, p).map(k => `<span class="vb gold">${small(BADGE_UI[k][0])}${esc(BADGE_UI[k][1]())}</span>`).join('')}`;
   const photos = p.photos || [];
   return `<div class="phead"><div class="pcover">${skyline()}</div>
     <div class="pmain-row">${photos[0] ? `<span class="av xl" style="background:url(${photos[0]}) center/cover"></span>` : `<span class="av xl ill">${avatarSvg(me ? (S.me ? S.me.name + '@' : 'guest') : n)}</span>`}
@@ -1397,7 +1397,11 @@ function render(scrollTop) {
 const TR_LANGS = ['ur', 'id', 'ms', 'tr', 'bn', 'hi', 'fa', 'fr'];
 const trTried = {};
 function boot() {
-  if (LV && !LV.ready) { root.innerHTML = `<div class="gate light" style="justify-content:center;align-items:center"><div style="width:72px">${logo()}</div></div>`; LV.init().then(pr => { applyLive(pr); boot(); }).catch(e => { console.warn(e); LV.ready = true; boot(); }); return; }
+  if (LV && !LV.ready && !boot.bg) {
+    // signed-in before: show the app from the saved state at once, refresh the session in the background
+    if (S.me && S.me.live) { boot.bg = true; LV.init().then(pr => { applyLive(pr); dropData(); if (!pr || (S.faceidCred && !unlocked) || !document.querySelector('.app')) boot(); else render(); }).catch(e => { console.warn(e); LV.ready = true; }); }
+    else { if (!document.getElementById('splash')) root.innerHTML = `<div class="gate light" style="justify-content:center;align-items:center"><div style="width:72px">${logo()}</div></div>`; LV.init().then(pr => { applyLive(pr); boot(); }).catch(e => { console.warn(e); LV.ready = true; boot(); }); return; }
+  }
   if (S.me && S.faceidCred && !unlocked) return gateLock();
   if (TR_LANGS.includes(lang) && !(window.TR && window.TR[lang]) && !trTried[lang]) {
     trTried[lang] = true; const sc = document.createElement('script'); sc.src = 'tr/' + lang + '.js?v=' + (window.NAKHLIO_V || 1);

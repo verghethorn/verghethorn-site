@@ -121,7 +121,7 @@ L.counts = async (id) => {
 const POSTSEL = '*, mg_likes(user_id), mg_comments(count)';
 const norm = (p) => { const me = L.user && L.user.id; return Object.assign(p, { likes: (p.mg_likes || []).length, liked: (p.mg_likes || []).some(x => x.user_id === me), ncm: ((p.mg_comments || [])[0] || {}).count || 0 }); };
 L.posts = async (type, author) => {
-  let q = sb.from('mg_posts').select(POSTSEL).eq('type', type || 'post').order('created_at', { ascending: false }).limit(60);
+  let q = sb.from('mg_posts').select(POSTSEL); q = type === 'grid' ? q.in('type', ['post', 'reel']) : q.eq('type', type || 'post'); q = q.order('created_at', { ascending: false }).limit(60);
   if (author) q = q.eq('author', author);
   if (type === 'story') q = q.gte('created_at', new Date(Date.now() - 864e5).toISOString());
   const rows = ok(await q).map(norm); await L.prof(rows.map(r => r.author)); return rows;

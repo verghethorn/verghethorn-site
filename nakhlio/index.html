@@ -14,9 +14,19 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="apple-touch-startup-image" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/splash/s-1320x2868.png">
+<link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/splash/s-1290x2796.png">
+<link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/splash/s-1284x2778.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/splash/s-1242x2688.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="img/splash/s-828x1792.png">
+<link rel="apple-touch-startup-image" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/splash/s-1206x2622.png">
+<link rel="apple-touch-startup-image" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/splash/s-1179x2556.png">
+<link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/splash/s-1170x2532.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/splash/s-1125x2436.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="img/splash/s-750x1334.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
 <style>
 /* Layout concept: a calm phone app — sand ground, palm-green structure, date-amber for the one thing to press. */
 :root{
@@ -692,20 +702,43 @@ body:not(.dsk) .gallery .float .ibtn,body:not(.dsk) .item-head .float .ibtn{box-
 .list:not(.dsk .list){grid-template-columns:minmax(0,1fr)}.list>*,.bigcats>*,.cats>*,.facts>*,.amen>*,.mini>*,.topics>*,.langs>*,.pgrid>*,.pstats>*,.pphotos>*,.mgcounts>*,.mggrid>*,.two-btn>*{min-width:0}.pstats small{overflow-wrap:anywhere}
 .opstats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:4px 0 14px}.opstats>*{min-width:0}.opstat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:7px 8px;text-align:start;display:flex;flex-direction:column;gap:2px}.opstat b{font-size:17px;font-weight:800;color:var(--palm)}.opstat small{font-size:10.5px;overflow-wrap:anywhere;hyphens:auto;color:var(--ink-2);line-height:1.25}
 .row-card>.av{flex:none}
+.mggrid .mgvt{position:relative;overflow:hidden;background:#13251f}.mgvt video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}.mgvt svg{position:relative;filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))}
 </style>
 </head>
 <body>
+<div id="splash" aria-hidden="true"><div class="sp-in">
+<svg class="sp-logo" viewBox="0 0 64 64"><path class="sp-arch" d="M15 54V30a17 17 0 0 1 34 0v24z" fill="#F6F1E8"/><g fill="none" stroke="#0F5C4C" stroke-width="2.6" stroke-linecap="round"><path class="sp-d sp-t" pathLength="1" d="M32 52V31"/><path class="sp-d sp-f1" pathLength="1" d="M32 31c-4-4-10-4.5-14-1.5"/><path class="sp-d sp-f2" pathLength="1" d="M32 31c4-4 10-4.5 14-1.5"/><path class="sp-d sp-f3" pathLength="1" d="M32 31c-3-6-8-8.5-12.5-8"/><path class="sp-d sp-f4" pathLength="1" d="M32 31c3-6 8-8.5 12.5-8"/><path class="sp-d sp-f5" pathLength="1" d="M32 31c-.5-6 .5-10 0-12.5"/></g><g class="sp-dates" fill="#E3A23B"><circle cx="29" cy="35" r="2.3"/><circle cx="35" cy="35" r="2.3"/><circle cx="32" cy="38.5" r="2.3"/></g></svg>
+<div class="sp-name">Nakhlio</div><div class="sp-tag">Life in Medina, made easy</div></div></div>
+<style>
+#splash{position:fixed;inset:0;z-index:9999;background:#0F5C4C;display:flex;align-items:center;justify-content:center;transition:opacity .35s ease}
+#splash.out{opacity:0;pointer-events:none}
+.sp-in{display:flex;flex-direction:column;align-items:center;gap:14px;transform:translateY(-4vh)}
+.sp-logo{width:132px;height:132px;overflow:visible}
+.sp-arch{transform-origin:32px 54px;animation:spA .45s ease-out both}
+.sp-d{stroke-dasharray:1;stroke-dashoffset:1;animation:spD .38s ease-out forwards}
+.sp-t{animation-delay:.3s}.sp-f1{animation-delay:.62s}.sp-f2{animation-delay:.74s}.sp-f3{animation-delay:.86s}.sp-f4{animation-delay:.98s}.sp-f5{animation-delay:1.1s}
+.sp-dates circle{transform-box:fill-box;transform-origin:center;transform:scale(0);animation:spP .3s cubic-bezier(.3,1.6,.5,1) forwards}
+.sp-dates circle:nth-child(1){animation-delay:1.3s}.sp-dates circle:nth-child(2){animation-delay:1.38s}.sp-dates circle:nth-child(3){animation-delay:1.46s}
+.sp-name{font:800 30px/1 'Manrope',system-ui,-apple-system,sans-serif;color:#F6F1E8;letter-spacing:.5px;opacity:0;animation:spF .5s ease-out .5s forwards}
+.sp-tag{font:600 14px/1.2 'Manrope',system-ui,-apple-system,sans-serif;color:#E3A23B;letter-spacing:.4px;opacity:0;animation:spF .5s ease-out .9s forwards}
+@keyframes spA{from{transform:scaleY(0);opacity:0}to{transform:scaleY(1);opacity:1}}
+@keyframes spD{to{stroke-dashoffset:0}}
+@keyframes spP{to{transform:scale(1)}}
+@keyframes spF{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.sp-arch,.sp-d,.sp-dates circle,.sp-name,.sp-tag{animation:none;opacity:1;stroke-dashoffset:0;transform:none}}
+</style>
+<script>(function(){var t0=Date.now(),done=false;window.__hideSplash=function(){if(done)return;done=true;var s=document.getElementById('splash');if(!s)return;var w=Math.max(0,1600-(Date.now()-t0));if(sessionStorage.getItem('nk_sp'))w=0;try{sessionStorage.setItem('nk_sp','1')}catch(e){}setTimeout(function(){s.classList.add('out');setTimeout(function(){s.remove()},400)},w)};setTimeout(window.__hideSplash,8000);document.addEventListener('DOMContentLoaded',function(){var r=document.getElementById('root');if(!r)return;if(r.firstElementChild)return window.__hideSplash();new MutationObserver(function(m,ob){if(r.firstElementChild){ob.disconnect();window.__hideSplash()}}).observe(r,{childList:true})})})();</script>
 <div id="root"></div>
 <div class="toast-box" id="toasts"></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script>window.NAKHLIO_V = 28;</script>
-<script src="i18n.js?v=28"></script>
-<script src="data.js?v=28"></script>
-<script src="community.js?v=28"></script>
-<script src="services.js?v=28"></script>
-<script src="vendor/supabase-2.118.0.js"></script>
-<script src="live.js?v=28"></script>
-<script src="app.js?v=28"></script>
-<script src="magaam.js?v=28"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>window.NAKHLIO_V = 30;</script>
+<script defer src="i18n.js?v=30"></script>
+<script defer src="data.js?v=30"></script>
+<script defer src="community.js?v=30"></script>
+<script defer src="services.js?v=30"></script>
+<script defer src="vendor/supabase-2.118.0.js"></script>
+<script defer src="live.js?v=30"></script>
+<script defer src="app.js?v=30"></script>
+<script defer src="magaam.js?v=30"></script>
 </body>
 </html>

@@ -298,7 +298,7 @@ if (LV) {
       <div class="mgcbox"><textarea id="mgcin" rows="1" placeholder="${t('comment_ph')}"></textarea><button class="btn primary mgbtn" data-act="mgcsend" data-v="${x.id}">${ic('send')}</button></div></div>`); };
   const profView = (uid) => {
     const me = uid === meId(); const pr = me ? LV.profile || {} : (LV.cached(uid) || want('mg:pf:' + uid, () => LV.fetchProfile(uid)) || {});
-    const cnt = want('mg:cnt:' + uid, () => LV.counts(uid)) || [0, 0, 0]; const posts = keep(want('mg:up:' + uid, () => LV.posts('post', uid))) || []; const rel = R();
+    const cnt = want('mg:cnt:' + uid, () => LV.counts(uid)) || [0, 0, 0]; const posts = keep(want('mg:up:' + uid, () => LV.posts('grid', uid))) || []; const rel = R();
     const fr = rel.friends.has(uid), rq = rel.out.has(uid), fo = rel.follow.has(uid);
     const actions = me ? `<button class="btn soft mgbtn2" data-act="mgedit">${small('user')}${t('edit_profile')}</button>`
       : `<button class="btn ${fo ? 'soft mgbtn2' : 'primary mgbtn'}" data-act="mgfollow" data-v="${uid}">${M(fo ? 'unfollow' : 'follow')}</button><button class="btn soft mgbtn2" data-act="mgfriend" data-v="${uid}" ${fr || rq ? 'disabled' : ''}>${small(fr ? 'check' : 'plus')}${M(fr ? 'is_friend' : rq ? 'req_sent' : 'add_friend')}</button><button class="btn soft mgbtn2 sq ${fr ? '' : 'dim'}" data-act="mgdm" data-v="${uid}" aria-label="${t('dm')}">${ic('send')}</button><button class="btn soft mgbtn2 sq" data-act="mgreport" data-v="${uid}" data-t="user" aria-label="${t('report')}">${ic('flag')}</button>`;
@@ -307,7 +307,7 @@ if (LV) {
     <div class="mgwrap mgprof"><div class="mgpav">${av(uid, 'xl')}</div><h2>${esc(pr.name || '…')}${vm(uid)}</h2>${pr.banned ? `<p class="tag" style="background:var(--rose-tint);color:var(--rose)">${FXM('act_ban')}</p>` : ''}${pr.about ? `<p class="mgbio">${esc(me ? pr.about : trText('a' + uid, pr.about, pr.ui_lang))}</p>` : ''}
     <div class="mgcounts"><div><b class="num">${nf(cnt[0])}</b><small>${M('posts')}</small></div><div><b class="num">${nf(cnt[1])}</b><small>${M('followers')}</small></div><div><b class="num">${nf(cnt[2])}</b><small>${M('following')}</small></div></div>
     <div class="mgpact">${actions}</div>${!me && !fr ? `<p class="note" style="text-align:center;margin-top:8px">${small('lock')} ${M('dm_lock')}</p>` : ''}${adm}
-    <div class="mggrid">${posts.length ? posts.map(x => `<button data-act="mgpost" data-v="${x.id}" style="background-image:url(${esc(x.media_type === 'video' ? '' : x.media_url)})">${x.media_type === 'video' ? ic('play') : ''}</button>`).join('') : `<p class="note" style="grid-column:1/-1;text-align:center;padding:20px 0">${M('no_posts')}</p>`}</div></div>`;
+    <div class="mggrid">${posts.length ? posts.map(x => x.media_type === 'video' ? `<button class="mgvt" data-act="mgpost" data-v="${x.id}"><video src="${esc(x.media_url)}#t=0.5" muted playsinline preload="metadata"></video>${ic('play')}</button>` : `<button data-act="mgpost" data-v="${x.id}" style="background-image:url(${esc(x.media_url)})"></button>`).join('') : `<p class="note" style="grid-column:1/-1;text-align:center;padding:20px 0">${M('no_posts')}</p>`}</div></div>`;
   };
   V.mgme = () => { const r = ready(); if (r) return r; return wrapView('mgme', profView(meId()), t('profile_l')); };
   V.mgp = (p) => { const r = ready(); if (r) return r; if (p.id === meId()) return V.mgme(); return wrapView('', profView(p.id), esc(pname(p.id))); };
