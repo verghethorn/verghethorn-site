@@ -48,9 +48,9 @@ L.email = () => (L.user && L.user.email) || '';
 const b64ToBlob = (d) => { const [h, b] = d.split(','); const bin = atob(b); const a = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i); return new Blob([a], { type: (h.match(/data:([^;]+)/) || [])[1] || 'image/jpeg' }); };
 L.upload = async (fileOrData, kind) => {
   const blob = typeof fileOrData === 'string' ? b64ToBlob(fileOrData) : fileOrData;
-  const ext = (blob.type.split('/')[1] || 'jpg').replace('quicktime', 'mov').replace('jpeg', 'jpg');
+  const ext = ((blob.type.split(';')[0].split('/')[1]) || 'jpg').replace('quicktime', 'mov').replace('jpeg', 'jpg').replace('x-m4a', 'm4a');
   const path = `${L.user.id}/${kind || 'm'}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
-  ok(await sb.storage.from('media').upload(path, blob, { contentType: blob.type, upsert: false }));
+  ok(await sb.storage.from('media').upload(path, blob, { contentType: blob.type.split(';')[0], upsert: false, cacheControl: '31536000' }));
   return sb.storage.from('media').getPublicUrl(path).data.publicUrl;
 };
 
@@ -105,7 +105,18 @@ L.mgChat = async (other) => { const me = L.user.id;
   if (rows[0]) return rows[0]; return ok(await sb.from('mg_chats').insert({ user1: me, user2: other }).select().single()); };
 L.mgChatById = async (id) => ok(await sb.from('mg_chats').select('*').eq('id', id).maybeSingle());
 L.mgMessages = async (chatId) => { const rows = ok(await sb.from('mg_messages').select('*').eq('chat_id', chatId).order('created_at', { ascending: false }).limit(300)); return rows.reverse(); };
-L.mgSend = async (chatId, body, lang, media_url, reply_to) => ok(await sb.from('mg_messages').insert({ chat_id: chatId, sender: L.user.id, body: body || '', lang: lang || '', media_url: media_url || null, reply_to: reply_to || null }).select().single());
+L.mgSend = async (chatId, body, lang, media_url, reply_to, media_kind, media_meta) => ok(await sb.from('mg_messages').insert({ chat_id: chatId, sender: L.user.id, body: body || '', lang: lang || '', media_url: media_url || null, reply_to: reply_to || null, media_kind: media_kind || (media_url ? 'image' : null), media_meta: media_meta || null }).select().single());
+L.explore = async (n) => { const rows = ok(await sb.from('mg_posts').select(POSTSEL).in('type', ['post', 'reel']).eq('hidden', false).order('created_at', { ascending: false }).range(0, (n || 30) - 1)).map(norm); await L.prof(rows.map(r => r.author)); return rows; };
+/* verification ("blue check") requests */
+L.verifyMine = async () => { const r = await sb.from('verify_requests').select('*').eq('user_id', L.user.id).order('created_at', { ascending: false }).limit(1); return (r.data || [])[0] || null; };
+L.verifySubmit = async (blob, app) => { const path = `${L.user.id}/doc-${Date.now()}.jpg`; ok(await sb.storage.from('verify').upload(path, blob, { contentType: 'image/jpeg', upsert: false }));
+  return ok(await sb.from('verify_requests').insert({ user_id: L.user.id, doc_path: path, app: app || 'nakhlio' }).select().single()); };
+L.verifyList = async () => { const rows = ok(await sb.from('verify_requests').select('*').eq('status', 'pending').order('created_at').limit(50)); await L.prof(rows.map(r => r.user_id)); return rows; };
+L.verifyDoc = async (path) => { const r = await sb.storage.from('verify').createSignedUrl(path, 600); return r.data ? r.data.signedUrl : null; };
+L.verifyDecide = async (req, approve, note) => {
+  if (approve) await L.setFlag(req.user_id, { verified: true });
+  ok(await sb.from('verify_requests').update({ status: approve ? 'approved' : 'rejected', note: note || '', reviewed_by: L.user.id, reviewed_at: new Date().toISOString() }).eq('id', req.id));
+  await sb.storage.from('verify').remove([req.doc_path]); };
 L.mgDelete = async (id) => ok(await sb.from('mg_messages').update({ deleted: true, body: '', media_url: null }).eq('id', id));
 L.mgRead = async (chatId) => sb.from('mg_reads').upsert({ chat_id: chatId, user_id: L.user.id, read_at: new Date().toISOString() });
 L.mgOtherRead = async (chatId) => { const r = await sb.from('mg_reads').select('*').eq('chat_id', chatId).neq('user_id', L.user.id).maybeSingle(); return r.data ? r.data.read_at : null; };

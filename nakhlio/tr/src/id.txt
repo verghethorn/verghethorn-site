@@ -1054,3 +1054,40 @@ c801|Buka Magaam dari Layar Utama lalu daftar
 c802|Tidak ada tombol ini? Buka tautan di Safari: ketuk ⋯ atau ikon kompas lalu pilih “Buka di Safari”.
 c803|Pasang
 c804|Lanjutkan di peramban
+c805|Verifikasi
+c806|Pengguna Magaam
+c807|Dapatkan verifikasi
+c808|Tunjukkan bahwa ini benar-benar Anda. Orang lebih percaya.
+c809|Tanda ✓ di samping nama Anda menunjukkan administrator telah memeriksa identitas Anda. Dua langkah:
+c810|Foto profil Anda
+c811|Foto sudah ada
+c812|Tambahkan foto asli wajah Anda
+c813|Foto paspor atau iqama Anda
+c814|Halaman dengan foto dan nama Anda, tanpa silau
+c815|Hanya administrator Nakhlio yang melihat dokumen. Kami menghapusnya tepat setelah pemeriksaan.
+c816|Kirim untuk diperiksa
+c817|Tambahkan foto profil terlebih dahulu
+c818|Tambahkan foto dokumen
+c819|Permintaan terkirim. Administrator akan memeriksanya dan mengirim pesan di obrolan tim Nakhlio.
+c820|Permintaan Anda sedang diperiksa. Kami akan mengabari segera setelah selesai.
+c821|Anda sudah terverifikasi ✓
+c822|Permintaan Anda sebelumnya ditolak
+c823|Tidak ada permintaan baru
+c824|Setujui
+c650|Tolak
+c825|Alasan penolakan (akan dilihat orang tersebut):
+c826|Identitas Anda dikonfirmasi dan tanda ✓ sudah di profil Anda. Terima kasih!
+c827|Kami tidak dapat mengonfirmasi identitas Anda. Dokumen telah dihapus. Silakan coba lagi.
+c828|Jelajahi
+c829|Orang
+c830|Semua postingan
+c831|Tidak ada yang ditemukan
+c832|Foto atau video
+c833|Ambil foto
+c834|Pesan suara
+c835|Merekam… Ketuk Kirim atau ✕
+c836|Tidak ada akses mikrofon. Izinkan di pengaturan ponsel.
+c837|Mengirim…
+c838|Kirim
+c839|Undang dari kontak
+c840|baru dalam 7 hari

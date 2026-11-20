@@ -1054,3 +1054,40 @@ c801|Ouvrez Magaam depuis l’écran d’accueil et inscrivez-vous
 c802|Pas de bouton ? Ouvrez le lien dans Safari : touchez ⋯ ou l’icône boussole et choisissez « Ouvrir dans Safari ».
 c803|Installer
 c804|Continuer dans le navigateur
+c805|Vérification
+c806|Utilisateurs Magaam
+c807|Se faire vérifier
+c808|Montrez que c’est vraiment vous. Les gens font davantage confiance.
+c809|Le ✓ à côté de votre nom montre que les administrateurs ont vérifié votre identité. Deux étapes :
+c810|Votre photo de profil
+c811|Photo ajoutée
+c812|Ajoutez une vraie photo de votre visage
+c813|Photo de votre passeport ou iqama
+c814|La page avec votre photo et votre nom, sans reflet
+c815|Seuls les administrateurs de Nakhlio voient le document. Nous le supprimons juste après la vérification.
+c816|Envoyer pour vérification
+c817|Ajoutez d’abord une photo de profil
+c818|Ajoutez une photo du document
+c819|Demande envoyée. Les administrateurs l’examineront et vous écriront dans la discussion de l’équipe Nakhlio.
+c820|Votre demande est en cours d’examen. Nous vous écrirons dès qu’elle sera vérifiée.
+c821|Vous êtes déjà vérifié ✓
+c822|Votre demande précédente a été refusée
+c823|Aucune nouvelle demande
+c824|Approuver
+c650|Refuser
+c825|Motif du refus (la personne le verra) :
+c826|Votre identité est confirmée et le ✓ est sur votre profil. Merci !
+c827|Nous n’avons pas pu confirmer votre identité. Le document a été supprimé. Réessayez.
+c828|Explorer
+c829|Personnes
+c830|Toutes les publications
+c831|Personne trouvée
+c832|Photo ou vidéo
+c833|Prendre une photo
+c834|Message vocal
+c835|Enregistrement… Touchez Envoyer ou ✕
+c836|Pas d’accès au micro. Autorisez-le dans les réglages du téléphone.
+c837|Envoi…
+c838|Envoyer
+c839|Inviter depuis les contacts
+c840|nouveaux sur 7 jours

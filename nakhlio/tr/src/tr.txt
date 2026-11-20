@@ -1054,3 +1054,40 @@ c801|Magaam’ı Ana Ekrandan açın ve kaydolun
 c802|Bu düğme yok mu? Bağlantıyı Safari’de açın: ⋯ veya pusula simgesine dokunup “Safari’de Aç”ı seçin.
 c803|Yükle
 c804|Tarayıcıda devam et
+c805|Doğrulama
+c806|Magaam kullanıcıları
+c807|Doğrulama al
+c808|Gerçekten siz olduğunuzu gösterin. İnsanlar daha çok güvenir.
+c809|Adınızın yanındaki ✓, yöneticilerin kimliğinizi doğruladığını gösterir. İki adım:
+c810|Profil fotoğrafınız
+c811|Fotoğraf eklendi
+c812|Yüzünüzün gerçek bir fotoğrafını ekleyin
+c813|Pasaportunuzun veya ikametinizin fotoğrafı
+c814|Fotoğrafınızın ve adınızın olduğu sayfa, parlama olmadan
+c815|Belgeyi yalnızca Nakhlio yöneticileri görür. Kontrolden hemen sonra sileriz.
+c816|İncelemeye gönder
+c817|Önce profil fotoğrafı ekleyin
+c818|Belgenin fotoğrafını ekleyin
+c819|Talep gönderildi. Yöneticiler inceleyip Nakhlio ekibi sohbetinden size yazacak.
+c820|Talebiniz inceleniyor. Kontrol edilir edilmez size yazacağız.
+c821|Zaten doğrulandınız ✓
+c822|Önceki talebiniz reddedildi
+c823|Yeni talep yok
+c824|Onayla
+c650|Reddet
+c825|Reddetme nedeni (kişi görecek):
+c826|Kimliğiniz doğrulandı ve ✓ işareti profilinizde. Teşekkürler!
+c827|Kimliğinizi doğrulayamadık. Belge silindi. Lütfen tekrar deneyin.
+c828|Keşfet
+c829|Kişiler
+c830|Tüm gönderiler
+c831|Kimse bulunamadı
+c832|Fotoğraf veya video
+c833|Fotoğraf çek
+c834|Sesli mesaj
+c835|Kaydediliyor… Gönder’e veya ✕’e dokunun
+c836|Mikrofon erişimi yok. Telefon ayarlarından izin verin.
+c837|Gönderiliyor…
+c838|Gönder
+c839|Rehberden davet et
+c840|son 7 günde yeni

@@ -54,6 +54,21 @@ const T = {
   inv_ok: D('Вы теперь друзья с', 'You are now friends with', 'أصبحتما صديقين:'),
   write: D('Написать', 'Message', 'مراسلة'),
   other_email: D('Другой e-mail', 'Another e-mail', 'بريد آخر'),
+  explore: D('Поиск', 'Explore', 'استكشاف'),
+  people_s: D('Люди', 'People', 'أشخاص'),
+  all_posts: D('Все публикации', 'All posts', 'كل المنشورات'),
+  more: D('Показать ещё', 'Show more', 'عرض المزيد'),
+  nobody: D('Никого не нашли', 'Nobody found', 'لم نجد أحداً'),
+  attach_media: D('Фото или видео', 'Photo or video', 'صورة أو فيديو'),
+  take_photo: D('Сделать фото', 'Take a photo', 'التقاط صورة'),
+  voice: D('Голосовое', 'Voice message', 'رسالة صوتية'),
+  rec_hint: D('Идёт запись… Нажмите «Отправить» или ✕', 'Recording… Tap Send or ✕', 'جارٍ التسجيل… اضغط «إرسال» أو ✕'),
+  mic_denied: D('Нет доступа к микрофону. Разрешите его в настройках телефона.', 'No microphone access. Allow it in your phone settings.', 'لا يوجد إذن للميكروفون. اسمح به في إعدادات الهاتف.'),
+  sending: D('Отправляем…', 'Sending…', 'جارٍ الإرسال…'),
+  send_l: D('Отправить', 'Send', 'إرسال'),
+  from_contacts: D('Пригласить из контактов', 'Invite from contacts', 'ادعُ من جهات الاتصال'),
+  mg_users_n: D('Пользователей в Magaam', 'Magaam users', 'مستخدمو Magaam'),
+  new7_n: D('новых за 7 дней', 'new in 7 days', 'جدد خلال 7 أيام'),
   inst_t: D('Установите Magaam на телефон', 'Install Magaam on your phone', 'ثبّت Magaam على هاتفك'),
   inst_d: D('Так Magaam откроется как обычное приложение, и вам будут приходить уведомления о сообщениях.', 'Magaam will open like a normal app and you will get message notifications.', 'سيفتح Magaam كتطبيق عادي وستصلك إشعارات الرسائل.'),
   inst_1: D('Нажмите кнопку «Поделиться» внизу экрана', 'Tap the Share button at the bottom of the screen', 'اضغط زر «مشاركة» أسفل الشاشة'),
@@ -132,8 +147,8 @@ const pLink = (n, inner) => `<button class="pbtn" data-act="mgp" data-v="${esc(n
 const capHtml = (p) => { const tr = p.who !== '@me' && LANG_OF[p.who] && LANG_OF[p.who] !== NK.lang; return `${esc(txt(p.cap || ''))}${tr ? `<span class="mgtr">${small('translate')}${t('auto_tr')}</span>` : ''}`; };
 
 const top = (title) => `<header class="mgtop">${window.MG_APP ? '<span class="mgback"></span>' : `<button class="mgback" data-act="tab" data-v="home" aria-label="${t('back')}">${ic('back', 'flip')}<span>${M('back_n')}</span></button>`}
-  <div class="mgbrand">${mgLogo()}<b>${title || 'MAGAAM'}</b></div><button class="mgic" data-act="mgnew" aria-label="${M('create')}">${ic('plus')}</button></header>`;
-const nav = (on) => `<nav class="mgnav">${[['mg', 'home', 'feed'], ['mgreels', 'play', 'reels'], ['mgnew', 'plus', 'create'], window.LIVE ? ['mgchats', 'chat', 'chats'] : ['mgfriends', 'users', 'friends'], ['mgme', 'user', null]].map(([v, i, k]) =>
+  <div class="mgbrand">${title ? `${mgLogo()}<b>${title}</b>` : '<img class="mgwm" src="img/mgapp/wordmark-dark.png" alt="MAGAAM">'}</div>${window.LIVE ? `<button class="mgic" data-act="mggo" data-v="mgreels" aria-label="${M('reels')}">${ic('play')}</button>` : ''}<button class="mgic" data-act="mgnew" aria-label="${M('create')}">${ic('plus')}</button></header>`;
+const nav = (on) => `<nav class="mgnav">${[['mg', 'home', 'feed'], window.LIVE ? ['mgexplore', 'search', 'explore'] : ['mgreels', 'play', 'reels'], ['mgnew', 'plus', 'create'], window.LIVE ? ['mgchats', 'chat', 'chats'] : ['mgfriends', 'users', 'friends'], ['mgme', 'user', null]].map(([v, i, k]) =>
   v === 'mgnew' ? `<button class="mgplus" data-act="mgnew" aria-label="${M('create')}">${ic('plus')}</button>`
   : `<button class="${on === v || (v === 'mgchats' && on === 'mgfriends') ? 'on' : ''}" data-act="mggo" data-v="${v}">${v === 'mgme' && NK.S.me ? (window.__mgMeAv ? window.__mgMeAv() : mgAv('@me', 'xs')) : ic(i)}${v === 'mgchats' && window.__mgUnread ? `<em class="mgbadge num">${window.__mgUnread > 99 ? '99+' : window.__mgUnread}</em>` : ''}<span>${k ? M(k) : t('profile_l')}</span></button>`).join('')}</nav>`;
 function rulesModal() {
@@ -144,8 +159,8 @@ function rulesModal() {
   host.appendChild(w);
 }
 const wrapView = (on, body, title) => (setTimeout(rulesModal, 60), { html: `<div class="mg">${top(title)}${body}</div>${nav(on)}` });
-const mobileOnly = () => ({ html: `<div class="mg">${top()}<div class="mgwrap" style="text-align:center;padding-top:40px">${mgLogo('big')}<h2 style="margin:14px 0 6px">MAGAAM</h2><p class="note">${esc(L(FX.mg_mobile))}</p></div></div>` });
-const lock = () => ({ html: `<div class="mg">${top()}<div class="mgwrap" style="text-align:center;padding-top:40px">${mgLogo('big')}<h2 style="margin:14px 0 6px">MAGAAM</h2><p class="note">${M('tag')}</p><p class="note">${t('spaces_guest')}</p><button class="btn primary full mgbtn" data-act="startreg" style="margin-top:16px">${t('create_profile')}</button></div></div>` });
+const mobileOnly = () => ({ html: `<div class="mg">${top()}<div class="mgwrap" style="text-align:center;padding-top:40px">${mgLogo('big')}<h2 style="margin:14px 0 6px"><img class="mgwm" src="img/mgapp/wordmark-dark.png" alt="MAGAAM"></h2><p class="note">${esc(L(FX.mg_mobile))}</p></div></div>` });
+const lock = () => ({ html: `<div class="mg">${top()}<div class="mgwrap" style="text-align:center;padding-top:40px">${mgLogo('big')}<h2 style="margin:14px 0 6px"><img class="mgwm" src="img/mgapp/wordmark-dark.png" alt="MAGAAM"></h2><p class="note">${M('tag')}</p><p class="note">${t('spaces_guest')}</p><button class="btn primary full mgbtn" data-act="startreg" style="margin-top:16px">${t('create_profile')}</button></div></div>` });
 
 function postCard(p) {
   const liked = st().likes[p.id];
@@ -268,7 +283,7 @@ window.MGACT = (a, v, el) => {
   if (!NK.S.me && a !== 'mggo') { authSheet(); return true; }
   const g = st();
   switch (a) {
-    case 'mggo': if (NK.stack.length && NK.stack[NK.stack.length - 1].v === v) return true; if (['mg', 'mgreels', 'mgfriends', 'mgme', 'mgchats'].includes(cur().v)) NK.stack[NK.stack.length - 1] = { v }; else NK.stack.push({ v }); render(true); return true;
+    case 'mggo': if (NK.stack.length && NK.stack[NK.stack.length - 1].v === v) return true; if (['mg', 'mgreels', 'mgfriends', 'mgme', 'mgchats', 'mgexplore'].includes(cur().v)) NK.stack[NK.stack.length - 1] = { v }; else NK.stack.push({ v }); render(true); return true;
     case 'mgp': if (v === '@me') { go('mgme'); return true; } go('mgp', { id: v }); return true;
     case 'mgpost': go('mgpost', { id: v }); return true;
     case 'mglike': g.likes[v] = !g.likes[v]; save(); render(); return true;
@@ -343,9 +358,10 @@ if (LV) {
     const actions = me ? `<button class="btn soft mgbtn2" data-act="mgedit">${small('user')}${t('edit_profile')}</button><button class="btn primary mgbtn" data-act="mginvite">${small('plus')}${M('invite')}</button><button class="btn soft mgbtn2 sq" data-act="notifset" aria-label="${FXM('notif_t')}">${ic('siren')}</button>${NK.canAdmin() ? `<button class="btn soft mgbtn2 sq ${isAdmin() ? 'on' : ''}" data-act="admmode" aria-label="${FXM(isAdmin() ? 'adm_mode_off' : 'adm_mode_on')}">${ic('shield')}</button>` : ''}`
       : `<button class="btn ${fo ? 'soft mgbtn2' : 'primary mgbtn'}" data-act="mgfollow" data-v="${uid}">${M(fo ? 'unfollow' : 'follow')}</button><button class="btn soft mgbtn2" data-act="mgfriend" data-v="${uid}" ${fr || rq ? 'disabled' : ''}>${small(fr ? 'check' : 'plus')}${M(fr ? 'is_friend' : rq ? 'req_sent' : 'add_friend')}</button><button class="btn soft mgbtn2 sq ${fr ? '' : 'dim'}" data-act="mgdm" data-v="${uid}" aria-label="${t('dm')}">${ic('send')}</button><button class="btn soft mgbtn2 sq" data-act="mgreport" data-v="${uid}" data-t="user" aria-label="${t('report')}">${ic('flag')}</button>`;
     const adm = isAdmin() && !me ? `<div class="mgadmbar"><b>${small('shield')}${FXM('adm')}</b><button data-act="mgaflag" data-v="${uid}" data-f="verified" data-x="${pr.verified ? 0 : 1}">${FXM(pr.verified ? 'act_unverify' : 'act_verify')}</button><button data-act="mgaflag" data-v="${uid}" data-f="banned" data-x="${pr.banned ? 0 : 1}">${FXM(pr.banned ? 'act_unban' : 'act_ban')}</button><button data-act="mgawarn" data-v="${uid}">${FXM('act_warn')}</button></div>` : '';
-    const admTop = me && isAdmin() ? `<button class="mgadmmode" data-act="admmode">${small('shield')}<b>${FXM('adm_badge')}</b><span>${FXM('adm_mode_off')}</span></button>` : '';
+    const ast = me && isAdmin() ? want('adm:stats', () => LV.stats()) || {} : {};
+    const admTop = me && isAdmin() ? `<button class="mgadmmode" data-act="admmode">${small('shield')}<b>${FXM('adm_badge')}</b><span>${FXM('adm_mode_off')}</span></button><div class="mgastats"><div><b class="num">${ast.mg_users == null ? '…' : nf(ast.mg_users)}</b><small>${M('mg_users_n')}</small></div><div><b class="num">${ast.mg_new7 == null ? '…' : nf(ast.mg_new7)}</b><small>${M('new7_n')}</small></div><div><b class="num">${ast.reports == null ? '…' : nf(ast.reports)}</b><small>${FXM('tab_reports')}</small></div><div><b class="num">${ast.verify == null ? '…' : nf(ast.verify)}</b><small>${FXM('tab_verify')}</small></div></div>` : '';
     return admTop + `<div class="mgcover" style="${pr.cover_url ? `background-image:url(${esc(pr.cover_url)})` : ''}">${me ? `<button class="mgcbtn" data-act="mgcover">${small('camera')}${M('cover')}</button>` : ''}</div>
-    <div class="mgwrap mgprof"><div class="mgpav">${av(uid, 'xl')}</div><h2>${esc(mname(uid))}${vm(uid)}</h2>${pr.banned ? `<p class="tag" style="background:var(--rose-tint);color:var(--rose)">${FXM('act_ban')}</p>` : ''}${pr.mg_bio ? `<p class="mgbio">${esc(me ? pr.mg_bio : trText('a' + uid, pr.mg_bio, pr.ui_lang))}</p>` : ''}
+    <div class="mgwrap mgprof"><div class="mgpav">${av(uid, 'xl')}</div><h2>${esc(mname(uid))}${vm(uid)}</h2>${pr.banned ? `<p class="tag" style="background:var(--rose-tint);color:var(--rose)">${FXM('act_ban')}</p>` : ''}${me && !pr.verified ? `<button class="mgvfbtn" data-act="vfopen" data-v="mg">${small('check')}${FXM('vf_t')}</button>` : ''}${pr.mg_bio ? `<p class="mgbio">${esc(me ? pr.mg_bio : trText('a' + uid, pr.mg_bio, pr.ui_lang))}</p>` : ''}
     <div class="mgcounts"><div><b class="num">${nf(cnt[0])}</b><small>${M('posts')}</small></div><div><b class="num">${nf(cnt[1])}</b><small>${M('followers')}</small></div><div><b class="num">${nf(cnt[2])}</b><small>${M('following')}</small></div></div>
     <div class="mgpact">${actions}</div>${!me && !fr ? `<p class="note" style="text-align:center;margin-top:8px">${small('lock')} ${M('dm_lock')}</p>` : ''}${adm}
     <div class="mggrid">${posts.length ? posts.map(x => x.media_type === 'video' ? `<button class="mgvt" data-act="mgpost" data-v="${x.id}"><video src="${esc(x.media_url)}#t=0.5" muted playsinline preload="metadata"></video>${ic('play')}</button>` : `<button data-act="mgpost" data-v="${x.id}" style="background-image:url(${esc(x.media_url)})"></button>`).join('') : `<p class="note" style="grid-column:1/-1;text-align:center;padding:20px 0">${M('no_posts')}</p>`}</div></div>`;
@@ -378,13 +394,13 @@ if (LV) {
       <p class="note" style="font-size:12px">${M('rules')}</p><button class="btn primary full mgbtn" id="mgpub" style="margin-top:10px">${t('publish')}</button>`);
     w.querySelectorAll('[data-ty]').forEach(b => b.onclick = () => { type = b.dataset.ty; w.querySelectorAll('[data-ty]').forEach(x => x.classList.toggle('on', x === b)); });
     w.querySelector('#mgfile').onchange = async (e) => { file = e.target.files[0]; data = null; if (!file) return; const pv = w.querySelector('#mgprev');
-      if (file.type.startsWith('video')) { if (file.size > 50 * 1048576) { toast(FXM('too_big')); file = null; return; } pv.innerHTML = `<video src="${URL.createObjectURL(file)}" muted autoplay loop playsinline></video>`; } else { data = await resizeImg(file); pv.innerHTML = `<img src="${data}" alt="">`; } };
+      if (file.type.startsWith('video')) { if (file.size > 50 * 1048576) { toast(FXM('too_big')); file = null; return; } pv.innerHTML = `<video src="${URL.createObjectURL(file)}" muted autoplay loop playsinline></video>`; } else { data = await resizeImg(file, 2048, 0.88); pv.innerHTML = `<img src="${data}" alt="">`; } };
     w.querySelector('#mgpub').onclick = async (ev) => { if (!file) { w.querySelector('.mgpick').classList.add('err'); return; } const b = ev.currentTarget; b.disabled = true; b.textContent = '…';
       try { const isV = file.type.startsWith('video'); const url = await LV.upload(isV ? file : data, type);
         await LV.createPost({ type, media_url: url, media_type: isV ? 'video' : 'image', caption: w.querySelector('#mgcap').value.trim(), lang: NK.lang, dist: NK.S.me.dist || '' });
         w.remove(); toast(t('published')); dropData('mg:'); go(type === 'reel' ? 'mgreels' : 'mg');
       } catch (e) { console.warn(e); toast(FXM('send_fail')); b.disabled = false; b.textContent = t('publish'); } }; };
-  const pickImg = (cb) => { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.onchange = async () => { const f = inp.files[0]; if (f) cb(await resizeImg(f)); }; inp.click(); };
+  const pickImg = (cb, max) => { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.onchange = async () => { const f = inp.files[0]; if (f) cb(await resizeImg(f, max || 1080, 0.88)); }; inp.click(); };
   const editLive = () => { const w = sheet(`<h3>${t('edit_profile')}</h3><div style="display:flex;gap:10px;margin:6px 0 14px"><button class="btn soft mgbtn2" id="mgph">${small('camera')}${M('photo')}</button><button class="btn soft mgbtn2" id="mgcv">${small('camera')}${M('cover')}</button></div>
       <div class="field"><label for="mgnm">${M('name_l')}</label><input id="mgnm" maxlength="40" value="${esc(mname(meId()))}"></div>
       <div class="field"><label for="mgbio">${t('about_l')}</label><textarea id="mgbio" rows="3">${esc((LV.profile || {}).mg_bio || '')}</textarea></div><button class="btn primary full mgbtn" id="mgsave">${t('save_l')}</button>`);
@@ -405,12 +421,12 @@ if (LV) {
       : `<p class="note" style="margin:0 0 10px">${L(window.FX.code_sent)} <b dir="ltr">${esc(MR.email)}</b></p><div class="field"><label for="mgcode">${M('code_l')}</label><input id="mgcode" inputmode="numeric" autocomplete="one-time-code" maxlength="8" dir="ltr" style="letter-spacing:6px;font-size:22px;text-align:center"></div>${err}
         <button class="btn primary full mgbtn" data-act="mgrverify">${M('enter')}</button><div style="display:flex;justify-content:space-between;margin-top:12px"><button class="mglink" data-act="mgrback">${M('other_email')}</button><button class="mglink" data-act="mgrsend" data-v="again">${t('get_code')}</button></div>
         <p class="note" style="font-size:12px;margin-top:10px">${L(window.FX.spam_hint)}</p>`;
-    return { html: `<div class="mg mgland"><div class="mgwrap"><div class="mglhead">${mgLogo('big')}<h1>MAGAAM</h1><p>${M('tag2')}</p></div>${invBox()}<div class="mgcard">${body}</div></div></div>` }; };
+    return { html: `<div class="mg mgland"><div class="mgwrap"><div class="mglhead">${mgLogo('big')}<h1 class="mgh1"><img class="mgwm" src="img/mgapp/wordmark-dark.png" alt="MAGAAM"></h1><p>${M('tag2')}</p></div>${invBox()}<div class="mgcard">${body}</div></div></div>` }; };
   let bip = null; window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); bip = e; if (cur().v.startsWith('mg')) render(); });
   const shareIc = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-4px"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>`;
   const plusIc = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:-4px"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg>`;
   const installGate = () => { const ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
-    return { html: `<div class="mg mgland"><div class="mgwrap"><div class="mglhead">${mgLogo('big')}<h1>MAGAAM</h1><p>${M('tag2')}</p></div>${invBox()}<div class="mgcard">
+    return { html: `<div class="mg mgland"><div class="mgwrap"><div class="mglhead">${mgLogo('big')}<h1 class="mgh1"><img class="mgwm" src="img/mgapp/wordmark-dark.png" alt="MAGAAM"></h1><p>${M('tag2')}</p></div>${invBox()}<div class="mgcard">
       <h3 style="margin:0 0 4px">${M('inst_t')}</h3><p class="note" style="margin:0 0 12px">${M('inst_d')}</p>
       ${bip ? `<button class="btn primary full mgbtn" data-act="mginst">${M('inst_btn')}</button>` : `<ol class="mgsteps"><li><span>1</span>${M('inst_1')} ${shareIc}</li><li><span>2</span>${M('inst_2')} ${plusIc}</li><li><span>3</span>${M('inst_3')}</li></ol>${ios ? `<p class="note" style="font-size:12.5px;margin:10px 0 0">${M('inst_safari')}</p>` : ''}`}
       </div><button class="mglink" style="display:block;margin:16px auto 0" data-act="mgskipinst">${M('inst_skip')}</button></div>${ios && !bip ? '<div class="mgarrow">↓</div>' : ''}</div>` }; };
@@ -429,7 +445,7 @@ if (LV) {
     const w = sheet(`<div style="text-align:center">${mgLogo()}<h3 style="margin:8px 0 4px">${M('invite')}</h3><p class="note" style="margin:0 0 12px">${M('invite_d')}</p></div>
       <div class="mglinkbox" dir="ltr">${esc(link)}</div>
       ${navigator.share ? `<button class="btn primary full mgbtn" data-x="share" style="margin-top:10px">${small('send')}${M('share')}</button>` : ''}
-      <div class="mgshare"><a class="btn soft mgbtn2" href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" rel="noopener">WhatsApp</a><a class="btn soft mgbtn2" href="https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(M('inv_text'))}" target="_blank" rel="noopener">Telegram</a><button class="btn soft mgbtn2" data-x="copy">${M('copy_link')}</button></div>`);
+      <div class="mgshare"><a class="btn soft mgbtn2" href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" rel="noopener">WhatsApp</a><a class="btn soft mgbtn2" href="https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(M('inv_text'))}" target="_blank" rel="noopener">Telegram</a><button class="btn soft mgbtn2" data-x="copy">${M('copy_link')}</button></div><button class="btn soft full mgbtn2" style="margin-top:8px" data-act="mgcontacts">${small('users')}${M('from_contacts')}</button>`);
     w.addEventListener('click', e => { const b = e.target.closest('[data-x]'); if (!b) return;
       if (b.dataset.x === 'share') navigator.share({ title: 'Magaam', text: M('inv_text'), url: link }).catch(() => {});
       if (b.dataset.x === 'copy') { (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject()).then(() => toast(M('copied'))).catch(() => { const ta = document.createElement('textarea'); ta.value = link; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast(M('copied')); }); } }); };
@@ -442,11 +458,11 @@ if (LV) {
   const shortTime = (d) => { const x = new Date(d); return x.toDateString() === new Date().toDateString() ? hm(d) : x.toLocaleDateString(NK.lang, { day: 'numeric', month: 'short' }); };
   const inboxTick = () => { const inb = want('mg:inbox', () => LV.mgInbox()); if (inb) { window.__mgUnread = inb.reduce((s, c) => s + Number(c.unread || 0), 0); if (window.MG_APP) NK.setBadge(window.__mgUnread); } };
   const ticks = (m, chatId) => { const rd = OTHER_READ[chatId]; return `<i class="mgtick ${rd && new Date(rd) >= new Date(m.created_at) ? 'rd' : ''}">${rd && new Date(rd) >= new Date(m.created_at) ? '✓✓' : '✓'}</i>`; };
-  const bubble = (m, chatId) => { const mine = m.sender === meId(); const list = MGM[chatId] || [];
+  const bubble = (m, chatId) => { const mine = m.sender === meId(); const list = MGM[chatId] || []; const kindTxt = (x) => x.media_kind === 'audio' ? '🎤 ' + M('voice') : x.media_kind === 'video' ? '🎬' : M('photo_msg');
     if (m.deleted) return `<div class="mgb ${mine ? 'me' : ''} del" data-mid="${m.id}"><span>${M('deleted')}</span><small>${hm(m.created_at)}</small></div>`;
     const rq = m.reply_to ? list.find(x => x.id === m.reply_to) : null;
     const txtv = mine ? m.body : trText('mg' + m.id, m.body, m.lang);
-    return `<div class="mgb ${mine ? 'me' : ''}" data-act="mgbtap" data-v="${m.id}" data-mid="${m.id}">${rq ? `<span class="mgq"><b>${esc(mname(rq.sender))}</b>${esc(rq.deleted ? M('deleted') : rq.body || M('photo_msg'))}</span>` : ''}${m.media_url ? `<img src="${esc(m.media_url)}" alt="" loading="lazy">` : ''}${m.body ? `<span class="mgtx">${esc(txtv)}</span>` : ''}${!mine && TRC['mg' + m.id] && TRC['mg' + m.id].tr ? `<em class="mgtrs">${small('translate')}${t('auto_tr')}</em>` : ''}<small>${hm(m.created_at)}${mine ? ticks(m, chatId) : ''}</small></div>`; };
+    return `<div class="mgb ${mine ? 'me' : ''} ${m.media_url && !m.body && m.media_kind !== 'audio' ? 'media' : ''}" data-act="mgbtap" data-v="${m.id}" data-mid="${m.id}">${rq ? `<span class="mgq"><b>${esc(mname(rq.sender))}</b>${esc(rq.deleted ? M('deleted') : rq.body || kindTxt(rq))}</span>` : ''}${mediaInBubble(m)}${m.body ? `<span class="mgtx">${esc(txtv)}</span>` : ''}${!mine && TRC['mg' + m.id] && TRC['mg' + m.id].tr ? `<em class="mgtrs">${small('translate')}${t('auto_tr')}</em>` : ''}<small>${hm(m.created_at)}${mine ? ticks(m, chatId) : ''}</small></div>`; };
   const threadHtml = (chatId) => { const list = MGM[chatId] || []; let last = ''; return list.map(m => { const d = new Date(m.created_at).toDateString(); const sep = d !== last ? `<div class="mgday"><span>${dayLabel(m.created_at)}</span></div>` : ''; last = d; return sep + bubble(m, chatId); }).join(''); };
   const paintThread = () => { if (!openChat) return; const th = document.getElementById('mgthread'); if (!th) return; const atEnd = window.innerHeight + window.scrollY >= document.body.scrollHeight - 120; th.innerHTML = threadHtml(openChat.id); if (atEnd) scrollEnd(); };
   const scrollEnd = () => setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 20);
@@ -467,19 +483,20 @@ if (LV) {
     return { html: `<div class="mg mgchatv"><header class="mgctop"><button class="mgic" data-act="mgchatback" aria-label="${t('back')}">${ic('back', 'flip')}</button>${link(other, av(other, 'sm'))}<div class="grow">${link(other, `<b>${esc(mname(other))}</b>${vm(other)}`)}<small id="mgsub"></small></div></header>
       <div class="mgthread" id="mgthread">${MGM[id] ? threadHtml(id) : loading}</div>
       <div class="mgcomp">${rq ? `<div class="mgrq"><span><b>${esc(mname(rq.sender))}</b>${esc(rq.body || M('photo_msg'))}</span><button data-act="mgrqx" aria-label="${t('close')}">${small('x')}</button></div>` : ''}
-        <div class="mgcrow"><button class="mgic" data-act="mgphoto" aria-label="${M('photo_msg')}">${ic('camera')}</button><textarea id="mgmsg" rows="1" placeholder="${M('msg_ph')}" aria-label="${M('msg_ph')}"></textarea><button class="mgsend" data-act="mgsendm" aria-label="send">${ic('send', 'flip')}</button></div></div></div>` }; };
+        <div id="mgrecbar" class="mgrecbar" hidden><i class="mgdot"></i><b id="mgrect" class="num">0:00</b><span>${M('rec_hint')}</span><button class="mgic" data-act="mgrecx" aria-label="${t('close')}">${ic('x')}</button><button class="mgsend" data-act="mgrecsend" aria-label="${M('send_l')}">${ic('send', 'flip')}</button></div><div class="mgcrow"><button class="mgic" data-act="mgattach" aria-label="${M('attach_media')}">${ic('plus')}</button><textarea id="mgmsg" rows="1" placeholder="${M('msg_ph')}" aria-label="${M('msg_ph')}"></textarea><button class="mgsend mgmic" data-act="mgrec" aria-label="${M('voice')}"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><button class="mgsend mgsnd" data-act="mgsendm" aria-label="${M('send_l')}">${ic('send', 'flip')}</button></div></div></div>` }; };
 
   const sendText = async () => { if (!openChat) return; const ta = document.getElementById('mgmsg'); const tx = ta ? ta.value.trim() : ''; if (!tx) return; const id = openChat.id;
-    ta.value = ''; DRAFT[id] = ''; ta.style.height = 'auto'; const rp = REPLY[id]; delete REPLY[id]; const rqb = document.querySelector('.mgrq'); if (rqb) rqb.remove();
+    ta.value = ''; DRAFT[id] = ''; ta.style.height = 'auto'; const rw = ta.closest('.mgcrow'); if (rw) rw.classList.remove('has'); const rp = REPLY[id]; delete REPLY[id]; const rqb = document.querySelector('.mgrq'); if (rqb) rqb.remove();
     try { const m = await LV.mgSend(id, tx, NK.lang, null, rp); const l = MGM[id] = MGM[id] || []; if (!l.some(x => x.id === m.id)) l.push(m); paintThread(); scrollEnd(); dropData('mg:inbox'); }
     catch (e) { console.warn(e); toast(FXM('send_fail')); ta.value = tx; } };
   window.MGAFTER = (c) => {
-    if (c.v !== 'mgchat') { if (openChat) { if (typingCh) typingCh.leave(); typingCh = null; openChat = null; dropData('mg:inbox'); } return; }
+    if (c.v !== 'mgchat') { if (REC) recStop(false); if (openChat) { if (typingCh) typingCh.leave(); typingCh = null; openChat = null; dropData('mg:inbox'); } return; }
     if (!openChat || openChat.id !== c.id) { if (typingCh) typingCh.leave(); openChat = { id: c.id, u: c.u };
       typingCh = LV.mgTyping(c.id, () => { const s = document.getElementById('mgsub'); if (s) { s.textContent = M('typing'); clearTimeout(typingT); typingT = setTimeout(() => { const s2 = document.getElementById('mgsub'); if (s2) s2.textContent = ''; }, 3000); } }); scrollEnd(); }
     const ta = document.getElementById('mgmsg'); if (!ta) return; ta.value = DRAFT[c.id] || '';
     const auto = () => { ta.style.height = 'auto'; ta.style.height = Math.min(120, ta.scrollHeight) + 'px'; }; auto();
-    ta.addEventListener('input', () => { DRAFT[c.id] = ta.value; auto(); if (typingCh) typingCh.send(); });
+    const swap = () => { const row = ta.closest('.mgcrow'); if (row) row.classList.toggle('has', !!ta.value.trim()); }; swap();
+    ta.addEventListener('input', () => { DRAFT[c.id] = ta.value; auto(); swap(); if (typingCh) typingCh.send(); });
     ta.addEventListener('keydown', ev => { if (ev.key === 'Enter' && !ev.shiftKey && !('ontouchstart' in window)) { ev.preventDefault(); sendText(); } });
   };
   LV.onMg((kind, row, ev) => {
@@ -523,6 +540,57 @@ if (LV) {
         MR.photo = null; MR.err = ''; NK.applyLive(pr); save(); NK.stack.length = 1; NK.stack[0] = { v: 'mg' }; render(true); }
       catch (e) { console.warn(e); MR.err = L(window.FX.send_fail); el.disabled = false; render(); } return; }
   };
+  /* ===== Explore: search people + everyone's posts and reels ===== */
+  const EXQ = { q: '', n: 30 };
+  V.mgexplore = () => { const r = ready(); if (r) return r;
+    const q = EXQ.q.trim(); const people = q ? want('mg:ppl:' + q, () => LV.mgPeople(q)) : null;
+    const list = keep(want('mg:ex:' + EXQ.n, () => LV.explore(EXQ.n)));
+    const tiles = (list || []).map((x, i) => { const big = x.type === 'reel' && i % 10 === 2;
+      return `<button class="mgxt ${big ? 'big' : ''}" data-act="mgpost" data-v="${x.id}">${x.media_type === 'video' ? `<video src="${esc(x.media_url)}#t=0.5" muted playsinline preload="metadata"></video><i class="mgxp">${ic('play')}</i>` : `<img src="${esc(x.media_url)}" alt="" loading="lazy">`}</button>`; }).join('');
+    const ppl = q ? (people === undefined ? loading : people && people.length ? people.filter(p => p.id !== meId()).map(p => `<div class="mgrow">${link(p.id, av(p.id, 'md'))}<div class="grow">${link(p.id, `<b>${esc(mname(p.id))}</b>${vm(p.id)}`)}</div><button class="btn sm soft mgbtn2" data-act="mgp" data-v="${p.id}">${t('open')}</button></div>`).join('') : `<p class="note">${M('nobody')}</p>`) : '';
+    return wrapView('mgexplore', `<div class="mgwrap" style="padding-bottom:0"><form class="mgsearch" data-act="noop" onsubmit="event.preventDefault();document.getElementById('mgxgo').click()">${ic('search')}<input id="mgxq" type="search" value="${esc(q)}" placeholder="${M('search')}" aria-label="${M('search')}" enterkeyhint="search"><button type="button" id="mgxgo" class="mglink" data-act="mgxsearch">${M('search')}</button></form>${q ? `<h4>${M('people_s')}</h4>${ppl}` : ''}</div>
+      <div class="mgxgrid">${list === undefined ? loading : tiles || `<p class="note" style="grid-column:1/-1;text-align:center">${M('mg_empty') || ''}</p>`}</div>
+      ${list && list.length >= EXQ.n ? `<div class="mgwrap"><button class="btn soft full mgbtn2" data-act="mgxmore">${M('more')}</button></div>` : ''}`, M('explore')); };
+
+  /* ===== chat attachments: photo/video in full quality, voice messages ===== */
+  const fmtDur = (s) => { s = Math.max(0, Math.round(s || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+  const attachSheet = () => { const w = sheet(`<div class="mgmsheet"><button data-x="lib">${ic('camera')}${M('attach_media')}</button><button data-x="cam">${ic('camera')}${M('take_photo')}</button></div>`);
+    w.addEventListener('click', e => { const b = e.target.closest('[data-x]'); if (!b) return; w.remove(); pickMedia(b.dataset.x === 'cam'); }); };
+  const pickMedia = (camera) => { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = camera ? 'image/*' : 'image/*,video/*'; if (camera) inp.capture = 'environment'; inp.multiple = !camera;
+    inp.onchange = async () => { for (const f of [...inp.files].slice(0, 10)) await sendFile(f); }; inp.click(); };
+  const sendFile = async (f) => { if (!openChat) return; const id = openChat.id;
+    if (f.size > 50 * 1048576) { toast(FXM('too_big')); return; }
+    toast(M('sending'));
+    try { let url, kind, meta = null;
+      if (f.type.startsWith('video')) { kind = 'video'; url = await LV.upload(f, 'chat'); }
+      else { kind = 'image'; const d = await resizeImg(f, 2560, 0.9); url = await LV.upload(d || f, 'chat'); }
+      const m = await LV.mgSend(id, '', NK.lang, url, REPLY[id], kind, meta); delete REPLY[id]; const l = MGM[id] = MGM[id] || []; if (!l.some(x => x.id === m.id)) l.push(m); paintThread(); scrollEnd(); }
+    catch (e) { fail0(e); } };
+  let REC = null;
+  const recStart = async () => { if (REC || !openChat) return;
+    let stream; try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); } catch (e) { toast(M('mic_denied')); return; }
+    const type = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg'].find(t => window.MediaRecorder && MediaRecorder.isTypeSupported(t)) || '';
+    const rec = new MediaRecorder(stream, type ? { mimeType: type, audioBitsPerSecond: 64000 } : undefined); const chunks = [];
+    rec.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
+    REC = { rec, stream, chunks, t0: Date.now(), type: rec.mimeType || type || 'audio/mp4', timer: setInterval(() => { const el = document.getElementById('mgrect'); if (el) el.textContent = fmtDur((Date.now() - REC.t0) / 1000); }, 300) };
+    rec.start(250); const bar = document.querySelector('.mgcrow'); if (bar) bar.classList.add('rec');
+    const rb = document.getElementById('mgrecbar'); if (rb) rb.hidden = false; };
+  const recStop = (send) => { if (!REC) return; const R_ = REC; REC = null; clearInterval(R_.timer); const bar = document.querySelector('.mgcrow'); if (bar) bar.classList.remove('rec'); const rb = document.getElementById('mgrecbar'); if (rb) rb.hidden = true;
+    R_.rec.onstop = async () => { R_.stream.getTracks().forEach(t => t.stop()); const dur = (Date.now() - R_.t0) / 1000; if (!send || dur < 0.8 || !openChat) return; const id = openChat.id;
+      try { const blob = new Blob(R_.chunks, { type: R_.type.split(';')[0] }); const url = await LV.upload(blob, 'voice'); const m = await LV.mgSend(id, '', NK.lang, url, REPLY[id], 'audio', { dur: Math.round(dur) }); delete REPLY[id]; const l = MGM[id] = MGM[id] || []; if (!l.some(x => x.id === m.id)) l.push(m); paintThread(); scrollEnd(); } catch (e) { fail0(e); } };
+    R_.rec.stop(); };
+  const audioHtml = (m) => `<span class="mgvoice"><button class="mgvp" data-act="mgplay" data-v="${m.id}" aria-label="play">${ic('play')}</button><span class="mgvw"><i style="width:0%"></i></span><em class="num">${fmtDur(m.media_meta && m.media_meta.dur)}</em><audio preload="none" src="${esc(m.media_url)}" data-mid="${m.id}"></audio></span>`;
+  const mediaInBubble = (m) => !m.media_url ? '' : m.media_kind === 'audio' ? audioHtml(m) : m.media_kind === 'video' ? `<video src="${esc(m.media_url)}#t=0.1" controls playsinline preload="metadata"></video>` : `<img src="${esc(m.media_url)}" alt="" loading="lazy" data-act="mgzoom" data-v="${esc(m.media_url)}">`;
+  const playVoice = (id) => { const a = document.querySelector(`audio[data-mid="${id}"]`); if (!a) return; document.querySelectorAll('.mgvoice audio').forEach(x => { if (x !== a) x.pause(); });
+    const box = a.closest('.mgvoice'), bar = box.querySelector('.mgvw i'), btn = box.querySelector('.mgvp');
+    a.ontimeupdate = () => { if (a.duration) bar.style.width = (a.currentTime / a.duration * 100) + '%'; };
+    a.onended = () => { bar.style.width = '0%'; btn.innerHTML = ic('play'); }; a.onpause = () => { btn.innerHTML = ic('play'); }; a.onplay = () => { btn.innerHTML = `<b style="font-size:13px">❚❚</b>`; };
+    if (a.paused) a.play().catch(() => {}); else a.pause(); };
+  const zoom = (url) => { const host = document.querySelector('.app') || document.body; const w = document.createElement('div'); w.className = 'mgzoom'; w.innerHTML = `<img src="${esc(url)}" alt=""><button aria-label="${t('close')}">${ic('x')}</button>`; w.onclick = () => w.remove(); host.appendChild(w); };
+  const contactsInvite = async () => { const link = inviteLink(), text = M('inv_text') + ' ' + link;
+    if ('contacts' in navigator && 'select' in navigator.contacts) { try { const cs = await navigator.contacts.select(['name', 'tel'], { multiple: true }); const nums = cs.flatMap(c => c.tel || []).map(n => n.replace(/[^\d+]/g, '')).filter(Boolean);
+        if (nums.length) location.href = `sms:${nums.join(',')}?body=${encodeURIComponent(text)}`; } catch (e) {} return; }
+    if (navigator.share) navigator.share({ title: 'Magaam', text: M('inv_text'), url: link }).catch(() => {}); else location.href = `sms:?&body=${encodeURIComponent(text)}`; };
   const prevAct = window.MGACT;
   window.MGACT = (a, v, el) => {
     if (!a.startsWith('mg')) return false;
@@ -549,7 +617,16 @@ if (LV) {
       case 'mgchatback': NK.back(); return true;
       case 'mgsendm': sendText(); return true;
       case 'mgphoto': sendPhoto(); return true;
-      case 'mgbtap': msgSheet(v); return true;
+      case 'mgattach': attachSheet(); return true;
+      case 'mgrec': recStart(); return true;
+      case 'mgrecx': recStop(false); return true;
+      case 'mgrecsend': recStop(true); return true;
+      case 'mgplay': playVoice(v); return true;
+      case 'mgzoom': zoom(v); return true;
+      case 'mgxsearch': { const i = document.getElementById('mgxq'); EXQ.q = i ? i.value : ''; render(); return true; }
+      case 'mgxmore': EXQ.n += 30; render(); return true;
+      case 'mgcontacts': contactsInvite(); return true;
+      case 'mgbtap': if (window.__lastTarget && window.__lastTarget.closest && window.__lastTarget.closest('video,.mgvoice,img')) return true; msgSheet(v); return true;
       case 'mgrqx': if (openChat) delete REPLY[openChat.id]; render(); return true;
       case 'mglst': openLiveStory(+v); return true;
       case 'mgedit': editLive(); return true;

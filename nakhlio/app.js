@@ -654,12 +654,12 @@ function avatar(n, size) {
   const ph = me && S.me.photos && S.me.photos[0];
   return ph ? `<span class="av ${size || ''}" style="background:url(${ph}) center/cover"></span>` : `<span class="av ill ${size || ''}">${avatarSvg(n === '@me' && S.me ? S.me.name + '@' : n)}</span>`;
 }
-function resizeImg(file) {
+function resizeImg(file, max, q) {
   return new Promise((res) => {
     const fr = new FileReader(); fr.onload = () => { const im = new Image(); im.onload = () => {
-      const k = Math.min(1, 480 / Math.max(im.width, im.height)); const c = document.createElement('canvas');
+      const k = Math.min(1, (max || 480) / Math.max(im.width, im.height)); const c = document.createElement('canvas');
       c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
-      res(c.toDataURL('image/jpeg', 0.78)); }; im.onerror = () => res(null); im.src = fr.result; }; fr.onerror = () => res(null); fr.readAsDataURL(file);
+      res(c.toDataURL('image/jpeg', q || 0.78)); }; im.onerror = () => res(null); im.src = fr.result; }; fr.onerror = () => res(null); fr.readAsDataURL(file);
   });
 }
 const fieldErr = (k) => reg.errs[k] ? `<span class="ferr">${ic('info')}${t(reg.errs[k])}</span>` : '';
@@ -770,12 +770,33 @@ function notifSheet() {
     else { await pushDisable(); S.notifOn = false; save(); toast(t('saved_ok')); } });
   p2.addEventListener('change', () => { S.sound = p2.checked; save(); unlockAudio(); if (S.sound) { lastChime = 0; chime(); } if (LV && LV.user) LV.updateProfile({ notify_sound: S.sound }).catch(() => {}); });
 }
+async function verifySheet(mg) {
+  if (!LV || !LV.user) return;
+  const pr = LV.profile || {}; if (pr.verified) { toast(FXL('vf_done')); return; }
+  const last = await LV.verifyMine().catch(() => null);
+  if (last && last.status === 'pending') { sheet(`<h3>${small('check')} ${FXL('vf_t')}</h3><p style="line-height:1.55">${FXL('vf_pending')}</p><button class="btn green full" data-close>${t('understood')}</button>`); return; }
+  const photo = mg ? (pr.mg_avatar || pr.photo_url) : pr.photo_url; let doc = null;
+  const w = sheet(`<h3>${small('check')} ${FXL('vf_t')}</h3><p class="note" style="margin:0 0 12px;line-height:1.5">${FXL('vf_d')}</p>
+    ${last && last.status === 'rejected' ? `<div class="banner" style="font-size:13px;margin-bottom:10px">${ic('info')}<div>${FXL('vf_rejected')}${last.note ? ': ' + esc(last.note) : ''}</div></div>` : ''}
+    <div class="vfstep ${photo ? 'ok' : ''}"><span class="vfn">${photo ? '✓' : '1'}</span><div class="grow"><b>${FXL('vf_s1')}</b><small>${FXL(photo ? 'vf_s1_ok' : 'vf_s1_no')}</small></div>${photo ? `<span class="av" style="background:url(${esc(photo)}) center/cover"></span>` : `<button class="btn sm soft" id="vfph">${small('camera')}${t('add')}</button>`}</div>
+    <div class="vfstep" id="vfdocrow"><span class="vfn">2</span><div class="grow"><b>${FXL('vf_s2')}</b><small>${FXL('vf_s2_d')}</small></div><button class="btn sm soft" id="vfdoc">${small('camera')}${t('add')}</button></div>
+    <p class="note" style="font-size:12px;margin:10px 0 0;line-height:1.45">${small('lock')} ${FXL('vf_privacy')}</p><p class="ferr" id="vferr" hidden></p>
+    <button class="btn green full" id="vfgo" style="margin-top:12px">${FXL('vf_send')}</button>`);
+  const pick = (cb) => { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.onchange = async () => { const f = inp.files[0]; if (f) cb(await resizeImg(f, 2000, 0.9)); }; inp.click(); };
+  const ph = w.querySelector('#vfph'); if (ph) ph.onclick = () => pick(async d => { try { const url = await LV.upload(d, 'avatar'); const np = await LV.updateProfile(mg ? { mg_avatar: url } : { photo_url: url }); S.me = meFrom(np); save(); w.remove(); verifySheet(mg); } catch (e) { toast(FXL('send_fail')); } });
+  w.querySelector('#vfdoc').onclick = () => pick(d => { if (!d) return; doc = d; const row = w.querySelector('#vfdocrow'); row.classList.add('ok'); row.querySelector('.vfn').textContent = '✓'; row.querySelector('#vfdoc').outerHTML = `<span class="av" style="background:url(${d}) center/cover;border-radius:8px"></span>`; });
+  w.querySelector('#vfgo').onclick = async (ev) => { const er = w.querySelector('#vferr'); const show = (k) => { er.hidden = false; er.textContent = FXL(k); };
+    if (!photo) return show('vf_need_photo'); if (!doc) return show('vf_need_doc');
+    const b = ev.currentTarget; b.disabled = true; b.textContent = '…';
+    try { const blob = await (await fetch(doc)).blob(); await LV.verifySubmit(blob, mg ? 'magaam' : 'nakhlio'); w.remove(); sheet(`<h3>${small('check')} ${FXL('vf_t')}</h3><p style="line-height:1.55">${FXL('vf_sent')}</p><button class="btn green full" data-close>${t('understood')}</button>`); }
+    catch (e) { console.warn(e); b.disabled = false; b.textContent = FXL('vf_send'); show('send_fail'); } };
+}
 function openDeep(url) {
   let u; try { u = new URL(url, location.href); } catch (e) { return; }
   const g = u.searchParams.get('go'), ch = u.searchParams.get('chat'), uu = u.searchParams.get('u');
   if (ch && uu) { stack = [{ v: 'mgchats' }, { v: 'mgchat', id: ch, u: uu }]; return render(true); }
   if (g === 'friends') { stack = [{ v: 'mgfriends' }]; return render(true); }
-  if ((g === 'operator' || g === 'reports') && canAdmin()) { S.adminMode = true; save(); stack = [{ v: 'profile' }, { v: 'operator', k: g === 'reports' ? 'reports' : 'chats' }]; return render(true); }
+  if ((g === 'operator' || g === 'reports' || g === 'verify') && canAdmin()) { S.adminMode = true; save(); stack = [{ v: 'profile' }, { v: 'operator', k: g === 'operator' ? 'chats' : g }]; return render(true); }
   if (g === 'chats') { stack = [{ v: 'chats' }]; return render(true); }
 }
 let unlocked = false;
@@ -991,7 +1012,7 @@ function profileHtml(n) {
   return `<div class="phead"><div class="pcover">${skyline()}</div>
     <div class="pmain-row">${photos[0] ? `<span class="av xl" style="background:url(${photos[0]}) center/cover"></span>` : `<span class="av xl ill">${avatarSvg(me ? (S.me ? S.me.name + '@' : 'guest') : n)}</span>`}
       <div class="pid"><h2>${esc(p.display)}${me ? '' : vmark(n)}</h2>${p.job ? `<div class="pjob">${esc(txt(p.job))}</div>` : ''}</div></div>
-    <div class="badges">${badges}</div>
+    <div class="badges">${badges}</div>${me && LV && LV.user && !(LV.profile || {}).verified ? `<button class="vfbtn" data-act="vfopen">${small('check')}<span><b>${FXL('vf_t')}</b><small>${FXL('vf_short')}</small></span>${ic('chev', 'flip chev')}</button>` : ''}
     <div class="pstats"><div><b class="num">${p.rating ? '★ ' + nf(p.rating, 1) : '—'}</b><small>${t('reviews_l')} · <span class="num">${nf(reviews.length)}</span></small></div><div><b class="num">${nf(items.length)}</b><small>${t('listings_l')}</small></div><div><b class="num">${esc(p.since || '2026')}</b><small>${t('since_l')}</small></div></div>
     <div class="pmeta">${p.dist ? `<span>${small('pin')}${esc(loc(p.dist))}</span>` : ''}${p.langs ? `<span>${small('globe')}${esc(p.langs)}</span>` : ''}</div>
     ${p.about ? `<p class="pabout">${esc(txt(p.about))}</p>` : ''}
@@ -1125,8 +1146,8 @@ function adminProfile() {
   const st = want('adm:stats', () => LV.stats()) || {};
   const row = (act, v, k, icn, label, n) => `<button data-act="${act}" ${v ? `data-v="${v}"` : ''} ${k ? `data-k="${k}"` : ''}><i class="b-palm c-palm">${ic(icn)}</i><span class="grow">${label}</span>${n ? `<span class="tag green num">${nf(n)}</span>` : ''}${ic('chev', 'flip chev')}</button>`;
   return { tabs: true, html: topbar(FXL('adm_badge'), { noBack: true }) + `<div class="wrap narrow">
-    <div class="admcard"><span class="admlogo">${logo()}</span><h2>${FXL('nk_admin')}</h2><p>${isOwner() ? FXL('owner_l') : FXL('adm')}</p></div>
-    <div class="plist" style="margin-top:14px">${row('admop', 'chats', '', 'headset', FXL('tab_chats'), st.support)}${row('admop', 'reports', '', 'flag', FXL('tab_reports'), st.reports)}${row('admop', 'users', '', 'users', FXL('tab_users'), st.users)}</div>
+    <div class="admcard"><span class="admlogo">${logo()}</span><h2>${FXL('nk_admin')}</h2><p>${isOwner() ? FXL('owner_l') : FXL('adm')}</p><div class="admnums"><div><b class="num">${st.users == null ? '…' : nf(st.users)}</b><small>${FXL('st_users')} Nakhlio</small></div><div><b class="num">${st.mg_users == null ? '…' : nf(st.mg_users)}</b><small>${FXL('st_mg_users')}</small></div><div><b class="num">${st.new7 == null ? '…' : nf(st.new7)}</b><small>${FXL('st_new7')}</small></div></div></div>
+    <div class="plist" style="margin-top:14px">${row('admop', 'chats', '', 'headset', FXL('tab_chats'), st.support)}${row('admop', 'reports', '', 'flag', FXL('tab_reports'), st.reports)}${row('admop', 'verify', '', 'check', FXL('tab_verify'), st.verify)}${row('admop', 'users', '', 'users', FXL('tab_users'), st.users)}</div>
     <div class="plist" style="margin-top:14px"><button data-act="notifset"><i class="b-sky c-sky">${ic('siren')}</i><span class="grow">${FXL('notif_t')}</span>${ic('chev', 'flip chev')}</button><button data-act="go" data-v="lang"><i class="b-palm c-palm">${ic('globe')}</i><span class="grow">${t('language')}</span>${ic('chev', 'flip chev')}</button></div>
     <div style="margin-top:14px">${admSwitch()}</div></div>` };
 }
@@ -1157,8 +1178,8 @@ V.operator = (p) => {
     liveSyncChats(); const k = p.k || 'chats';
     const st = want('adm:stats', () => LV.stats());
     const stat = (n, label, act, v) => `<button class="opstat" ${act ? `data-act="${act}" data-v="${v}"` : 'data-act="noop"'}><b class="num">${n == null ? '…' : nf(n)}</b><small>${label}</small></button>`;
-    const strip = `<div class="opstats">${stat(st && st.users, FXL('st_users'), 'ufilt', 'all')}${stat(st && st.new7, FXL('st_new7'), 'ufilt', 'all')}${stat(st && st.reports, FXL('tab_reports'), 'opk', 'reports')}${stat(st && st.support, FXL('st_support'), 'opk', 'chats')}${stat(st && st.banned, FXL('st_banned'), 'ufilt', 'banned')}${stat(st && st.verified, FXL('st_verified'), 'ufilt', 'verified')}${stat(st && st.admins, FXL('st_admins') + ' / 5', 'ufilt', 'admins')}</div>`;
-    const seg = `<div class="seg" style="margin:4px 0 14px">${['chats', 'reports', 'users'].map(x => `<button class="${x === k || (k === 'udms' && x === 'users') ? 'on' : ''}" data-act="opk" data-v="${x}">${FXL('tab_' + x)}</button>`).join('')}</div>`;
+    const strip = `<div class="opstats">${stat(st && st.users, FXL('st_users'), 'ufilt', 'all')}${stat(st && st.mg_users, FXL('st_mg_users'), 'ufilt', 'all')}${stat(st && st.verify, FXL('tab_verify'), 'opk', 'verify')}${stat(st && st.new7, FXL('st_new7'), 'ufilt', 'all')}${stat(st && st.reports, FXL('tab_reports'), 'opk', 'reports')}${stat(st && st.support, FXL('st_support'), 'opk', 'chats')}${stat(st && st.banned, FXL('st_banned'), 'ufilt', 'banned')}${stat(st && st.verified, FXL('st_verified'), 'ufilt', 'verified')}${stat(st && st.admins, FXL('st_admins') + ' / 5', 'ufilt', 'admins')}</div>`;
+    const seg = `<div class="seg" style="margin:4px 0 14px">${['chats', 'reports', 'verify', 'users'].map(x => `<button class="${x === k || (k === 'udms' && x === 'users') ? 'on' : ''}" data-act="opk" data-v="${x}">${FXL('tab_' + x)}${x === 'verify' && st && st.verify ? ` <span class="num">${st.verify}</span>` : ''}</button>`).join('')}</div>`;
     const uRow = (u) => `<button class="row-card" data-act="admuser" data-v="${u.id}">${liveAv(u.id)}<span class="grow"><span class="ttl" style="display:block">${esc(u.name || '…')}${u.verified ? ' ✓' : ''}</span><span class="sub" style="display:block">${u.is_owner ? FXL('owner_l') + ' · ' : u.is_admin ? FXL('adm') + ' · ' : ''}${u.banned ? `<b style="color:var(--rose)">${FXL('banned_l')}</b> · ` : ''}${u.gender === 'f' ? t('female') : t('male')} · ${new Date(u.created_at).toLocaleDateString(locale())}</span></span></button>`;
     let body = '';
     if (k === 'chats') { const ids = Object.keys(S.chats).filter(x => x.startsWith('A:')).sort((a, b) => S.chats[b].t - S.chats[a].t);
@@ -1169,6 +1190,11 @@ V.operator = (p) => {
       const chips = `<div class="chips" style="margin-top:0">${['all', 'admins', 'banned', 'verified'].map(x => `<button class="chip ${x === f ? 'on' : ''}" data-act="ufilt" data-v="${x}">${x === 'all' ? t('all') : x === 'admins' ? FXL('st_admins') : x === 'banned' ? FXL('st_banned') : FXL('st_verified')}</button>`).join('')}</div>`;
       const search = `<div class="crow" style="margin:6px 0 10px"><input id="usq" type="search" value="${esc(q)}" placeholder="${FXL('user_search')}" aria-label="${FXL('user_search')}" style="flex:1;min-width:0;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font:inherit;background:var(--card)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.nextElementSibling.click()}"><button class="btn sm primary" data-act="usearch">${FXL('find')}</button></div>`;
       body = search + chips + (res === undefined ? `<p class="note">…</p>` : !res ? `<p class="note">${FXL('send_fail')}</p>` : `<p class="note" style="margin:8px 0">${FXL('found')}: <b class="num">${nf(res.count)}</b>${res.count > res.rows.length ? ` · ${FXL('shown')} <span class="num">${nf(res.rows.length)}</span>` : ''}</p><div class="list one">${res.rows.map(uRow).join('')}</div>${res.count > res.rows.length ? `<button class="btn soft full" style="margin-top:12px" data-act="umore">${FXL('more')}</button>` : ''}`); }
+    else if (k === 'verify') { const vr = want('adm:vf', () => LV.verifyList());
+      body = vr === undefined ? `<p class="note">…</p>` : !vr || !vr.length ? `<p class="note">${FXL('vf_none')}</p>` : `<div class="list one">${vr.map(r => { const pr = LV.cached(r.user_id) || {}; const docU = want('adm:vfd:' + r.id, () => LV.verifyDoc(r.doc_path));
+        return `<div class="card"><div style="display:flex;gap:10px;align-items:center"><button class="pbtn" data-act="admuser" data-v="${r.user_id}">${liveAv(r.user_id, 'lg')}</button><div style="flex:1;min-width:0"><b>${esc(pr.name || '…')}${pr.mg_name && pr.mg_name !== pr.name ? ` · ${esc(pr.mg_name)}` : ''}</b><div class="sub">${r.app === 'magaam' ? 'Magaam' : 'Nakhlio'} · ${new Date(r.created_at).toLocaleString(locale())}</div></div></div>
+          <div class="vfcmp"><figure><span style="background-image:url(${esc(pr.photo_url || pr.mg_avatar || '')})"></span><figcaption>${FXL('vf_s1')}</figcaption></figure>${pr.mg_avatar && pr.mg_avatar !== pr.photo_url ? `<figure><span style="background-image:url(${esc(pr.mg_avatar)})"></span><figcaption>Magaam</figcaption></figure>` : ''}<figure class="doc">${docU ? `<a href="${esc(docU)}" target="_blank" rel="noopener"><span style="background-image:url(${esc(docU)})"></span></a>` : '<span></span>'}<figcaption>${FXL('vf_s2')}</figcaption></figure></div>
+          <div style="display:flex;gap:8px;margin-top:10px"><button class="btn sm green" data-act="vfyes" data-v="${r.id}">${small('check')}${FXL('vf_approve')}</button><button class="btn sm soft" data-act="vfno" data-v="${r.id}">${FXL('vf_reject')}</button></div></div>`; }).join('')}</div>`; }
     else if (k === 'udms' && isOwner()) { const ds = want('adm:udms:' + p.uid, () => LV.userDms(p.uid));
       body = `<h3 style="margin:0 0 10px">${esc(pname(p.uid))} · ${FXL('tab_dms')}</h3>` + (ds === undefined ? `<p class="note">…</p>` : !ds || !ds.length ? `<p class="note">${FXL('no_dms')}</p>` : `<div class="list one">${ds.map(c => `<button class="row-card" data-act="oprep" data-v="${c.id}">${liveAv(c.user1 === p.uid ? c.user2 : c.user1)}<span class="grow"><span class="ttl" style="display:block">${esc(pname(c.user1))} ↔ ${esc(pname(c.user2))}</span><span class="sub" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.last ? esc(pname(c.last.sender)) + ': ' + esc(String(c.last.body).slice(0, 80)) : ''}</span></span><small class="num">${new Date(c.last_at).toLocaleDateString(locale())}</small></button>`).join('')}</div>`); }
     else { const reps = want('reports', () => LV.reports());
@@ -1214,6 +1240,7 @@ const AUTH = ['sorder', 'write', 'dm', 'reply', 'comment', 'csend', 'postad', 'p
 const guestLock = (title, txt0) => ({ tabs: true, html: topbar(title, { noBack: stack.length < 2 }) + `<div class="wrap"><div class="empty">${emptyIllus('lock')}<b>${title}</b><p style="margin:6px auto 18px;max-width:34ch">${txt0}</p><button class="btn primary" data-act="startreg">${ic('user')}${t('create_profile')}</button></div></div>` });
 /* ---------- events ---------- */
 root.addEventListener('click', (e) => {
+  window.__lastTarget = e.target;
   const el = e.target.closest('[data-act]'); if (!el) return;
   const a = el.dataset.act, v = el.dataset.v, id = el.dataset.id;
   if (!S.me && AUTH.includes(a)) { e.preventDefault(); return authSheet(); }
@@ -1226,6 +1253,10 @@ root.addEventListener('click', (e) => {
     case 'admuser': admUserSheet(v); break;
     case 'admop': go('operator', { k: v }); break;
     case 'notifset': notifSheet(); break;
+    case 'vfopen': verifySheet(v === 'mg'); break;
+    case 'vfyes': case 'vfno': { const reqs = (DATA['adm:vf'] || {}).v || []; const rq = reqs.find(x => String(x.id) === v); if (!rq) break; const yes = a === 'vfyes';
+      const note = yes ? '' : prompt(FXL('vf_reason')); if (!yes && note === null) break;
+      LV.verifyDecide(rq, yes, note || '').then(() => LV.warn(rq.user_id, yes ? FXL('vf_ok_msg') : FXL('vf_no_msg') + (note ? ' ' + note : ''), lang)).then(() => { toast(t('saved_ok')); dropData('adm:'); render(); }).catch(e => { console.warn(e); toast(FXL('send_fail')); }); break; }
     case 'ldelmsg': if (confirm(FXL('act_delete') + '?')) LV.deleteMessage(v).then(() => { toast(FXL('act_delete') + ' ✓'); }).catch(() => toast(FXL('send_fail'))); break;
     case 'admdone': LV.closeReport(v).then(() => { dropData('reports'); dropData('adm:stats'); render(); }); break;
     case 'admdelpost': if (confirm(FXL('act_delete') + '?')) LV.deletePost(v).then(() => { toast(FXL('act_delete') + ' ✓'); dropData(); render(); }).catch(e => toast(FXL('send_fail'))); break;
@@ -1487,7 +1518,7 @@ if (LV) {
   wrapV('room', (pp) => liveSpace(pp.id.split(':')[0])); wrapV('event', () => { if (isOwner()) { liveSpace('men'); liveSpace('women'); } else liveSpace(S.me && S.me.gender === 'f' ? 'women' : 'men'); });
   LV.onRoom && setTimeout(() => LV.onRoom(m => { if (m.author === meU()) return; dropData('c:sp:'); if (cur().v === 'room' && cur().id === m.room) { liveSpace(m.room.split(':')[0]); } }), 0);
 }
-window.NK = { canAdmin, chime, setBadge, isStandalone, isInApp, notifSheet, setLang: (l) => { if (!LANGS.some(x => x.code === l)) return; lang = l; S.lang = l; save(); if (LV && LV.user && LV.profile) LV.updateProfile({ ui_lang: l }).catch(() => {}); }, boot: () => boot(), isPhone, isAdmin, want, dropData, liveAv, pname, meFrom, applyLive, liveSyncChats, loadChat, V, t, L, ic, esc, small, img, avatar, vmark, commentsBlock, loc, nf, toast, sheet, go, back, render, save, openDM, authSheet, resizeImg, txt, cur,
+window.NK = { verifySheet, canAdmin, chime, setBadge, isStandalone, isInApp, notifSheet, setLang: (l) => { if (!LANGS.some(x => x.code === l)) return; lang = l; S.lang = l; save(); if (LV && LV.user && LV.profile) LV.updateProfile({ ui_lang: l }).catch(() => {}); }, boot: () => boot(), isPhone, isAdmin, want, dropData, liveAv, pname, meFrom, applyLive, liveSyncChats, loadChat, V, t, L, ic, esc, small, img, avatar, vmark, commentsBlock, loc, nf, toast, sheet, go, back, render, save, openDM, authSheet, resizeImg, txt, cur,
   get S() { return S; }, get lang() { return lang; }, get stack() { return stack; } };
 boot();
 if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !DEMO) {
