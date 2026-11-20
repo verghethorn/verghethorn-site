@@ -571,6 +571,32 @@ a{color:inherit;text-decoration:none}
 .av.xl.ill{border:4px solid var(--card)}
 body:not(.dsk) .gallery .float,body:not(.dsk) .item-head .float{position:fixed;top:calc(10px + var(--sat));left:max(14px,calc(50% - 226px));right:max(14px,calc(50% - 226px));z-index:35}
 body:not(.dsk) .gallery .float .ibtn,body:not(.dsk) .item-head .float .ibtn{box-shadow:0 4px 14px rgba(19,37,31,.18)}
+
+.bigcat.svc{grid-column:1/-1;height:118px;background:linear-gradient(120deg,var(--palm-2),#12705D 60%,#1d8a71)}
+.bigcat.svc::after{background:none}
+.bigcat.svc .svc-icons{position:absolute;inset:14px 14px auto auto;display:flex;gap:6px;z-index:1}
+[dir=rtl] .bigcat.svc .svc-icons{inset:14px auto auto 14px}
+.bigcat.svc .svc-icons i{width:34px;height:34px;border-radius:11px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;color:var(--date)}
+.bigcat.svc .svc-icons svg{width:18px;height:18px}
+.svc-hero{display:flex;gap:14px;align-items:center;background:linear-gradient(120deg,var(--palm-2),#12705D);color:#fff}
+.svc-hero .svc-badge{width:52px;height:52px;flex:none}
+.svc-hero b{font-size:17px}
+.svc-hero p{margin:4px 0 0;font-size:13.5px;opacity:.85;line-height:1.45}
+.svc-head{height:170px}
+.svc-list{display:grid;gap:10px}
+.svc-list span{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;line-height:1.45}
+.svc-list svg{color:var(--palm);flex:none;margin-top:2px}
+.svc-list.need svg{color:var(--date-2)}
+.svc-steps{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.svc-steps li{display:flex;gap:12px;align-items:center;background:var(--card);border-radius:14px;padding:10px 12px;box-shadow:var(--shadow);font-size:14px}
+.svc-steps .n{width:28px;height:28px;border-radius:14px;background:var(--date);color:#2f1d00;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}
+.dsk .bigcats{grid-template-columns:1fr 1fr 1fr}
+.dsk .bigcat.svc{grid-column:auto;height:240px}
+.dsk .bigcat.svc .svc-icons i{width:42px;height:42px}
+
+.cta-bar .p{max-width:46%;min-width:0}
+.cta-bar .p b{font-size:17px;overflow-wrap:anywhere}
+.cta-bar .btn{white-space:nowrap;flex:1 0 auto}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -581,6 +607,7 @@ body:not(.dsk) .gallery .float .ibtn,body:not(.dsk) .item-head .float .ibtn{box-
 <script src="i18n.js"></script>
 <script src="data.js"></script>
 <script src="community.js"></script>
+<script src="services.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

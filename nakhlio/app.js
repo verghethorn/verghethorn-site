@@ -246,7 +246,7 @@ function trCard(x) {
     <div class="price num">${money(x.price)} <small>${termSuffix(x.term, 1)}</small></div></div></button>${heart(x.id)}</div>`;
 }
 const SECTIONS = [
-  { k: 'housing', ic: 'home', c: 'palm' }, { k: 'transport', ic: 'car', c: 'sky' }, { k: 'ads', ic: 'tag', c: 'date' }, { k: 'parcels', ic: 'box', c: 'clay' },
+  { k: 'housing', ic: 'home', c: 'palm' }, { k: 'transport', ic: 'car', c: 'sky' }, { k: 'services', ic: 'headset', c: 'date' }, { k: 'ads', ic: 'tag', c: 'date' }, { k: 'parcels', ic: 'box', c: 'clay' },
   { k: 'help', ic: 'hand', c: 'palm' }, { k: 'majlis', ic: 'majlis', c: 'date' }, { k: 'men', ic: 'male', c: 'sky' }, { k: 'women', ic: 'female', c: 'rose' },
   { k: 'family', ic: 'family', c: 'clay' }, { k: 'days', ic: 'calendar', c: 'palm' },
 ];
@@ -277,8 +277,9 @@ V.home = () => {
     <div class="bigcats">
       <button class="bigcat" data-act="go" data-v="housing"><img src="${img('liv1')}" alt=""><span><b>${t('s_housing')}</b><small>${t('s_housing_d')}</small></span></button>
       <button class="bigcat" data-act="go" data-v="transport"><img src="${img('car2')}" alt=""><span><b>${t('s_transport')}</b><small>${t('s_transport_d')}</small></span></button>
+      <button class="bigcat svc" data-act="go" data-v="services"><span class="svc-icons">${['contract', 'idcard', 'bank', 'plane', 'box'].map(i => `<i>${ic(i)}</i>`).join('')}</span><span><b>${t('s_services')}</b><small>${t('s_services_d')}</small></span></button>
     </div>
-    <div class="cats" style="margin-top:18px">${SECTIONS.slice(2).map(s => `<button class="cat" data-act="go" data-v="${s.k}"><i class="b-${s.c} c-${s.c}">${ic(s.ic)}</i>${t('s_' + s.k)}</button>`).join('')}</div>
+    <div class="cats" style="margin-top:18px">${SECTIONS.filter(s => !['housing', 'transport', 'services'].includes(s.k)).map(s => `<button class="cat" data-act="go" data-v="${s.k}"><i class="b-${s.c} c-${s.c}">${ic(s.ic)}</i>${t('s_' + s.k)}</button>`).join('')}</div>
     <div class="sec"><h3>${t('featured')}</h3><button data-act="go" data-v="housing">${t('see_all')}</button></div>
     <div class="hscroll">${featured.map(x => x.kind ? trCard(x) : houseCard(x)).join('')}</div>
     ${nextDay ? `<button class="card" data-act="go" data-v="days" style="display:flex;gap:14px;align-items:center;width:100%;text-align:start;margin-top:18px"><span class="prayer-ico" style="background:var(--palm-tint);color:var(--palm)">${ic('calendar')}</span><span style="flex:1;min-width:0"><small style="color:var(--ink-2);font-weight:600;font-size:12px">${t('s_days')}</small><b style="display:block">${esc(L(nextDay.d.name))}</b></span><b class="num" style="color:var(--palm);text-align:end">${nf(nextDay.left)}<small style="display:block;font-size:11px;color:var(--ink-2);font-weight:600">${t('days_left')}</small></b></button>` : ''}
@@ -592,6 +593,7 @@ const REGX = {
   ar: { reg_title: 'أنشئ ملفك الشخصي', reg_sub: 'دقيقة واحدة بدون كلمات مرور. رقمك وبريدك لا يظهران للآخرين أبداً.', step: 'الخطوة', of: 'من', phone_l: 'رقم الجوال', phone_ph: '5X XXX XXXX', get_code: 'أرسل الرمز', code_title: 'أدخل الرمز', code_sub: 'أرسلنا رسالة إلى', demo_code: 'تجريبي: الرمز 1234', code_l: 'رمز التحقق', change_num: 'تغيير الرقم', resend: 'إعادة الإرسال', name_l: 'اسمك', name_ph: 'بماذا يناديك الناس؟', email_l: 'البريد الإلكتروني', gender_l: 'أنا', male: 'رجل', female: 'امرأة', gender_note: 'مطلوب لمساحة الرجال ومساحة النساء، ولا يظهر في ملفك.', photos_l: 'صور الملف', photos_hint: 'حتى 3 صور، الأولى هي الرئيسية. يمكنك وضع صورة رمزية بدل صورتك.', add: 'إضافة', about_l: 'نبذة عني', about_ph: 'مثال: من قازان، أعيش في المدينة مع عائلتي وأخبز الكيك حسب الطلب', job_l: 'ماذا أعمل', job_ph: 'مثال: طالب، كهربائي، صانعة حلويات', optional: 'اختياري', next: 'متابعة', finish: 'تم — افتح نخليو', err_phone: 'أدخل الرقم بدون رمز الدولة: 9–10 أرقام.', err_code: 'الرمز 4 أرقام. الرمز التجريبي: 1234.', err_name: 'أدخل اسمك، حرفان على الأقل.', err_email: 'تحقق من البريد: يجب أن يكون مثل name@mail.com', err_gender: 'اختر أحد الخيارين.', edit_profile: 'تعديل الملف', logout: 'تسجيل الخروج', save_l: 'حفظ', saved_ok: 'تم حفظ الملف', v_phone: 'الجوال موثّق', v_email: 'البريد موثّق', v_nakhlio: 'موثّق من نخليو', since_l: 'في نخليو منذ', reviews_l: 'التقييمات', listings_l: 'الإعلانات', no_listings: 'لا توجد إعلانات بعد', no_reviews: 'لا توجد تقييمات بعد', report_user: 'إبلاغ', profile_l: 'الملف', district_l: 'الحي', langs_l: 'اللغات', men_only: 'هذه المساحة للرجال فقط', women_only_m: 'هذه المساحة للنساء فقط', main_photo: 'رئيسية', remove: 'حذف', men_lock: 'للرجال الموثّقين فقط', men_lock_text: 'حفاظاً على الأمان، يؤكد مشرف كل عضو بمكالمة صوتية قصيرة مدتها دقيقتان.', auth_t: 'أنشئ ملفك للمتابعة', auth_d: 'يمكنك التصفح بدون تسجيل. للمراسلة والرد والتعليق ونشر الإعلانات أنشئ ملفك خلال دقيقة، بدون كلمات مرور.', create_profile: 'إنشاء ملف', later: 'لاحقاً', guest_d: 'تصفّح بحرية. أنشئ ملفك للمراسلة والتعليق ونشر الإعلانات.', chats_guest: 'ستظهر رسائلك هنا بعد إنشاء ملفك.', spaces_guest: 'هذه المساحة للأعضاء فقط. أنشئ ملفك للدخول.' },
 };
 for (const k in REGX) Object.assign(I18N[k], REGX[k]);
+for (const k of ['ru', 'en', 'ar']) { I18N[k].s_services = SVC_TEXT.title[k]; I18N[k].s_services_d = SVC_TEXT.sub[k]; }
 const CODES = [['+966', 'SA'], ['+7', 'RU / KZ'], ['+92', 'PK'], ['+62', 'ID'], ['+60', 'MY'], ['+90', 'TR'], ['+880', 'BD'], ['+91', 'IN'], ['+98', 'IR'], ['+20', 'EG'], ['+998', 'UZ'], ['+33', 'FR'], ['+44', 'UK'], ['+1', 'US']];
 let reg = { step: 1, code: '+966', phone: '', errs: {} };
 const AV_C = ['b-palm c-palm', 'b-date c-date', 'b-sky c-sky', 'b-rose c-rose', 'b-clay c-clay'];
@@ -732,14 +734,66 @@ V.editprofile = () => {
   return { html: topbar(t('edit_profile')) + `<div class="wrap narrow"><div id="pform">${profileForm(d, true)}</div><button class="btn primary full" id="psave" style="margin-top:18px">${t('save_l')}</button></div>` };
 };
 
+/* ---------- Nakhlio Services ---------- */
+const ST = (k) => L(SVC_TEXT[k]);
+function svcFind(id) { for (const c of SVC_CATS) { const it = c.items.find(x => x.id === id); if (it) return { cat: c, item: it }; } return null; }
+const svcTile = (c) => `<button class="topic" data-act="go" data-v="scat" data-id="${c.k}"><i class="b-${c.c} c-${c.c}">${ic(c.icon)}</i><span>${esc(L(c.name))}<small class="num">${nf(c.items.length)}</small></span></button>`;
+const svcRow = (c, it) => `<button class="row-card" data-act="go" data-v="svc" data-id="${it.id}"><span class="thumb b-${c.c} c-${c.c}" style="display:flex;align-items:center;justify-content:center">${ic(c.icon).replace('<svg', '<svg style="width:30px;height:30px"')}</span><span class="grow">
+  <span class="sub" style="display:flex;gap:6px;align-items:center;margin:0 0 3px;flex-wrap:wrap">${esc(L(c.name))}<span class="tag green">${small('shield')}${ST('licensed')}</span></span>
+  <span class="ttl" style="display:block">${esc(L(it.title))}</span>
+  <span style="display:flex;justify-content:space-between;gap:8px;margin-top:5px"><span class="price">${esc(L(it.price))}</span><span class="sub" style="display:inline-flex;gap:4px;align-items:center;margin:0">${small('clock')}${esc(L(it.time))}</span></span></span></button>`;
+V.services = () => ({ tabs: true, html: topbar(ST('title')) + `<div class="wrap">
+  <div class="card svc-hero"><span class="svc-badge">${logo('rgba(255,255,255,.14)')}</span><div><b>${ST('title')}</b><p>${ST('intro')}</p></div></div>
+  <div class="topics" style="margin-top:14px">${SVC_CATS.map(svcTile).join('')}</div>
+  <div class="sec"><h3>${ST('popular')}</h3></div>
+  <div class="list">${SVC_CATS.map(c => svcRow(c, c.items[0])).join('')}</div></div>` });
+V.scat = (p) => { const c = SVC_CATS.find(x => x.k === p.id); return { tabs: true, html: topbar(L(c.name)) + `<div class="wrap">
+  <div class="banner green">${ic('shield')}<div>${ST('intro')}</div></div>
+  <div class="list" style="margin-top:14px">${c.items.map(it => svcRow(c, it)).join('')}</div></div>` }; };
+V.svc = (p) => {
+  const f = svcFind(p.id); const c = f.cat, it = f.item;
+  return { raw: true, cta: `<div class="p"><b class="num">${esc(L(it.price))}</b><small>${esc(L(it.time))}</small></div><button class="btn primary" data-act="sorder" data-v="${it.id}">${ic('send', 'flip')}${ST('order')}</button>`, html: `<div class="item-head svc-head b-${c.c}"><div class="float"><button class="ibtn" data-act="back" aria-label="${t('back')}">${ic('back', 'flip')}</button><span class="fr">${homeBtn()}</span></div><span class="big-ic c-${c.c}">${ic(c.icon)}</span></div>
+  <div class="sheetbody wrap">
+    <span class="tag green">${small('shield')}${ST('licensed')}</span>
+    <h2 class="d-title" style="margin-top:8px">${esc(L(it.title))}</h2>
+    <div class="d-sub"><span>${small(c.icon)}${esc(L(c.name))}</span><span>${small('clock')}${ST('time')}: ${esc(L(it.time))}</span></div>
+    <div class="block"><h4>${ST('includes')}</h4><div class="svc-list">${it.inc.map(x => `<span>${small('check')}${esc(L(x))}</span>`).join('')}</div></div>
+    <div class="block"><h4>${ST('need')}</h4><div class="svc-list need">${it.need.map(x => `<span>${small('contract')}${esc(L(x))}</span>`).join('')}</div></div>
+    <div class="block"><h4>${ST('how')}</h4><ol class="svc-steps">${SVC_TEXT.steps.map((s, i) => `<li><span class="n num">${nf(i + 1)}</span><span>${esc(L(s))}</span></li>`).join('')}</ol></div>
+    <p class="note" style="margin-top:18px">${ST('req')} <b class="num">${it.id}</b></p>
+  </div>` };
+};
+function orderSheet(id) {
+  const f = svcFind(id); const it = f.item; let how = 'chat', when = 't_now';
+  const w = sheet(`<h3>${ST('order')}</h3><p class="note">${esc(L(it.title))} · ${esc(L(it.price))}</p>
+    <div class="field"><label>${ST('contact_how')}</label><div class="seg" id="ohow"><button type="button" class="on" data-v="chat">${small('chat')} ${ST('by_chat')}</button><button type="button" data-v="call">${small('phone')} ${ST('by_call')}</button></div>
+      <small class="hint" dir="ltr" style="text-align:start">${esc(S.me ? S.me.phone : '')}</small></div>
+    <div class="field"><label>${ST('when')}</label><div class="chips" id="owhen" style="padding:0;margin:0">${['t_now', 't_morning', 't_evening'].map((k, i) => `<button type="button" class="chip ${i ? '' : 'on'}" data-v="${k}">${ST(k)}</button>`).join('')}</div></div>
+    <div class="field"><label for="ocomm">${ST('comment')} <span class="opt-l">${t('optional')}</span></label><textarea id="ocomm" rows="3" placeholder="${ST('comment_ph')}"></textarea></div>
+    <button class="btn primary full" style="margin-top:16px" id="ogo">${ic('send', 'flip')}${ST('order')}</button>`);
+  w.querySelectorAll('#ohow button').forEach(b => b.addEventListener('click', () => { how = b.dataset.v; w.querySelectorAll('#ohow button').forEach(x => x.classList.toggle('on', x === b)); }));
+  w.querySelectorAll('#owhen button').forEach(b => b.addEventListener('click', () => { when = b.dataset.v; w.querySelectorAll('#owhen button').forEach(x => x.classList.toggle('on', x === b)); }));
+  w.querySelector('#ogo').addEventListener('click', () => {
+    const cm = w.querySelector('#ocomm').value.trim();
+    const msg = `${ST('req')}: ${L(it.title)} (${id}). ${ST('contact_how')}: ${how === 'chat' ? ST('by_chat') : ST('by_call')}. ${ST('when')}: ${ST(when)}.${cm ? ' ' + cm : ''}`;
+    S.chats[id] = S.chats[id] || { msgs: [] }; S.chats[id].lang = lang; S.chats[id].t = Date.now();
+    S.chats[id].msgs.push({ from: 'me', text: msg }); save(); w.remove(); toast(ST('sent'));
+    go('chat', { id, draft: '' });
+    setTimeout(() => { const ty = document.getElementById('typing'); if (ty) ty.innerHTML = '<div class="bubble op typing"><i></i><i></i><i></i></div>'; }, 400);
+    setTimeout(() => { S.chats[id].msgs.push({ from: 'op', text: SVC_TEXT.reply }); save(); if (cur().v === 'chat' && cur().id === id) render(); }, 2000);
+  });
+}
+
 /* chats */
 function listingInfo(id) {
   if (id.startsWith('U:')) return { title: id.slice(2), person: id.slice(2), price: '', agency: '—' };
+  if (id.startsWith('SV-')) { const f = svcFind(id); if (f) return { title: L(f.item.title), svc: f.cat, price: L(f.item.price), agency: ST('licensed') + ' · ' + L(f.cat.name) }; }
   const h = HOUSING.find(x => x.id === id); if (h) return { title: L(h.title), photo: h.photos[0], price: money(h.price) + ' ' + termSuffix(h.term), agency: h.agency };
   const x = TRANSPORT.find(v => v.id === id); if (x) return { title: x.model, photo: x.photo, price: money(x.price) + ' ' + termSuffix(x.term, 1), agency: 'Madinah Rent Partners' };
   return { title: id, photo: 'liv8', price: '', agency: '—' };
 }
-const chatThumb = (li) => li.person ? `<span class="thumb av ill" style="width:56px;height:56px;border-radius:18px">${avatarSvg(li.person)}</span>` : `<span class="thumb"><img src="${img(li.photo)}" alt=""></span>`;
+const svcThumb = (c, sz) => `<span class="thumb b-${c.c} c-${c.c}" style="display:flex;align-items:center;justify-content:center;${sz || ''}">${ic(c.icon).replace('<svg', '<svg style="width:26px;height:26px"')}</span>`;
+const chatThumb = (li) => li.svc ? svcThumb(li.svc, 'width:56px;height:56px;border-radius:16px') : li.person ? `<span class="thumb av ill" style="width:56px;height:56px;border-radius:18px">${avatarSvg(li.person)}</span>` : `<span class="thumb"><img src="${img(li.photo)}" alt=""></span>`;
 V.chats = () => {
   if (!S.me) return guestLock(t('chats_title'), t('chats_guest'));
   const ids = Object.keys(S.chats).sort((a, b) => (S.chats[b].t || 0) - (S.chats[a].t || 0));
@@ -753,7 +807,7 @@ V.chat = (p) => {
     : `<span style="width:40px;height:40px;flex:none">${logo()}</span><h1 style="font-size:16px">${t('operator')}<small style="display:block;font-size:12px;color:var(--palm);font-weight:700">● ${t('online')}</small></h1>`;
   return { composer: 'chat', html: `<div class="topbar"><button class="ibtn" data-act="back" aria-label="${t('back')}">${ic('back', 'flip')}</button>${head}${homeBtn()}</div>
   <div class="wrap chat-wrap">
-    ${dmChat ? '' : `<button class="listing-pin" data-act="openlisting" data-v="${id}"><img src="${img(li.photo)}" alt=""><span style="text-align:start;min-width:0"><b>${esc(li.title)}</b><small class="num">${esc(li.price)}${li.price ? ' · ' : ''}${id}</small></span></button>`}
+    ${dmChat ? '' : `<button class="listing-pin" data-act="openlisting" data-v="${id}">${li.svc ? svcThumb(li.svc, 'width:48px;height:48px;border-radius:10px') : `<img src="${img(li.photo)}" alt="">`}<span style="text-align:start;min-width:0"><b>${esc(li.title)}</b><small class="num">${esc(li.price)}${li.price ? ' · ' : ''}${id}</small></span></button>`}
     <div class="banner green" style="font-size:12.5px">${ic('lock')}<div>${t('privacy_note')}</div></div>
     ${bubbles}<div id="typing"></div>
   </div>` };
@@ -779,7 +833,7 @@ V.lang = () => ({ tabs: true, html: topbar(t('language')) + `<div class="wrap"><
 V.operator = () => {
   const ids = Object.keys(S.chats).filter(id => !id.startsWith('U:'));
   const st = ['new', 'work', 'view', 'done'];
-  return { tabs: true, html: topbar(t('operator_panel')) + `<div class="wrap"><p class="note" style="margin-top:0">${t('operator_panel_d')}</p>${ids.length ? `<div class="list">${ids.map(id => { const li = listingInfo(id); const s = S.req[id] || 'new'; const c = S.chats[id]; return `<div class="card"><div style="display:flex;gap:10px;align-items:center"><img src="${img(li.photo)}" alt="" style="width:52px;height:52px;border-radius:12px;object-fit:cover"><div style="flex:1;min-width:0"><b style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(li.title)}</b><span class="note num">${id}</span></div><button class="status st-${s}" data-act="status" data-v="${id}">${t('req_status_' + s)}</button></div>
+  return { tabs: true, html: topbar(t('operator_panel')) + `<div class="wrap"><p class="note" style="margin-top:0">${t('operator_panel_d')}</p>${ids.length ? `<div class="list">${ids.map(id => { const li = listingInfo(id); const s = S.req[id] || 'new'; const c = S.chats[id]; return `<div class="card"><div style="display:flex;gap:10px;align-items:center">${li.svc ? svcThumb(li.svc, 'width:52px;height:52px;border-radius:12px') : `<img src="${img(li.photo)}" alt="" style="width:52px;height:52px;border-radius:12px;object-fit:cover">`}<div style="flex:1;min-width:0"><b style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(li.title)}</b><span class="note num">${id}</span></div><button class="status st-${s}" data-act="status" data-v="${id}">${t('req_status_' + s)}</button></div>
     <div class="kv" style="margin-top:12px;box-shadow:none;border:1px solid var(--line)"><div><span>${t('client')}</span><b>${t('guest')} · ${esc((LANGS.find(l => l.code === (c.lang || lang)) || {}).name)}</b></div><div><span>${t('source')}</span><b>${esc(li.agency)}</b></div><div><span>${t('chats_title')}</span><b class="num">${nf(c.msgs.length)}</b></div></div>
     <button class="btn sm soft" style="margin-top:10px" data-act="go" data-v="chat" data-id="${id}">${ic('chat')}${t('open')}</button></div>`; }).join('')}</div>` : emptyBlock(t('chats_empty'), 'chat').replace(t('nothing_d'), '')}</div>` };
 };
@@ -801,7 +855,7 @@ function authSheet() {
     <button class="btn primary full" data-startreg>${ic('user')}${t('create_profile')}</button><button class="btn soft full" style="margin-top:10px" data-close>${t('later')}</button>`);
   w.querySelector('[data-startreg]').addEventListener('click', () => { w.remove(); gateReg(); });
 }
-const AUTH = ['write', 'dm', 'reply', 'comment', 'csend', 'postad', 'postparcel', 'compose', 'going', 'helped', 'rreply', 'verify', 'report', 'reportuser', 'toastdemo'];
+const AUTH = ['sorder', 'write', 'dm', 'reply', 'comment', 'csend', 'postad', 'postparcel', 'compose', 'going', 'helped', 'rreply', 'verify', 'report', 'reportuser', 'toastdemo'];
 const guestLock = (title, txt0) => ({ tabs: true, html: topbar(title, { noBack: stack.length < 2 }) + `<div class="wrap"><div class="empty">${emptyIllus('lock')}<b>${title}</b><p style="margin:6px auto 18px;max-width:34ch">${txt0}</p><button class="btn primary" data-act="startreg">${ic('user')}${t('create_profile')}</button></div></div>` });
 /* ---------- events ---------- */
 root.addEventListener('click', (e) => {
@@ -819,6 +873,7 @@ root.addEventListener('click', (e) => {
     case 'pk': cur().k = v; render(); break;
     case 'c': cur().c = v; render(); break;
     case 'dm': openDM(v); break;
+    case 'sorder': orderSheet(v); break;
     case 'profile': if (v === '@me') tab('profile'); else go('person', { id: v }); break;
     case 'reportuser': toast(t('reported')); break;
     case 'logout': delete S.me; save(); stack = [{ v: 'home' }]; boot(); break;
@@ -833,7 +888,7 @@ root.addEventListener('click', (e) => {
     case 'write': openChat(v); break;
     case 'writead': openChat(v); break;
     case 'writeitem': if (!S.chats[v]) S.chats[v] = { msgs: [], meta: { title: el.dataset.t } }; openChat(v); break;
-    case 'openlisting': if (HOUSING.some(h => h.id === v)) go('house', { id: v }); else if (TRANSPORT.some(x => x.id === v)) go('vehicle', { id: v }); break;
+    case 'openlisting': if (v.startsWith('SV-')) go('svc', { id: v }); else if (HOUSING.some(h => h.id === v)) go('house', { id: v }); else if (TRANSPORT.some(x => x.id === v)) go('vehicle', { id: v }); break;
     case 'orig': { const c = S.chats[cur().id]; c.msgs[+v].showOrig = !c.msgs[+v].showOrig; save(); render(); break; }
     case 'setlang': lang = v; S.lang = v; save(); setDoc(); if (cur().v === 'lang' && stack.length > 1) stack.pop(); boot(); break;
     case 'gatelang': stack.push({ v: 'lang' }); gateLang(true); break;
