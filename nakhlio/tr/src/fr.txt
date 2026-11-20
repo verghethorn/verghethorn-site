@@ -252,7 +252,7 @@ u:guest_d|Parcourez librement. Créez un profil pour écrire, commenter et publi
 u:chats_guest|Vos messages apparaîtront ici après la création de votre profil.
 u:spaces_guest|Cet espace est réservé aux membres. Créez un profil pour entrer.
 u:s_services|Services Nakhlio
-u:s_services_d|Entreprise, accueil à l’aéroport, installation du logement
+u:s_services_d|Entreprise, logistique, marketing, personnel
 c0|Wi-Fi
 c1|Climatisation
 c2|Eau
@@ -807,3 +807,50 @@ c560|Tous les services passent par des partenaires Nakhlio vérifiés et agréé
 c561|Objets et livres
 c562|Accueil à l’aéroport
 c563|Entreprise, accueil à l’aéroport, installation du logement
+c564|Logistique, import et douane
+c565|Importation de marchandises et dédouanement
+c566|devis gratuit
+c567|Choix du transporteur et de l’itinéraire
+c568|Dédouanement par un commissionnaire agréé
+c569|Livraison à votre entrepôt ou bureau
+c570|Liste des marchandises et facture
+c571|Registre du commerce (CR)
+c572|Transport de marchandises en Arabie saoudite
+c573|Groupage et chargements complets
+c574|Suivi de l’envoi
+c575|Adresses d’enlèvement et de livraison
+c576|Poids et volume de la marchandise
+c577|Marketing, publicité et design
+c578|Logo et identité visuelle
+c579|sur demande
+c580|1–3 semaines
+c581|Logo, couleurs, polices
+c582|Enseigne et cartes de visite
+c583|Textes en arabe et en anglais
+c584|Publicité sur les réseaux sociaux et Google
+c585|Stratégie et budget
+c586|Gestion des comptes
+c587|Rapport mensuel
+c588|Budget publicitaire
+c589|Location de voitures pour entreprises
+c590|Voitures pour le personnel, au mois ou à l’année
+c591|à partir de 3 jours
+c592|Berlines, SUV, minibus
+c593|Assurance et entretien inclus
+c594|Contrat avec votre entreprise
+c595|Nombre de voitures et durée
+c596|Recherche de bureau et d’entrepôt
+c597|Recherche de bureau
+c598|Options selon le quartier et le budget
+c599|Visites
+c600|Contrat via un courtier agréé
+c601|Surface et budget
+c602|Recherche d’entrepôt
+c603|Recrutement
+c604|Recherche de personnel
+c605|Recherche de candidats
+c606|Entretiens dans la bonne langue
+c607|Embauche via une agence agréée
+c608|Description du poste
+c609|Entreprise, logistique, marketing, personnel
+c610|La publication d’annonces et les messages sont gratuits. Nakhlio ne prend aucune commission sur les transactions. Seule la promotion est payante, si vous le souhaitez.

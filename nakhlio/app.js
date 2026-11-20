@@ -279,7 +279,7 @@ V.home = () => {
     <div class="bigcats">
       <button class="bigcat" data-act="go" data-v="housing"><img src="${img('liv1')}" alt=""><span><b>${t('s_housing')}</b><small>${t('s_housing_d')}</small></span></button>
       <button class="bigcat" data-act="go" data-v="transport"><img src="${img('car2')}" alt=""><span><b>${t('s_transport')}</b><small>${t('s_transport_d')}</small></span></button>
-      <button class="bigcat svc" data-act="go" data-v="services"><span class="svc-icons">${['bank', 'plane', 'box'].map(i => `<i>${ic(i)}</i>`).join('')}</span><span><b>${t('s_services')}</b><small>${t('s_services_d')}</small></span></button>
+      <button class="bigcat svc" data-act="go" data-v="services"><span class="svc-icons">${['bank', 'box', 'palette', 'car', 'user'].map(i => `<i>${ic(i)}</i>`).join('')}</span><span><b>${t('s_services')}</b><small>${t('s_services_d')}</small></span></button>
     </div>
     <div class="cats" style="margin-top:18px">${SECTIONS.filter(s => !['housing', 'transport', 'services'].includes(s.k)).map(s => `<button class="cat" data-act="go" data-v="${s.k}"><i class="b-${s.c} c-${s.c}">${ic(s.ic)}</i>${t('s_' + s.k)}</button>`).join('')}</div>
     <div class="sec"><h3>${t('featured')}</h3><button data-act="go" data-v="housing">${t('see_all')}</button></div>
@@ -416,7 +416,7 @@ V.ads = (p) => {
   const c = p.c || 'all';
   const items = myAds().concat(ADS).filter(a => c === 'all' || a.cat === c);
   return { tabs: true, html: topbar(t('s_ads'), { right: `<button class="ibtn" data-act="postad" aria-label="${t('ad_post')}">${ic('plus')}</button>` }) + `<div class="wrap">
-  <div class="banner green">${ic('lock')}<div>${t('ad_contact_note')}</div></div>
+  <div class="banner green">${ic('lock')}<div>${t('ad_contact_note')}<br>${ST('free_ads')}</div></div>
   ${chipsRow(ADCATS, c, 'c')}
   <div class="count">${nf(items.length)} ${t('results')}</div>
   <div class="list">${items.map(adRow).join('') || emptyBlock()}</div>
@@ -950,7 +950,7 @@ function composeSheet(kind, topic) {
   });
 }
 function adSheet() {
-  const w = sheet(`<h3>${t('ad_post')}</h3><p class="note">${t('ad_free')} · ${t('ad_contact_note')}</p>
+  const w = sheet(`<h3>${t('ad_post')}</h3><p class="note">${ST('free_ads')}</p>
     <div class="field"><label for="adcat">${t('category')}</label><select id="adcat">${Object.keys(ADCATS).map(k => `<option value="${k}">${esc(L(ADCATS[k]))}</option>`).join('')}</select></div>
     <div class="field"><label for="adt">${t('title_f')}</label><input id="adt" placeholder="${lang === 'ru' ? 'Например: Стиральная машина, 2 года' : lang === 'ar' ? 'مثال: غسالة، عمرها سنتان' : 'e.g. Washing machine, 2 years old'}"></div>
     <div class="field"><label for="adp">${t('price_from')}, ${t('sar')}</label><input id="adp" inputmode="numeric" placeholder="300"></div>

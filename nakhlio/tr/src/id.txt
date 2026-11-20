@@ -252,7 +252,7 @@ u:guest_d|Lihat-lihat dengan bebas. Buat profil untuk menulis pesan, berkomentar
 u:chats_guest|Pesan Anda akan muncul di sini setelah membuat profil.
 u:spaces_guest|Ruang ini khusus anggota. Buat profil untuk bergabung.
 u:s_services|Layanan Nakhlio
-u:s_services_d|Bisnis, penjemputan bandara, persiapan rumah
+u:s_services_d|Bisnis, logistik, pemasaran, karyawan
 c0|Wi-Fi
 c1|AC
 c2|Air
@@ -807,3 +807,50 @@ c560|Semua layanan melalui mitra Nakhlio yang terverifikasi dan berlisensi. Pero
 c561|Barang & buku
 c562|Penjemputan bandara
 c563|Bisnis, penjemputan bandara, persiapan rumah
+c564|Logistik, impor & bea cukai
+c565|Impor barang dan pengurusan bea cukai
+c566|penawaran gratis
+c567|Memilih kurir dan rute
+c568|Pengurusan bea cukai melalui broker berlisensi
+c569|Pengiriman ke gudang atau kantor Anda
+c570|Daftar barang dan faktur
+c571|Registrasi komersial (CR)
+c572|Pengiriman kargo di Arab Saudi
+c573|Muatan parsial dan penuh
+c574|Pelacakan kargo
+c575|Alamat penjemputan dan pengiriman
+c576|Berat dan volume kargo
+c577|Pemasaran, iklan & desain
+c578|Logo dan identitas merek
+c579|sesuai permintaan
+c580|1–3 minggu
+c581|Logo, warna, huruf
+c582|Papan nama dan kartu nama
+c583|Teks dalam bahasa Arab dan Inggris
+c584|Iklan media sosial dan Google
+c585|Strategi dan anggaran
+c586|Pengelolaan akun
+c587|Laporan bulanan
+c588|Anggaran iklan
+c589|Sewa mobil untuk perusahaan
+c590|Mobil untuk karyawan, bulanan dan tahunan
+c591|mulai 3 hari
+c592|Sedan, SUV, minibus
+c593|Asuransi dan perawatan termasuk
+c594|Kontrak dengan perusahaan Anda
+c595|Jumlah mobil dan durasi
+c596|Pencarian kantor & gudang
+c597|Pencarian kantor
+c598|Pilihan sesuai lingkungan dan anggaran
+c599|Kunjungan lokasi
+c600|Kontrak melalui broker berlisensi
+c601|Luas dan anggaran
+c602|Pencarian gudang
+c603|Rekrutmen
+c604|Mencari karyawan
+c605|Pencarian kandidat
+c606|Wawancara dalam bahasa yang tepat
+c607|Perekrutan melalui agen berlisensi
+c608|Deskripsi pekerjaan
+c609|Bisnis, logistik, pemasaran, karyawan
+c610|Memasang iklan dan berkirim pesan gratis. Nakhlio tidak mengambil potongan dari transaksi. Hanya promosi yang berbayar, jika Anda mau.

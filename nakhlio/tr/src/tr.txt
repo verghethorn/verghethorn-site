@@ -252,7 +252,7 @@ u:guest_d|Serbestçe gezinin. Mesaj yazmak, yorum yapmak ve ilan vermek için pr
 u:chats_guest|Profil oluşturduktan sonra mesajlarınız burada görünecek.
 u:spaces_guest|Bu alan sadece üyeler içindir. Katılmak için profil oluşturun.
 u:s_services|Nakhlio Hizmetleri
-u:s_services_d|İş, havalimanında karşılama, ev kurulumu
+u:s_services_d|İş, lojistik, pazarlama, personel
 c0|Wi-Fi
 c1|Klima
 c2|Su
@@ -807,3 +807,50 @@ c560|Tüm hizmetler doğrulanmış ve lisanslı Nakhlio ortakları üzerinden ve
 c561|Eşya ve kitaplar
 c562|Havalimanında karşılama
 c563|İş, havalimanında karşılama, ev kurulumu
+c564|Lojistik, ithalat ve gümrük
+c565|Mal ithalatı ve gümrükleme
+c566|ücretsiz fiyat teklifi
+c567|Taşıyıcı ve güzergâh seçimi
+c568|Lisanslı gümrük müşaviri ile gümrükleme
+c569|Deponuza veya ofisinize teslimat
+c570|Ürün listesi ve fatura
+c571|Ticaret sicili (CR)
+c572|Suudi Arabistan içinde kargo taşıma
+c573|Parsiyel ve komple yükler
+c574|Kargo takibi
+c575|Alış ve teslim adresleri
+c576|Yükün ağırlığı ve hacmi
+c577|Pazarlama, reklam ve tasarım
+c578|Logo ve kurumsal kimlik
+c579|talep üzerine
+c580|1–3 hafta
+c581|Logo, renkler, yazı tipleri
+c582|Tabela ve kartvizit
+c583|Arapça ve İngilizce metinler
+c584|Sosyal medya ve Google reklamları
+c585|Strateji ve bütçe
+c586|Hesap yönetimi
+c587|Aylık rapor
+c588|Reklam bütçesi
+c589|Kurumsal araç kiralama
+c590|Çalışanlar için aylık ve yıllık araçlar
+c591|3 günden itibaren
+c592|Sedan, SUV, minibüs
+c593|Sigorta ve bakım dahil
+c594|Şirketinizle sözleşme
+c595|Araç sayısı ve süre
+c596|Ofis ve depo bulma
+c597|Ofis bulma
+c598|Semte ve bütçeye göre seçenekler
+c599|Yer gösterme
+c600|Lisanslı emlakçı ile sözleşme
+c601|Alan ve bütçe
+c602|Depo bulma
+c603|Personel temini
+c604|Çalışan bulma
+c605|Aday arama
+c606|Doğru dilde mülakatlar
+c607|Lisanslı ajans ile işe alım
+c608|İş tanımı
+c609|İş, lojistik, pazarlama, personel
+c610|İlan vermek ve mesajlaşmak ücretsizdir. Nakhlio işlemlerden pay almaz. Yalnızca öne çıkarma ücretlidir, isterseniz.

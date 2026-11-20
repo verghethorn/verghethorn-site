@@ -252,7 +252,7 @@ u:guest_d|Layari dengan bebas. Cipta profil untuk menulis mesej, memberi komen d
 u:chats_guest|Mesej anda akan muncul di sini selepas anda mencipta profil.
 u:spaces_guest|Ruang ini khas untuk ahli. Cipta profil untuk menyertai.
 u:s_services|Perkhidmatan Nakhlio
-u:s_services_d|Perniagaan, sambutan di lapangan terbang, persediaan rumah
+u:s_services_d|Perniagaan, logistik, pemasaran, kakitangan
 c0|Wi-Fi
 c1|Penghawa dingin
 c2|Air
@@ -807,3 +807,50 @@ c560|Semua perkhidmatan melalui rakan kongsi Nakhlio yang disahkan dan berlesen.
 c561|Barangan & buku
 c562|Sambutan di lapangan terbang
 c563|Perniagaan, sambutan di lapangan terbang, persediaan rumah
+c564|Logistik, import & kastam
+c565|Import barangan dan pelepasan kastam
+c566|sebut harga percuma
+c567|Memilih pengangkut dan laluan
+c568|Pelepasan kastam melalui broker berlesen
+c569|Penghantaran ke gudang atau pejabat anda
+c570|Senarai barangan dan invois
+c571|Pendaftaran perniagaan (CR)
+c572|Penghantaran kargo dalam Arab Saudi
+c573|Muatan separa dan penuh
+c574|Penjejakan kargo
+c575|Alamat pengambilan dan penghantaran
+c576|Berat dan isi padu kargo
+c577|Pemasaran, pengiklanan & reka bentuk
+c578|Logo dan identiti jenama
+c579|atas permintaan
+c580|1–3 minggu
+c581|Logo, warna, fon
+c582|Papan tanda dan kad perniagaan
+c583|Teks dalam bahasa Arab dan Inggeris
+c584|Iklan media sosial dan Google
+c585|Strategi dan bajet
+c586|Pengurusan akaun
+c587|Laporan bulanan
+c588|Bajet iklan
+c589|Sewa kereta korporat
+c590|Kereta untuk kakitangan, bulanan dan tahunan
+c591|dari 3 hari
+c592|Sedan, SUV, van mini
+c593|Insurans dan penyelenggaraan termasuk
+c594|Kontrak dengan syarikat anda
+c595|Bilangan kereta dan tempoh
+c596|Carian pejabat & gudang
+c597|Carian pejabat
+c598|Pilihan mengikut kawasan dan bajet
+c599|Lawatan premis
+c600|Kontrak melalui broker berlesen
+c601|Keluasan dan bajet
+c602|Carian gudang
+c603|Pengambilan pekerja
+c604|Mencari kakitangan
+c605|Carian calon
+c606|Temu duga dalam bahasa yang sesuai
+c607|Pengambilan melalui agensi berlesen
+c608|Huraian tugas
+c609|Perniagaan, logistik, pemasaran, kakitangan
+c610|Memasang iklan dan berutus mesej adalah percuma. Nakhlio tidak mengambil potongan daripada urus niaga. Hanya promosi yang berbayar, jika anda mahu.
