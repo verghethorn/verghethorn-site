@@ -777,7 +777,7 @@ function gateRegLive() {
       if (a === 'send') { lreg.email = scope.querySelector('#lemail').value.trim().toLowerCase(); const nl = scope.querySelector('#llang').value; if (nl !== lang) { lang = nl; S.lang = nl; save(); } }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(lreg.email)) { lreg.errs.email = t('err_email'); return gateRegLive(); }
       busy(b, true);
-      try { await LV.sendCode(lreg.email); lreg.step = 2; toast(FXL('code_sent') + ' ' + lreg.email); } catch (e) { toast(FXL('send_fail')); console.warn(e); }
+      try { await LV.sendCode(lreg.email, lang); lreg.step = 2; toast(FXL('code_sent') + ' ' + lreg.email); } catch (e) { toast(FXL('send_fail')); console.warn(e); }
       busy(b, false); return TR_LANGS.includes(lang) && !(window.TR && window.TR[lang]) ? boot() : gateRegLive();
     }
     if (a === 'verify') {

@@ -17,10 +17,26 @@ L.init = async () => {
   sb.auth.onAuthStateChange((ev, s) => { L.user = s ? s.user : null; if (!s) L.profile = null; });
   return L.profile;
 };
-L.sendCode = (email) => sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } }).then(ok);
+/* Sign-in codes are sent by our own server function (through Brevo). If it is not set up yet, Supabase's built-in email is used. */
+const FN = URL_ + '/functions/v1/login-code';
+const fn = async (body) => { const r = await fetch(FN, { method: 'POST', headers: { 'content-type': 'application/json', apikey: KEY }, body: JSON.stringify(body) }); let j = {}; try { j = await r.json(); } catch (e) {} return j; };
+let builtin = false;
+L.sendCode = async (email, lang) => {
+  const j = await fn({ action: 'send', email, lang }).catch(() => ({ error: 'not_configured' }));
+  if (j.ok) { builtin = false; return true; }
+  if (j.error === 'not_configured') { builtin = true; return sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } }).then(ok); }
+  const e = new Error(j.error || 'send_failed'); e.code = j.error; throw e;
+};
 L.verifyCode = async (email, token) => {
-  let r = await sb.auth.verifyOtp({ email, token, type: 'email' });
-  if (r.error) r = await sb.auth.verifyOtp({ email, token, type: 'signup' });
+  let r;
+  if (!builtin) {
+    const j = await fn({ action: 'verify', email, code: token });
+    if (!j.token_hash) { const e = new Error(j.error || 'code_bad'); e.code = 'code_bad'; throw e; }
+    r = await sb.auth.verifyOtp({ token_hash: j.token_hash, type: 'magiclink' });
+  } else {
+    r = await sb.auth.verifyOtp({ email, token, type: 'email' });
+    if (r.error) r = await sb.auth.verifyOtp({ email, token, type: 'signup' });
+  }
   ok(r); L.user = r.data.user; L.profile = await L.fetchProfile(L.user.id); return L.profile;
 };
 L.fetchProfile = async (id) => ok(await sb.from('profiles').select('*').eq('id', id).maybeSingle());
