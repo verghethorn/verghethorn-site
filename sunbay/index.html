@@ -1233,7 +1233,7 @@ function act(a, el) {
     case 'reinvest': if (S.income > 0) { const v = S.income; S.purchase += v; S.income = 0; addLog('Реинвест: Мой доход → Баланс покупок', 0, 'ok'); Audio.pay(); toast(`${sun(v, true)} переведено на Баланс покупок`); save(); updateHUD(); renderSheet(); } break;
     case 'sound': S.sound = !S.sound; Audio.setOn(S.sound); save(); renderSheet(); break;
     case 'install': closeSheet(); showInstall(true); break;
-    case 'reset': if (confirm('Удалить весь прогресс и начать заново?')) { try { localStorage.removeItem(SAVE_KEY); } catch (e) {} location.reload(); } break;
+    case 'reset': if (el.dataset.sure) { try { localStorage.removeItem(SAVE_KEY); } catch (e) {} location.reload(); } else { el.dataset.sure = '1'; el.textContent = 'Нажмите ещё раз — прогресс удалится'; } break;
   }
 }
 
