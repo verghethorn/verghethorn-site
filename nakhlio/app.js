@@ -524,11 +524,42 @@ function spaceView(which) {
     ${k === 'events' ? `<button class="btn soft full" style="margin-top:14px" data-act="toastdemo">${ic('plus')}${t('create_event')}</button>` : ''}
   </div>` };
 }
-V.men = () => !S.me ? guestLock(t('s_men'), t('spaces_guest')) : S.me.gender !== 'f' && !S.menOk ? { tabs: true, html: topbar(t('s_men')) + `<div class="wrap"><div class="empty">${emptyIllus('lock')}<b>${t('men_lock')}</b><p style="margin:6px auto 18px;max-width:32ch">${t('men_lock_text')}</p><button class="btn primary" data-act="verifym">${ic('shield')}${t('verify_btn')}</button></div></div>` } : (S.me.gender === 'f') ? { tabs: true, html: topbar(t('s_men')) + `<div class="wrap"><div class="empty">${emptyIllus('lock')}<b>${t('men_only')}</b></div></div>` } : spaceView('men');
+const PLEDGE = {
+  intro_women: { ru: 'Это пространство только для женщин. Мужчинам входить сюда запрещено.', en: 'This space is for women only. Men are not permitted to enter.', ar: 'هذه المساحة للنساء فقط، ولا يجوز للرجال دخولها.' },
+  intro_men: { ru: 'Это пространство только для мужчин. Женщинам входить сюда запрещено.', en: 'This space is for men only. Women are not permitted to enter.', ar: 'هذه المساحة للرجال فقط، ولا يجوز للنساء دخولها.' },
+  title: { ru: 'Напоминание перед входом', en: 'A reminder before you enter', ar: 'تذكير قبل الدخول' },
+  q1: { ar: 'وَلَا تَقْفُ مَا لَيْسَ لَكَ بِهِ عِلْمٌ ۚ إِنَّ السَّمْعَ وَالْبَصَرَ وَالْفُؤَادَ كُلُّ أُولَٰئِكَ كَانَ عَنْهُ مَسْئُولًا', ru: '«Не следуй тому, чего не знаешь. Воистину, слух, зрение и сердце — обо всём этом будет спрошено»', en: '“Do not follow that of which you have no knowledge. Indeed, the hearing, the sight and the heart — about all of these one will be questioned.”', src: { ru: 'Коран, сура аль-Исра, 17:36 (смысловой перевод)', en: 'Quran, Al-Isra 17:36 (meaning)', ar: 'سورة الإسراء، الآية 36' } },
+  q2: { ar: 'لَعَنَ رَسُولُ اللَّهِ ﷺ الْمُتَشَبِّهِينَ مِنَ الرِّجَالِ بِالنِّسَاءِ، وَالْمُتَشَبِّهَاتِ مِنَ النِّسَاءِ بِالرِّجَالِ', ru: '«Посланник Аллаха ﷺ проклял мужчин, уподобляющихся женщинам, и женщин, уподобляющихся мужчинам»', en: '“The Messenger of Allah ﷺ cursed men who imitate women and women who imitate men.”', src: { ru: 'Сахих аль-Бухари, 5885', en: 'Sahih al-Bukhari 5885', ar: 'صحيح البخاري، 5885' } },
+  q3: { ar: 'مَنْ غَشَّنَا فَلَيْسَ مِنَّا', ru: '«Кто обманывает нас — тот не из нас»', en: '“Whoever deceives us is not one of us.”', src: { ru: 'Сахих Муслим, 101', en: 'Sahih Muslim 101', ar: 'صحيح مسلم، 101' } },
+  oath_women: { ru: 'Я — женщина. Аллах свидетель моим словам.', en: 'I am a woman. Allah is witness to my words.', ar: 'أنا امرأة، والله شاهد على ما أقول.' },
+  oath_men: { ru: 'Я — мужчина. Аллах свидетель моим словам.', en: 'I am a man. Allah is witness to my words.', ar: 'أنا رجل، والله شاهد على ما أقول.' },
+  enter: { ru: 'Войти', en: 'Enter', ar: 'دخول' },
+  leave: { ru: 'Вернуться назад', en: 'Go back', ar: 'رجوع' },
+};
+S.pledge = S.pledge || {};
+function pledgeView(which) {
+  const col = which === 'men' ? 'sky' : 'rose';
+  const q = (k) => `<figure class="ayah"><p class="ar" dir="rtl" lang="ar">${PLEDGE[k].ar}</p>${lang !== 'ar' ? `<p class="tr">${esc(L(PLEDGE[k]))}</p>` : ''}<figcaption>${esc(L(PLEDGE[k].src))}</figcaption></figure>`;
+  return { tabs: true, html: topbar(t('s_' + which)) + `<div class="wrap narrow"><div class="card pledge">
+    <span class="pl-ic b-${col} c-${col}">${ic(which === 'men' ? 'male' : 'female')}</span>
+    <h2>${esc(L(PLEDGE.title))}</h2><p class="pl-intro">${esc(L(PLEDGE['intro_' + which]))}</p>
+    ${q('q1')}${q('q2')}${q('q3')}
+    <label class="check"><input type="checkbox" id="oath"><span><b>${esc(L(PLEDGE['oath_' + which]))}</b></span></label>
+    <button class="btn green full" style="margin-top:16px" id="oathgo" data-act="oath" data-v="${which}" disabled>${esc(L(PLEDGE.enter))}</button>
+    <button class="btn soft full" style="margin-top:10px" data-act="back">${esc(L(PLEDGE.leave))}</button>
+  </div></div>` };
+}
+const blocked = (which, key) => ({ tabs: true, html: topbar(t('s_' + which)) + `<div class="wrap"><div class="empty">${emptyIllus('lock')}<b>${t(key)}</b></div></div>` });
+V.men = () => {
+  if (!S.me) return guestLock(t('s_men'), t('spaces_guest'));
+  if (S.me.gender === 'f') return blocked('men', 'men_only');
+  if (!S.pledge.men) return pledgeView('men');
+  return spaceView('men');
+};
 V.women = () => {
   if (!S.me) return guestLock(t('s_women'), t('spaces_guest'));
-  if (S.me.gender === 'm') return { tabs: true, html: topbar(t('s_women')) + `<div class="wrap"><div class="empty">${emptyIllus('lock')}<b>${t('women_only_m')}</b></div></div>` };
-  if (!S.womenOk) return { tabs: true, html: topbar(t('s_women')) + `<div class="wrap"><div class="empty">${emptyIllus('lock')}<b>${t('women_lock')}</b><p style="margin:6px auto 18px;max-width:32ch">${t('women_lock_text')}</p><button class="btn primary" data-act="verify">${ic('shield')}${t('verify_btn')}</button></div></div>` };
+  if (S.me.gender === 'm') return blocked('women', 'women_only_m');
+  if (!S.pledge.women) return pledgeView('women');
   return spaceView('women');
 };
 V.event = (p) => {
@@ -752,7 +783,7 @@ function authSheet() {
     <button class="btn primary full" data-startreg>${ic('user')}${t('create_profile')}</button><button class="btn soft full" style="margin-top:10px" data-close>${t('later')}</button>`);
   w.querySelector('[data-startreg]').addEventListener('click', () => { w.remove(); gateReg(); });
 }
-const AUTH = ['verifym', 'write', 'dm', 'reply', 'comment', 'csend', 'postad', 'postparcel', 'compose', 'going', 'helped', 'rreply', 'verify', 'report', 'reportuser', 'toastdemo'];
+const AUTH = ['write', 'dm', 'reply', 'comment', 'csend', 'postad', 'postparcel', 'compose', 'going', 'helped', 'rreply', 'verify', 'report', 'reportuser', 'toastdemo'];
 const guestLock = (title, txt0) => ({ tabs: true, html: topbar(title, { noBack: stack.length < 2 }) + `<div class="wrap"><div class="empty">${emptyIllus('lock')}<b>${title}</b><p style="margin:6px auto 18px;max-width:34ch">${txt0}</p><button class="btn primary" data-act="startreg">${ic('user')}${t('create_profile')}</button></div></div>` });
 /* ---------- events ---------- */
 root.addEventListener('click', (e) => {
@@ -794,8 +825,7 @@ root.addEventListener('click', (e) => {
     case 'report': S.reported[v] = true; save(); toast(t('reported')); render(); break;
     case 'compose': composeSheet(v, id); break;
     case 'going': S.going[v] = !S.going[v]; save(); render(); break;
-    case 'verifym': S.menOk = true; save(); toast(t('verify_sent')); render(); break;
-    case 'verify': S.womenOk = true; save(); toast(t('verify_sent')); render(); break;
+    case 'oath': S.pledge[v] = true; save(); render(true); break;
     case 'postad': adSheet(); break;
     case 'postparcel': parcelSheet(); break;
     case 'status': { const st = ['new', 'work', 'view', 'done']; S.req[v] = st[(st.indexOf(S.req[v] || 'new') + 1) % 4]; save(); render(); break; }
@@ -898,6 +928,7 @@ function render(scrollTop) {
   const sc = document.querySelector('.scroller');
   window.scrollTo(0, keep);
   if (rootTabs.includes(c.v) && stack.length === 1) stack[0] = c;
+  const oath = document.getElementById('oath'); if (oath) oath.addEventListener('change', () => { document.getElementById('oathgo').disabled = !oath.checked; });
   // gallery dots
   const tr = document.getElementById('gtrack');
   if (tr) tr.addEventListener('scroll', () => { const i = Math.round(Math.abs(tr.scrollLeft) / tr.clientWidth); document.querySelectorAll('#gdots i').forEach((d, j) => d.classList.toggle('on', i === j)); }, { passive: true });
