@@ -319,7 +319,7 @@ if (LV) {
   const trText = (key, text, from) => { if (!text || !from || from === NK.lang) return text; if (TRC[key]) return TRC[key].t; TRC[key] = { t: text }; LV.translate(text, from, NK.lang).then(r => { if (r) { TRC[key] = { t: r, tr: true }; if (cur().v === 'mgchat' && document.getElementById('mgthread')) paintThread(); else render(); } }); return text; };
   const trBadge = (key) => TRC[key] && TRC[key].tr ? `<span class="mgtr">${small('translate')}${t('auto_tr')}</span>` : '';
   const ago = (d) => { const h = Math.max(0, Math.round((Date.now() - new Date(d)) / 36e5)); return agoTxt(h); };
-  const ready = () => { if (!NK.isPhone()) return mobileOnly(); if (window.MG_APP && !NK.isStandalone() && !NK.S.me && !NK.S.mgSkipInst) return installGate(); if (LV.ready && LV.user && !(LV.profile && LV.profile.mg_on)) return setupView(); if (!NK.S.me || (LV.ready && !LV.user)) return landing(); acceptPending(); if (cur().v !== 'mgchat') inboxTick(); return null; };
+  const ready = () => { if (!NK.isPhone()) return mobileOnly(); if (window.MG_APP && !NK.isStandalone()) return installGate(); if (LV.ready && LV.user && !(LV.profile && LV.profile.mg_on)) return setupView(); if (!NK.S.me || (LV.ready && !LV.user)) return landing(); acceptPending(); if (cur().v !== 'mgchat') inboxTick(); return null; };
   const loading = `<p class="note" style="text-align:center;padding:30px 0">…</p>`;
   const R = () => want('mg:rel', () => LV.rel()) || { friends: new Set(), out: new Set(), inc: [], follow: new Set() };
   const mediaHtml = (p) => p.media_type === 'video' ? `<video src="${esc(p.media_url)}" playsinline muted loop autoplay controls></video>` : `<img src="${esc(p.media_url)}" alt="" loading="lazy">`;
@@ -429,7 +429,7 @@ if (LV) {
     return { html: `<div class="mg mgland"><div class="mgwrap"><div class="mglhead">${mgLogo('big')}<h1 class="mgh1"><img class="mgwm" src="img/mgapp/wordmark-dark.png" alt="MAGAAM"></h1><p>${M('tag2')}</p></div>${invBox()}<div class="mgcard">
       <h3 style="margin:0 0 4px">${M('inst_t')}</h3><p class="note" style="margin:0 0 12px">${M('inst_d')}</p>
       ${bip ? `<button class="btn primary full mgbtn" data-act="mginst">${M('inst_btn')}</button>` : `<ol class="mgsteps"><li><span>1</span>${M('inst_1')} ${shareIc}</li><li><span>2</span>${M('inst_2')} ${plusIc}</li><li><span>3</span>${M('inst_3')}</li></ol>${ios ? `<p class="note" style="font-size:12.5px;margin:10px 0 0">${M('inst_safari')}</p>` : ''}`}
-      </div><button class="mglink" style="display:block;margin:16px auto 0" data-act="mgskipinst">${M('inst_skip')}</button></div>${ios && !bip ? '<div class="mgarrow">↓</div>' : ''}</div>` }; };
+      </div></div>${ios && !bip ? '<div class="mgarrow">↓</div>' : ''}</div>` }; };
   const setupView = () => { const pr = LV.profile || {}; const ph = MR.photo || pr.mg_avatar || pr.photo_url || '';
     return { html: `<div class="mg mgland"><div class="mgwrap"><div class="mglhead">${mgLogo()}<h2>${M('setup_t')}</h2><p>${M('setup_d')}</p></div>${invBox()}<div class="mgcard">
       <button class="mgsetph" data-act="mgrphoto">${ph ? `<span style="background-image:url(${esc(ph)})"></span>` : `<span>${ic('camera')}</span>`}<b>${M('photo')}</b></button>
