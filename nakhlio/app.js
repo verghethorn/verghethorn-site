@@ -19,6 +19,11 @@ const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch
 
 const DEMO = !!window.NAKHLIO_DEMO || /[?&]demo=1/.test(location.search);
 if (DEMO) { S.demoSkip = true; try { localStorage.setItem('nakhlio_v1', JSON.stringify(S)); } catch (e) {} }
+if (/[?&]me=rashid\b/.test(location.search) && !(S.me && S.me.name === 'Rashid Kurabegov')) {
+  S.demoSkip = true; S.lang = S.lang || 'ru';
+  S.me = { name: 'Rashid Kurabegov', gender: 'm', photos: ['img/rashid.jpg'], about: 'Используй пять вещей до прихода других пяти', job: '', dist: '', langs: 'RU · AR · EN', since: '2026', phone: '', email: '' };
+  S.pledge = S.pledge || {}; save();
+}
 const browserLang = (() => { const n = (navigator.language || 'en').slice(0, 2); return LANGS.some(l => l.code === n) ? n : 'en'; })();
 let lang = S.lang || browserLang;
 const TRL = () => (window.TR && window.TR[lang]) || { u: {}, c: {} };
@@ -285,7 +290,6 @@ V.home = () => {
       <button class="bigcat svc" data-act="go" data-v="services"><span class="svc-icons">${['bank', 'box', 'palette', 'car', 'user'].map(i => `<i>${ic(i)}</i>`).join('')}</span><span><b>${t('s_services')}</b><small>${t('s_services_d')}</small></span></button>
     </div>
     <div class="cats" style="margin-top:18px">${SECTIONS.filter(s => !['housing', 'transport', 'services'].includes(s.k)).map(s => `<button class="cat" data-act="go" data-v="${s.k}"><i class="b-${s.c} c-${s.c}">${ic(s.ic)}</i>${t('s_' + s.k)}</button>`).join('')}</div>
-    ${homeDocs()}
     <div class="sec"><h3>${t('featured')}</h3><button data-act="go" data-v="housing">${t('see_all')}</button></div>
     <div class="hscroll">${featured.map(x => x.kind ? trCard(x) : houseCard(x)).join('')}</div>
     ${nextDay ? `<button class="card" data-act="go" data-v="days" style="display:flex;gap:14px;align-items:center;width:100%;text-align:start;margin-top:18px"><span class="prayer-ico" style="background:var(--palm-tint);color:var(--palm)">${ic('calendar')}</span><span style="flex:1;min-width:0"><small style="color:var(--ink-2);font-weight:600;font-size:12px">${t('s_days')}</small><b style="display:block">${esc(L(nextDay.d.name))}</b></span><b class="num" style="color:var(--palm);text-align:end">${nf(nextDay.left)}<small style="display:block;font-size:11px;color:var(--ink-2);font-weight:600">${t('days_left')}</small></b></button>` : ''}
