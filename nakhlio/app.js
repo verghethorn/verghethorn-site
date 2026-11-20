@@ -4,9 +4,9 @@
 
 /* ---------- extra texts used by screens ---------- */
 const EXTRA = {
-  en: { catalog: 'Catalog', nothing: 'Nothing found', nothing_d: 'Try another word or open a section below.', all_sections: 'All sections', price_from: 'Price', title_f: 'Title', category: 'Category', photo: 'Photos', add_photo: 'Add photos', demo_pay: 'demo', post_parcel: 'Post a trip or request', agree_rules: 'I have read the rules. I carry only open items and check the contents myself.', what: 'What', weight: 'Weight', kg: 'kg', date: 'Date', from_to: 'Route', guest: 'Guest', you: 'You', client_lang: 'Client language', top: 'Top', pro: 'PRO', yours: 'yours', members: 'members', room_hello: 'Assalamu alaikum! Welcome to the room.', room_rule: 'Remember the Majlis rules: no politics, no religious disputes.', write_room: 'Write to the room…', km: 'km', min: 'min', any: 'Anyone', audience: 'Suitable for', term_l: 'Rental term', cc: 'Engine', open_maps: 'Location on the map', walk_to: 'walk', open: 'Open', help_post: 'Offer help', ask_family: 'Ask parents', q_tag: 'Question', e_tag: 'Experience' },
-  ru: { catalog: 'Каталог', nothing: 'Ничего не найдено', nothing_d: 'Попробуйте другое слово или откройте раздел ниже.', all_sections: 'Все разделы', price_from: 'Цена', title_f: 'Заголовок', category: 'Категория', photo: 'Фото', add_photo: 'Добавить фото', demo_pay: 'демо', post_parcel: 'Разместить поездку или запрос', agree_rules: 'Я прочитал правила. Перевожу только открытые вещи и сам проверяю содержимое.', what: 'Что', weight: 'Вес', kg: 'кг', date: 'Дата', from_to: 'Маршрут', guest: 'Гость', you: 'Вы', client_lang: 'Язык клиента', top: 'Топ', pro: 'PRO', yours: 'ваше', members: 'участников', room_hello: 'Ассаляму алейкум! Добро пожаловать в комнату.', room_rule: 'Помните правила Меджлиса: без политики и споров о религии.', write_room: 'Написать в комнату…', km: 'км', min: 'мин', any: 'Всем', audience: 'Подходит', term_l: 'Срок аренды', cc: 'Двигатель', open_maps: 'Место на карте', walk_to: 'пешком', open: 'Открыть', help_post: 'Предложить помощь', ask_family: 'Спросить родителей', q_tag: 'Вопрос', e_tag: 'Опыт' },
-  ar: { catalog: 'الكتالوج', nothing: 'لا توجد نتائج', nothing_d: 'جرّب كلمة أخرى أو افتح قسماً بالأسفل.', all_sections: 'كل الأقسام', price_from: 'السعر', title_f: 'العنوان', category: 'الفئة', photo: 'الصور', add_photo: 'أضف صوراً', demo_pay: 'تجريبي', post_parcel: 'أضف رحلة أو طلباً', agree_rules: 'قرأت القواعد. أنقل الأغراض المفتوحة فقط وأفحص المحتوى بنفسي.', what: 'ماذا', weight: 'الوزن', kg: 'كجم', date: 'التاريخ', from_to: 'المسار', guest: 'زائر', you: 'أنت', client_lang: 'لغة العميل', top: 'مميز', pro: 'PRO', yours: 'إعلانك', members: 'عضو', room_hello: 'السلام عليكم! أهلاً بك في الغرفة.', room_rule: 'تذكّر قواعد المجلس: لا سياسة ولا جدال في الدين.', write_room: 'اكتب في الغرفة…', km: 'كم', min: 'د', any: 'للجميع', audience: 'مناسب لـ', term_l: 'مدة الإيجار', cc: 'المحرك', open_maps: 'الموقع على الخريطة', walk_to: 'مشياً', open: 'فتح', help_post: 'اعرض مساعدة', ask_family: 'اسأل الأهالي', q_tag: 'سؤال', e_tag: 'تجربة' },
+  en: { catalog: 'Catalog', nothing: 'Nothing found', nothing_d: 'Try another word or open a section below.', all_sections: 'All sections', price_from: 'Price', title_f: 'Title', category: 'Category', photo: 'Photos', add_photo: 'Add photos', demo_pay: 'demo', post_parcel: 'Post a trip or request', agree_rules: 'I have read the rules. I carry only open items and check the contents myself.', what: 'What', weight: 'Weight', kg: 'kg', date: 'Date', from_to: 'Route', guest: 'Guest', you: 'You', client_lang: 'Client language', top: 'Top', pro: 'PRO', yours: 'yours', members: 'members', room_hello: 'Assalamu alaikum! Welcome to the room.', room_rule: 'Remember the Majlis rules: no politics, no religious disputes.', write_room: 'Write to the room…', km: 'km', min: 'min', any: 'Anyone', audience: 'Suitable for', term_l: 'Rental term', cc: 'Engine', open_maps: 'Location on the map', walk_to: 'walk', open: 'Open', help_post: 'Offer help', ask_family: 'Ask parents', q_tag: 'Question', e_tag: 'Experience', comment: 'Comment', reply: 'Reply', dm: 'Message privately', reply_to: 'Replying to', comments_t: 'Questions & comments', comment_ph: 'Write a comment…', seller: 'Author', on_since: 'on Nakhlio since', langs_spoken: 'Speaks', event_org: 'Organiser', auto_tr: 'Translated automatically' },
+  ru: { catalog: 'Каталог', nothing: 'Ничего не найдено', nothing_d: 'Попробуйте другое слово или откройте раздел ниже.', all_sections: 'Все разделы', price_from: 'Цена', title_f: 'Заголовок', category: 'Категория', photo: 'Фото', add_photo: 'Добавить фото', demo_pay: 'демо', post_parcel: 'Разместить поездку или запрос', agree_rules: 'Я прочитал правила. Перевожу только открытые вещи и сам проверяю содержимое.', what: 'Что', weight: 'Вес', kg: 'кг', date: 'Дата', from_to: 'Маршрут', guest: 'Гость', you: 'Вы', client_lang: 'Язык клиента', top: 'Топ', pro: 'PRO', yours: 'ваше', members: 'участников', room_hello: 'Ассаляму алейкум! Добро пожаловать в комнату.', room_rule: 'Помните правила Меджлиса: без политики и споров о религии.', write_room: 'Написать в комнату…', km: 'км', min: 'мин', any: 'Всем', audience: 'Подходит', term_l: 'Срок аренды', cc: 'Двигатель', open_maps: 'Место на карте', walk_to: 'пешком', open: 'Открыть', help_post: 'Предложить помощь', ask_family: 'Спросить родителей', q_tag: 'Вопрос', e_tag: 'Опыт', comment: 'Комментировать', reply: 'Ответить', dm: 'Написать лично', reply_to: 'Ответ для', comments_t: 'Вопросы и комментарии', comment_ph: 'Напишите комментарий…', seller: 'Автор', on_since: 'на Nakhlio с', langs_spoken: 'Говорит', event_org: 'Организатор', auto_tr: 'Переведено автоматически' },
+  ar: { catalog: 'الكتالوج', nothing: 'لا توجد نتائج', nothing_d: 'جرّب كلمة أخرى أو افتح قسماً بالأسفل.', all_sections: 'كل الأقسام', price_from: 'السعر', title_f: 'العنوان', category: 'الفئة', photo: 'الصور', add_photo: 'أضف صوراً', demo_pay: 'تجريبي', post_parcel: 'أضف رحلة أو طلباً', agree_rules: 'قرأت القواعد. أنقل الأغراض المفتوحة فقط وأفحص المحتوى بنفسي.', what: 'ماذا', weight: 'الوزن', kg: 'كجم', date: 'التاريخ', from_to: 'المسار', guest: 'زائر', you: 'أنت', client_lang: 'لغة العميل', top: 'مميز', pro: 'PRO', yours: 'إعلانك', members: 'عضو', room_hello: 'السلام عليكم! أهلاً بك في الغرفة.', room_rule: 'تذكّر قواعد المجلس: لا سياسة ولا جدال في الدين.', write_room: 'اكتب في الغرفة…', km: 'كم', min: 'د', any: 'للجميع', audience: 'مناسب لـ', term_l: 'مدة الإيجار', cc: 'المحرك', open_maps: 'الموقع على الخريطة', walk_to: 'مشياً', open: 'فتح', help_post: 'اعرض مساعدة', ask_family: 'اسأل الأهالي', q_tag: 'سؤال', e_tag: 'تجربة', comment: 'تعليق', reply: 'رد', dm: 'رسالة خاصة', reply_to: 'رداً على', comments_t: 'الأسئلة والتعليقات', comment_ph: 'اكتب تعليقاً…', seller: 'صاحب الإعلان', on_since: 'في نخليو منذ', langs_spoken: 'يتحدث', event_org: 'المنظّم', auto_tr: 'ترجمة تلقائية' },
 };
 for (const k in EXTRA) Object.assign(I18N[k], EXTRA[k]);
 
@@ -14,7 +14,7 @@ for (const k in EXTRA) Object.assign(I18N[k], EXTRA[k]);
 const KEY = 'nakhlio_v1';
 let S = {};
 try { S = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { S = {}; }
-S.saved = S.saved || []; S.chats = S.chats || {}; S.going = S.going || {}; S.posts = S.posts || {}; S.req = S.req || {}; S.reported = S.reported || {}; S.helped = S.helped || {};
+S.saved = S.saved || []; S.chats = S.chats || {}; S.going = S.going || {}; S.posts = S.posts || {}; S.req = S.req || {}; S.reported = S.reported || {}; S.helped = S.helped || {}; S.cm = S.cm || {};
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 
 const DEMO = !!window.NAKHLIO_DEMO || /[?&]demo=1/.test(location.search);
@@ -223,7 +223,7 @@ function houseCard(h) {
   return `<div class="lcard"><button data-act="go" data-v="house" data-id="${h.id}" style="display:block;width:100%;text-align:start">
     <div class="ph"><img src="${img(h.photos[0])}" alt="" loading="lazy"><span class="chip-on-photo">${ic('shield')}${t('verified').split('·')[0].trim()}</span><span class="rating">${ic('star')}${nf(h.rating, 1)}</span></div>
     <div class="body"><div class="ttl">${esc(L(h.title))}</div>
-    <div class="meta"><span>${ic('pin')}${esc(L(DIST[h.dist]))}</span><span>${ic(h.walk ? 'walk' : 'car')}${distTxt(h)}</span><span>${ic('bed')}${nf(h.rooms)}</span></div>
+    <div class="meta"><span>${ic('pin')}${esc(loc(h.dist))}</span><span>${ic(h.walk ? 'walk' : 'car')}${distTxt(h)}</span><span>${ic('bed')}${nf(h.rooms)}</span></div>
     <div class="price num">${money(h.price)} <small>${termSuffix(h.term)}</small></div></div></button>${heart(h.id)}</div>`;
 }
 function trCard(x) {
@@ -307,7 +307,7 @@ const emptyBlock = (txt, kind) => `<div class="empty">${emptyIllus(kind)}<b>${tx
 function gallery(photos, id) {
   return `<div class="gallery"><div class="track" id="gtrack">${photos.map(ph => `<img src="${img(ph)}" alt="">`).join('')}</div>
     <div class="dots" id="gdots">${photos.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div>
-    <div class="float"><button class="ibtn" data-act="back" aria-label="${t('back')}">${ic('back', 'flip')}</button><button class="ibtn ${isSaved(id) ? 'c-rose' : ''}" data-act="save" data-v="${id}" aria-label="♡">${ic('heart')}</button></div></div>`;
+    <div class="float"><button class="ibtn" data-act="back" aria-label="${t('back')}">${ic('back', 'flip')}</button>${id ? `<button class="ibtn ${isSaved(id) ? 'c-rose' : ''}" data-act="save" data-v="${id}" aria-label="♡">${ic('heart')}</button>` : ''}</div></div>`;
 }
 V.house = (p) => {
   const h = HOUSING.find(x => x.id === p.id);
@@ -316,7 +316,7 @@ V.house = (p) => {
   return { cta: `<div class="p"><b class="num">${money(h.price)}</b><small>${termSuffix(h.term)}</small></div><button class="btn primary" data-act="write" data-v="${h.id}">${ic('chat')}${t('write')}</button>`, raw: true, html: gallery(h.photos, h.id) + `
   <div class="sheetbody wrap">
     <h2 class="d-title">${esc(L(h.title))}</h2>
-    <div class="d-sub"><span>${ic('pin')}${esc(L(DIST[h.dist]))}</span><span>${ic(h.walk ? 'walk' : 'car')}${h.walk ? `${nf(h.walk)} ${t('min_walk')}` : `${nf(h.km, 1)} ${t('km_haram')}`}</span><span style="color:var(--date-2)">${ic('star')}<b class="num">${nf(h.rating, 1)}</b></span></div>
+    <div class="d-sub"><span>${ic('pin')}${esc(loc(h.dist))}</span><span>${ic(h.walk ? 'walk' : 'car')}${h.walk ? `${nf(h.walk)} ${t('min_walk')}` : `${nf(h.km, 1)} ${t('km_haram')}`}</span><span style="color:var(--date-2)">${ic('star')}<b class="num">${nf(h.rating, 1)}</b></span></div>
     <div class="verified">${ic('camera')}${t('verified')}</div>
     <div class="facts">${facts.map(([i, v, l]) => `<div class="fact">${ic(i)}<b class="num">${nf(v)}</b><small>${l}</small></div>`).join('')}</div>
     <div class="block"><h4>${t('description')}</h4><p>${esc(L(h.desc))}</p></div>
@@ -324,7 +324,7 @@ V.house = (p) => {
     <div class="block"><h4>${t('terms')}</h4><div class="kv">
       <div><span>${t('term_l')}</span><b>${t(h.term)}</b></div><div><span>${t('payment')}</span><b>${esc(L(h.pay))}</b></div>
       <div><span>${t('deposit')}</span><b class="num">${h.dep ? money(h.dep) : '—'}</b></div><div><span>${t('audience')}</span><b>${aud} · ${h.furnished ? t('furnished') : t('unfurnished')}</b></div></div></div>
-    <div class="block"><h4>${t('location')}</h4><div class="map">${mapSvg(h.walk ? h.walk / 12 : h.km)}<div class="cap"><b>${esc(L(DIST[h.dist]))}</b> · ${h.walk ? `${nf(h.walk)} ${t('min_walk')}` : `${nf(h.km, 1)} ${t('km_haram')}`}<br>${t('location_note')}</div></div></div>
+    <div class="block"><h4>${t('location')}</h4><div class="map">${mapSvg(h.walk ? h.walk / 12 : h.km)}<div class="cap"><b>${esc(loc(h.dist))}</b> · ${h.walk ? `${nf(h.walk)} ${t('min_walk')}` : `${nf(h.km, 1)} ${t('km_haram')}`}<br>${t('location_note')}</div></div></div>
     <div class="block"><h4>${t('reviews')} <span class="tag">${t('review_example')}</span></h4>${REVIEWS.map(r => `<div class="review"><div class="who"><i>${esc(r.who[0])}</i>${esc(r.who)}<span class="stars">${ic('star').repeat(r.stars)}</span></div><p>${esc(L(r.text))}</p></div>`).join('')}</div>
     <p class="note" style="margin-top:18px">${t('listing_no')} <b class="num">${h.id}</b></p>
   </div>` };
@@ -353,9 +353,9 @@ V.explore = (p) => {
   const q = (p.q || '').trim().toLowerCase();
   let res = '';
   if (q) {
-    const hs = HOUSING.filter(h => [L(h.title), L(DIST[h.dist]), h.title.en, h.title.ru, DIST[h.dist].en].join(' ').toLowerCase().includes(q));
+    const hs = HOUSING.filter(h => [L(h.title), h.title.en, h.title.ru, DIST[h.dist].en].join(' ').toLowerCase().includes(q));
     const ts = TRANSPORT.filter(x => (x.model + ' ' + t(x.kind)).toLowerCase().includes(q));
-    const as = ADS.filter(a => (L(a.title) + ' ' + L(a.cat)).toLowerCase().includes(q));
+    const as = myAds().concat(ADS).filter(a => (txt(a.title) + ' ' + catLabel(a.cat, ADCATS) + ' ' + a.seller.name).toLowerCase().includes(q));
     res = (hs.length + ts.length + as.length) ? `<div class="count">${nf(hs.length + ts.length + as.length)} ${t('results')}</div><div class="list">${hs.map(houseCard).join('')}${ts.map(trCard).join('')}${as.map(adRow).join('')}</div>` : emptyBlock();
   }
   return { tabs: true, html: topbar(t('catalog'), { noBack: stack.length < 2 }) + `<div class="wrap">
@@ -366,23 +366,98 @@ V.explore = (p) => {
   </div>` };
 };
 
-const adRow = (a) => `<button class="row-card" data-act="writead" data-v="${a.id}" style="${a.boosted ? 'background:var(--date-tint)' : ''}"><span class="thumb"><img src="${img(a.photo)}" alt="" loading="lazy"></span><span class="grow"><span class="sub" style="display:flex;gap:6px;align-items:center;margin:0 0 3px">${esc(L(a.cat))}${a.boosted ? `<span class="tag gold">${ic('up').replace('<svg', '<svg style="width:12px;height:12px"')}${t('top')}</span>` : ''}${a.pro ? `<span class="tag green">${t('pro')}</span>` : ''}${a.mine ? `<span class="tag">${t('yours')}</span>` : ''}</span><span class="ttl" style="display:block">${esc(L(a.title))}</span><span class="sub" style="display:block">${esc(L(a.who))}</span><span class="price" style="display:block">${esc(L(a.price))}</span></span></button>`;
-V.ads = () => ({ tabs: true, html: topbar(t('s_ads'), { right: `<button class="ibtn" data-act="postad" aria-label="${t('ad_post')}">${ic('plus')}</button>` }) + `<div class="wrap">
-  <div class="banner green">${ic('lock')}<div>${t('ad_contact_note')}</div></div>
-  <button class="btn primary full" style="margin-top:14px" data-act="postad">${ic('plus')}${t('ad_post')} · ${t('ad_free')}</button>
-  <div class="list" style="margin-top:16px">${(S.myAds || []).concat(ADS).map(adRow).join('')}</div></div>` });
+/* ---------- community helpers ---------- */
+const loc = (k) => (DIST[k] ? DIST[k].en : (k || ''));
+const who = (n) => (n === '@me' ? t('you') : n);
+const initial = (n) => esc((String(who(n)).replace(/^Ustaz /, '')[0]) || '?');
+const txt = (x) => (typeof x === 'string' ? x : L(x));
+const catLabel = (k, map) => (map[k] ? L(map[k]) : (k || ''));
+const small = (n) => ic(n).replace('<svg', '<svg style="width:15px;height:15px"');
+let openC = {}, replyTo = {};
+function commentsBlock(key, list, opts) {
+  opts = opts || {};
+  const all = (list || []).concat(S.cm[key] || []);
+  const items = all.map((c) => {
+    const mine = c.who === '@me';
+    return `<div class="cmt ${c.to ? 'sub' : ''}"><span class="av ${mine ? 'me' : ''}">${initial(c.who)}</span><div class="cb">
+      <div class="cw"><b>${esc(who(c.who))}</b>${c.to ? `<span class="to">${small('chev')}${esc(who(c.to))}</span>` : ''}${c.date ? `<small class="num">${c.date}</small>` : ''}</div>
+      <p>${esc(txt(c.text))}</p>
+      ${mine ? '' : `<div class="ca"><button data-act="reply" data-k="${key}" data-v="${esc(c.who)}">${small('chat')}${t('reply')}</button><button data-act="dm" data-v="${esc(c.who)}">${small('send')}${t('dm')}</button>${c.helped != null ? `<span class="num">${small('check')}${nf(c.helped)}</span>` : ''}</div>`}
+    </div></div>`;
+  }).join('');
+  const box = opts.collapsed && !openC[key] ? '' : `<div class="cbox"><div class="rchip" ${replyTo[key] ? '' : 'hidden'}>${t('reply_to')} <b>${esc(who(replyTo[key] || ''))}</b><button data-act="unreply" data-k="${key}" aria-label="${t('close')}">${small('x')}</button></div>
+    <div class="crow"><textarea rows="1" data-ck="${key}" placeholder="${t('comment_ph')}" aria-label="${t('comment_ph')}"></textarea><button class="send" data-act="csend" data-k="${key}" aria-label="send">${ic('send', 'flip')}</button></div></div>`;
+  return `<div class="cmts">${items}</div>${box}`;
+}
+const chipsRow = (map, curK, act) => `<div class="chips"><button class="chip ${curK === 'all' ? 'on' : ''}" data-act="${act}" data-v="all">${t('all')}</button>${Object.keys(map).map(k => `<button class="chip ${k === curK ? 'on' : ''}" data-act="${act}" data-v="${k}">${esc(L(map[k]))}</button>`).join('')}</div>`;
+const cCount = (x) => (x.comments || []).length + (S.cm['c:' + x.id] || []).length;
+const myAds = () => S.myAds || [];
 
+const adRow = (a) => `<button class="row-card" data-act="go" data-v="item" data-id="${a.id}" style="${a.boosted ? 'background:var(--date-tint)' : ''}"><span class="thumb"><img src="${img(a.photos[0])}" alt="" loading="lazy"></span><span class="grow">
+  <span class="sub" style="display:flex;gap:6px;align-items:center;margin:0 0 3px;flex-wrap:wrap">${esc(catLabel(a.cat, ADCATS))}${a.boosted ? `<span class="tag gold">${t('top')}</span>` : ''}${a.pro ? `<span class="tag green">${t('pro')}</span>` : ''}${a.mine ? `<span class="tag">${t('yours')}</span>` : ''}</span>
+  <span class="ttl" style="display:block">${esc(txt(a.title))}</span><span class="sub" style="display:block">${esc(who(a.seller.name))} · ${esc(loc(a.seller.dist))}</span>
+  <span style="display:flex;justify-content:space-between;align-items:center;margin-top:5px;gap:8px"><span class="price">${esc(txt(a.price))}</span><span class="sub" style="display:inline-flex;gap:4px;align-items:center;margin:0">${small('chat')}<span class="num">${nf(cCount(a))}</span></span></span></span></button>`;
+V.ads = (p) => {
+  const c = p.c || 'all';
+  const items = myAds().concat(ADS).filter(a => c === 'all' || a.cat === c);
+  return { tabs: true, html: topbar(t('s_ads'), { right: `<button class="ibtn" data-act="postad" aria-label="${t('ad_post')}">${ic('plus')}</button>` }) + `<div class="wrap">
+  <div class="banner green">${ic('lock')}<div>${t('ad_contact_note')}</div></div>
+  ${chipsRow(ADCATS, c, 'c')}
+  <div class="count">${nf(items.length)} ${t('results')}</div>
+  <div class="list">${items.map(adRow).join('') || emptyBlock()}</div>
+  <button class="btn primary full" style="margin-top:16px" data-act="postad">${ic('plus')}${t('ad_post')} · ${t('ad_free')}</button></div>` };
+};
+const HELP_IC = { airport: 'plane', translate: 'translate', elderly: 'hand', tours: 'pin' };
+const helpRow = (x) => `<button class="row-card" data-act="go" data-v="item" data-id="${x.id}"><span class="thumb b-palm c-palm" style="display:flex;align-items:center;justify-content:center">${ic(HELP_IC[x.cat]).replace('<svg', '<svg style="width:30px;height:30px"')}</span><span class="grow">
+  <span class="sub" style="margin:0 0 3px;display:block">${esc(catLabel(x.cat, HELPCATS))}</span><span class="ttl" style="display:block">${esc(L(x.title))}</span>
+  <span class="sub" style="display:block">${esc(x.seller.name)} · ${esc(x.seller.langs)} · ★ ${nf(x.seller.rating, 1)}</span>
+  <span style="display:flex;justify-content:space-between;align-items:center;margin-top:5px"><span class="price">${esc(L(x.price))}</span><span class="sub" style="display:inline-flex;gap:4px;align-items:center;margin:0">${small('chat')}<span class="num">${nf(cCount(x))}</span></span></span></span></button>`;
+V.help = (p) => {
+  const c = p.c || 'all';
+  const items = HELP.filter(x => c === 'all' || x.cat === c);
+  return { tabs: true, html: topbar(t('s_help')) + `<div class="wrap"><p class="note" style="margin-top:0">${t('s_help_d')}</p>
+  ${chipsRow(HELPCATS, c, 'c')}<div class="list" style="margin-top:12px">${items.map(helpRow).join('')}</div>
+  <button class="btn soft full" style="margin-top:16px" data-act="postad">${ic('plus')}${t('help_post')}</button></div>` };
+};
+const parcelRow = (x) => `<button class="row-card" data-act="go" data-v="item" data-id="${x.id}"><span class="thumb b-${x.kind === 'flying' ? 'date c-date' : 'clay c-clay'}" style="display:flex;align-items:center;justify-content:center">${ic(x.kind === 'flying' ? 'plane' : 'box').replace('<svg', '<svg style="width:30px;height:30px"')}</span><span class="grow">
+  <span class="ttl" style="display:block">${esc(x.from)} → ${esc(x.to)}</span>
+  <span class="sub num" style="display:block">${new Date(x.date).toLocaleDateString(locale(), { day: 'numeric', month: 'long' })} · ${nf(x.kg, 1)} ${t('kg')}${x.what ? ' · ' + esc(L(x.what)) : ''}</span>
+  <span class="sub" style="display:flex;justify-content:space-between;margin-top:4px"><span>${esc(x.seller.name)} · ★ ${nf(x.seller.rating, 1)}</span><span style="display:inline-flex;gap:4px;align-items:center">${small('chat')}<span class="num">${nf(cCount(x))}</span></span></span></span></button>`;
 V.parcels = (p) => {
   const k = p.k || 'flying';
   return { tabs: true, html: topbar(t('s_parcels')) + `<div class="wrap">
   <div class="banner rose">${ic('shield')}<div><b>${t('parcel_rules_t')}</b>${t('parcel_rules')}</div></div>
   <div class="seg" style="margin-top:14px">${['flying', 'need'].map(x => `<button class="${x === k ? 'on' : ''}" data-act="pk" data-v="${x}">${t(x === 'flying' ? 'flying' : 'need_send')}</button>`).join('')}</div>
-  <div class="list" style="margin-top:14px">${PARCELS.filter(x => x.kind === k).map(x => `<div class="event"><div class="top"><span class="date">${ic(k === 'flying' ? 'plane' : 'box')}</span><div style="flex:1;min-width:0"><b>${esc(L(x.from))} → ${esc(L(x.to))}</b><small class="num">${new Date(x.date).toLocaleDateString(locale(), { day: 'numeric', month: 'long' })} · ${nf(x.kg)} ${t('kg')}${x.what ? ' · ' + esc(L(x.what)) : ''}</small><small>${esc(L(x.who))}</small></div></div><div class="foot"><button class="btn sm green" data-act="writeitem" data-v="${x.id}" data-t="${esc(L(x.from) + ' → ' + L(x.to))}">${ic('chat')}${t('write')}</button></div></div>`).join('')}</div>
+  <div class="list" style="margin-top:14px">${PARCELS.filter(x => x.kind === k).map(parcelRow).join('')}</div>
   <button class="btn soft full" style="margin-top:16px" data-act="postparcel">${ic('plus')}${t('post_parcel')}</button></div>` };
 };
-V.help = () => ({ tabs: true, html: topbar(t('s_help')) + `<div class="wrap"><p class="note" style="margin-top:0">${t('s_help_d')}</p>
-  <div class="list">${HELP.map(x => `<div class="event"><div class="top"><span class="date" style="background:var(--palm-tint);color:var(--palm)">${ic('hand')}</span><div style="flex:1;min-width:0"><b>${esc(L(x.title))}</b><small>${esc(L(x.who))}</small></div></div><div class="foot"><b class="num" style="color:var(--palm)">${esc(L(x.price))}</b><button class="btn sm green" data-act="writeitem" data-v="${x.id}" data-t="${esc(L(x.title))}">${ic('chat')}${t('write')}</button></div></div>`).join('')}</div>
-  <button class="btn soft full" style="margin-top:16px" data-act="postad">${ic('plus')}${t('help_post')}</button></div>` });
+function findItem(id) { return ADS.find(x => x.id === id) || myAds().find(x => x.id === id) || HELP.find(x => x.id === id) || PARCELS.find(x => x.id === id); }
+function sellerCard(s) {
+  return `<div class="seller"><span class="av lg">${initial(s.name)}</span><div class="grow"><b>${esc(who(s.name))}</b><small>${t('langs_spoken')}: ${esc(s.langs || '—')}</small><small>★ ${nf(s.rating || 5, 1)} · ${t('on_since')} ${esc(s.since || '2026')} · ${esc(loc(s.dist))}</small></div>${s.name === '@me' ? '' : `<button class="btn sm soft" data-act="dm" data-v="${esc(s.name)}">${small('chat')}${t('dm')}</button>`}</div>`;
+}
+V.item = (p) => {
+  const x = findItem(p.id); if (!x) return V.home();
+  const kind = PARCELS.includes(x) ? 'parcel' : HELP.includes(x) ? 'help' : 'ad';
+  const title = kind === 'parcel' ? `${x.from} → ${x.to}` : txt(x.title);
+  const price = kind === 'parcel' ? `${nf(x.kg, 1)} ${t('kg')}` : txt(x.price);
+  const cat = kind === 'ad' ? catLabel(x.cat, ADCATS) : kind === 'help' ? catLabel(x.cat, HELPCATS) : t(x.kind === 'flying' ? 'flying' : 'need_send');
+  const icn = kind === 'help' ? HELP_IC[x.cat] : x.kind === 'flying' ? 'plane' : 'box';
+  const head = x.photos ? gallery(x.photos, null) : `<div class="item-head"><div class="float"><button class="ibtn" data-act="back" aria-label="${t('back')}">${ic('back', 'flip')}</button></div><span class="big-ic">${ic(icn)}</span></div>`;
+  const sub = kind === 'parcel' ? `<span>${small('calendar')}<span class="num">${new Date(x.date).toLocaleDateString(locale(), { day: 'numeric', month: 'long', year: 'numeric' })}</span></span><span>${small('box')}${nf(x.kg, 1)} ${t('kg')}</span>` : `<span>${small('pin')}${esc(loc(x.seller.dist))}</span>`;
+  const me = x.seller.name === '@me';
+  return { raw: true, cta: me ? null : `<div class="p"><b class="num">${esc(price)}</b><small>${esc(cat)}</small></div><button class="btn primary" data-act="dm" data-v="${esc(x.seller.name)}">${ic('chat')}${t('write')}</button>`, html: head + `
+  <div class="sheetbody wrap">
+    <span class="tag green">${esc(cat)}</span>
+    <h2 class="d-title" style="margin-top:8px">${esc(title)}</h2>
+    <div class="d-sub">${sub}</div>
+    ${kind === 'parcel' && x.what ? `<div class="verified" style="background:var(--date-tint);color:#5a3c06">${ic('box')}${esc(L(x.what))}</div>` : ''}
+    ${x.desc ? `<div class="block"><h4>${t('description')}</h4><p>${esc(txt(x.desc))}</p></div>` : ''}
+    ${kind === 'parcel' ? `<div class="block"><div class="banner rose">${ic('shield')}<div><b>${t('parcel_rules_t')}</b>${t('parcel_rules')}</div></div></div>` : ''}
+    <div class="block"><h4>${t('seller')}</h4>${sellerCard(x.seller)}</div>
+    <div class="block"><h4>${t('comments_t')} <span class="num" style="color:var(--ink-3)">${nf(cCount(x))}</span></h4>${commentsBlock('c:' + x.id, x.comments)}</div>
+    <p class="note" style="margin-top:18px">${t('listing_no')} <b class="num">${x.id}</b></p>
+  </div>` };
+};
 
 const TOPIC_IC = { iqama: 'idcard', bank: 'bank', sim: 'sim', insurance: 'medic', licence: 'car', ejar: 'contract', travel: 'train', study: 'grad', places: 'pin', doctors: 'medic' };
 const TOPIC_C = ['palm', 'date', 'sky', 'rose', 'clay'];
@@ -390,39 +465,51 @@ const postsFor = (k) => (S.posts[k] || []).concat(POSTS[k] || []);
 function postHtml(pst, i, k) {
   const id = k + ':' + i; const hl = S.helped[id];
   if (S.reported[id]) return '';
-  return `<div class="post"><div class="who">${ic(pst.q ? 'majlis' : 'book').replace('<svg', '<svg style="width:16px;height:16px;color:var(--palm)"')}${esc(pst.who)}<span class="tag ${pst.q ? 'gold' : 'green'}">${pst.q ? t('q_tag') : t('e_tag')}</span></div>
-    <p>${esc(L(pst.text))}</p>
-    ${(pst.a || []).map(a => `<div class="answer"><div class="who" style="font-size:12px">${esc(a.who)}</div><p>${esc(L(a.text))}</p></div>`).join('')}
-    <div class="acts"><button class="${hl ? 'on' : ''}" data-act="helped" data-v="${id}">${ic('check')}${t('helped')} · <span class="num">${nf((pst.helped || 0) + (hl ? 1 : 0))}</span></button>${pst.a ? `<span>${ic('chat').replace('<svg', '<svg style="width:16px;height:16px"')}${nf(pst.a.length)}</span>` : ''}<button class="rep" data-act="report" data-v="${id}">${ic('flag')}${t('report')}</button></div></div>`;
+  const key = 'p:' + id; const n = (pst.a || []).length + (S.cm[key] || []).length;
+  return `<div class="post"><div class="who"><span class="av sm">${initial(pst.who)}</span><b style="color:var(--ink)">${esc(who(pst.who))}</b>${pst.date ? `<span class="num">· ${pst.date}</span>` : ''}<span class="tag ${pst.q ? 'gold' : 'green'}">${pst.q ? t('q_tag') : t('e_tag')}</span></div>
+    <p>${esc(txt(pst.text))}</p>
+    <div class="acts"><button class="${hl ? 'on' : ''}" data-act="helped" data-v="${id}">${ic('check')}${t('helped')} · <span class="num">${nf((pst.helped || 0) + (hl ? 1 : 0))}</span></button>
+    <button data-act="comment" data-k="${key}">${ic('chat')}${t('comment')} · <span class="num">${nf(n)}</span></button>
+    ${pst.who !== '@me' ? `<button data-act="dm" data-v="${esc(pst.who)}" aria-label="${t('dm')}" title="${t('dm')}">${ic('send')}</button>` : ''}
+    <button class="rep" data-act="report" data-v="${id}" aria-label="${t('report')}" title="${t('report')}">${ic('flag')}</button></div>
+    ${n || openC[key] ? `<div class="thread">${commentsBlock(key, pst.a, { collapsed: true })}</div>` : ''}</div>`;
 }
 V.majlis = () => {
   if (!S.rulesOk) setTimeout(rulesSheet, 250);
   return { tabs: true, html: topbar(t('s_majlis')) + `<div class="wrap">
   <div class="card" style="background:var(--palm);color:#fff;display:flex;gap:14px;align-items:center"><span style="width:52px;height:52px;border-radius:16px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;flex:none">${ic('majlis').replace('<svg', '<svg style="width:28px;height:28px"')}</span><div><b style="font-size:17px">${t('s_majlis')}</b><div style="opacity:.85;font-size:13.5px">${t('majlis_tag')}</div></div></div>
   <button class="banner" style="margin-top:12px;width:100%;text-align:start" data-act="rules">${ic('info')}<div><b>${t('rules_title')}</b>${t('rules_text').split('.')[0]}.</div></button>
-  <div class="topics" style="margin-top:14px">${TOPICS.map((k, i) => `<button class="topic" data-act="go" data-v="topic" data-id="${k}"><i class="b-${TOPIC_C[i % 5]} c-${TOPIC_C[i % 5]}">${ic(TOPIC_IC[k])}</i><span>${t('t_' + k)}<small>${nf(postsFor(k).length)} · ${t('answers')}</small></span></button>`).join('')}</div>
+  <div class="topics" style="margin-top:14px">${TOPICS.map((k, i) => `<button class="topic" data-act="go" data-v="topic" data-id="${k}"><i class="b-${TOPIC_C[i % 5]} c-${TOPIC_C[i % 5]}">${ic(TOPIC_IC[k])}</i><span>${t('t_' + k)}<small class="num">${nf(postsFor(k).length)} · ${nf(postsFor(k).reduce((a, p) => a + (p.a || []).length, 0))} ${t('answers')}</small></span></button>`).join('')}</div>
   </div>` };
 };
 V.topic = (p) => {
   const k = p.id; const posts = postsFor(k);
-  return { tabs: true, html: topbar(t('t_' + k)) + `<div class="wrap">
-  <div style="display:grid;gap:10px"><button class="btn green" data-act="compose" data-v="q" data-id="${k}">${ic('majlis')}${t('ask_q')}</button><button class="btn primary" data-act="compose" data-v="e" data-id="${k}">${ic('book')}${t('share_exp')}</button></div>
+  return { tabs: true, html: topbar(t('t_' + k)) + `<div class="wrap narrow">
+  <div class="two-btn"><button class="btn green" data-act="compose" data-v="q" data-id="${k}">${ic('majlis')}${t('ask_q')}</button><button class="btn primary" data-act="compose" data-v="e" data-id="${k}">${ic('book')}${t('share_exp')}</button></div>
   ${OFFICIAL[k] ? `<div class="banner green" style="margin-top:12px">${ic('shield')}<div><b>${t('official')}</b>${OFFICIAL[k]}</div></div>` : ''}
   <div style="margin-top:14px">${posts.length ? posts.map((x, i) => postHtml(x, i, k)).join('') : emptyBlock(t('majlis_tag'), 'chat')}</div></div>` };
 };
-V.family = () => ({ tabs: true, html: topbar(t('s_family')) + `<div class="wrap">
+V.family = () => ({ tabs: true, html: topbar(t('s_family')) + `<div class="wrap narrow">
   <div class="banner green">${ic('family')}<div>${t('s_family_d')}</div></div>
-  <div style="display:grid;gap:10px;margin-top:12px"><button class="btn green" data-act="compose" data-v="q" data-id="family">${ic('majlis')}${t('ask_family')}</button><button class="btn primary" data-act="compose" data-v="e" data-id="family">${ic('book')}${t('share_exp')}</button></div>
+  <div class="two-btn" style="margin-top:12px"><button class="btn green" data-act="compose" data-v="q" data-id="family">${ic('majlis')}${t('ask_family')}</button><button class="btn primary" data-act="compose" data-v="e" data-id="family">${ic('book')}${t('share_exp')}</button></div>
   <div style="margin-top:14px">${(S.posts.family || []).concat(FAMILY).map((x, i) => postHtml(x, i, 'family')).join('')}</div></div>` });
 
+const allEvents = () => MEN_EVENTS.concat(WOMEN_EVENTS);
+function eventCard(e, full) {
+  const g = S.going[e.id]; const n = e.going + (g ? 1 : 0); const cn = (e.comments || []).length + (S.cm['e:' + e.id] || []).length;
+  return `<div class="event"><div class="top"><span class="date">${ic('calendar')}</span><div style="flex:1;min-width:0"><b>${esc(L(e.title))}</b><small>${esc(L(e.when))}</small><small>${small('pin')} ${esc(e.where)}</small><small>${t('event_org')}: ${esc(e.org)}</small></div></div>
+    <div class="progress"><i style="width:${Math.min(100, n / e.need * 100)}%"></i></div>
+    <div class="foot"><span class="num">${nf(n)} / ${nf(e.need)} ${t('going_n')}</span>${full ? '' : `<button class="btn sm soft" data-act="go" data-v="event" data-id="${e.id}">${small('chat')}<span class="num">${nf(cn)}</span></button>`}<button class="btn sm ${g ? 'green' : 'primary'}" data-act="going" data-v="${e.id}">${g ? ic('check') : '✋'} ${t('going')}</button></div></div>`;
+}
 function spaceView(which) {
   const rooms = which === 'men' ? MEN_ROOMS : WOMEN_ROOMS, events = which === 'men' ? MEN_EVENTS : WOMEN_EVENTS;
   const col = which === 'men' ? 'sky' : 'rose';
   const k = (cur().k) || 'rooms';
-  const evHtml = events.map(e => { const g = S.going[e.id]; const n = e.going + (g ? 1 : 0); return `<div class="event"><div class="top"><span class="date">${ic('calendar')}</span><div style="flex:1;min-width:0"><b>${esc(L(e.title))}</b><small>${esc(L(e.when))}</small><small>${ic('pin').replace('<svg', '<svg style="width:13px;height:13px;vertical-align:-2px"')} ${esc(L(e.where))}</small></div></div><div class="progress"><i style="width:${Math.min(100, n / e.need * 100)}%"></i></div><div class="foot"><span class="num">${nf(n)} / ${nf(e.need)} ${t('going_n')}</span><button class="btn sm ${g ? 'green' : 'primary'}" data-act="going" data-v="${e.id}">${g ? ic('check') : '✋'} ${t('going')}</button></div></div>`; }).join('');
+  const last = (r) => { const m = r.msgs[r.msgs.length - 1]; return m ? `${m.who}: ${L(m.text)}` : ''; };
   return { tabs: true, html: topbar(t('s_' + which)) + `<div class="wrap">
     <div class="seg">${['rooms', 'events'].map(x => `<button class="${x === k ? 'on' : ''}" data-act="spk" data-v="${x}">${t(x === 'rooms' ? 'rooms_title' : 'events')}</button>`).join('')}</div>
-    <div style="margin-top:14px">${k === 'rooms' ? rooms.map(r => `<button class="room" data-act="go" data-v="room" data-id="${which}:${r.id}"><i class="b-${col} c-${col}">${ic(r.icon)}</i><span class="grow"><b>${esc(L(r.name))}</b><small>${esc(L(r.last))}</small></span><em class="num">${nf(r.n)}</em></button>`).join('') : evHtml + `<button class="btn soft full" style="margin-top:14px" data-act="toastdemo">${ic('plus')}${t('create_event')}</button>`}</div>
+    <div style="margin-top:14px" class="${k === 'rooms' ? 'rooms-grid' : 'list'}">${k === 'rooms' ? rooms.map(r => `<button class="room" data-act="go" data-v="room" data-id="${which}:${r.id}"><i class="b-${col} c-${col}">${ic(r.icon)}</i><span class="grow"><b>${esc(L(r.name))}</b><small>${esc(last(r))}</small></span><em class="num">${nf(r.n)}</em></button>`).join('') : events.map(e => eventCard(e)).join('')}</div>
+    ${k === 'events' ? `<button class="btn soft full" style="margin-top:14px" data-act="toastdemo">${ic('plus')}${t('create_event')}</button>` : ''}
   </div>` };
 }
 V.men = () => spaceView('men');
@@ -430,14 +517,22 @@ V.women = () => {
   if (!S.womenOk) return { tabs: true, html: topbar(t('s_women')) + `<div class="wrap"><div class="empty">${emptyIllus('lock')}<b>${t('women_lock')}</b><p style="margin:6px auto 18px;max-width:32ch">${t('women_lock_text')}</p><button class="btn primary" data-act="verify">${ic('shield')}${t('verify_btn')}</button></div></div>` };
   return spaceView('women');
 };
+V.event = (p) => {
+  const e = allEvents().find(x => x.id === p.id);
+  return { tabs: true, html: topbar(L(e.title)) + `<div class="wrap narrow">${eventCard(e, true)}
+    <div class="block"><h4>${t('comments_t')}</h4>${commentsBlock('e:' + e.id, e.comments)}</div></div>` };
+};
 V.room = (p) => {
   const [sp, id] = p.id.split(':'); const r = (sp === 'men' ? MEN_ROOMS : WOMEN_ROOMS).find(x => x.id === id);
-  const msgs = (S.rooms && S.rooms[p.id]) || [];
+  const mine = ((S.rooms && S.rooms[p.id]) || []).map(m => typeof m === 'string' ? { who: '@me', text: m } : m);
+  const msgs = r.msgs.concat(mine);
+  const bub = msgs.map(m => m.who === '@me'
+    ? `<div class="bubble me">${m.to ? `<span class="rto">${small('chev')}${esc(who(m.to))}</span>` : ''}${esc(txt(m.text))}</div>`
+    : `<div class="msg"><span class="av">${initial(m.who)}</span><div class="bubble op"><b class="nm">${esc(m.who)}</b>${m.to ? `<span class="rto">${small('chev')}${esc(who(m.to))}</span>` : ''}${esc(txt(m.text))}<div class="ma"><button data-act="rreply" data-v="${esc(m.who)}">${t('reply')}</button><button data-act="dm" data-v="${esc(m.who)}">${t('dm')}</button></div></div></div>`).join('');
   return { composer: 'room', html: topbar(L(r.name), { right: `<span class="tag green num">${nf(r.n)} ${t('members')}</span>` }) + `<div class="wrap chat-wrap">
     <div class="banner" style="font-size:12.5px">${ic('info')}<div>${t('room_rule')}</div></div>
-    <div class="bubble op">${t('room_hello')}<small>${t('operator')}</small></div>
-    <div class="bubble op">${esc(L(r.last))}<small>${sp === 'men' ? 'Yusuf' : 'Amina'}</small></div>
-    ${msgs.map(m => `<div class="bubble me">${esc(m)}</div>`).join('')}
+    <div class="msg"><span class="av" style="background:var(--palm);color:#fff">N</span><div class="bubble op"><b class="nm">${t('operator')}</b>${t('room_hello')}</div></div>
+    ${bub}
   </div>` };
 };
 
@@ -447,22 +542,25 @@ V.days = () => ({ tabs: true, html: topbar(t('days_title')) + `<div class="wrap"
 
 /* chats */
 function listingInfo(id) {
+  if (id.startsWith('U:')) return { title: id.slice(2), person: id.slice(2), price: '', agency: '—' };
   const h = HOUSING.find(x => x.id === id); if (h) return { title: L(h.title), photo: h.photos[0], price: money(h.price) + ' ' + termSuffix(h.term), agency: h.agency };
   const x = TRANSPORT.find(v => v.id === id); if (x) return { title: x.model, photo: x.photo, price: money(x.price) + ' ' + termSuffix(x.term, 1), agency: 'Madinah Rent Partners' };
-  const a = ADS.find(v => v.id === id) || (S.myAds || []).find(v => v.id === id); if (a) return { title: L(a.title), photo: a.photo, price: L(a.price), agency: '—' };
-  const o = (S.chats[id] && S.chats[id].meta) || {}; return { title: o.title || id, photo: 'liv8', price: '', agency: '—' };
+  return { title: id, photo: 'liv8', price: '', agency: '—' };
 }
+const chatThumb = (li) => li.person ? `<span class="thumb av lg" style="width:56px;height:56px;border-radius:18px;font-size:20px">${initial(li.person)}</span>` : `<span class="thumb"><img src="${img(li.photo)}" alt=""></span>`;
 V.chats = () => {
   const ids = Object.keys(S.chats).sort((a, b) => (S.chats[b].t || 0) - (S.chats[a].t || 0));
-  return { tabs: true, html: topbar(t('chats_title'), { noBack: true }) + `<div class="wrap chat-list">${ids.length ? `<div class="list">${ids.map(id => { const c = S.chats[id]; const li = listingInfo(id); const last = c.msgs[c.msgs.length - 1]; return `<button class="row-card" data-act="go" data-v="chat" data-id="${id}"><span class="thumb"><img src="${img(li.photo)}" alt=""></span><span class="grow"><span class="ttl" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(li.title)}</span><span class="sub" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${last ? esc(last.from === 'op' ? L(last.text) : last.text) : ''}</span><span class="sub" style="display:block;color:var(--palm);font-weight:700">${t('operator')} · ${id}</span></span></button>`; }).join('')}</div>` : emptyBlock(t('chats_empty'), 'chat').replace(t('nothing_d'), '')}</div>` };
+  return { tabs: true, html: topbar(t('chats_title'), { noBack: true }) + `<div class="wrap chat-list narrow">${ids.length ? `<div class="list one">${ids.map(id => { const c = S.chats[id]; const li = listingInfo(id); const last = c.msgs[c.msgs.length - 1]; return `<button class="row-card" data-act="go" data-v="chat" data-id="${id}">${chatThumb(li)}<span class="grow"><span class="ttl" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(li.title)}</span><span class="sub" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${last ? esc(txt(last.text)) : ''}</span><span class="sub" style="display:block;color:var(--palm);font-weight:700">${li.person ? t('dm') : t('operator') + ' · ' + id}</span></span></button>`; }).join('')}</div>` : emptyBlock(t('chats_empty'), 'chat').replace(t('nothing_d'), '')}</div>` };
 };
 V.chat = (p) => {
-  const id = p.id; const c = S.chats[id] || { msgs: [] }; const li = listingInfo(id);
-  const bubbles = c.msgs.map((m, i) => m.from === 'me' ? `<div class="bubble me">${esc(m.text)}${m.num ? `<small>${ic('phone').replace('<svg', '<svg style="width:12px;height:12px;vertical-align:-2px"')} ${t('number_shared')}</small>` : ''}</div>`
-    : `<div class="bubble op">${esc(m.showOrig ? m.text.ar : L(m.text))}${lang !== 'ar' ? `<button class="tr" data-act="orig" data-v="${i}">${ic('translate')}${m.showOrig ? t('show_translation') : t('translated') + ' · ' + t('show_original')}</button>` : ''}<small>${t('operator')}</small></div>`).join('');
-  return { composer: 'chat', html: `<div class="topbar"><button class="ibtn" data-act="back" aria-label="${t('back')}">${ic('back', 'flip')}</button><span style="width:40px;height:40px;flex:none">${logo()}</span><h1 style="font-size:16px">${t('operator')}<small style="display:block;font-size:12px;color:var(--palm);font-weight:700">● ${t('online')}</small></h1></div>
+  const id = p.id; const c = S.chats[id] || { msgs: [] }; const li = listingInfo(id); const dmChat = !!li.person;
+  const bubbles = c.msgs.map((m, i) => m.from === 'me' ? `<div class="bubble me">${esc(m.text)}${m.num ? `<small>${small('phone')} ${t('number_shared')}</small>` : ''}</div>`
+    : `<div class="bubble op">${esc(m.showOrig ? m.text.ar : L(m.text))}${dmChat ? `<span class="tr">${small('translate')}${t('auto_tr')}</span>` : lang !== 'ar' ? `<button class="tr" data-act="orig" data-v="${i}">${small('translate')}${m.showOrig ? t('show_translation') : t('translated') + ' · ' + t('show_original')}</button>` : ''}<small>${esc(dmChat ? li.person : t('operator'))}</small></div>`).join('');
+  const head = dmChat ? `<span class="av lg" style="width:40px;height:40px;border-radius:14px">${initial(li.person)}</span><h1 style="font-size:16px">${esc(li.person)}<small style="display:block;font-size:12px;color:var(--palm);font-weight:700">● ${t('online')}</small></h1>`
+    : `<span style="width:40px;height:40px;flex:none">${logo()}</span><h1 style="font-size:16px">${t('operator')}<small style="display:block;font-size:12px;color:var(--palm);font-weight:700">● ${t('online')}</small></h1>`;
+  return { composer: 'chat', html: `<div class="topbar"><button class="ibtn" data-act="back" aria-label="${t('back')}">${ic('back', 'flip')}</button>${head}</div>
   <div class="wrap chat-wrap">
-    <button class="listing-pin" data-act="openlisting" data-v="${id}"><img src="${img(li.photo)}" alt=""><span style="text-align:start;min-width:0"><b>${esc(li.title)}</b><small class="num">${esc(li.price)}${li.price ? ' · ' : ''}${id}</small></span></button>
+    ${dmChat ? '' : `<button class="listing-pin" data-act="openlisting" data-v="${id}"><img src="${img(li.photo)}" alt=""><span style="text-align:start;min-width:0"><b>${esc(li.title)}</b><small class="num">${esc(li.price)}${li.price ? ' · ' : ''}${id}</small></span></button>`}
     <div class="banner green" style="font-size:12.5px">${ic('lock')}<div>${t('privacy_note')}</div></div>
     ${bubbles}<div id="typing"></div>
   </div>` };
@@ -486,7 +584,7 @@ V.about = () => ({ tabs: true, html: topbar(t('about')) + `<div class="wrap"><di
   <div class="kv" style="margin-top:14px"><div><span>${t('license')}</span><b>FAL-1200000000 (${t('example')})</b></div><div><span>${t('verified').split('·')[0]}</span><b>✓</b></div></div><p class="note" style="margin-top:14px;text-align:center">${t('photo_credit')}</p></div>` });
 V.lang = () => ({ tabs: true, html: topbar(t('language')) + `<div class="wrap"><div class="langs" style="margin-top:4px">${LANGS.map(l => `<button class="lang ${l.code === lang ? 'on' : ''}" data-act="setlang" data-v="${l.code}" dir="${l.dir}"><b>${l.name}</b><small>${l.latin}</small></button>`).join('')}</div></div>` });
 V.operator = () => {
-  const ids = Object.keys(S.chats);
+  const ids = Object.keys(S.chats).filter(id => !id.startsWith('U:'));
   const st = ['new', 'work', 'view', 'done'];
   return { tabs: true, html: topbar(t('operator_panel')) + `<div class="wrap"><p class="note" style="margin-top:0">${t('operator_panel_d')}</p>${ids.length ? `<div class="list">${ids.map(id => { const li = listingInfo(id); const s = S.req[id] || 'new'; const c = S.chats[id]; return `<div class="card"><div style="display:flex;gap:10px;align-items:center"><img src="${img(li.photo)}" alt="" style="width:52px;height:52px;border-radius:12px;object-fit:cover"><div style="flex:1;min-width:0"><b style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(li.title)}</b><span class="note num">${id}</span></div><button class="status st-${s}" data-act="status" data-v="${id}">${t('req_status_' + s)}</button></div>
     <div class="kv" style="margin-top:12px;box-shadow:none;border:1px solid var(--line)"><div><span>${t('client')}</span><b>${t('guest')} · ${esc((LANGS.find(l => l.code === (c.lang || lang)) || {}).name)}</b></div><div><span>${t('source')}</span><b>${esc(li.agency)}</b></div><div><span>${t('chats_title')}</span><b class="num">${nf(c.msgs.length)}</b></div></div>
@@ -517,6 +615,14 @@ root.addEventListener('click', (e) => {
     case 'kind': cur().kind = v; render(); break;
     case 'filter': cur().f = v; render(); break;
     case 'pk': cur().k = v; render(); break;
+    case 'c': cur().c = v; render(); break;
+    case 'dm': openDM(v); break;
+    case 'reply': replyTo[el.dataset.k] = v; openC[el.dataset.k] = true; render(); focusBox(el.dataset.k); break;
+    case 'unreply': replyTo[el.dataset.k] = null; render(); break;
+    case 'comment': openC[el.dataset.k] = !openC[el.dataset.k]; render(); if (openC[el.dataset.k]) focusBox(el.dataset.k); break;
+    case 'csend': { const k = el.dataset.k; const ta = root.querySelector(`textarea[data-ck="${k}"]`); const tx = ta && ta.value.trim(); if (!tx) { ta && ta.focus(); break; } S.cm[k] = (S.cm[k] || []).concat({ who: '@me', text: tx, to: replyTo[k] || undefined, date: new Date().toISOString().slice(0, 7) }); replyTo[k] = null; save(); render(); break; }
+    case 'rreply': cur().replyTo = v; render(); setTimeout(() => { const m = document.getElementById('msg'); if (m) m.focus(); }, 30); break;
+    case 'rclear': cur().replyTo = null; render(); break;
     case 'spk': cur().k = v; render(); break;
     case 'save': e.stopPropagation(); S.saved = isSaved(v) ? S.saved.filter(x => x !== v) : S.saved.concat(v); save(); render(); break;
     case 'write': openChat(v); break;
@@ -551,6 +657,14 @@ root.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && (e.target.id === 'q' || e.target.id === 'q2')) { const q = e.target.value; if (e.target.id === 'q') go('explore', { q }); else { cur().q = q; render(); } }
 });
 
+function focusBox(k) { setTimeout(() => { const ta = root.querySelector(`textarea[data-ck="${k}"]`); if (ta) { ta.focus(); ta.scrollIntoView({ block: 'center', behavior: 'smooth' }); } }, 40); }
+function openDM(name) {
+  if (!name || name === '@me') return;
+  const id = 'U:' + name;
+  if (!S.chats[id]) S.chats[id] = { msgs: [], person: name };
+  S.chats[id].t = S.chats[id].t || Date.now(); save();
+  go('chat', { id, draft: '' });
+}
 function openChat(id) {
   if (!S.chats[id]) S.chats[id] = { msgs: [] };
   S.chats[id].lang = lang; S.chats[id].t = S.chats[id].t || Date.now(); save();
@@ -562,9 +676,9 @@ function sendChat(text, num) {
   const nOp = c.msgs.filter(m => m.from === 'op').length;
   if (num || nOp > 1) return;
   setTimeout(() => { const ty = document.getElementById('typing'); if (ty) { ty.innerHTML = '<div class="bubble op typing"><i></i><i></i><i></i></div>'; scrollEnd(); } }, 500);
-  setTimeout(() => { c.msgs.push({ from: 'op', text: nOp === 0 ? OP_REPLY : OP_REPLY_2 }); c.t = Date.now(); save(); if (cur().v === 'chat' && cur().id === id) render(); }, 2200);
+  setTimeout(() => { c.msgs.push({ from: 'op', text: id.startsWith('U:') ? PERSON_REPLY : nOp === 0 ? OP_REPLY : OP_REPLY_2 }); c.t = Date.now(); save(); if (cur().v === 'chat' && cur().id === id) render(); }, 2200);
 }
-const scrollEnd = () => { const sc = document.querySelector('.desk .scroller'); if (sc) sc.scrollTop = sc.scrollHeight; else window.scrollTo(0, document.body.scrollHeight); };
+const scrollEnd = () => window.scrollTo(0, document.body.scrollHeight);
 
 function composeSheet(kind, topic) {
   const w = sheet(`<h3>${kind === 'q' ? t('ask_q') : t('share_exp')}</h3><p class="note">${t('t_' + topic) !== 't_' + topic ? t('t_' + topic) : t('s_family')}</p>
@@ -573,13 +687,13 @@ function composeSheet(kind, topic) {
     <button class="btn green full" style="margin-top:14px" id="cpub">${t('publish')}</button>`);
   w.querySelector('#cpub').addEventListener('click', () => {
     const txt = w.querySelector('#ctext').value.trim(); if (!txt) return;
-    S.posts[topic] = [{ q: kind === 'q', who: t('you') + ' · ' + new Date().toISOString().slice(0, 7), text: txt, helped: 0 }].concat(S.posts[topic] || []);
+    S.posts[topic] = [{ q: kind === 'q', who: '@me', date: new Date().toISOString().slice(0, 7), text: txt, helped: 0 }].concat(S.posts[topic] || []);
     save(); w.remove(); toast(t('published')); render();
   });
 }
 function adSheet() {
   const w = sheet(`<h3>${t('ad_post')}</h3><p class="note">${t('ad_free')} · ${t('ad_contact_note')}</p>
-    <div class="field"><label for="adcat">${t('category')}</label><select id="adcat">${['Вещи|Things|أغراض', 'Домашняя еда|Home food|أكل بيتي', 'Услуги|Services|خدمات', 'Учёба|Lessons|دروس', 'Отдам даром|Free|مجاناً'].map(s => { const [r, en, ar] = s.split('|'); return `<option>${lang === 'ru' ? r : lang === 'ar' ? ar : en}</option>`; }).join('')}</select></div>
+    <div class="field"><label for="adcat">${t('category')}</label><select id="adcat">${Object.keys(ADCATS).map(k => `<option value="${k}">${esc(L(ADCATS[k]))}</option>`).join('')}</select></div>
     <div class="field"><label for="adt">${t('title_f')}</label><input id="adt" placeholder="${lang === 'ru' ? 'Например: Стиральная машина, 2 года' : lang === 'ar' ? 'مثال: غسالة، عمرها سنتان' : 'e.g. Washing machine, 2 years old'}"></div>
     <div class="field"><label for="adp">${t('price_from')}, ${t('sar')}</label><input id="adp" inputmode="numeric" placeholder="300"></div>
     <div class="field"><label>${t('photo')}</label><button class="btn line full" type="button">${ic('camera')}${t('add_photo')}</button></div>
@@ -590,7 +704,7 @@ function adSheet() {
     const ti = w.querySelector('#adt').value.trim(); if (!ti) { w.querySelector('#adt').focus(); return; }
     const pr = w.querySelector('#adp').value.trim();
     const cat = w.querySelector('#adcat').value;
-    S.myAds = [{ id: 'A-' + (800 + (S.myAds || []).length), cat, title: ti, price: pr ? pr + ' ' + t('sar') : '—', who: t('you'), photo: 'liv2', mine: true, boosted: w.querySelector('#adb').checked || w.querySelector('#adh').checked }].concat(S.myAds || []);
+    S.myAds = [{ id: 'A-' + (800 + (S.myAds || []).length), cat, title: ti, price: pr ? pr + ' ' + t('sar') : '—', seller: { name: '@me', langs: (LANGS.find(l => l.code === lang) || {}).latin, since: '2026', rating: 5, dist: 'central' }, photos: ['liv2'], desc: '', comments: [], mine: true, boosted: w.querySelector('#adb').checked || w.querySelector('#adh').checked }].concat(S.myAds || []);
     save(); w.remove(); toast(t('published')); if (cur().v !== 'ads') go('ads'); else render();
   });
 }
@@ -616,12 +730,16 @@ function render(scrollTop) {
   const rootTabs = ['home', 'explore', 'chats', 'saved', 'profile'];
   const tabsHtml = r.tabs ? `<nav class="tabbar">${[['home', 'home'], ['explore', 'grid'], ['chats', 'chat'], ['saved', 'heart'], ['profile', 'user']].map(([v, i]) => { const on = stack[0].v === v; const n = v === 'chats' ? Object.keys(S.chats).length : 0; return `<button class="tab ${on ? 'on' : ''}" data-act="tab" data-v="${v}">${ic(i)}${t('tab_' + v)}${n ? `<span class="dot num">${nf(n)}</span>` : ''}</button>`; }).join('')}</nav>` : '';
   const cta = r.cta ? `<div class="cta-bar">${r.cta}</div>` : '';
-  const comp = r.composer ? `<div class="composer">${r.composer === 'chat' ? `<button class="share" data-act="sharenum" aria-label="${t('share_number')}" title="${t('share_number')}">${ic('phone')}</button>` : ''}<textarea id="msg" rows="1" placeholder="${r.composer === 'room' ? t('write_room') : t('type_msg')}" aria-label="${t('type_msg')}">${esc(c.draft || '')}</textarea><button class="send" id="sendBtn" aria-label="send">${ic('send', 'flip')}</button></div>` : '';
+  const rchip = r.composer === 'room' && c.replyTo ? `<div class="rchip">${t('reply_to')} <b>${esc(c.replyTo)}</b><button data-act="rclear" aria-label="${t('close')}">${small('x')}</button></div>` : '';
+  const comp = r.composer ? `<div class="composer">${rchip}${r.composer === 'chat' ? `<button class="share" data-act="sharenum" aria-label="${t('share_number')}" title="${t('share_number')}">${ic('phone')}</button>` : ''}<textarea id="msg" rows="1" placeholder="${r.composer === 'room' ? t('write_room') : t('type_msg')}" aria-label="${t('type_msg')}">${esc(c.draft || '')}</textarea><button class="send" id="sendBtn" aria-label="send">${ic('send', 'flip')}</button></div>` : '';
   const scroller = document.querySelector('.scroller');
-  const keep = !scrollTop && scroller ? (document.body.classList.contains('desk') ? scroller.scrollTop : window.scrollY) : 0;
-  root.innerHTML = `<div class="app"><div class="scroller"><div class="view ${r.tabs ? '' : 'no-tabs'}">${r.html}</div></div>${tabsHtml}${cta}${comp}</div>`;
+  const keep = !scrollTop && scroller ? window.scrollY : 0;
+  const dsk = document.body.classList.contains('dsk');
+  const html = r.raw && r.html.trim().startsWith('<div class="gallery') || r.html.trim().startsWith('<div class="item-head') ? `<div class="detail">${r.html}</div>` : r.html;
+  const dnav = dsk ? `<header class="dnav"><div class="dnav-in"><button class="brand" data-act="tab" data-v="home" style="color:var(--palm)">${logo()}Nakhlio</button><nav>${[['home', 'home'], ['explore', 'grid'], ['chats', 'chat'], ['saved', 'heart'], ['profile', 'user']].map(([v, i]) => { const n = v === 'chats' ? Object.keys(S.chats).length : 0; return `<button class="${stack[0].v === v ? 'on' : ''}" data-act="tab" data-v="${v}">${ic(i)}${t('tab_' + v)}${n ? `<span class="dot num">${nf(n)}</span>` : ''}</button>`; }).join('')}</nav><button class="lang-pill dark" data-act="go" data-v="lang">${ic('globe')}${esc((LANGS.find(l => l.code === lang) || {}).name)}</button></div></header>` : '';
+  root.innerHTML = `<div class="app">${dnav}<div class="scroller"><div class="view ${r.tabs ? '' : 'no-tabs'}">${html}</div></div>${dsk ? '' : tabsHtml}${cta}${comp}</div>`;
   const sc = document.querySelector('.scroller');
-  if (document.body.classList.contains('desk')) sc.scrollTop = keep; else window.scrollTo(0, keep);
+  window.scrollTo(0, keep);
   if (rootTabs.includes(c.v) && stack.length === 1) stack[0] = c;
   // gallery dots
   const tr = document.getElementById('gtrack');
@@ -631,7 +749,7 @@ function render(scrollTop) {
   if (msg) {
     const auto = () => { msg.style.height = 'auto'; msg.style.height = Math.min(120, msg.scrollHeight) + 'px'; };
     msg.addEventListener('input', () => { c.draft = msg.value; auto(); }); auto();
-    const doSend = () => { const v = msg.value; if (!v.trim()) return; c.draft = ''; if (r.composer === 'chat') sendChat(v); else { S.rooms = S.rooms || {}; (S.rooms[c.id] = S.rooms[c.id] || []).push(v.trim()); save(); render(); } setTimeout(scrollEnd, 50); };
+    const doSend = () => { const v = msg.value; if (!v.trim()) return; c.draft = ''; if (r.composer === 'chat') sendChat(v); else { S.rooms = S.rooms || {}; (S.rooms[c.id] = S.rooms[c.id] || []).push({ who: '@me', text: v.trim(), to: c.replyTo || undefined }); c.replyTo = null; save(); render(); } setTimeout(scrollEnd, 50); };
     document.getElementById('sendBtn').addEventListener('click', doSend);
     msg.addEventListener('keydown', ev => { if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); doSend(); } });
     const sn = document.querySelector('[data-act=sharenum]'); if (sn) sn.addEventListener('click', ev => { ev.stopPropagation(); sendChat('', true); });
@@ -644,9 +762,8 @@ function render(scrollTop) {
 /* ---------- boot ---------- */
 function boot() {
   setDoc();
-  const desk = !isPhone() && !isStandalone();
-  document.body.classList.toggle('desk', desk && !!S.desk);
-  if (desk && !S.desk) return gateDesktop();
+  const desk = !isPhone();
+  document.body.classList.toggle('dsk', desk);
   if (!desk) {
     if (isInApp() && !isStandalone() && !(DEMO && S.demoSkip)) return gateInApp();
     if (!isStandalone() && !(DEMO && S.demoSkip) && !S.installed) return gateInstall();
