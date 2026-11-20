@@ -1049,5 +1049,18 @@
 "c725": "Warning sent to chat",
 "c726": "Your account was blocked by the administrator. You cannot post or send messages.",
 "c727": "Nothing here yet. Post the first photo!",
-"c728": "The file is larger than 50 MB"
+"c728": "The file is larger than 50 MB",
+"c729": "Users",
+"c730": "Conversations",
+"c731": "Chief administrator",
+"c732": "Make administrator",
+"c733": "Remove administrator rights",
+"c734": "Administrators",
+"c735": "There can be at most 5 administrators. Remove someone’s rights first.",
+"c736": "Search by name",
+"c737": "No private conversations yet",
+"c738": "Chief administrator view. Here you can only look and delete violations, not write.",
+"c739": "View only",
+"c740": "To protect people, the Nakhlio administration may view conversations and room messages when checking reports and violations.",
+"c741": "Blocked"
 }

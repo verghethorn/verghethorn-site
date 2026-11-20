@@ -974,3 +974,17 @@ c725|Avertissement envoyé dans la discussion
 c726|Votre compte a été bloqué par l’administrateur. Vous ne pouvez ni publier ni envoyer de messages.
 c727|Rien pour l’instant. Publiez la première photo !
 c728|Le fichier dépasse 50 Mo
+
+c729|Utilisateurs
+c730|Conversations
+c731|Administrateur principal
+c732|Nommer administrateur
+c733|Retirer les droits d’administrateur
+c734|Administrateurs
+c735|5 administrateurs au maximum. Retirez d’abord les droits de quelqu’un.
+c736|Rechercher par nom
+c737|Aucune conversation privée pour l’instant
+c738|Vue de l’administrateur principal. Ici, vous pouvez seulement consulter et supprimer les infractions, pas écrire.
+c739|Lecture seule
+c740|Pour protéger les personnes, l’administration de Nakhlio peut consulter les conversations et les messages des salons lors de l’examen des signalements et des infractions.
+c741|Bloqué

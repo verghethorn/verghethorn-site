@@ -974,3 +974,17 @@ c725|Uyarı sohbete gönderildi
 c726|Hesabınız yönetici tarafından engellendi. Gönderi paylaşamaz ve mesaj yazamazsınız.
 c727|Burada henüz bir şey yok. İlk fotoğrafı paylaşın!
 c728|Dosya 50 MB’tan büyük
+
+c729|Kullanıcılar
+c730|Yazışmalar
+c731|Baş yönetici
+c732|Yönetici yap
+c733|Yönetici yetkisini kaldır
+c734|Yöneticiler
+c735|En fazla 5 yönetici olabilir. Önce birinin yetkisini kaldırın.
+c736|İsme göre ara
+c737|Henüz özel yazışma yok
+c738|Baş yönetici görünümü. Burada yalnızca bakabilir ve ihlalleri silebilirsiniz, yazamazsınız.
+c739|Yalnızca görüntüleme
+c740|İnsanları korumak için Nakhlio yönetimi, şikâyetleri ve ihlalleri incelerken yazışmaları ve oda mesajlarını görüntüleyebilir.
+c741|Engellendi

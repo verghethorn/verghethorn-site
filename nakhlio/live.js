@@ -63,13 +63,19 @@ L.people = async () => { const rows = ok(await sb.from('profiles').select('*').o
 /* chats */
 L.myChats = async () => {
   const me = L.user.id;
-  let q = sb.from('chats').select('*').order('last_at', { ascending: false });
+  let q = sb.from('chats').select('*').or(`user1.eq.${me},user2.eq.${me},kind.eq.support`).order('last_at', { ascending: false });
   const rows = ok(await q);
   const mine = rows.filter(c => c.user1 === me || c.user2 === me);
   await L.prof(rows.flatMap(c => [c.user1, c.user2]));
   const last = await Promise.all(rows.map(c => sb.from('messages').select('*').eq('chat_id', c.id).order('created_at', { ascending: false }).limit(1).then(r => (r.data || [])[0] || null)));
   rows.forEach((c, i) => c.last = last[i]);
   return { mine, all: rows };
+};
+L.allDms = async () => {
+  const rows = ok(await sb.from('chats').select('*').eq('kind', 'dm').order('last_at', { ascending: false }).limit(100));
+  await L.prof(rows.flatMap(c => [c.user1, c.user2]));
+  const last = await Promise.all(rows.map(c => sb.from('messages').select('*').eq('chat_id', c.id).order('created_at', { ascending: false }).limit(1).then(r => (r.data || [])[0] || null)));
+  rows.forEach((c, i) => c.last = last[i]); return rows;
 };
 L.supportChat = async (topic) => {
   const me = L.user.id; topic = topic || '';

@@ -974,3 +974,17 @@ c725|Amaran dihantar ke sembang
 c726|Akaun anda disekat oleh pentadbir. Anda tidak boleh menyiarkan atau menghantar mesej.
 c727|Belum ada apa-apa. Siarkan foto pertama!
 c728|Fail melebihi 50 MB
+
+c729|Pengguna
+c730|Perbualan
+c731|Pentadbir utama
+c732|Jadikan pentadbir
+c733|Tarik balik hak pentadbir
+c734|Pentadbir
+c735|Maksimum 5 pentadbir. Tarik balik hak seseorang dahulu.
+c736|Cari mengikut nama
+c737|Belum ada perbualan peribadi
+c738|Paparan pentadbir utama. Di sini anda hanya boleh melihat dan memadam pelanggaran, tidak boleh menulis.
+c739|Lihat sahaja
+c740|Untuk melindungi orang ramai, pentadbiran Nakhlio boleh melihat perbualan dan mesej bilik semasa menyemak aduan dan pelanggaran.
+c741|Disekat

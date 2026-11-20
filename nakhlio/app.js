@@ -546,10 +546,12 @@ function spaceView(which) {
   const col = which === 'men' ? 'sky' : 'rose';
   const k = (cur().k) || 'rooms';
   const last = (r) => { const m = r.msgs[r.msgs.length - 1]; return m ? `${m.who}: ${L(m.text)}` : ''; };
+  const wt = watching(which);
   return { tabs: true, html: topbar(t('s_' + which)) + `<div class="wrap">
+    ${wt ? `<div class="banner" style="font-size:12.5px;margin-bottom:12px">${ic('shield')}<div>${FXL('watch_mode')}</div></div>` : ''}
     <div class="seg">${['rooms', 'events'].map(x => `<button class="${x === k ? 'on' : ''}" data-act="spk" data-v="${x}">${t(x === 'rooms' ? 'rooms_title' : 'events')}</button>`).join('')}</div>
     <div style="margin-top:14px" class="${k === 'rooms' ? 'rooms-grid' : 'list'}">${k === 'rooms' ? rooms.map(r => `<button class="room" data-act="go" data-v="room" data-id="${which}:${r.id}"><i class="b-${col} c-${col}">${ic(r.icon)}</i><span class="grow"><b>${esc(L(r.name))}</b><small>${esc(last(r))}</small></span><em class="num">${nf(r.n)}</em></button>`).join('') : events.map(e => eventCard(e)).join('')}</div>
-    ${k === 'events' ? `<button class="btn soft full" style="margin-top:14px" data-act="${LV ? 'levent' : 'toastdemo'}" data-v="${which}">${ic('plus')}${t('create_event')}</button>` : ''}
+    ${k === 'events' && !wt ? `<button class="btn soft full" style="margin-top:14px" data-act="${LV ? 'levent' : 'toastdemo'}" data-v="${which}">${ic('plus')}${t('create_event')}</button>` : ''}
   </div>` };
 }
 const PLEDGE = {
@@ -580,13 +582,13 @@ function pledgeView(which) {
 const blocked = (which, key) => ({ tabs: true, html: topbar(t('s_' + which)) + `<div class="wrap"><div class="empty">${emptyIllus('lock')}<b>${t(key)}</b></div></div>` });
 V.men = () => {
   if (!S.me) return guestLock(t('s_men'), t('spaces_guest'));
-  if (S.me.gender === 'f') return blocked('men', 'men_only');
+  if (S.me.gender === 'f' && !isOwner()) return blocked('men', 'men_only');
   if (!S.pledge.men) return pledgeView('men');
   return spaceView('men');
 };
 V.women = () => {
   if (!S.me) return guestLock(t('s_women'), t('spaces_guest'));
-  if (S.me.gender === 'm') return blocked('women', 'women_only_m');
+  if (S.me.gender === 'm' && !isOwner()) return blocked('women', 'women_only_m');
   if (!S.pledge.women) return pledgeView('women');
   return spaceView('women');
 };
@@ -602,8 +604,9 @@ V.room = (p) => {
   const bub = msgs.map(m => m.who === '@me'
     ? `<div class="bubble me">${m.to ? `<span class="rto">${small('chev')}${esc(who(m.to))}</span>` : ''}${esc(txt(m.text))}</div>`
     : `<div class="msg">${pBtn(m.who, avatar(m.who))}<div class="bubble op">${pBtn(m.who, `<b class="nm">${esc(m.who)}${vmark(m.who)}</b>`)}${m.to ? `<span class="rto">${small('chev')}${esc(who(m.to))}</span>` : ''}${esc(txt(m.text))}<div class="ma">${LV && m.mid ? (isAdmin() ? `<button data-act="ldel" data-v="room:${m.mid}">${FXL('act_delete')}</button>` : `<button data-act="lrep" data-v="room:${m.mid}">${t('report')}</button>`) : ''}<button data-act="rreply" data-v="${esc(m.who)}">${t('reply')}</button><button data-act="dm" data-v="${esc(m.who)}">${t('dm')}</button></div></div></div>`).join('');
-  return { composer: 'room', html: topbar(L(r.name), { right: `<span class="tag green num">${nf(r.n)} ${tn('members', r.n)}</span>` }) + `<div class="wrap chat-wrap">
-    <div class="banner" style="font-size:12.5px">${ic('info')}<div>${t('room_rule')}</div></div>
+  const wt = watching(sp);
+  return { composer: wt ? null : 'room', html: topbar(L(r.name), { right: `<span class="tag green num">${nf(r.n)} ${tn('members', r.n)}</span>` }) + `<div class="wrap chat-wrap">
+    <div class="banner" style="font-size:12.5px">${ic(wt ? 'shield' : 'info')}<div>${wt ? FXL('watch_mode') : t('room_rule')}</div></div>
     <div class="msg"><span class="av" style="background:var(--palm);color:#fff">N</span><div class="bubble op"><b class="nm">${t('operator')}</b>${t('room_hello')}</div></div>
     ${bub}
   </div>` };
@@ -690,7 +693,7 @@ function validate(d, forEdit) {
   return e;
 }
 const LV = window.LIVE || null;
-const meFrom = (pr) => ({ id: pr.id, live: true, name: pr.name, gender: pr.gender, about: pr.about || '', job: pr.job || '', dist: pr.dist || '', photos: pr.photo_url ? [pr.photo_url] : [], langs: (LANGS.find(l => l.code === pr.ui_lang) || {}).latin || '', since: (pr.created_at || '').slice(0, 4), email: LV ? LV.email() : '', phone: (S.me && S.me.phone) || '', admin: !!pr.is_admin, verified: !!pr.verified, banned: !!pr.banned, faceid: S.me && S.me.faceid });
+const meFrom = (pr) => ({ id: pr.id, live: true, name: pr.name, gender: pr.gender, about: pr.about || '', job: pr.job || '', dist: pr.dist || '', photos: pr.photo_url ? [pr.photo_url] : [], langs: (LANGS.find(l => l.code === pr.ui_lang) || {}).latin || '', since: (pr.created_at || '').slice(0, 4), email: LV ? LV.email() : '', phone: (S.me && S.me.phone) || '', admin: !!pr.is_admin, owner: !!pr.is_owner, verified: !!pr.verified, banned: !!pr.banned, faceid: S.me && S.me.faceid });
 const DATA = {};
 function want(key, fn) { const d = DATA[key]; if (d && d.v !== undefined && Date.now() - d.t < 20000) return d.v; if (!d || !d.p) { DATA[key] = Object.assign(d || {}, { p: fn().then(v => { DATA[key] = { v, t: Date.now() }; render(); }).catch(e => { DATA[key] = { v: d ? d.v : null, t: Date.now() }; console.warn(e); }) }); } return d ? d.v : undefined; }
 const dropData = (prefix) => Object.keys(DATA).forEach(k => { if (!prefix || k.startsWith(prefix)) delete DATA[k]; });
@@ -701,7 +704,7 @@ async function liveSyncChats(force) {
   if (!LV || !LV.user || !S.me) return; if (!force && liveSyncChats.t && Date.now() - liveSyncChats.t < 15000) return; liveSyncChats.t = Date.now();
   try {
     const { all } = await LV.myChats(); const me = LV.user.id; const old = {};
-    for (const k of Object.keys(S.chats)) if (S.chats[k].live) { old[k] = S.chats[k]; delete S.chats[k]; }
+    for (const k of Object.keys(S.chats)) if (S.chats[k].live && !k.startsWith('O:')) { old[k] = S.chats[k]; delete S.chats[k]; }
     all.forEach(c => {
       if (c.kind === 'dm' && c.user1 !== me && c.user2 !== me) return;
       const k = c.kind === 'dm' ? 'D:' + (c.user1 === me ? c.user2 : c.user1) : c.user1 === me ? (c.topic || 'support') : 'A:' + c.id;
@@ -715,8 +718,9 @@ function loadChat(key) { const c = S.chats[key]; if (!c || !c.live) return; LV.m
 function onLiveMessage(m) {
   if (!LV || !LV.user || m.sender === LV.user.id) return;
   const key = Object.keys(S.chats).find(k => S.chats[k].cid === m.chat_id);
-  if (!key) return liveSyncChats(true);
+  if (!key) { if (isOwner()) { dropData('adm:dms'); return liveSyncChats(); } return liveSyncChats(true); }
   const c = S.chats[key]; if (c.msgs.some(x => x.mid === m.id)) return;
+  if (key.startsWith('O:')) { c.msgs.push(liveMsg(m)); if (cur().v === 'chat' && cur().id === key) render(); return; }
   c.msgs.push(liveMsg(m)); c.t = Date.now(); save();
   if (document.querySelector('.sheet-wrap')) return;
   if (cur().v === 'chat' && cur().id === key) { render(); setTimeout(scrollEnd, 30); } else if (['chats', 'operator'].includes(cur().v)) render();
@@ -849,6 +853,8 @@ function eventSheet(space) {
 const OWNER_H = '81d40b4d82d36fea86c23f3b610f9626bb16e35459c65aa15ce8ea88377b5c13';
 async function ownerCheck(phone) { try { const d = String(phone).replace(/\D/g, '').slice(-9); const h = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(d)); return [...new Uint8Array(h)].map(x => x.toString(16).padStart(2, '0')).join('') === OWNER_H; } catch (e) { return false; } }
 const isAdmin = () => !!(S.me && S.me.admin);
+const isOwner = () => !!(LV && S.me && S.me.owner);
+const watching = (sp) => isOwner() && S.me.gender !== (sp === 'men' ? 'm' : 'f');
 function testNotice(k) {
   S.testAck = S.testAck || {}; if (S.testAck[k] || document.querySelector('.tmodal')) return;
   const host = document.querySelector('.app') || document.body; const w = document.createElement('div'); w.className = 'tmodal';
@@ -1019,6 +1025,7 @@ function orderSheet(id) {
 /* chats */
 function listingInfo(id) {
   if (id.startsWith('D:')) { const uid = id.slice(2); return { title: pname(uid), person: pname(uid), uid, price: '', agency: 'Magaam' }; }
+  if (id.startsWith('O:')) { const c = S.chats[id] || {}; const nmx = pname(c.user1) + ' ↔ ' + pname(c.user2); return { title: nmx, person: nmx, uid: c.user1, price: '', agency: FXL('read_only'), watch: true }; }
   if (id.startsWith('A:')) { const c = S.chats[id] || {}; const inner = c.topic ? listingInfo(c.topic) : null; return { title: pname(c.user1) + (inner && c.topic ? ' · ' + inner.title : ''), person: pname(c.user1), uid: c.user1, price: c.topic || '', agency: t('operator_panel'), admin: true }; }
   if (id === 'support') return { title: t('operator'), price: '', agency: t('operator'), svc: SVC_CATS[0] };
   if (id.startsWith('U:')) return { title: id.slice(2), person: id.slice(2), price: '', agency: '—' };
@@ -1032,22 +1039,22 @@ const chatThumb = (li) => li.svc ? svcThumb(li.svc, 'width:56px;height:56px;bord
 V.chats = () => {
   if (!S.me) return guestLock(t('chats_title'), t('chats_guest'));
   if (LV) liveSyncChats();
-  const ids = Object.keys(S.chats).filter(k => !k.startsWith('A:')).sort((a, b) => (S.chats[b].t || 0) - (S.chats[a].t || 0));
+  const ids = Object.keys(S.chats).filter(k => !k.startsWith('A:') && !k.startsWith('O:')).sort((a, b) => (S.chats[b].t || 0) - (S.chats[a].t || 0));
   return { tabs: true, html: topbar(t('chats_title'), { noBack: true }) + `<div class="wrap chat-list narrow">${ids.length ? `<div class="list one">${ids.map(id => { const c = S.chats[id]; const li = listingInfo(id); const last = c.msgs[c.msgs.length - 1]; return `<button class="row-card" data-act="go" data-v="chat" data-id="${id}">${chatThumb(li)}<span class="grow"><span class="ttl" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(li.title)}</span><span class="sub" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${last ? esc(txt(last.text)) : ''}</span><span class="sub" style="display:block;color:var(--palm);font-weight:700">${li.person ? t('dm') : t('operator') + (id === 'support' ? '' : ' · ' + id)}</span></span></button>`; }).join('')}</div>` : emptyBlock(t('chats_empty'), 'chat').replace(t('nothing_d'), '')}</div>` };
 };
 V.chat = (p) => {
   const id = p.id; const c = S.chats[id] || { msgs: [] }; const li = listingInfo(id); const dmChat = !!li.person;
   if (c.live && !p._l) { p._l = 1; loadChat(id); }
-  const liveB = (m, i) => { trMsg(m); const shown = m.tr && !m.showOrig ? m.tr : m.text; const who_ = id.startsWith('A:') ? pname(c.user1) : id.startsWith('D:') ? li.person : t('operator');
+  const liveB = (m, i) => { trMsg(m); const shown = m.tr && !m.showOrig ? m.tr : m.text; const who_ = id.startsWith('O:') ? pname(m.who) : id.startsWith('A:') ? pname(c.user1) : id.startsWith('D:') ? li.person : t('operator');
     return m.from === 'me' ? `<div class="bubble me">${esc(m.text)}</div>` : `<div class="bubble op">${esc(shown)}${m.tr ? `<button class="tr" data-act="orig" data-v="${i}">${small('translate')}${m.showOrig ? t('show_translation') : t('auto_tr') + ' · ' + t('show_original')}</button>` : ''}<small>${esc(m.who && LV && m.who !== c.user1 && id.startsWith('A:') ? pname(m.who) : who_)}</small></div>`; };
   const bubbles = c.live ? c.msgs.map(liveB).join('') : c.msgs.map((m, i) => m.from === 'me' ? `<div class="bubble me">${esc(m.text)}${m.num ? `<small>${small('phone')} ${t('number_shared')}</small>` : ''}</div>`
     : `<div class="bubble op">${esc(m.showOrig ? m.text.ar : L(m.text))}${dmChat ? `<span class="tr">${small('translate')}${t('auto_tr')}</span>` : lang !== 'ar' ? `<button class="tr" data-act="orig" data-v="${i}">${small('translate')}${m.showOrig ? t('show_translation') : t('translated') + ' · ' + t('show_original')}</button>` : ''}<small>${esc(dmChat ? li.person : t('operator'))}</small></div>`).join('');
-  const head = li.uid ? `<button class="pbtn" data-act="${id.startsWith('D:') ? 'mgp' : 'noop'}" data-v="${li.uid}">${liveAv(li.uid, 'lg')}</button><h1 style="font-size:16px">${esc(li.person)}<small style="display:block;font-size:12px;color:var(--ink-3);font-weight:600">${id.startsWith('A:') ? esc(t('operator_panel')) : 'Magaam'}</small></h1>` : dmChat ? `${pBtn(li.person, avatar(li.person, 'lg'))}<h1 style="font-size:16px">${pBtn(li.person, esc(li.person))}<small style="display:block;font-size:12px;color:var(--palm);font-weight:700">● ${t('online')}</small></h1>`
+  const head = li.uid ? `<button class="pbtn" data-act="${id.startsWith('D:') ? 'mgp' : 'noop'}" data-v="${li.uid}">${liveAv(li.uid, 'lg')}</button><h1 style="font-size:16px">${esc(li.person)}<small style="display:block;font-size:12px;color:var(--ink-3);font-weight:600">${id.startsWith('A:') ? esc(t('operator_panel')) : id.startsWith('O:') ? esc(FXL('read_only')) : 'Magaam'}</small></h1>` : dmChat ? `${pBtn(li.person, avatar(li.person, 'lg'))}<h1 style="font-size:16px">${pBtn(li.person, esc(li.person))}<small style="display:block;font-size:12px;color:var(--palm);font-weight:700">● ${t('online')}</small></h1>`
     : `<span style="width:40px;height:40px;flex:none">${logo()}</span><h1 style="font-size:16px">${t('operator')}<small style="display:block;font-size:12px;color:var(--palm);font-weight:700">● ${t('online')}</small></h1>`;
-  return { composer: 'chat', html: `<div class="topbar"><button class="ibtn" data-act="back" aria-label="${t('back')}">${ic('back', 'flip')}</button>${head}${homeBtn()}</div>
+  return { composer: id.startsWith('O:') ? null : 'chat', html: `<div class="topbar"><button class="ibtn" data-act="back" aria-label="${t('back')}">${ic('back', 'flip')}</button>${head}${homeBtn()}</div>
   <div class="wrap chat-wrap">
     ${dmChat ? '' : `<button class="listing-pin" data-act="openlisting" data-v="${id}">${li.svc ? svcThumb(li.svc, 'width:48px;height:48px;border-radius:10px') : `<img src="${img(li.photo)}" alt="">`}<span style="text-align:start;min-width:0"><b>${esc(li.title)}</b><small class="num">${esc(li.price)}${li.price ? ' · ' : ''}${id}</small></span></button>`}
-    <div class="banner green" style="font-size:12.5px">${ic('lock')}<div>${t('privacy_note')}</div></div>
+    ${id.startsWith('O:') ? `<div class="banner" style="font-size:12.5px">${ic('shield')}<div>${FXL('watch_mode')}</div></div>` : `<div class="banner green" style="font-size:12.5px">${ic('lock')}<div>${t('privacy_note')}</div></div>`}
     ${bubbles}<div id="typing"></div>
   </div>` };
 };
@@ -1069,15 +1076,37 @@ V.profile = () => ({ tabs: true, html: topbar(t('profile_title'), { noBack: true
 V.about = () => ({ tabs: true, html: topbar(t('about')) + `<div class="wrap"><div class="card" style="text-align:center"><div style="width:72px;margin:0 auto 10px">${logo()}</div><b style="font-size:20px">Nakhlio</b><p style="margin:10px 0 0;line-height:1.6">${t('about_text')}</p></div>
   <div class="kv" style="margin-top:14px"><div><span>${t('license')}</span><b>FAL-1200000000 (${t('example')})</b></div><div><span>${t('verified').split('·')[0]}</span><b>✓</b></div></div><p class="note" style="margin-top:14px;text-align:center">${t('photo_credit')}</p></div>` });
 V.lang = () => ({ tabs: true, html: topbar(t('language')) + `<div class="wrap"><div class="langs" style="margin-top:4px">${LANGS.map(l => `<button class="lang ${l.code === lang ? 'on' : ''}" data-act="setlang" data-v="${l.code}" dir="${l.dir}"><b>${l.name}</b><small>${l.latin}</small></button>`).join('')}</div></div>` });
+function admUserSheet(uid) {
+  const u = LV.cached(uid); if (!u) return; const meId = meU();
+  const canBan = !u.is_owner && uid !== meId && (isOwner() || !u.is_admin);
+  const btn = (act, label, cls) => `<button class="btn ${cls || 'soft'} full" style="margin-top:8px" data-x="${act}">${label}</button>`;
+  const w = sheet(`<div style="display:flex;gap:12px;align-items:center">${liveAv(uid, 'lg')}<div><h3 style="margin:0">${esc(u.name || '…')}</h3><small class="note">${u.is_owner ? FXL('owner_l') : u.is_admin ? FXL('adm') : ''}${u.banned ? ' · ' + FXL('banned_l') : ''}</small></div></div>
+    ${btn('open', t('open'))}${uid !== meId ? btn('verify', FXL(u.verified ? 'act_unverify' : 'act_verify')) + btn('warn', FXL('act_warn')) : ''}${canBan ? btn('ban', FXL(u.banned ? 'act_unban' : 'act_ban'), u.banned ? 'soft' : 'soft') : ''}${isOwner() && uid !== meId && !u.is_owner ? btn('admin', FXL(u.is_admin ? 'unmake_admin' : 'make_admin'), u.is_admin ? 'soft' : 'green') : ''}`);
+  const done = () => { w.remove(); dropData('adm:users'); toast(t('saved_ok')); render(); };
+  const fail = (e) => toast(/admin_limit/.test(String(e && e.message)) ? FXL('admin_limit') : FXL('send_fail'));
+  w.addEventListener('click', (e) => { const b = e.target.closest('[data-x]'); if (!b) return; const x = b.dataset.x;
+    if (x === 'open') { w.remove(); go('person', { id: u.name }); }
+    else if (x === 'verify') LV.setFlag(uid, { verified: !u.verified }).then(done).catch(fail);
+    else if (x === 'ban') { if (u.banned || confirm(FXL('act_ban') + ': ' + u.name + '?')) LV.setFlag(uid, { banned: !u.banned }).then(done).catch(fail); }
+    else if (x === 'admin') { if (confirm(FXL(u.is_admin ? 'unmake_admin' : 'make_admin') + ': ' + u.name + '?')) LV.setFlag(uid, { is_admin: !u.is_admin }).then(r => { if (!!r.is_admin === !!u.is_admin) return fail(); done(); }).catch(fail); }
+    else if (x === 'warn') { w.remove(); const w2 = sheet(`<h3>${FXL('act_warn')}: ${esc(u.name)}</h3><div class="field"><textarea id="wtx" rows="4" placeholder="${FXL('warn_ph')}"></textarea></div><button class="btn primary full" id="wgo">${FXL('act_warn')}</button>`);
+      w2.querySelector('#wgo').onclick = () => { const tx = w2.querySelector('#wtx').value.trim(); if (!tx) return; LV.warn(uid, tx, lang).then(() => { w2.remove(); toast(FXL('warn_sent')); liveSyncChats(true); }).catch(fail); }; }
+  });
+}
 V.operator = (p) => {
   if (!isAdmin()) return V.home();
   if (LV) {
     liveSyncChats(); const k = p.k || 'chats';
-    const seg = `<div class="seg" style="margin:4px 0 14px">${['chats', 'reports'].map(x => `<button class="${x === k ? 'on' : ''}" data-act="opk" data-v="${x}">${FXL(x === 'chats' ? 'tab_chats' : 'tab_reports')}</button>`).join('')}</div>`;
+    const seg = `<div class="seg" style="margin:4px 0 14px">${['chats', 'reports', 'users'].concat(isOwner() ? ['dms'] : []).map(x => `<button class="${x === k ? 'on' : ''}" data-act="opk" data-v="${x}">${FXL('tab_' + x)}</button>`).join('')}</div>`;
     let body = '';
     if (k === 'chats') { const ids = Object.keys(S.chats).filter(x => x.startsWith('A:')).sort((a, b) => S.chats[b].t - S.chats[a].t);
       body = ids.length ? `<div class="list one">${ids.map(id => { const c = S.chats[id]; const li = listingInfo(id); const last = c.msgs[c.msgs.length - 1];
         return `<button class="row-card" data-act="go" data-v="chat" data-id="${id}">${liveAv(c.user1)}<span class="grow"><span class="ttl" style="display:block">${esc(li.title)}</span><span class="sub" style="display:block">${last ? esc(String(last.text).slice(0, 80)) : ''}</span></span><small class="num">${new Date(c.t).toLocaleDateString(locale())}</small></button>`; }).join('')}</div>` : emptyBlock(t('chats_empty'), 'chat').replace(t('nothing_d'), ''); }
+    else if (k === 'users') { const us = want('adm:users', () => LV.people());
+      const nA = (us || []).filter(u => u.is_admin).length;
+      body = us === undefined ? `<p class="note">…</p>` : `<p class="note" style="margin:0 0 10px">${FXL('admins_n')}: <b class="num">${nf(nA)}</b> / 5</p><div class="field" style="margin-bottom:12px"><input type="search" placeholder="${FXL('user_search')}" aria-label="${FXL('user_search')}" oninput="var q=this.value.toLowerCase();document.querySelectorAll('[data-nm]').forEach(function(e){e.hidden=e.dataset.nm.indexOf(q)<0})"></div><div class="list one">${(us || []).map(u => `<button class="row-card" data-act="admuser" data-v="${u.id}" data-nm="${esc((u.name || '').toLowerCase())}">${liveAv(u.id)}<span class="grow"><span class="ttl" style="display:block">${esc(u.name || '…')}${u.verified ? ' ✓' : ''}</span><span class="sub" style="display:block">${u.is_owner ? FXL('owner_l') : u.is_admin ? FXL('adm') : ''}${u.banned ? `<b style="color:var(--rose)">${FXL('banned_l')}</b>` : ''}${!u.is_admin && !u.banned ? (u.gender === 'f' ? t('female') : t('male')) : ''} · ${new Date(u.created_at).toLocaleDateString(locale())}</span></span>${ic('chev', 'flip chev')}</button>`).join('')}</div>`; }
+    else if (k === 'dms' && isOwner()) { const ds = want('adm:dms', () => LV.allDms());
+      body = ds === undefined ? `<p class="note">…</p>` : !ds || !ds.length ? `<p class="note">${FXL('no_dms')}</p>` : `<div class="list one">${ds.map(c => `<button class="row-card" data-act="admdm" data-v="${c.id}">${liveAv(c.user1)}<span class="grow"><span class="ttl" style="display:block">${esc(pname(c.user1))} ↔ ${esc(pname(c.user2))}</span><span class="sub" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.last ? esc(pname(c.last.sender)) + ': ' + esc(String(c.last.body).slice(0, 80)) : ''}</span></span><small class="num">${new Date(c.last_at).toLocaleDateString(locale())}</small></button>`).join('')}</div>`; }
     else { const reps = want('reports', () => LV.reports());
       body = reps === undefined ? `<p class="note">…</p>` : !reps || !reps.length ? `<p class="note">${FXL('no_reports')}</p>` : `<div class="list one">${reps.map(r => `<div class="card rep ${r.status}"><div class="sub" style="margin:0 0 4px">${esc(r.target_type)} · ${new Date(r.created_at).toLocaleString(locale())} · ${esc(pname(r.reporter))}</div>
         <b>${r.target_type === 'user' ? esc(pname(r.target_id)) : esc(r.target_id)}</b>${r.reason ? `<p style="margin:4px 0 0">${esc(r.reason)}</p>` : ''}
@@ -1099,7 +1128,7 @@ function sheet(html) {
   host.appendChild(w); return w;
 }
 function rulesSheet() {
-  const w = sheet(`<h3>${t('rules_title')}</h3><p style="line-height:1.6;margin:8px 0 16px">${t('rules_text')}</p><button class="btn green full" data-close>${t('understood')}</button>`);
+  const w = sheet(`<h3>${t('rules_title')}</h3><p style="line-height:1.6;margin:8px 0 10px">${t('rules_text')}</p>${LV ? `<p class="note" style="line-height:1.5;margin:0 0 16px">${FXL('mod_note')}</p>` : ''}<button class="btn green full" data-close>${t('understood')}</button>`);
   w.querySelector('[data-close]').addEventListener('click', () => { S.rulesOk = true; save(); });
 }
 
@@ -1121,6 +1150,9 @@ root.addEventListener('click', (e) => {
     case 'go': go(v, id ? { id } : {}); break;
     case 'docedit': docSheet(v); break;
     case 'opk': cur().k = v; render(); break;
+    case 'admuser': admUserSheet(v); break;
+    case 'admdm': { const ds = (DATA['adm:dms'] || {}).v || []; const c = ds.find(x => x.id === v); if (!c) break; const key = 'O:' + c.id;
+      S.chats[key] = { live: true, cid: c.id, kind: 'dm', user1: c.user1, user2: c.user2, t: new Date(c.last_at).getTime(), msgs: [], watch: true }; go('chat', { id: key }); break; }
     case 'admdone': LV.closeReport(v).then(() => { dropData('reports'); render(); }); break;
     case 'admdelpost': if (confirm(FXL('act_delete') + '?')) LV.deletePost(v).then(() => { toast(FXL('act_delete') + ' ✓'); dropData(); render(); }).catch(e => toast(FXL('send_fail'))); break;
     case 'accedit': accSheet(v); break;
@@ -1363,7 +1395,7 @@ if (LV) {
   const wrapV = (name, pre) => { const f = V[name]; V[name] = (pp) => { try { pre(pp); } catch (e) { console.warn(e); } return f(pp); }; };
   ['ads', 'parcels', 'item', 'majlis', 'topic', 'family', 'explore', 'person'].forEach(n => wrapV(n, () => liveCommunity()));
   wrapV('men', () => liveSpace('men')); wrapV('women', () => liveSpace('women'));
-  wrapV('room', (pp) => liveSpace(pp.id.split(':')[0])); wrapV('event', () => liveSpace(S.me && S.me.gender === 'f' ? 'women' : 'men'));
+  wrapV('room', (pp) => liveSpace(pp.id.split(':')[0])); wrapV('event', () => { if (isOwner()) { liveSpace('men'); liveSpace('women'); } else liveSpace(S.me && S.me.gender === 'f' ? 'women' : 'men'); });
   LV.onRoom && setTimeout(() => LV.onRoom(m => { if (m.author === meU()) return; dropData('c:sp:'); if (cur().v === 'room' && cur().id === m.room) { liveSpace(m.room.split(':')[0]); } }), 0);
 }
 window.NK = { isPhone, isAdmin, want, dropData, liveAv, pname, meFrom, applyLive, liveSyncChats, loadChat, V, t, L, ic, esc, small, img, avatar, vmark, commentsBlock, loc, nf, toast, sheet, go, back, render, save, openDM, authSheet, resizeImg, txt, cur,

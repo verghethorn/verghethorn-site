@@ -974,3 +974,17 @@ c725|Peringatan dikirim ke obrolan
 c726|Akun Anda diblokir oleh administrator. Anda tidak bisa memposting atau mengirim pesan.
 c727|Belum ada apa-apa. Posting foto pertama!
 c728|File lebih dari 50 MB
+
+c729|Pengguna
+c730|Percakapan
+c731|Administrator utama
+c732|Jadikan administrator
+c733|Cabut hak administrator
+c734|Administrator
+c735|Maksimal 5 administrator. Cabut hak salah satunya terlebih dahulu.
+c736|Cari berdasarkan nama
+c737|Belum ada percakapan pribadi
+c738|Tampilan administrator utama. Di sini Anda hanya dapat melihat dan menghapus pelanggaran, tidak bisa menulis.
+c739|Hanya lihat
+c740|Untuk melindungi pengguna, administrasi Nakhlio dapat melihat percakapan dan pesan di ruang saat memeriksa laporan dan pelanggaran.
+c741|Diblokir
