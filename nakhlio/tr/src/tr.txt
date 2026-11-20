@@ -944,3 +944,33 @@ c695|Bunlar test ilanlarıdır
 c696|Bu bölümdeki tüm fotoğraflar, fiyatlar ve ilanlar şimdilik tanıtım amaçlı test örnekleridir. Gerçek teklifler lansmandan sonra görünecek.
 c697|Yönetici
 c698|Magaam yalnızca Nakhlio mobil uygulamasında çalışır. Telefonunuzda açın.
+c699|E-postanızı girin, size bir kod gönderelim. Şifre gerekmez. E-postanızı kimse görmez.
+c700|Uygulama dili
+c701|Uygulamayı, mesajları ve gönderileri bu dilde göreceksiniz.
+c702|Kodu şu adrese gönderdik:
+c703|E-postayı değiştir
+c704|E-posta gelmedi mi? Spam klasörünü kontrol edin.
+c705|Bir şeyler ters gitti. Bağlantınızı kontrol edip bir dakika sonra tekrar deneyin.
+c706|Kod yanlış veya süresi dolmuş. Yeni bir kod isteyin.
+c707|E-postanız giriş adınızdır ve değiştirilemez.
+c708|Nakhlio’ya giriş
+c709|Face ID ile aç
+c710|E-posta koduyla giriş yap
+c711|Face ID kullanılamıyor. E-posta koduyla giriş yapın.
+c712|Sohbetler
+c713|Şikâyetler
+c714|Şikâyet yok
+c715|Sil
+c716|Çözüldü
+c717|Gizle
+c718|Göster
+c719|Doğrula
+c720|Onayı kaldır
+c721|Engelle
+c722|Engeli kaldır
+c723|Uyar
+c724|Uyarı metni…
+c725|Uyarı sohbete gönderildi
+c726|Hesabınız yönetici tarafından engellendi. Gönderi paylaşamaz ve mesaj yazamazsınız.
+c727|Burada henüz bir şey yok. İlk fotoğrafı paylaşın!
+c728|Dosya 50 MB’tan büyük

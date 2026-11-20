@@ -944,3 +944,33 @@ c695|Ce sont des annonces de test
 c696|Toutes les photos, tous les prix et toutes les annonces de cette section sont des exemples de test, pour découvrir l’application. Les vraies offres apparaîtront après le lancement.
 c697|Administrateur
 c698|Magaam fonctionne uniquement dans l’application mobile Nakhlio. Ouvrez-la sur votre téléphone.
+c699|Saisissez votre e-mail et nous vous enverrons un code. Pas de mot de passe. Personne ne verra votre e-mail.
+c700|Langue de l’application
+c701|Vous verrez l’application, les messages et les publications dans cette langue.
+c702|Nous avons envoyé un code à
+c703|Modifier l’e-mail
+c704|Pas d’e-mail ? Vérifiez le dossier spam.
+c705|Une erreur s’est produite. Vérifiez votre connexion et réessayez dans une minute.
+c706|Le code est incorrect ou expiré. Demandez-en un nouveau.
+c707|Votre e-mail est votre identifiant et ne peut pas être modifié.
+c708|Connexion à Nakhlio
+c709|Déverrouiller avec Face ID
+c710|Se connecter avec un code par e-mail
+c711|Face ID n’est pas disponible. Connectez-vous avec un code par e-mail.
+c712|Discussions
+c713|Signalements
+c714|Aucun signalement
+c715|Supprimer
+c716|Résolu
+c717|Masquer
+c718|Afficher
+c719|Vérifier
+c720|Retirer la coche
+c721|Bloquer
+c722|Débloquer
+c723|Avertir
+c724|Texte de l’avertissement…
+c725|Avertissement envoyé dans la discussion
+c726|Votre compte a été bloqué par l’administrateur. Vous ne pouvez ni publier ni envoyer de messages.
+c727|Rien pour l’instant. Publiez la première photo !
+c728|Le fichier dépasse 50 Mo

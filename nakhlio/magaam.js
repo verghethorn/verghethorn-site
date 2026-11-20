@@ -249,5 +249,136 @@ window.MGACT = (a, v, el) => {
   }
   return false;
 };
+
+/* ================= LIVE (server) mode ================= */
+const LV = window.LIVE;
+if (LV) {
+  const { want, dropData, liveAv, pname, isAdmin } = NK;
+  const FXM = (k) => L(window.FX[k]);
+  const meId = () => LV.user && LV.user.id;
+  const prof = (uid) => LV.cached(uid) || {};
+  const av = (uid, sz) => `<span class="mgav ${sz || ''}">${uid === meId() ? avatar('@me') : liveAv(uid)}</span>`;
+  const vm = (uid) => prof(uid).verified ? vmark(window.VERIFIED[0]) : '';
+  const link = (uid, inner) => `<button class="pbtn" data-act="mgp" data-v="${uid}">${inner}</button>`;
+  const TRC = {};
+  const trText = (key, text, from) => { if (!text || !from || from === NK.lang) return text; if (TRC[key]) return TRC[key].t; TRC[key] = { t: text }; LV.translate(text, from, NK.lang).then(r => { if (r) { TRC[key] = { t: r, tr: true }; render(); } }); return text; };
+  const trBadge = (key) => TRC[key] && TRC[key].tr ? `<span class="mgtr">${small('translate')}${t('auto_tr')}</span>` : '';
+  const ago = (d) => { const h = Math.max(0, Math.round((Date.now() - new Date(d)) / 36e5)); return agoTxt(h); };
+  const ready = () => { if (!NK.isPhone()) return mobileOnly(); if (!NK.S.me) return lock(); return null; };
+  const loading = `<p class="note" style="text-align:center;padding:30px 0">…</p>`;
+  const R = () => want('mg:rel', () => LV.rel()) || { friends: new Set(), out: new Set(), inc: [], follow: new Set() };
+  const mediaHtml = (p) => p.media_type === 'video' ? `<video src="${esc(p.media_url)}" playsinline muted loop autoplay controls></video>` : `<img src="${esc(p.media_url)}" alt="" loading="lazy">`;
+  const admBtns = (p) => isAdmin() ? `<div class="mgadm"><span>${small('shield')}${FXM('adm')}</span><button data-act="mgahide" data-v="${p.id}" data-h="${p.hidden ? 0 : 1}">${FXM(p.hidden ? 'act_show' : 'act_hide')}</button><button data-act="mgadel" data-v="${p.id}">${FXM('act_delete')}</button></div>` : '';
+  const card = (p) => `<article class="mgpost ${p.hidden ? 'hid' : ''}">
+    <div class="mgph">${link(p.author, av(p.author, 'sm'))}<div class="grow">${link(p.author, `<b>${esc(pname(p.author))}</b>${vm(p.author)}`)}${p.dist ? `<small>${small('pin')}${esc(loc(p.dist))}</small>` : ''}</div><small class="num">${ago(p.created_at)}</small></div>
+    <div class="mgimg" data-act="mgdbl" data-v="${p.id}">${mediaHtml(p)}<i class="mgheart">${ic('heart')}</i></div>
+    <div class="mgact"><button class="${p.liked ? 'on' : ''}" data-act="mglike" data-v="${p.id}" aria-label="like">${ic('heart')}</button><button data-act="mgpost" data-v="${p.id}" aria-label="${t('comment')}">${ic('chat')}</button>${p.author !== meId() ? `<button data-act="mgreport" data-v="${p.id}" data-t="post" aria-label="${t('report')}">${ic('flag')}</button>` : ''}<span class="num">${nf(p.likes)} ${M('likes')}</span></div>
+    ${p.caption ? `<p class="mgcap">${link(p.author, `<b>${esc(pname(p.author))}</b>`)} ${esc(trText('p' + p.id, p.caption, p.lang))}${trBadge('p' + p.id)}</p>` : ''}
+    ${p.ncm ? `<button class="mgmore" data-act="mgpost" data-v="${p.id}">${t('comments_t')} · <span class="num">${nf(p.ncm)}</span></button>` : ''}${admBtns(p)}
+  </article>`;
+  const ALL = {}; const keep = (list) => { (list || []).forEach(p => ALL[p.id] = p); return list; };
+  const stories = () => {
+    const list = keep(want('mg:stories', () => LV.posts('story'))) || []; const by = {}; list.forEach(s => { (by[s.author] = by[s.author] || []).push(s); });
+    const mineS = by[meId()]; const others = Object.keys(by).filter(a => a !== meId());
+    window.__mgSt = (mineS ? [[meId(), mineS]] : []).concat(others.map(a => [a, by[a]]));
+    const g = st();
+    return `<div class="mgstories"><button class="mgst ${mineS ? '' : 'add'}" data-act="${mineS ? 'mglst' : 'mgnew'}" data-v="${mineS ? 0 : 'story'}">${av(meId(), 'md')}${mineS ? '' : `<i>${ic('plus')}</i>`}<span>${M('your_story')}</span></button>${others.map((a, i) => `<button class="mgst ${g.seen[a] ? 'seen' : ''}" data-act="mglst" data-v="${i + (mineS ? 1 : 0)}">${av(a, 'md')}<span>${esc(pname(a))}</span></button>`).join('')}</div>`;
+  };
+  V.mg = () => { const r = ready(); if (r) return r; const feed = keep(want('mg:feed', () => LV.posts('post')));
+    return wrapView('mg', `${stories()}${NK.S.me.banned ? `<div class="banner" style="margin:10px 14px">${ic('info')}<div>${FXM('banned')}</div></div>` : ''}<div class="mgfeed">${feed === undefined ? loading : feed && feed.length ? feed.map(card).join('') : `<div class="mgwrap" style="text-align:center">${mgLogo('big')}<p class="note">${FXM('mg_empty')}</p><button class="btn primary mgbtn" data-act="mgnew">${M('create')}</button></div>`}</div><p class="note mgrules">${small('info')} ${M('rules')}</p>`); };
+  V.mgreels = () => { const r = ready(); if (r) return r; setTimeout(rulesModal, 60); const list = keep(want('mg:reels', () => LV.posts('reel')));
+    return { html: `<div class="mg mgdark">${top(M('reels'))}<div class="mgreels">${list === undefined ? loading : list && list.length ? list.map(x => `<section class="mgreel">${x.media_type === 'video' ? `<video src="${esc(x.media_url)}" playsinline muted loop autoplay></video>` : `<div class="kb" style="background-image:url(${esc(x.media_url)})"></div>`}
+      <div class="mgrside"><button class="${x.liked ? 'on' : ''}" data-act="mglike" data-v="${x.id}">${ic('heart')}<small class="num">${nf(x.likes)}</small></button><button data-act="mgpost" data-v="${x.id}">${ic('chat')}<small class="num">${nf(x.ncm)}</small></button><button data-act="mgreport" data-v="${x.id}" data-t="post">${ic('flag')}</button></div>
+      <div class="mgrinfo">${link(x.author, `${av(x.author, 'sm')}<b>${esc(pname(x.author))}</b>${vm(x.author)}`)}<p>${esc(trText('p' + x.id, x.caption || '', x.lang))}${trBadge('p' + x.id)}</p>${admBtns(x)}</div></section>`).join('') : `<div class="mgwrap" style="text-align:center;padding-top:60px"><p class="note" style="color:#AFB7CC">${FXM('mg_empty')}</p><button class="btn primary mgbtn" data-act="mgnew" data-v="reel">${M('create')}</button></div>`}</div></div>${nav('mgreels')}` }; };
+  V.mgpost = (p) => { const r = ready(); if (r) return r; const x = want('mg:post:' + p.id, () => LV.post(p.id)); if (x) ALL[x.id] = Object.assign(ALL[x.id] || {}, x);
+    if (x === undefined) return wrapView('mg', loading); if (!x) return V.mg();
+    const cms = (x.comments || []).map(c => `<div class="cmt"><span>${link(c.author, av(c.author, 'sm'))}</span><div class="cb"><div class="cw">${link(c.author, `<b>${esc(pname(c.author))}</b>${vm(c.author)}`)}<small class="num">${ago(c.created_at)}</small></div><p>${esc(trText('c' + c.id, c.body, c.lang))}${trBadge('c' + c.id)}</p>
+      <div class="ca">${c.author !== meId() ? `<button data-act="mgreport" data-v="${c.id}" data-t="comment">${small('flag')}${t('report')}</button>` : ''}${isAdmin() || c.author === meId() ? `<button data-act="mgcdel" data-v="${c.id}" data-p="${x.id}">${small('x')}${FXM('act_delete')}</button>` : ''}</div></div></div>`).join('');
+    return wrapView('mg', `<div class="mgfeed">${card(ALL[x.id])}</div><div class="mgwrap"><h4 style="margin:6px 0 10px">${t('comments_t')}</h4>${cms || `<p class="note">—</p>`}
+      <div class="mgcbox"><textarea id="mgcin" rows="1" placeholder="${t('comment_ph')}"></textarea><button class="btn primary mgbtn" data-act="mgcsend" data-v="${x.id}">${ic('send')}</button></div></div>`); };
+  const profView = (uid) => {
+    const me = uid === meId(); const pr = me ? LV.profile || {} : (LV.cached(uid) || want('mg:pf:' + uid, () => LV.fetchProfile(uid)) || {});
+    const cnt = want('mg:cnt:' + uid, () => LV.counts(uid)) || [0, 0, 0]; const posts = keep(want('mg:up:' + uid, () => LV.posts('post', uid))) || []; const rel = R();
+    const fr = rel.friends.has(uid), rq = rel.out.has(uid), fo = rel.follow.has(uid);
+    const actions = me ? `<button class="btn soft mgbtn2" data-act="mgedit">${small('user')}${t('edit_profile')}</button>`
+      : `<button class="btn ${fo ? 'soft mgbtn2' : 'primary mgbtn'}" data-act="mgfollow" data-v="${uid}">${M(fo ? 'unfollow' : 'follow')}</button><button class="btn soft mgbtn2" data-act="mgfriend" data-v="${uid}" ${fr || rq ? 'disabled' : ''}>${small(fr ? 'check' : 'plus')}${M(fr ? 'is_friend' : rq ? 'req_sent' : 'add_friend')}</button><button class="btn soft mgbtn2 sq ${fr ? '' : 'dim'}" data-act="mgdm" data-v="${uid}" aria-label="${t('dm')}">${ic('send')}</button><button class="btn soft mgbtn2 sq" data-act="mgreport" data-v="${uid}" data-t="user" aria-label="${t('report')}">${ic('flag')}</button>`;
+    const adm = isAdmin() && !me ? `<div class="mgadmbar"><b>${small('shield')}${FXM('adm')}</b><button data-act="mgaflag" data-v="${uid}" data-f="verified" data-x="${pr.verified ? 0 : 1}">${FXM(pr.verified ? 'act_unverify' : 'act_verify')}</button><button data-act="mgaflag" data-v="${uid}" data-f="banned" data-x="${pr.banned ? 0 : 1}">${FXM(pr.banned ? 'act_unban' : 'act_ban')}</button><button data-act="mgawarn" data-v="${uid}">${FXM('act_warn')}</button></div>` : '';
+    return `<div class="mgcover" style="${pr.cover_url ? `background-image:url(${esc(pr.cover_url)})` : ''}">${me ? `<button class="mgcbtn" data-act="mgcover">${small('camera')}${M('cover')}</button>` : ''}</div>
+    <div class="mgwrap mgprof"><div class="mgpav">${av(uid, 'xl')}</div><h2>${esc(pr.name || '…')}${vm(uid)}</h2>${pr.banned ? `<p class="tag" style="background:var(--rose-tint);color:var(--rose)">${FXM('act_ban')}</p>` : ''}${pr.about ? `<p class="mgbio">${esc(me ? pr.about : trText('a' + uid, pr.about, pr.ui_lang))}</p>` : ''}
+    <div class="mgcounts"><div><b class="num">${nf(cnt[0])}</b><small>${M('posts')}</small></div><div><b class="num">${nf(cnt[1])}</b><small>${M('followers')}</small></div><div><b class="num">${nf(cnt[2])}</b><small>${M('following')}</small></div></div>
+    <div class="mgpact">${actions}</div>${!me && !fr ? `<p class="note" style="text-align:center;margin-top:8px">${small('lock')} ${M('dm_lock')}</p>` : ''}${adm}
+    <div class="mggrid">${posts.length ? posts.map(x => `<button data-act="mgpost" data-v="${x.id}" style="background-image:url(${esc(x.media_type === 'video' ? '' : x.media_url)})">${x.media_type === 'video' ? ic('play') : ''}</button>`).join('') : `<p class="note" style="grid-column:1/-1;text-align:center;padding:20px 0">${M('no_posts')}</p>`}</div></div>`;
+  };
+  V.mgme = () => { const r = ready(); if (r) return r; return wrapView('mgme', profView(meId()), t('profile_l')); };
+  V.mgp = (p) => { const r = ready(); if (r) return r; if (p.id === meId()) return V.mgme(); return wrapView('', profView(p.id), esc(pname(p.id))); };
+  V.mgfriends = () => { const r = ready(); if (r) return r; const rel = R(); const people = (want('mg:people', () => LV.people()) || []).filter(x => x.id !== meId());
+    const row = (uid, right) => `<div class="mgrow">${link(uid, av(uid, 'md'))}<div class="grow">${link(uid, `<b>${esc(pname(uid))}</b>${vm(uid)}`)}</div>${right}</div>`;
+    return wrapView('mgfriends', `<div class="mgwrap">
+      ${rel.inc.length ? `<h4>${M('requests')}</h4>${rel.inc.map(q => row(q.from_id, `<button class="btn sm primary mgbtn" data-act="mgacc" data-v="${q.id}">${M('accept')}</button><button class="btn sm soft mgbtn2" data-act="mgdec" data-v="${q.id}">${M('decline')}</button>`)).join('')}` : ''}
+      <h4>${M('friends')}</h4>${rel.friends.size ? [...rel.friends].map(uid => row(uid, `<button class="btn sm soft mgbtn2" data-act="mgdm" data-v="${uid}">${ic('send')}</button>`)).join('') : `<p class="note">${M('no_friends')}</p>`}
+      <h4>${M('people')}</h4>${people.filter(x => !rel.friends.has(x.id)).map(x => row(x.id, `<button class="btn sm ${rel.follow.has(x.id) ? 'soft mgbtn2' : 'primary mgbtn'}" data-act="mgfollow" data-v="${x.id}">${M(rel.follow.has(x.id) ? 'unfollow' : 'follow')}</button>`)).join('') || `<p class="note">—</p>`}
+    </div>`, M('friends')); };
+
+  /* live stories viewer */
+  const openLiveStory = (k) => { const list = window.__mgSt || []; const host = document.querySelector('.app') || document.body; const w = document.createElement('div'); w.className = 'mgstview'; host.appendChild(w); let tm;
+    const close = () => { clearTimeout(tm); w.remove(); render(); };
+    const show = () => { if (k < 0 || k >= list.length) return close(); const [a, items] = list[k]; st().seen[a] = true; save(); const s = items[0];
+      w.innerHTML = `<div class="bar"><i style="animation-duration:6s"></i></div><div class="who">${av(a, 'sm')}<b>${esc(pname(a))}</b>${a !== meId() ? `<button data-r aria-label="${t('report')}">${ic('flag')}</button>` : ''}<button data-x aria-label="${t('close')}">${ic('x')}</button></div>${s.media_type === 'video' ? `<video src="${esc(s.media_url)}" autoplay playsinline></video>` : `<img src="${esc(s.media_url)}" alt="">`}${s.caption ? `<p class="stcap">${esc(trText('p' + s.id, s.caption, s.lang))}</p>` : ''}<button class="nav l" data-p></button><button class="nav r" data-n></button>`;
+      w.querySelector('[data-x]').onclick = close; const rb = w.querySelector('[data-r]'); if (rb) rb.onclick = () => LV.report('post', s.id).then(() => toast(t('reported')));
+      w.querySelector('[data-p]').onclick = () => { k--; show(); }; w.querySelector('[data-n]').onclick = () => { k++; show(); }; clearTimeout(tm); tm = setTimeout(() => { k++; show(); }, 6000); };
+    show(); };
+
+  /* live create */
+  const createLive = (kind) => { let type = kind || 'post', file = null, data = null;
+    const w = sheet(`<h3>${M('new_post')}</h3><div class="seg mgseg">${['post', 'story', 'reel'].map(x => `<button type="button" data-ty="${x}" class="${x === type ? 'on' : ''}">${M(x === 'post' ? 't_photo' : x === 'story' ? 't_story' : 't_reel')}</button>`).join('')}</div>
+      <label class="mgpick"><input type="file" id="mgfile" accept="image/*,video/*" hidden><span id="mgprev">${ic('camera')}<b>${M('pick')}</b></span></label>
+      <div class="field"><label for="mgcap">${M('caption')}</label><textarea id="mgcap" rows="2" placeholder="${M('caption_ph')}"></textarea></div>
+      <p class="note" style="font-size:12px">${M('rules')}</p><button class="btn primary full mgbtn" id="mgpub" style="margin-top:10px">${t('publish')}</button>`);
+    w.querySelectorAll('[data-ty]').forEach(b => b.onclick = () => { type = b.dataset.ty; w.querySelectorAll('[data-ty]').forEach(x => x.classList.toggle('on', x === b)); });
+    w.querySelector('#mgfile').onchange = async (e) => { file = e.target.files[0]; data = null; if (!file) return; const pv = w.querySelector('#mgprev');
+      if (file.type.startsWith('video')) { if (file.size > 50 * 1048576) { toast(FXM('too_big')); file = null; return; } pv.innerHTML = `<video src="${URL.createObjectURL(file)}" muted autoplay loop playsinline></video>`; } else { data = await resizeImg(file); pv.innerHTML = `<img src="${data}" alt="">`; } };
+    w.querySelector('#mgpub').onclick = async (ev) => { if (!file) { w.querySelector('.mgpick').classList.add('err'); return; } const b = ev.currentTarget; b.disabled = true; b.textContent = '…';
+      try { const isV = file.type.startsWith('video'); const url = await LV.upload(isV ? file : data, type);
+        await LV.createPost({ type, media_url: url, media_type: isV ? 'video' : 'image', caption: w.querySelector('#mgcap').value.trim(), lang: NK.lang, dist: NK.S.me.dist || '' });
+        w.remove(); toast(t('published')); dropData('mg:'); go(type === 'reel' ? 'mgreels' : 'mg');
+      } catch (e) { console.warn(e); toast(FXM('send_fail')); b.disabled = false; b.textContent = t('publish'); } }; };
+  const pickImg = (cb) => { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.onchange = async () => { const f = inp.files[0]; if (f) cb(await resizeImg(f)); }; inp.click(); };
+  const editLive = () => { const w = sheet(`<h3>${t('edit_profile')}</h3><div style="display:flex;gap:10px;margin:6px 0 14px"><button class="btn soft mgbtn2" id="mgph">${small('camera')}${M('photo')}</button><button class="btn soft mgbtn2" id="mgcv">${small('camera')}${M('cover')}</button></div>
+      <div class="field"><label for="mgbio">${t('about_l')}</label><textarea id="mgbio" rows="3">${esc((LV.profile || {}).about || '')}</textarea></div><button class="btn primary full mgbtn" id="mgsave">${t('save_l')}</button>`);
+    const up = async (data, field) => { try { const url = await LV.upload(data, field); const pr = await LV.updateProfile({ [field]: url }); NK.S.me = NK.meFrom(pr); save(); toast(t('saved_ok')); render(); } catch (e) { toast(FXM('send_fail')); } };
+    w.querySelector('#mgph').onclick = () => pickImg(d => up(d, 'photo_url')); w.querySelector('#mgcv').onclick = () => pickImg(d => up(d, 'cover_url'));
+    w.querySelector('#mgsave').onclick = async () => { try { const pr = await LV.updateProfile({ about: w.querySelector('#mgbio').value.trim() }); NK.S.me = NK.meFrom(pr); save(); w.remove(); render(); } catch (e) { toast(FXM('send_fail')); } }; };
+
+  const prevAct = window.MGACT;
+  window.MGACT = (a, v, el) => {
+    if (!a.startsWith('mg')) return false;
+    if (!NK.S.me && a !== 'mggo') { authSheet(); return true; }
+    const fail = (e) => { console.warn(e); toast(FXM('send_fail')); };
+    const reload = (k) => { dropData(k || 'mg:'); render(); };
+    switch (a) {
+      case 'mglike': { const p = ALL[v]; if (!p) return true; p.liked = !p.liked; p.likes += p.liked ? 1 : -1; render(); LV.like(v, p.liked).catch(fail); return true; }
+      case 'mgdbl': { const now = Date.now(); if (el._t && now - el._t < 320) { const p = ALL[v]; if (p && !p.liked) { p.liked = true; p.likes++; LV.like(v, true).catch(fail); } el.classList.add('pop'); setTimeout(render, 450); } el._t = now; return true; }
+      case 'mgfollow': { const rel = R(); const on = !rel.follow.has(v); if (on) rel.follow.add(v); else rel.follow.delete(v); render(); LV.follow(v, on).then(() => reload('mg:cnt:')).catch(fail); return true; }
+      case 'mgfriend': LV.friendRequest(v).then(() => { toast(M('req_sent')); reload('mg:rel'); }).catch(fail); return true;
+      case 'mgacc': LV.answerRequest(v, true).then(() => reload('mg:rel')).catch(fail); return true;
+      case 'mgdec': LV.answerRequest(v, false).then(() => reload('mg:rel')).catch(fail); return true;
+      case 'mgdm': { LV.rel().then(rel => { if (!rel.friends.has(v)) { toast(M('dm_lock')); return null; } return LV.dmChat(v); }).then(c => { if (!c) return; const key = 'D:' + v; NK.S.chats[key] = Object.assign(NK.S.chats[key] || { msgs: [] }, { live: true, cid: c.id, kind: 'dm', t: Date.now() }); save(); go('chat', { id: key, draft: '' }); }).catch(fail); return true; }
+      case 'mgdm_old': { LV.dmChat(v).then(c => { const key = 'D:' + v; NK.S.chats[key] = Object.assign(NK.S.chats[key] || { msgs: [] }, { live: true, cid: c.id, kind: 'dm', t: Date.now() }); save(); go('chat', { id: key, draft: '' }); }).catch(fail); return true; }
+      case 'mgnew': createLive(v); return true;
+      case 'mglst': openLiveStory(+v); return true;
+      case 'mgedit': editLive(); return true;
+      case 'mgcover': pickImg(async d => { try { const url = await LV.upload(d, 'cover'); const pr = await LV.updateProfile({ cover_url: url }); NK.S.me = NK.meFrom(pr); save(); render(); } catch (e) { fail(e); } }); return true;
+      case 'mgreport': LV.report(el.dataset.t || 'post', v).then(() => toast(t('reported'))).catch(fail); return true;
+      case 'mgcsend': { const ta = document.getElementById('mgcin'); const tx = ta && ta.value.trim(); if (!tx) return true; LV.comment(v, tx, NK.lang).then(() => reload('mg:post:' + v)).catch(fail); return true; }
+      case 'mgcdel': LV.deleteComment(v).then(() => reload('mg:post:' + el.dataset.p)).catch(fail); return true;
+      case 'mgahide': LV.hidePost(v, el.dataset.h === '1').then(() => reload()).catch(fail); return true;
+      case 'mgadel': if (confirm(FXM('act_delete') + '?')) LV.deletePost(v).then(() => { toast(FXM('act_delete') + ' ✓'); reload(); if (cur().v === 'mgpost') NK.back(); }).catch(fail); return true;
+      case 'mgaflag': LV.setFlag(v, { [el.dataset.f]: el.dataset.x === '1' }).then(() => { toast(t('saved_ok')); reload('mg:pf:'); }).catch(fail); return true;
+      case 'mgawarn': { const w = sheet(`<h3>${FXM('act_warn')}: ${esc(pname(v))}</h3><div class="field"><textarea id="wtx" rows="4" placeholder="${FXM('warn_ph')}"></textarea></div><button class="btn primary full mgbtn" id="wgo">${FXM('act_warn')}</button>`);
+        w.querySelector('#wgo').onclick = () => { const tx = w.querySelector('#wtx').value.trim(); if (!tx) return; LV.warn(v, tx, NK.lang).then(() => { w.remove(); toast(FXM('warn_sent')); NK.liveSyncChats(true); }).catch(fail); }; return true; }
+    }
+    return prevAct(a, v, el);
+  };
+}
 try { if (document.querySelector('#root .app')) render(); } catch (e) {}
 })();

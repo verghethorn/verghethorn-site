@@ -944,3 +944,33 @@ c695|Ini adalah iklan uji coba
 c696|Semua foto, harga, dan iklan di bagian ini masih contoh uji coba untuk pengenalan. Penawaran nyata akan muncul setelah peluncuran.
 c697|Administrator
 c698|Magaam hanya berfungsi di aplikasi seluler Nakhlio. Buka di ponsel Anda.
+c699|Masukkan e-mail Anda, kami akan mengirim kode. Tanpa kata sandi. Tidak ada yang melihat e-mail Anda.
+c700|Bahasa aplikasi
+c701|Anda akan melihat aplikasi, pesan, dan postingan dalam bahasa ini.
+c702|Kami mengirim kode ke
+c703|Ubah e-mail
+c704|Tidak ada e-mail? Periksa folder spam.
+c705|Terjadi kesalahan. Periksa koneksi dan coba lagi dalam satu menit.
+c706|Kode salah atau kedaluwarsa. Minta kode baru.
+c707|E-mail adalah login Anda dan tidak dapat diubah.
+c708|Masuk ke Nakhlio
+c709|Buka dengan Face ID
+c710|Masuk dengan kode e-mail
+c711|Face ID tidak tersedia. Masuk dengan kode e-mail.
+c712|Obrolan
+c713|Laporan
+c714|Tidak ada laporan
+c715|Hapus
+c716|Selesai
+c717|Sembunyikan
+c718|Tampilkan
+c719|Verifikasi
+c720|Hapus centang
+c721|Blokir
+c722|Buka blokir
+c723|Peringatkan
+c724|Teks peringatan…
+c725|Peringatan dikirim ke obrolan
+c726|Akun Anda diblokir oleh administrator. Anda tidak bisa memposting atau mengirim pesan.
+c727|Belum ada apa-apa. Posting foto pertama!
+c728|File lebih dari 50 MB

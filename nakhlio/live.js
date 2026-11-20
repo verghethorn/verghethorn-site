@@ -1,0 +1,143 @@
+/* Nakhlio live backend (Supabase). Data access only — UI lives in app.js / magaam.js.
+   The publishable key is meant to be public; access is enforced by row-level security on the server. */
+(function () {
+const URL_ = 'https://csjkfdrsmmlcufcrcwbs.supabase.co';
+const KEY = 'sb_publishable_40ItdNlD24ixrpJyHidAYw_xzyVKWdk';
+const DEMO = !!window.NAKHLIO_DEMO || /[?&]demo=1/.test(location.search);
+if (DEMO || !window.supabase) { window.LIVE = null; return; }
+const sb = window.supabase.createClient(URL_, KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false, storageKey: 'nakhlio_auth' } });
+const L = { sb, user: null, profile: null, ready: false, listeners: [] };
+const ok = (r) => { if (r.error) throw r.error; return r.data; };
+
+L.init = async () => {
+  const { data } = await sb.auth.getSession();
+  L.user = data.session ? data.session.user : null;
+  if (L.user) L.profile = await L.fetchProfile(L.user.id);
+  L.ready = true;
+  sb.auth.onAuthStateChange((ev, s) => { L.user = s ? s.user : null; if (!s) L.profile = null; });
+  return L.profile;
+};
+L.sendCode = (email) => sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } }).then(ok);
+L.verifyCode = async (email, token) => {
+  let r = await sb.auth.verifyOtp({ email, token, type: 'email' });
+  if (r.error) r = await sb.auth.verifyOtp({ email, token, type: 'signup' });
+  ok(r); L.user = r.data.user; L.profile = await L.fetchProfile(L.user.id); return L.profile;
+};
+L.fetchProfile = async (id) => ok(await sb.from('profiles').select('*').eq('id', id).maybeSingle());
+L.createProfile = async (f) => { L.profile = ok(await sb.from('profiles').insert(Object.assign({ id: L.user.id }, f)).select().single()); return L.profile; };
+L.updateProfile = async (f) => { L.profile = ok(await sb.from('profiles').update(f).eq('id', L.user.id).select().single()); return L.profile; };
+L.signOut = async () => { await sb.auth.signOut(); L.user = null; L.profile = null; };
+L.email = () => (L.user && L.user.email) || '';
+
+const b64ToBlob = (d) => { const [h, b] = d.split(','); const bin = atob(b); const a = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i); return new Blob([a], { type: (h.match(/data:([^;]+)/) || [])[1] || 'image/jpeg' }); };
+L.upload = async (fileOrData, kind) => {
+  const blob = typeof fileOrData === 'string' ? b64ToBlob(fileOrData) : fileOrData;
+  const ext = (blob.type.split('/')[1] || 'jpg').replace('quicktime', 'mov').replace('jpeg', 'jpg');
+  const path = `${L.user.id}/${kind || 'm'}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
+  ok(await sb.storage.from('media').upload(path, blob, { contentType: blob.type, upsert: false }));
+  return sb.storage.from('media').getPublicUrl(path).data.publicUrl;
+};
+
+/* profiles cache */
+const PC = {};
+L.prof = async (ids) => { const need = [...new Set(ids.filter(id => id && !PC[id]))]; if (need.length) { const rows = ok(await sb.from('profiles').select('*').in('id', need)); rows.forEach(r => PC[r.id] = r); } return PC; };
+L.cached = (id) => PC[id] || null;
+L.people = async () => { const rows = ok(await sb.from('profiles').select('*').order('created_at', { ascending: false }).limit(200)); rows.forEach(r => PC[r.id] = r); return rows; };
+
+/* chats */
+L.myChats = async () => {
+  const me = L.user.id;
+  let q = sb.from('chats').select('*').order('last_at', { ascending: false });
+  const rows = ok(await q);
+  const mine = rows.filter(c => c.user1 === me || c.user2 === me);
+  await L.prof(rows.flatMap(c => [c.user1, c.user2]));
+  const last = await Promise.all(rows.map(c => sb.from('messages').select('*').eq('chat_id', c.id).order('created_at', { ascending: false }).limit(1).then(r => (r.data || [])[0] || null)));
+  rows.forEach((c, i) => c.last = last[i]);
+  return { mine, all: rows };
+};
+L.supportChat = async (topic) => {
+  const me = L.user.id; topic = topic || '';
+  let c = ok(await sb.from('chats').select('*').eq('kind', 'support').eq('user1', me).eq('topic', topic).maybeSingle());
+  if (!c) c = ok(await sb.from('chats').insert({ kind: 'support', user1: me, user2: null, topic }).select().single());
+  return c;
+};
+L.supportChatFor = async (userId) => {
+  let c = ok(await sb.from('chats').select('*').eq('kind', 'support').eq('user1', userId).eq('topic', '').maybeSingle());
+  if (!c) c = ok(await sb.from('chats').insert({ kind: 'support', user1: userId, user2: null, topic: '' }).select().single());
+  return c;
+};
+L.dmChat = async (other) => {
+  const me = L.user.id;
+  const rows = ok(await sb.from('chats').select('*').eq('kind', 'dm').or(`and(user1.eq.${me},user2.eq.${other}),and(user1.eq.${other},user2.eq.${me})`));
+  if (rows[0]) return rows[0];
+  return ok(await sb.from('chats').insert({ kind: 'dm', user1: me, user2: other }).select().single());
+};
+L.chat = async (id) => ok(await sb.from('chats').select('*').eq('id', id).maybeSingle());
+L.messages = async (chatId) => ok(await sb.from('messages').select('*').eq('chat_id', chatId).order('created_at', { ascending: true }).limit(500));
+L.send = async (chatId, body, lang) => ok(await sb.from('messages').insert({ chat_id: chatId, sender: L.user.id, body, lang }).select().single());
+L.deleteMessage = async (id) => ok(await sb.from('messages').delete().eq('id', id));
+let chan = null;
+L.onMessage = (cb) => { L.listeners.push(cb); if (chan) return; chan = sb.channel('msgs').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (p) => L.listeners.forEach(f => { try { f(p.new); } catch (e) {} })).subscribe(); };
+
+/* friends & follows */
+L.rel = async () => {
+  const me = L.user.id;
+  const fr = ok(await sb.from('friend_requests').select('*').or(`from_id.eq.${me},to_id.eq.${me}`));
+  const fo = ok(await sb.from('follows').select('*').eq('follower', me));
+  const friends = new Set(), out = new Set(), inc = [];
+  fr.forEach(r => { const o = r.from_id === me ? r.to_id : r.from_id; if (r.status === 'accepted') friends.add(o); else if (r.status === 'pending') { if (r.from_id === me) out.add(o); else inc.push(r); } });
+  L.R = { friends, out, inc, follow: new Set(fo.map(x => x.followee)) };
+  return L.R;
+};
+L.follow = async (id, on) => { if (on) ok(await sb.from('follows').insert({ follower: L.user.id, followee: id })); else ok(await sb.from('follows').delete().eq('follower', L.user.id).eq('followee', id)); };
+L.friendRequest = async (id) => ok(await sb.from('friend_requests').insert({ from_id: L.user.id, to_id: id }));
+L.answerRequest = async (reqId, accept) => ok(await sb.from('friend_requests').update({ status: accept ? 'accepted' : 'declined' }).eq('id', reqId));
+L.counts = async (id) => {
+  const c = (q) => q.then(r => r.count || 0);
+  const [posts, followers, following] = await Promise.all([
+    c(sb.from('mg_posts').select('id', { count: 'exact', head: true }).eq('author', id).eq('type', 'post')),
+    c(sb.from('follows').select('follower', { count: 'exact', head: true }).eq('followee', id)),
+    c(sb.from('follows').select('followee', { count: 'exact', head: true }).eq('follower', id))]);
+  return [posts, followers, following];
+};
+
+/* Magaam */
+const POSTSEL = '*, mg_likes(user_id), mg_comments(count)';
+const norm = (p) => { const me = L.user && L.user.id; return Object.assign(p, { likes: (p.mg_likes || []).length, liked: (p.mg_likes || []).some(x => x.user_id === me), ncm: ((p.mg_comments || [])[0] || {}).count || 0 }); };
+L.posts = async (type, author) => {
+  let q = sb.from('mg_posts').select(POSTSEL).eq('type', type || 'post').order('created_at', { ascending: false }).limit(60);
+  if (author) q = q.eq('author', author);
+  if (type === 'story') q = q.gte('created_at', new Date(Date.now() - 864e5).toISOString());
+  const rows = ok(await q).map(norm); await L.prof(rows.map(r => r.author)); return rows;
+};
+L.post = async (id) => { const p = ok(await sb.from('mg_posts').select(POSTSEL).eq('id', id).maybeSingle()); if (!p) return null; norm(p);
+  p.comments = ok(await sb.from('mg_comments').select('*').eq('post_id', id).order('created_at')); await L.prof([p.author].concat(p.comments.map(c => c.author))); return p; };
+L.createPost = async (f) => ok(await sb.from('mg_posts').insert(Object.assign({ author: L.user.id }, f)).select().single());
+L.like = async (id, on) => { if (on) await sb.from('mg_likes').insert({ post_id: id, user_id: L.user.id }); else await sb.from('mg_likes').delete().eq('post_id', id).eq('user_id', L.user.id); };
+L.comment = async (id, body, lang) => ok(await sb.from('mg_comments').insert({ post_id: id, author: L.user.id, body, lang }).select().single());
+L.report = async (type, id, reason) => ok(await sb.from('reports').insert({ reporter: L.user.id, target_type: type, target_id: String(id), reason: reason || '' }));
+
+/* admin */
+L.reports = async () => { const rows = ok(await sb.from('reports').select('*').order('created_at', { ascending: false }).limit(200)); await L.prof(rows.map(r => r.reporter).concat(rows.filter(r => r.target_type === 'user').map(r => r.target_id))); return rows; };
+L.closeReport = async (id) => ok(await sb.from('reports').update({ status: 'done' }).eq('id', id));
+L.hidePost = async (id, hidden) => ok(await sb.from('mg_posts').update({ hidden }).eq('id', id));
+L.deletePost = async (id) => ok(await sb.from('mg_posts').delete().eq('id', id));
+L.deleteComment = async (id) => ok(await sb.from('mg_comments').delete().eq('id', id));
+L.setFlag = async (uid, f) => { const r = ok(await sb.from('profiles').update(f).eq('id', uid).select().single()); PC[uid] = r; return r; };
+L.warn = async (uid, text, lang) => { const c = await L.supportChatFor(uid); return L.send(c.id, text, lang); };
+
+/* translation (MyMemory, free) */
+const TC = (() => { try { return JSON.parse(localStorage.getItem('nakhlio_tr') || '{}'); } catch (e) { return {}; } })();
+L.translate = async (text, from, to) => {
+  if (!text || !from || !to || from === to) return null;
+  const k = from + '|' + to + '|' + text; if (TC[k]) return TC[k];
+  try {
+    const r = await fetch('https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text.slice(0, 480)) + '&langpair=' + from + '|' + to);
+    const j = await r.json(); const out = j && j.responseData && j.responseData.translatedText;
+    if (out && j.responseStatus === 200) { TC[k] = out; try { localStorage.setItem('nakhlio_tr', JSON.stringify(TC)); } catch (e) {} return out; }
+  } catch (e) {}
+  return null;
+};
+
+window.LIVE = L;
+})();

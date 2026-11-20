@@ -944,3 +944,33 @@ c695|Ini iklan percubaan
 c696|Semua foto, harga dan iklan dalam bahagian ini masih contoh percubaan untuk tinjauan. Tawaran sebenar akan muncul selepas pelancaran.
 c697|Pentadbir
 c698|Magaam hanya berfungsi dalam aplikasi mudah alih Nakhlio. Buka di telefon anda.
+c699|Masukkan e-mel anda dan kami akan menghantar kod. Tiada kata laluan. Tiada siapa melihat e-mel anda.
+c700|Bahasa aplikasi
+c701|Anda akan melihat aplikasi, mesej dan siaran dalam bahasa ini.
+c702|Kami telah menghantar kod ke
+c703|Tukar e-mel
+c704|Tiada e-mel? Semak folder spam.
+c705|Berlaku ralat. Semak sambungan dan cuba lagi dalam seminit.
+c706|Kod salah atau tamat tempoh. Minta kod baharu.
+c707|E-mel ialah log masuk anda dan tidak boleh ditukar.
+c708|Log masuk ke Nakhlio
+c709|Buka dengan Face ID
+c710|Log masuk dengan kod e-mel
+c711|Face ID tidak tersedia. Log masuk dengan kod e-mel.
+c712|Sembang
+c713|Aduan
+c714|Tiada aduan
+c715|Padam
+c716|Selesai
+c717|Sembunyi
+c718|Tunjuk
+c719|Sahkan
+c720|Buang tanda
+c721|Sekat
+c722|Nyahsekat
+c723|Beri amaran
+c724|Teks amaran…
+c725|Amaran dihantar ke sembang
+c726|Akaun anda disekat oleh pentadbir. Anda tidak boleh menyiarkan atau menghantar mesej.
+c727|Belum ada apa-apa. Siarkan foto pertama!
+c728|Fail melebihi 50 MB
