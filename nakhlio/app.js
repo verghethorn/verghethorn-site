@@ -249,7 +249,7 @@ function trCard(x) {
 }
 const SECTIONS = [
   { k: 'housing', ic: 'home', c: 'palm' }, { k: 'transport', ic: 'car', c: 'sky' }, { k: 'services', ic: 'headset', c: 'date' }, { k: 'ads', ic: 'tag', c: 'date' }, { k: 'parcels', ic: 'box', c: 'clay' },
-  { k: 'help', ic: 'hand', c: 'palm' }, { k: 'majlis', ic: 'majlis', c: 'date' }, { k: 'men', ic: 'male', c: 'sky' }, { k: 'women', ic: 'female', c: 'rose' },
+  { k: 'majlis', ic: 'majlis', c: 'date' }, { k: 'men', ic: 'male', c: 'sky' }, { k: 'women', ic: 'female', c: 'rose' },
   { k: 'family', ic: 'family', c: 'clay' }, { k: 'days', ic: 'calendar', c: 'palm' },
 ];
 
@@ -426,14 +426,7 @@ const helpRow = (x) => `<button class="row-card" data-act="go" data-v="item" dat
   <span class="sub" style="margin:0 0 3px;display:block">${esc(catLabel(x.cat, HELPCATS))}</span><span class="ttl" style="display:block">${esc(L(x.title))}</span>
   <span class="sub" style="display:block">${esc(x.seller.name)} · ${esc(x.seller.langs)} · ★ ${nf(x.seller.rating, 1)}</span>
   <span style="display:flex;justify-content:space-between;align-items:center;margin-top:5px"><span class="price">${esc(L(x.price))}</span><span class="sub" style="display:inline-flex;gap:4px;align-items:center;margin:0">${small('chat')}<span class="num">${nf(cCount(x))}</span></span></span></span></button>`;
-V.help = (p) => {
-  const c = p.c || 'all';
-  const items = HELP.filter(x => c === 'all' || x.cat === c);
-  return { tabs: true, html: topbar(t('s_help')) + `<div class="wrap"><p class="note" style="margin-top:0">${t('s_help_d')}</p>
-  ${chipsRow(HELPCATS, c, 'c')}<div class="list" style="margin-top:12px">${items.map(helpRow).join('')}</div>
-  <button class="banner green" style="margin-top:14px;width:100%;text-align:start;border:0;cursor:pointer" data-act="go" data-v="services">${ic('shield')}<div><b>${ST('title')}</b>${ST('to_svc')}</div></button>
-  <button class="btn soft full" style="margin-top:16px" data-act="postad">${ic('plus')}${t('help_post')}</button></div>` };
-};
+V.help = () => V.services();
 const parcelRow = (x) => `<button class="row-card" data-act="go" data-v="item" data-id="${x.id}"><span class="thumb b-${x.kind === 'flying' ? 'date c-date' : 'clay c-clay'}" style="display:flex;align-items:center;justify-content:center">${ic(x.kind === 'flying' ? 'plane' : 'box').replace('<svg', '<svg style="width:30px;height:30px"')}</span><span class="grow">
   <span class="ttl" style="display:block">${esc(x.from)} → ${esc(x.to)}</span>
   <span class="sub num" style="display:block">${new Date(x.date).toLocaleDateString(locale(), { day: 'numeric', month: 'long' })} · ${nf(x.kg, 1)} ${t('kg')}${x.what ? ' · ' + esc(L(x.what)) : ''}</span>
@@ -742,12 +735,12 @@ const ST = (k) => L(SVC_TEXT[k]);
 function svcFind(id) { for (const c of SVC_CATS) { const it = c.items.find(x => x.id === id); if (it) return { cat: c, item: it }; } return null; }
 const svcTile = (c) => `<button class="topic" data-act="go" data-v="scat" data-id="${c.k}"><i class="b-${c.c} c-${c.c}">${ic(c.icon)}</i><span>${esc(L(c.name))}<small class="num">${nf(c.items.length)}</small></span></button>`;
 const svcRow = (c, it) => `<button class="row-card" data-act="go" data-v="svc" data-id="${it.id}"><span class="thumb b-${c.c} c-${c.c}" style="display:flex;align-items:center;justify-content:center">${ic(c.icon).replace('<svg', '<svg style="width:30px;height:30px"')}</span><span class="grow">
-  <span class="sub" style="display:flex;gap:6px;align-items:center;margin:0 0 3px;flex-wrap:wrap">${esc(L(c.name))}<span class="tag green">${small('shield')}${ST('licensed')}</span></span>
+  <span class="sub" style="display:flex;gap:6px;align-items:center;margin:0 0 3px;flex-wrap:wrap">${esc(L(c.name))}<span class="tag green">${small('shield')}${ST(c.vetted ? 'vetted' : 'licensed')}</span></span>
   <span class="ttl" style="display:block">${esc(L(it.title))}</span>
   <span style="display:flex;justify-content:space-between;gap:8px;margin-top:5px"><span class="price">${esc(L(it.price))}</span><span class="sub" style="display:inline-flex;gap:4px;align-items:center;margin:0">${small('clock')}${esc(L(it.time))}</span></span></span></button>`;
 V.services = () => ({ tabs: true, html: topbar(ST('title')) + `<div class="wrap">
   <div class="card svc-hero"><span class="svc-badge">${logo('rgba(255,255,255,.14)')}</span><div><b>${ST('title')}</b><p>${ST('intro')}</p></div></div>
-  <div class="banner" style="margin-top:12px">${ic('hand')}<div>${ST('only')}<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn soft sm" data-act="go" data-v="help">${t('s_help')}</button><button class="btn soft sm" data-act="go" data-v="ads">${t('s_ads')}</button></div></div></div>
+  <div class="banner green" style="margin-top:12px">${ic('shield')}<div>${ST('only')}</div></div>
   <div class="topics" style="margin-top:14px">${SVC_CATS.map(svcTile).join('')}</div>
   <div class="sec"><h3>${ST('popular')}</h3></div>
   <div class="list">${SVC_CATS.map(c => svcRow(c, c.items[0])).join('')}</div></div>` });
@@ -758,7 +751,7 @@ V.svc = (p) => {
   const f = svcFind(p.id); const c = f.cat, it = f.item;
   return { raw: true, cta: `<div class="p"><b class="num">${esc(L(it.price))}</b><small>${esc(L(it.time))}</small></div><button class="btn primary" data-act="sorder" data-v="${it.id}">${ic('send', 'flip')}${ST('order')}</button>`, html: `<div class="item-head svc-head b-${c.c}"><div class="float"><button class="ibtn" data-act="back" aria-label="${t('back')}">${ic('back', 'flip')}</button><span class="fr">${homeBtn()}</span></div><span class="big-ic c-${c.c}">${ic(c.icon)}</span></div>
   <div class="sheetbody wrap">
-    <span class="tag green">${small('shield')}${ST('licensed')}</span>
+    <span class="tag green">${small('shield')}${ST(c.vetted ? 'vetted' : 'licensed')}</span>
     <h2 class="d-title" style="margin-top:8px">${esc(L(it.title))}</h2>
     <div class="d-sub"><span>${small(c.icon)}${esc(L(c.name))}</span><span>${small('clock')}${ST('time')}: ${esc(L(it.time))}</span></div>
     <div class="block"><h4>${ST('includes')}</h4><div class="svc-list">${it.inc.map(x => `<span>${small('check')}${esc(L(x))}</span>`).join('')}</div></div>
@@ -791,7 +784,7 @@ function orderSheet(id) {
 /* chats */
 function listingInfo(id) {
   if (id.startsWith('U:')) return { title: id.slice(2), person: id.slice(2), price: '', agency: '—' };
-  if (id.startsWith('SV-')) { const f = svcFind(id); if (f) return { title: L(f.item.title), svc: f.cat, price: L(f.item.price), agency: ST('licensed') + ' · ' + L(f.cat.name) }; }
+  if (id.startsWith('SV-')) { const f = svcFind(id); if (f) return { title: L(f.item.title), svc: f.cat, price: L(f.item.price), agency: ST(f.cat.vetted ? 'vetted' : 'licensed') + ' · ' + L(f.cat.name) }; }
   const h = HOUSING.find(x => x.id === id); if (h) return { title: L(h.title), photo: h.photos[0], price: money(h.price) + ' ' + termSuffix(h.term), agency: h.agency };
   const x = TRANSPORT.find(v => v.id === id); if (x) return { title: x.model, photo: x.photo, price: money(x.price) + ' ' + termSuffix(x.term, 1), agency: 'Madinah Rent Partners' };
   return { title: id, photo: 'liv8', price: '', agency: '—' };

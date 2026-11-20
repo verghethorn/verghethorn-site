@@ -148,40 +148,7 @@ window.ADS = [
     ] },
 ];
 
-window.HELP = [
-  { id: 'G-901', cat: 'airport', seller: P('Abdullah', 'RU · AR', '2024', 4.9, 'central'),
-    title: D('Встречу в аэропорту и довезу до жилья', 'I’ll meet you at the airport and drive you to your place', 'أستقبلك في المطار وأوصلك إلى السكن'), price: D('150 SAR', '150 SAR', '150 ر.س'),
-    desc: D('Встречаю в Prince Mohammad bin Abdulaziz Airport с табличкой, помогу с SIM-картой и багажом. Машина на 6 мест.', 'I meet you at Prince Mohammad bin Abdulaziz Airport with a sign, help with a SIM card and luggage. 6-seat car.', 'أستقبلك في مطار الأمير محمد بن عبدالعزيز بلوحة باسمك، وأساعد في الشريحة والأمتعة. سيارة 6 مقاعد.'),
-    comments: [{ who: 'Rustam', text: D('Рейс прилетает в 3 ночи — встретите?', 'My flight lands at 3 a.m. — can you meet me?', 'رحلتي تصل الساعة 3 فجراً، هل تستقبلني؟') }, { who: 'Abdullah', to: 'Rustam', text: D('Да, ночью тоже работаю, +30 SAR.', 'Yes, I work nights too, +30 SAR.', 'نعم أعمل ليلاً أيضاً، بزيادة 30 ر.س.') }] },
-  { id: 'G-905', cat: 'airport', seller: P('Imran', 'UR · EN', '2025', 4.8, 'aziziyah'),
-    title: D('Трансфер Медина → Мекка на умру', 'Transfer Medina → Makkah for Umrah', 'توصيل من المدينة إلى مكة للعمرة'), price: D('450 SAR / машина', '450 SAR / car', '450 ر.س / سيارة'),
-    desc: D('Остановка в микате Dhul Hulayfah для ихрама. GMC на 7 человек, вода и детское кресло.', 'Stop at the Dhul Hulayfah miqat for ihram. GMC for 7 people, water and a child seat.', 'توقف عند ميقات ذي الحليفة للإحرام. سيارة GMC لـ 7 أشخاص مع ماء وكرسي أطفال.'),
-    comments: [{ who: 'Siti', text: D('Едем семьёй из 5 человек в четверг утром.', 'We’re a family of 5, going Thursday morning.', 'نحن عائلة من 5 أشخاص، يوم الخميس صباحاً.') }, { who: 'Imran', to: 'Siti', text: D('Отлично, в четверг свободен. Выезд в 6:00?', 'Great, I’m free Thursday. Leave at 6:00?', 'ممتاز، أنا متفرغ الخميس. ننطلق 6 صباحاً؟') }] },
-  { id: 'G-902', cat: 'translate', seller: P('Zarina', 'RU · AR · EN', '2023', 5.0, 'salam'),
-    title: D('Переводчик в больницу, банк, Jawazat', 'Interpreter for hospital, bank, Jawazat', 'مترجمة للمستشفى والبنك والجوازات'), price: D('100 SAR / час', '100 SAR / hour', '100 ر.س / ساعة'),
-    desc: D('Живу в Медине 9 лет. Хожу с вами к врачу, в банк или госучреждение и перевожу на месте.', 'I’ve lived in Medina for 9 years. I go with you to the doctor, bank or government office and interpret on the spot.', 'أعيش في المدينة منذ 9 سنوات. أرافقك إلى الطبيب أو البنك أو الدائرة الحكومية وأترجم مباشرة.'),
-    comments: [{ who: 'Leyla', text: D('Зарина ходила со мной к гинекологу — объяснила всё до мелочей, очень спокойно.', 'Zarina came with me to the gynaecologist — explained everything in detail, very calmly.', 'رافقتني زارينا إلى طبيبة النساء وشرحت كل شيء بهدوء وتفصيل.') }] },
-  { id: 'G-906', cat: 'translate', seller: P('Bilal', 'UR · AR · EN', '2024', 4.7, 'qaswa'),
-    title: D('Переводчик по телефону и видеозвонку', 'Interpreter by phone or video call', 'مترجم عبر الهاتف أو مكالمة الفيديو'), price: D('от 50 SAR', 'from 50 SAR', 'من 50 ر.س'),
-    desc: D('Подключаюсь к вашему звонку с врачом, арендодателем или мастером и перевожу. Урду, арабский, английский.', 'I join your call with a doctor, landlord or repairman and interpret. Urdu, Arabic, English.', 'أنضم إلى مكالمتك مع الطبيب أو المالك أو الفني وأترجم. أردو وعربي وإنجليزي.'),
-    comments: [{ who: 'Hasan', text: D('Помог по телефону договориться с сантехником, спасибо!', 'Helped me sort things out with a plumber over the phone, thank you!', 'ساعدني في التفاهم مع السبّاك عبر الهاتف، شكراً!') }] },
-  { id: 'G-903', cat: 'elderly', seller: P('Muhammad', 'UR · AR · EN', '2023', 4.9, 'central'),
-    title: D('Помощь пожилым родителям на зиярате', 'Help for elderly parents during Ziyarah', 'مساعدة كبار السن في الزيارة'), price: D('200 SAR / день', '200 SAR / day', '200 ر.س / يوم'),
-    desc: D('Сопровождаю в Масджид ан-Набави, Куба и Ухуд, есть кресло-коляска. Подстраиваюсь под время намазов.', 'I accompany them to Masjid an-Nabawi, Quba and Uhud; I have a wheelchair. I plan around prayer times.', 'أرافقهم إلى المسجد النبوي وقباء وأحد، ولدي كرسي متحرك. أرتب الوقت حسب الصلوات.'),
-    comments: [{ who: 'Farida', text: D('Мама в восторге от Мухаммада, очень терпеливый.', 'My mother is delighted with Muhammad — very patient.', 'أمي سعيدة جداً بمحمد، صبور للغاية.') }] },
-  { id: 'G-907', cat: 'elderly', seller: P('Aisha', 'AR · EN', '2025', 4.8, 'rayah'),
-    title: D('Сиделка для пожилой женщины на дому', 'Home carer for an elderly woman', 'مرافقة منزلية لامرأة مسنّة'), price: D('150 SAR / день', '150 SAR / day', '150 ر.س / يوم'),
-    desc: D('Медсестра по образованию. Помогу с лекарствами по расписанию врача, прогулками и бытом.', 'Nurse by training. I help with medication on the doctor’s schedule, walks and daily tasks.', 'ممرضة بالتخصص. أساعد في مواعيد الأدوية حسب الطبيب والمشي والأعمال اليومية.'),
-    comments: [{ who: 'Olga', text: D('Работаете с ночёвкой?', 'Do you do overnight stays?', 'هل تعملين مع المبيت؟') }, { who: 'Aisha', to: 'Olga', text: D('Да, по договорённости.', 'Yes, by arrangement.', 'نعم، بالاتفاق.') }] },
-  { id: 'G-904', cat: 'tours', seller: P('Ahmad', 'ID · AR', '2024', 4.9, 'fath'),
-    title: D('Покажу районы перед арендой жилья', 'I’ll show you districts before you rent', 'أعرّفك على الأحياء قبل الاستئجار'), price: D('120 SAR', '120 SAR', '120 ر.س'),
-    desc: D('За 3 часа объедем 4–5 районов, покажу магазины, школы и мечети рядом. Помогает понять, где удобнее жить.', 'In 3 hours we’ll drive around 4–5 districts and I’ll show nearby shops, schools and mosques. Helps you see where it’s easier to live.', 'خلال 3 ساعات نزور 4–5 أحياء وأريك المحلات والمدارس والمساجد القريبة، لتعرف أين الأنسب لك.'),
-    comments: [{ who: 'Denis', text: D('После поездки сразу выбрали Al Rayah — тихо и рядом школа.', 'After the tour we chose Al Rayah right away — quiet and a school nearby.', 'بعد الجولة اخترنا Al Rayah مباشرة، هادئ وقريب من المدرسة.') }] },
-  { id: 'G-908', cat: 'tours', seller: P('Yusuf', 'RU · AR', '2023', 5.0, 'central'),
-    title: D('Исторические места Медины с рассказом', 'Historic sites of Medina with a guide', 'المعالم التاريخية في المدينة مع مرشد'), price: D('100 SAR / человек', '100 SAR / person', '100 ر.س / شخص'),
-    desc: D('Ухуд, Куба, Масджид аль-Киблатайн, ров Хандак. Рассказываю сиру на русском, группы до 8 человек.', 'Uhud, Quba, Masjid al-Qiblatayn, the Trench. I tell the Seerah in Russian, groups up to 8.', 'أحد وقباء ومسجد القبلتين والخندق. أروي السيرة بالروسية لمجموعات حتى 8 أشخاص.'),
-    comments: [{ who: 'Ruslan', text: D('Были с детьми — слушали с открытым ртом. Джазакаллаху хайран!', 'We went with the kids — they listened open-mouthed. JazakAllahu khayran!', 'ذهبنا مع الأطفال وكانوا منبهرين. جزاك الله خيراً!') }] },
-];
+window.HELP = [];
 
 window.PARCELS = [
   { id: 'P-801', kind: 'flying', from: 'Medina', to: 'Moscow', date: '2026-12-02', kg: 3, seller: P('Rustam', 'RU', '2024', 4.8, 'aziziyah'),

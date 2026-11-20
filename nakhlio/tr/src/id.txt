@@ -252,7 +252,7 @@ u:guest_d|Lihat-lihat dengan bebas. Buat profil untuk menulis pesan, berkomentar
 u:chats_guest|Pesan Anda akan muncul di sini setelah membuat profil.
 u:spaces_guest|Ruang ini khusus anggota. Buat profil untuk bergabung.
 u:s_services|Layanan Nakhlio
-u:s_services_d|Dokumen, visa, bisnis, asuransi
+u:s_services_d|Penerjemah, antar-jemput, dokumen, visa
 c0|Wi-Fi
 c1|AC
 c2|Air
@@ -781,3 +781,26 @@ c534|Terjemahan tersumpah, iqama, visa, asuransi — ini ditangani mitra berlise
 c535|Penerjemah lewat telepon atau panggilan video
 c536|Saya ikut dalam panggilan Anda dengan dokter, pemilik rumah, atau tukang dan menerjemahkan. Urdu, Arab, Inggris.
 c537|Membantu saya berbicara dengan tukang ledeng lewat telepon, terima kasih!
+c538|Penerjemah & pendampingan
+c539|dengan janji temu
+c540|Penerjemah ikut bersama Anda
+c541|Rusia, Urdu, Inggris, Arab
+c542|Diverifikasi Nakhlio
+c543|Alamat dan waktu pertemuan
+c544|Panggilan bertiga atau video
+c545|Waktu panggilan
+c546|Kursi roda
+c547|Jadwal sesuai waktu salat
+c548|Tanggal dan tempat yang dikunjungi
+c549|Perawat terlatih
+c550|Obat sesuai jadwal dokter
+c551|Resep dokter
+c552|Tur lingkungan sebelum menyewa
+c553|3 jam
+c554|4–5 lingkungan
+c555|Toko, sekolah, dan masjid terdekat
+c556|Anggaran dan jumlah anggota keluarga
+c557|Uhud, Quba, Qiblatain, Khandaq
+c558|Sirah dalam bahasa Anda
+c559|Penerjemah, antar-jemput, dokumen, visa
+c560|Semua layanan melalui mitra Nakhlio yang terverifikasi dan berlisensi. Perorangan tidak menawarkan layanan ini di sini. Nakhlio menjaga kualitas dan menangani setiap keluhan.

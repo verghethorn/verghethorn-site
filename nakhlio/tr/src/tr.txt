@@ -252,7 +252,7 @@ u:guest_d|Serbestçe gezinin. Mesaj yazmak, yorum yapmak ve ilan vermek için pr
 u:chats_guest|Profil oluşturduktan sonra mesajlarınız burada görünecek.
 u:spaces_guest|Bu alan sadece üyeler içindir. Katılmak için profil oluşturun.
 u:s_services|Nakhlio Hizmetleri
-u:s_services_d|Belgeler, vizeler, iş, sigorta
+u:s_services_d|Tercümanlar, transferler, belgeler, vizeler
 c0|Wi-Fi
 c1|Klima
 c2|Su
@@ -781,3 +781,26 @@ c534|Onaylı tercüme, ikame, vize, sigorta — bunları Nakhlio Hizmetleri’nd
 c535|Telefon veya görüntülü aramada tercüman
 c536|Doktor, ev sahibi veya ustayla görüşmenize katılıp tercüme ederim. Urduca, Arapça, İngilizce.
 c537|Telefonda tesisatçıyla anlaşmama yardım etti, teşekkürler!
+c538|Tercüman ve refakat
+c539|randevuyla
+c540|Tercüman sizinle birlikte gelir
+c541|Rusça, Urduca, İngilizce, Arapça
+c542|Nakhlio tarafından doğrulandı
+c543|Görüşmenin adresi ve saati
+c544|Üçlü arama veya görüntülü arama
+c545|Arama saati
+c546|Tekerlekli sandalye
+c547|Namaz vakitlerine göre plan
+c548|Tarihler ve ziyaret edilecek yerler
+c549|Eğitimli hemşire
+c550|İlaçlar doktorun planına göre
+c551|Doktor reçeteleri
+c552|Kiralamadan önce semt turu
+c553|3 saat
+c554|4–5 semt
+c555|Yakındaki marketler, okullar ve camiler
+c556|Bütçe ve aile büyüklüğü
+c557|Uhud, Kuba, Kıbleteyn, Hendek
+c558|Siyer sizin dilinizde
+c559|Tercümanlar, transferler, belgeler, vizeler
+c560|Tüm hizmetler doğrulanmış ve lisanslı Nakhlio ortakları üzerinden verilir. Bu hizmetleri burada bireyler sunmaz. Nakhlio kaliteyi takip eder ve her şikâyeti ele alır.

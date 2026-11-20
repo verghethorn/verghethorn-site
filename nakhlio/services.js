@@ -5,6 +5,42 @@ const D = (ru, en, ar) => ({ ru, en, ar });
 const S = (id, title, price, time, inc, need) => ({ id, title, price, time, inc, need });
 
 window.SVC_CATS = [
+  { k: 'escort', icon: 'translate', c: 'sky', vetted: true, name: D('Переводчики и сопровождение', 'Interpreters & escort', 'مترجمون ومرافقة'),
+    items: [
+      S('SV-901', D('Переводчик в больницу, банк, Jawazat', 'Interpreter for hospital, bank, Jawazat', 'مترجمة للمستشفى والبنك والجوازات'), D('100 SAR / час', '100 SAR / hour', '100 ر.س / ساعة'), D('по записи', 'by appointment', 'بموعد'),
+        [D('Переводчик идёт вместе с вами', 'The interpreter goes with you', 'يرافقك المترجم'), D('Русский, урду, английский, арабский', 'Russian, Urdu, English, Arabic', 'الروسية والأردية والإنجليزية والعربية'), D('Проверен Nakhlio', 'Vetted by Nakhlio', 'موثّق من نخليو')],
+        [D('Адрес и время встречи', 'Address and time of the meeting', 'العنوان وموعد اللقاء')]),
+      S('SV-902', D('Переводчик по телефону и видеозвонку', 'Interpreter by phone or video call', 'مترجم عبر الهاتف أو مكالمة الفيديو'), D('от 50 SAR', 'from 50 SAR', 'من 50 ر.س'), D('в тот же день', 'same day', 'في نفس اليوم'),
+        [D('Звонок втроём или видеосвязь', 'Three-way call or video call', 'مكالمة ثلاثية أو فيديو'), D('Русский, урду, английский, арабский', 'Russian, Urdu, English, Arabic', 'الروسية والأردية والإنجليزية والعربية'), D('Проверен Nakhlio', 'Vetted by Nakhlio', 'موثّق من نخليو')],
+        [D('Время звонка', 'Time of the call', 'موعد المكالمة')]),
+    ] },
+  { k: 'elderly', icon: 'hand', c: 'rose', vetted: true, name: D('Помощь пожилым', 'Help for elderly', 'مساعدة كبار السن'),
+    items: [
+      S('SV-903', D('Помощь пожилым родителям в зияре', 'Help for elderly parents during Ziyarah', 'مساعدة الوالدين كبار السن أثناء الزيارة'), D('200 SAR / день', '200 SAR / day', '200 ر.س / يوم'), D('по записи', 'by appointment', 'بموعد'),
+        [D('Инвалидная коляска', 'Wheelchair', 'كرسي متحرك'), D('План по времени намаза', 'Plan around prayer times', 'جدول حسب أوقات الصلاة'), D('Проверен Nakhlio', 'Vetted by Nakhlio', 'موثّق من نخليو')],
+        [D('Даты и места для посещения', 'Dates and places to visit', 'التواريخ والأماكن المراد زيارتها')]),
+      S('SV-904', D('Сиделка на дому для пожилой женщины', 'Home carer for an elderly woman', 'مرافقة منزلية لسيدة مسنّة'), D('150 SAR / день', '150 SAR / day', '150 ر.س / يوم'), D('по записи', 'by appointment', 'بموعد'),
+        [D('Обученная медсестра', 'Trained nurse', 'ممرضة مدرّبة'), D('Лекарства по схеме врача', 'Medicines on the doctor’s schedule', 'الأدوية حسب جدول الطبيب'), D('Проверен Nakhlio', 'Vetted by Nakhlio', 'موثّق من نخليو')],
+        [D('Адрес', 'Address', 'العنوان'), D('Назначения врача', 'Doctor’s prescriptions', 'وصفات الطبيب')]),
+    ] },
+  { k: 'tours', icon: 'pin', c: 'palm', vetted: true, name: D('Экскурсии по городу', 'City tours', 'جولات في المدينة'),
+    items: [
+      S('SV-1001', D('Обзор районов перед арендой', 'Tour of districts before renting', 'جولة في الأحياء قبل الاستئجار'), D('120 SAR', '120 SAR', '120 ر.س'), D('3 часа', '3 hours', '3 ساعات'),
+        [D('4–5 районов', '4–5 districts', '4–5 أحياء'), D('Магазины, школы и мечети рядом', 'Shops, schools and mosques nearby', 'المتاجر والمدارس والمساجد القريبة'), D('Проверен Nakhlio', 'Vetted by Nakhlio', 'موثّق من نخليو')],
+        [D('Бюджет и состав семьи', 'Budget and family size', 'الميزانية وعدد أفراد الأسرة')]),
+      S('SV-1002', D('Исторические места Медины с гидом', 'Historic sites of Medina with a guide', 'معالم المدينة التاريخية مع مرشد'), D('100 SAR / человек', '100 SAR / person', '100 ر.س / للشخص'), D('3 часа', '3 hours', '3 ساعات'),
+        [D('Ухуд, Куба, Кыблатайн, Хандак', 'Uhud, Quba, Qiblatain, Khandaq', 'أحد وقباء والقبلتين والخندق'), D('Сира на вашем языке', 'Seerah in your language', 'السيرة بلغتك'), D('Проверен Nakhlio', 'Vetted by Nakhlio', 'موثّق من نخليو')],
+        [D('Даты поездки и число человек', 'Dates and number of people', 'التواريخ وعدد الأشخاص')]),
+    ] },
+  { k: 'travel', icon: 'plane', c: 'date', name: D('Трансферы и умра', 'Transfers & Umrah', 'التوصيل والعمرة'),
+    items: [
+      S('SV-601', D('Встреча в аэропорту Медины', 'Medina airport pick-up', 'الاستقبال في مطار المدينة'), D('от 150 SAR', 'from 150 SAR', 'من 150 ر.س'), D('24/7', '24/7', '24/7'),
+        [D('Водитель с табличкой', 'Driver with a name sign', 'سائق بلوحة باسمك'), D('Помощь с багажом', 'Help with luggage', 'المساعدة بالأمتعة'), D('Машина до 7 мест', 'Car up to 7 seats', 'سيارة حتى 7 مقاعد')],
+        [D('Номер рейса', 'Flight number', 'رقم الرحلة')]),
+      S('SV-602', D('Поездка на умру: Медина → Мекка', 'Umrah trip: Medina → Makkah', 'رحلة العمرة: المدينة ← مكة'), D('от 450 SAR / машина', 'from 450 SAR / car', 'من 450 ر.س / سيارة'), D('в любой день', 'any day', 'أي يوم'),
+        [D('Остановка в микате Dhul Hulayfah', 'Stop at the Dhul Hulayfah miqat', 'التوقف في ميقات ذي الحليفة'), D('Лицензированный перевозчик', 'Licensed carrier', 'ناقل مرخّص'), D('Обратная дорога по желанию', 'Return trip on request', 'العودة حسب الطلب')],
+        [D('Даты поездки и число человек', 'Dates and number of people', 'التواريخ وعدد الأشخاص')]),
+    ] },
   { k: 'docs', icon: 'contract', c: 'palm', name: D('Документы и переводы', 'Documents & translation', 'المستندات والترجمة'),
     items: [
       S('SV-101', D('Перевод диплома или аттестата с заверением', 'Certified translation of a diploma or certificate', 'ترجمة معتمدة للشهادة الدراسية'), D('от 150 SAR', 'from 150 SAR', 'من 150 ر.س'), D('2–3 дня', '2–3 days', '2–3 أيام'),
@@ -77,9 +113,9 @@ window.SVC_CATS = [
 ];
 window.SVC_TEXT = {
   title: D('Услуги Nakhlio', 'Nakhlio Services', 'خدمات نخليو'),
-  sub: D('Документы, визы, бизнес, страховка', 'Documents, visas, business, insurance', 'مستندات، تأشيرات، أعمال، تأمين'),
-  only: D('Здесь только то, что оформляется официально через лицензированных партнёров. Трансфер, переводчика, переезд, уборку и уроки предлагают участники — в разделах «Сопровождение» и «Объявления».', 'Only official paperwork handled by licensed partners is here. Transfers, interpreters, moving, cleaning and lessons are offered by members in Help and Classifieds.', 'هنا فقط ما يُنجز رسمياً عبر شركاء مرخّصين. التوصيل والمترجمون والنقل والتنظيف والدروس يقدّمها الأعضاء في قسمي «المساعدة» و«الإعلانات».'),
-  to_svc: D('Перевод с печатью, иqама, визы, страховка — это оформляют лицензированные партнёры в «Услугах Nakhlio».', 'Certified translation, Iqama, visas, insurance — these are handled by licensed partners in Nakhlio Services.', 'الترجمة المعتمدة والإقامة والتأشيرات والتأمين يتولاها شركاء مرخّصون في «خدمات نخليو».'),
+  sub: D('Переводчики, трансферы, документы, визы', 'Interpreters, transfers, documents, visas', 'مترجمون، توصيل، مستندات، تأشيرات'),
+  vetted: D('Проверен Nakhlio', 'Vetted by Nakhlio', 'موثّق من نخليو'),
+  only: D('Все услуги — через проверенных и лицензированных партнёров Nakhlio. Частные лица такие услуги здесь не предлагают. Nakhlio следит за качеством и разбирает каждую жалобу.', 'All services go through vetted and licensed Nakhlio partners. Private individuals do not offer these services here. Nakhlio watches the quality and handles every complaint.', 'كل الخدمات عبر شركاء نخليو الموثّقين والمرخّصين، ولا يقدّمها أفراد هنا. تتابع نخليو الجودة وتعالج كل شكوى.'),
   intro: D('Услуги наших партнёров. Вы оставляете заявку — сотрудник Nakhlio связывается с вами и ведёт дело до конца.', 'Services from our partners. You send a request — a Nakhlio team member contacts you and handles it to the end.', 'خدمات شركائنا. ترسل طلبك ويتواصل معك موظف نخليو ويتابع حتى النهاية.'),
   licensed: D('Лицензированный партнёр', 'Licensed partner', 'شريك مرخّص'),
   how: D('Как это работает', 'How it works', 'كيف تعمل الخدمة'),

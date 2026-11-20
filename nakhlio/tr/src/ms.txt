@@ -252,7 +252,7 @@ u:guest_d|Layari dengan bebas. Cipta profil untuk menulis mesej, memberi komen d
 u:chats_guest|Mesej anda akan muncul di sini selepas anda mencipta profil.
 u:spaces_guest|Ruang ini khas untuk ahli. Cipta profil untuk menyertai.
 u:s_services|Perkhidmatan Nakhlio
-u:s_services_d|Dokumen, visa, perniagaan, insurans
+u:s_services_d|Jurubahasa, pemindahan, dokumen, visa
 c0|Wi-Fi
 c1|Penghawa dingin
 c2|Air
@@ -781,3 +781,26 @@ c534|Terjemahan disahkan, iqama, visa, insurans — ini dikendalikan rakan kongs
 c535|Jurubahasa melalui telefon atau panggilan video
 c536|Saya menyertai panggilan anda dengan doktor, pemilik rumah atau tukang dan menterjemah. Urdu, Arab, Inggeris.
 c537|Membantu saya berurusan dengan tukang paip melalui telefon, terima kasih!
+c538|Jurubahasa & pengiring
+c539|melalui temujanji
+c540|Jurubahasa pergi bersama anda
+c541|Rusia, Urdu, Inggeris, Arab
+c542|Disahkan oleh Nakhlio
+c543|Alamat dan masa pertemuan
+c544|Panggilan tiga pihak atau video
+c545|Masa panggilan
+c546|Kerusi roda
+c547|Jadual mengikut waktu solat
+c548|Tarikh dan tempat untuk dilawati
+c549|Jururawat terlatih
+c550|Ubat mengikut jadual doktor
+c551|Preskripsi doktor
+c552|Lawatan kawasan sebelum menyewa
+c553|3 jam
+c554|4–5 kawasan
+c555|Kedai, sekolah dan masjid berdekatan
+c556|Bajet dan saiz keluarga
+c557|Uhud, Quba, Qiblatain, Khandaq
+c558|Sirah dalam bahasa anda
+c559|Jurubahasa, pemindahan, dokumen, visa
+c560|Semua perkhidmatan melalui rakan kongsi Nakhlio yang disahkan dan berlesen. Individu tidak menawarkan perkhidmatan ini di sini. Nakhlio memantau kualiti dan menangani setiap aduan.

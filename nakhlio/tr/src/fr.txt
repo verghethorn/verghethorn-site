@@ -252,7 +252,7 @@ u:guest_d|Parcourez librement. Créez un profil pour écrire, commenter et publi
 u:chats_guest|Vos messages apparaîtront ici après la création de votre profil.
 u:spaces_guest|Cet espace est réservé aux membres. Créez un profil pour entrer.
 u:s_services|Services Nakhlio
-u:s_services_d|Documents, visas, entreprise, assurance
+u:s_services_d|Interprètes, transferts, documents, visas
 c0|Wi-Fi
 c1|Climatisation
 c2|Eau
@@ -781,3 +781,26 @@ c534|Traduction certifiée, Iqama, visas, assurance — ces démarches sont assu
 c535|Interprète par téléphone ou appel vidéo
 c536|Je rejoins votre appel avec un médecin, un propriétaire ou un artisan et je traduis. Ourdou, arabe, anglais.
 c537|Il m’a aidé à m’entendre avec un plombier au téléphone, merci !
+c538|Interprètes et accompagnement
+c539|sur rendez-vous
+c540|L’interprète vous accompagne
+c541|Russe, ourdou, anglais, arabe
+c542|Vérifié par Nakhlio
+c543|Adresse et heure du rendez-vous
+c544|Appel à trois ou appel vidéo
+c545|Heure de l’appel
+c546|Fauteuil roulant
+c547|Programme selon les heures de prière
+c548|Dates et lieux à visiter
+c549|Infirmière formée
+c550|Médicaments selon le schéma du médecin
+c551|Ordonnances du médecin
+c552|Visite des quartiers avant de louer
+c553|3 heures
+c554|4–5 quartiers
+c555|Magasins, écoles et mosquées à proximité
+c556|Budget et taille de la famille
+c557|Uhud, Quba, Qiblatain, Khandaq
+c558|La Sîra dans votre langue
+c559|Interprètes, transferts, documents, visas
+c560|Tous les services passent par des partenaires Nakhlio vérifiés et agréés. Les particuliers ne proposent pas ces services ici. Nakhlio veille à la qualité et traite chaque réclamation.
