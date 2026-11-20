@@ -171,16 +171,16 @@ window.HELP = [
 window.TOPICS = ['iqama', 'bank', 'sim', 'insurance', 'licence', 'ejar', 'travel', 'study', 'places', 'doctors'];
 window.POSTS = {
   iqama: [
-    { q: true, who: 'Saeed · 2026-10', text: D('Как проверить, готова ли иqама после продления?', 'How do I check if my Iqama is ready after renewal?', 'كيف أتحقق من جاهزية الإقامة بعد التجديد؟'), helped: 18,
-      a: [{ who: 'Murad · 2026-10', text: D('Через приложение Absher: «Мои услуги» → «Паспорта» → «Продление иqамы». У меня статус обновился через 2 дня.', 'In the Absher app: “My services” → “Passports” → “Iqama renewal”. My status updated after 2 days.', 'من تطبيق أبشر: «خدماتي» ← «الجوازات» ← «تجديد الإقامة». تحدثت الحالة عندي بعد يومين.'), helped: 24 }] },
-    { q: false, who: 'Olga · 2026-09', text: D('Мой опыт: регистрировалась в Absher в отделении Jawazat у вокзала. Взяла паспорт и иqаму, очередь 40 минут, всё сделали в тот же день.', 'My experience: I registered for Absher at the Jawazat office near the station. Took my passport and Iqama, 40 minutes of queue, done the same day.', 'تجربتي: سجّلت في أبشر في مكتب الجوازات قرب المحطة. أحضرت الجواز والإقامة، انتظرت 40 دقيقة وتم كل شيء في نفس اليوم.'), helped: 31 },
+    { q: true, who: 'Saeed · 2026-10', text: D('Как проверить, готова ли икама после продления?', 'How do I check if my Iqama is ready after renewal?', 'كيف أتحقق من جاهزية الإقامة بعد التجديد؟'), helped: 18,
+      a: [{ who: 'Murad · 2026-10', text: D('Через приложение Absher: «Мои услуги» → «Паспорта» → «Продление икамы». У меня статус обновился через 2 дня.', 'In the Absher app: “My services” → “Passports” → “Iqama renewal”. My status updated after 2 days.', 'من تطبيق أبشر: «خدماتي» ← «الجوازات» ← «تجديد الإقامة». تحدثت الحالة عندي بعد يومين.'), helped: 24 }] },
+    { q: false, who: 'Olga · 2026-09', text: D('Мой опыт: регистрировалась в Absher в отделении Jawazat у вокзала. Взяла паспорт и икаму, очередь 40 минут, всё сделали в тот же день.', 'My experience: I registered for Absher at the Jawazat office near the station. Took my passport and Iqama, 40 minutes of queue, done the same day.', 'تجربتي: سجّلت في أبشر في مكتب الجوازات قرب المحطة. أحضرت الجواز والإقامة، انتظرت 40 دقيقة وتم كل شيء في نفس اليوم.'), helped: 31 },
   ],
   bank: [
-    { q: true, who: 'Hasan · 2026-11', text: D('Какой банк быстрее всего открывает счёт по новой иqаме?', 'Which bank opens an account fastest with a new Iqama?', 'أي بنك يفتح الحساب بسرعة بإقامة جديدة؟'), helped: 12,
+    { q: true, who: 'Hasan · 2026-11', text: D('Какой банк быстрее всего открывает счёт по новой икаме?', 'Which bank opens an account fastest with a new Iqama?', 'أي بنك يفتح الحساب بسرعة بإقامة جديدة؟'), helped: 12,
       a: [{ who: 'Daniyar · 2026-11', text: D('Открывал онлайн через приложение банка за 20 минут, карту привезли домой через 3 дня. Нужен активный Absher.', 'I opened it online in the bank’s app in 20 minutes, the card was delivered in 3 days. You need an active Absher.', 'فتحته عبر تطبيق البنك خلال 20 دقيقة ووصلتني البطاقة بعد 3 أيام. تحتاج حساب أبشر مفعّل.'), helped: 19 }] },
   ],
   sim: [
-    { q: false, who: 'Ayesha · 2026-08', text: D('SIM-карту купила прямо в аэропорту Медины, нужен только паспорт. Потом перерегистрировала на иqаму в салоне за 5 минут.', 'I bought a SIM card right at Medina airport, only a passport needed. Later re-registered it to my Iqama in a store in 5 minutes.', 'اشتريت الشريحة من مطار المدينة مباشرة، تحتاج الجواز فقط. ثم نقلتها على الإقامة في المحل خلال 5 دقائق.'), helped: 22 },
+    { q: false, who: 'Ayesha · 2026-08', text: D('SIM-карту купила прямо в аэропорту Медины, нужен только паспорт. Потом перерегистрировала на икаму в салоне за 5 минут.', 'I bought a SIM card right at Medina airport, only a passport needed. Later re-registered it to my Iqama in a store in 5 minutes.', 'اشتريت الشريحة من مطار المدينة مباشرة، تحتاج الجواز فقط. ثم نقلتها على الإقامة في المحل خلال 5 دقائق.'), helped: 22 },
   ],
   study: [
     { q: true, who: 'Abdurahman · 2026-10', text: D('Кто поступал в Исламский университет? Сколько ждали ответа?', 'Who applied to the Islamic University? How long did you wait for an answer?', 'من التحق بالجامعة الإسلامية؟ كم انتظرتم الرد؟'), helped: 9,

@@ -128,24 +128,24 @@ const E = (who, date, text, helped, a) => ({ q: false, who, date, text, helped, 
 const A = (who, date, text, helped, to) => ({ who, date, text, helped, to });
 window.POSTS = {
   iqama: [
-    Q('Saeed', '2026-10', D('Как проверить, готова ли иqама после продления?', 'How do I check if my Iqama is ready after renewal?', 'كيف أتحقق من جاهزية الإقامة بعد التجديد؟'), 18, [
-      A('Murad', '2026-10', D('В Absher: «Мои услуги» → «Паспорта» → «Продление иqамы». У меня статус обновился через 2 дня.', 'In Absher: “My services” → “Passports” → “Iqama renewal”. My status updated after 2 days.', 'في أبشر: «خدماتي» ← «الجوازات» ← «تجديد الإقامة». تحدثت الحالة عندي بعد يومين.'), 24),
+    Q('Saeed', '2026-10', D('Как проверить, готова ли икама после продления?', 'How do I check if my Iqama is ready after renewal?', 'كيف أتحقق من جاهزية الإقامة بعد التجديد؟'), 18, [
+      A('Murad', '2026-10', D('В Absher: «Мои услуги» → «Паспорта» → «Продление икамы». У меня статус обновился через 2 дня.', 'In Absher: “My services” → “Passports” → “Iqama renewal”. My status updated after 2 days.', 'في أبشر: «خدماتي» ← «الجوازات» ← «تجديد الإقامة». تحدثت الحالة عندي بعد يومين.'), 24),
       A('Saeed', '2026-10', D('Спасибо, брат, нашёл!', 'Thanks brother, found it!', 'شكراً أخي، وجدتها!'), 2, 'Murad')]),
-    E('Olga', '2026-09', D('Мой опыт: регистрировалась в Absher в отделении Jawazat у вокзала. Взяла паспорт и иqаму, очередь 40 минут, всё сделали в тот же день.', 'My experience: I registered for Absher at the Jawazat office near the station. Passport and Iqama, 40 minutes in the queue, done the same day.', 'تجربتي: سجّلت في أبشر في مكتب الجوازات قرب المحطة. أحضرت الجواز والإقامة، وانتظرت 40 دقيقة، وتم كل شيء في نفس اليوم.'), 31, [
+    E('Olga', '2026-09', D('Мой опыт: регистрировалась в Absher в отделении Jawazat у вокзала. Взяла паспорт и икаму, очередь 40 минут, всё сделали в тот же день.', 'My experience: I registered for Absher at the Jawazat office near the station. Passport and Iqama, 40 minutes in the queue, done the same day.', 'تجربتي: سجّلت في أبشر في مكتب الجوازات قرب المحطة. أحضرت الجواز والإقامة، وانتظرت 40 دقيقة، وتم كل شيء في نفس اليوم.'), 31, [
       A('Kamila', '2026-09', D('А для жены отдельно идти или с мужем?', 'Does the wife go separately or with her husband?', 'هل تذهب الزوجة وحدها أم مع زوجها؟'), 3),
-      A('Olga', '2026-09', D('Я ходила с мужем, его тоже попросили показать иqаму.', 'I went with my husband — they asked to see his Iqama too.', 'ذهبت مع زوجي وطلبوا إقامته أيضاً.'), 5, 'Kamila')]),
+      A('Olga', '2026-09', D('Я ходила с мужем, его тоже попросили показать икаму.', 'I went with my husband — they asked to see his Iqama too.', 'ذهبت مع زوجي وطلبوا إقامته أيضاً.'), 5, 'Kamila')]),
   ],
   bank: [
-    Q('Hasan', '2026-11', D('Какой банк быстрее всего открывает счёт по новой иqаме?', 'Which bank opens an account fastest with a new Iqama?', 'أي بنك يفتح الحساب بسرعة بإقامة جديدة؟'), 12, [
+    Q('Hasan', '2026-11', D('Какой банк быстрее всего открывает счёт по новой икаме?', 'Which bank opens an account fastest with a new Iqama?', 'أي بنك يفتح الحساب بسرعة بإقامة جديدة؟'), 12, [
       A('Daniyar', '2026-11', D('Открывал онлайн в приложении банка за 20 минут, карту привезли через 3 дня. Нужен активный Absher.', 'Opened it online in the bank’s app in 20 minutes, card delivered in 3 days. You need an active Absher.', 'فتحته عبر تطبيق البنك في 20 دقيقة ووصلتني البطاقة بعد 3 أيام. تحتاج حساب أبشر مفعّل.'), 19),
       A('Imran', '2026-11', D('У меня онлайн не прошло из-за имени латиницей — сходил в отделение, сделали за час.', 'Online didn’t work for me because of the Latin spelling of my name — went to a branch, done in an hour.', 'ما نجح معي أونلاين بسبب كتابة الاسم بالإنجليزي، فذهبت للفرع وانتهى خلال ساعة.'), 7)]),
     E('Leyla', '2026-10', D('Совет: сразу подключите Apple Pay / mada Pay — почти везде платят телефоном, наличные почти не нужны.', 'Tip: set up Apple Pay / mada Pay right away — phones are accepted almost everywhere, you barely need cash.', 'نصيحة: فعّل Apple Pay أو مدى باي مباشرة، الدفع بالجوال في كل مكان تقريباً.'), 15),
   ],
   sim: [
-    E('Ayesha', '2026-08', D('SIM-карту купила прямо в аэропорту Медины по паспорту. Потом перерегистрировала на иqаму в салоне за 5 минут.', 'Bought a SIM right at Medina airport with my passport. Later re-registered it to my Iqama in a store in 5 minutes.', 'اشتريت الشريحة من مطار المدينة بالجواز، ثم نقلتها على الإقامة في المحل خلال 5 دقائق.'), 22, [
+    E('Ayesha', '2026-08', D('SIM-карту купила прямо в аэропорту Медины по паспорту. Потом перерегистрировала на икаму в салоне за 5 минут.', 'Bought a SIM right at Medina airport with my passport. Later re-registered it to my Iqama in a store in 5 minutes.', 'اشتريت الشريحة من مطار المدينة بالجواز، ثم نقلتها على الإقامة في المحل خلال 5 دقائق.'), 22, [
       A('Rustam', '2026-08', D('Какой тариф брали?', 'Which plan did you get?', 'أي باقة أخذتِ؟'), 1),
       A('Ayesha', '2026-08', D('Предоплата на месяц с безлимитным интернетом, около 100 SAR.', 'Prepaid monthly with unlimited data, around 100 SAR.', 'مسبقة الدفع شهرية بإنترنت غير محدود، حوالي 100 ر.س.'), 6, 'Rustam')]),
-    Q('Ruslan', '2026-11', D('Можно ли оформить eSIM на иqаму без похода в салон?', 'Can I get an eSIM on my Iqama without going to a store?', 'هل يمكن استخراج eSIM بالإقامة بدون زيارة المحل؟'), 8, [
+    Q('Ruslan', '2026-11', D('Можно ли оформить eSIM на икаму без похода в салон?', 'Can I get an eSIM on my Iqama without going to a store?', 'هل يمكن استخراج eSIM بالإقامة بدون زيارة المحل؟'), 8, [
       A('Daniyar', '2026-11', D('Да, через приложение оператора с подтверждением через Nafath, у меня заняло 10 минут.', 'Yes, via the operator’s app with Nafath verification — took me 10 minutes.', 'نعم، عبر تطبيق المشغل مع التحقق بنفاذ، أخذ مني 10 دقائق.'), 11)]),
   ],
   insurance: [

@@ -28,6 +28,9 @@ const dir = () => (LANGS.find(l => l.code === lang) || {}).dir || 'ltr';
 const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const locale = () => ({ ar: 'ar-SA', fa: 'fa-IR', ur: 'ur-PK', ru: 'ru-RU', tr: 'tr-TR', fr: 'fr-FR', id: 'id-ID', ms: 'ms-MY', bn: 'bn-BD', hi: 'hi-IN' }[lang] || 'en-US');
 const nf = (n, d) => new Intl.NumberFormat(locale(), { maximumFractionDigits: d == null ? 0 : d }).format(n);
+const nfy = (n) => new Intl.NumberFormat(locale(), { useGrouping: false }).format(n);
+const PLF = { ru: { results: ['объявление', 'объявления', 'объявлений'], answers: ['ответ', 'ответа', 'ответов'], members: ['участник', 'участника', 'участников'] }, en: { results: ['listing', 'listings'], answers: ['answer', 'answers'], members: ['member', 'members'] } };
+const tn = (k, n) => { const f = PLF[lang] && PLF[lang][k]; if (!f) return t(k); if (lang === 'en') return f[n === 1 ? 0 : 1]; const a = n % 10, b = n % 100; return f[a === 1 && b !== 11 ? 0 : a >= 2 && a <= 4 && (b < 12 || b > 14) ? 1 : 2]; };
 const money = (n) => nf(n) + ' ' + t('sar');
 const img = (name) => 'img/' + name + '.jpg';
 
@@ -244,7 +247,7 @@ function trCard(x) {
   return `<div class="lcard"><button data-act="go" data-v="vehicle" data-id="${x.id}" style="display:block;width:100%;text-align:start">
     <div class="ph"><img src="${img(x.photo)}" alt="" loading="lazy"><span class="chip-on-photo">${ic('shield')}${t('insurance_inc')}</span></div>
     <div class="body"><div class="ttl">${esc(x.model)}</div>
-    <div class="meta"><span>${ic('calendar')}${nf(x.year)}</span><span>${spec}</span><span>${ic('pin')}${t('delivery')}</span></div>
+    <div class="meta"><span>${ic('calendar')}${nfy(x.year)}</span><span>${spec}</span><span>${ic('pin')}${t('delivery')}</span></div>
     <div class="price num">${money(x.price)} <small>${termSuffix(x.term, 1)}</small></div></div></button>${heart(x.id)}</div>`;
 }
 const SECTIONS = [
@@ -304,7 +307,7 @@ V.housing = (p) => {
   return { tabs: true, html: topbar(t('s_housing')) + `<div class="wrap">
     <div class="seg">${['daily', 'monthly', 'yearly'].map(x => `<button class="${x === term ? 'on' : ''}" data-act="term" data-v="${x}">${t(x)}</button>`).join('')}</div>
     <div class="chips">${chips}</div>
-    <div class="count">${nf(items.length)} ${t('results')}</div>
+    <div class="count">${nf(items.length)} ${tn('results', items.length)}</div>
     <div class="list">${items.map(houseCard).join('') || emptyBlock()}</div></div>` };
 };
 V.transport = (p) => {
@@ -313,7 +316,7 @@ V.transport = (p) => {
   return { tabs: true, html: topbar(t('s_transport')) + `<div class="wrap">
     <div class="chips" style="padding-top:2px">${[['cars', 'car'], ['scooters', 'scooter'], ['escooters', 'kick']].map(([k, i]) => `<button class="chip ${k === kind ? 'on' : ''}" data-act="kind" data-v="${k}">${ic(i)}${t(k)}</button>`).join('')}</div>
     <div class="seg" style="margin-top:10px">${['daily', 'monthly', 'yearly'].map(x => `<button class="${x === term ? 'on' : ''}" data-act="term" data-v="${x}">${t(x)}</button>`).join('')}</div>
-    <div class="count">${nf(TRANSPORT.filter(x => x.kind === kind).length)} ${t('results')}</div>
+    <div class="count">${nf(TRANSPORT.filter(x => x.kind === kind).length)} ${tn('results', TRANSPORT.filter(x => x.kind === kind).length)}</div>
     <div class="list">${items.map(trCard).join('')}</div></div>` };
 };
 const emptyBlock = (txt, kind) => `<div class="empty">${emptyIllus(kind)}<b>${txt || t('nothing')}</b>${txt ? '' : t('nothing_d')}</div>`;
@@ -347,16 +350,16 @@ V.vehicle = (p) => {
   const x = TRANSPORT.find(v => v.id === p.id);
   const same = TRANSPORT.filter(v => v.kind === x.kind && v.photo !== x.photo).map(v => v.photo);
   const photos = [x.photo].concat([...new Set(same)].slice(0, 2));
-  const facts = x.kind === 'cars' ? [['calendar', nf(x.year), t('year')], ['gear', t('auto'), t('gearbox')], ['seat', nf(x.seats), t('seats')], ['car', nf(x.km), t('km') + ' ' + termSuffix(x.term, 1)]]
-    : x.kind === 'scooters' ? [['calendar', nf(x.year), t('year')], ['gear', nf(x.cc) + ' cc', t('cc')], ['seat', nf(x.seats), t('seats')], ['shield', '✓', t('insurance_inc')]]
-    : [['calendar', nf(x.year), t('year')], ['battery', nf(x.range) + ' ' + t('km'), t('range')], ['users', nf(x.seats), t('seats')], ['shield', '✓', t('insurance_inc')]];
+  const facts = x.kind === 'cars' ? [['calendar', nfy(x.year), t('year')], ['gear', t('auto'), t('gearbox')], ['seat', nf(x.seats), t('seats')], ['car', nf(x.km), t('km') + ' ' + termSuffix(x.term, 1)]]
+    : x.kind === 'scooters' ? [['calendar', nfy(x.year), t('year')], ['gear', nf(x.cc) + ' cc', t('cc')], ['seat', nf(x.seats), t('seats')], ['shield', '✓', t('insurance_inc')]]
+    : [['calendar', nfy(x.year), t('year')], ['battery', nf(x.range) + ' ' + t('km'), t('range')], ['users', nf(x.seats), t('seats')], ['shield', '✓', t('insurance_inc')]];
   const req = x.kind === 'cars' ? t('req_car') : x.kind === 'scooters' ? t('req_sco') : t('req_esc');
   return { cta: `<div class="p"><b class="num">${money(x.price)}</b><small>${termSuffix(x.term, 1)}</small></div><button class="btn primary" data-act="write" data-v="${x.id}">${ic('chat')}${t('write')}</button>`, raw: true, html: gallery(photos, x.id) + `
   <div class="sheetbody wrap">
     <h2 class="d-title">${esc(x.model)}</h2>
     <div class="d-sub"><span>${ic(x.kind === 'cars' ? 'car' : x.kind === 'scooters' ? 'scooter' : 'kick')}${t(x.kind)}</span><span>${ic('calendar')}${t(x.term)}</span><span>${ic('pin')}${t('delivery')}</span></div>
     <div class="facts">${facts.map(([i, v, l]) => `<div class="fact">${ic(i)}<b class="num" style="font-size:13.5px">${v}</b><small>${l}</small></div>`).join('')}</div>
-    <div class="block"><h4>${t('included')}</h4><div class="amen"><span>${ic('shield')}${t('insurance_inc')}</span><span>${ic('pin')}${t('delivery')}</span>${x.kind === 'cars' ? `<span>${ic('gear')}${t('auto')}</span>` : ''}<span>${ic('headset')}24/7</span></div></div>
+    <div class="block"><h4>${t('included')}</h4><div class="amen"><span>${ic('shield')}${t('insurance_inc')}</span><span>${ic('pin')}${t('delivery')}</span><span>${ic('headset')}${t('operator')} · 24/7</span></div></div>
     <div class="block"><div class="banner">${ic('idcard')}<div><b>${t('requirements')}</b>${req}</div></div></div>
     <div class="block"><div class="banner green">${ic('contract')}<div>${t('rental_by')}</div></div></div>
     <p class="note" style="margin-top:18px">${t('listing_no')} <b class="num">${x.id}</b></p>
@@ -371,7 +374,7 @@ V.explore = (p) => {
     const ts = TRANSPORT.filter(x => (x.model + ' ' + t(x.kind)).toLowerCase().includes(q));
     const as = myAds().concat(ADS).filter(a => (txt(a.title) + ' ' + catLabel(a.cat, ADCATS) + ' ' + a.seller.name).toLowerCase().includes(q));
     const ss = []; for (const c of SVC_CATS) for (const it of c.items) if ([L(it.title), it.title.en, it.title.ru, L(c.name)].join(' ').toLowerCase().includes(q)) ss.push(svcRow(c, it));
-    res = (hs.length + ts.length + as.length + ss.length) ? `<div class="count">${nf(hs.length + ts.length + as.length + ss.length)} ${t('results')}</div><div class="list">${ss.join('')}${hs.map(houseCard).join('')}${ts.map(trCard).join('')}${as.map(adRow).join('')}</div>` : emptyBlock();
+    res = (hs.length + ts.length + as.length + ss.length) ? `<div class="count">${nf(hs.length + ts.length + as.length + ss.length)} ${tn('results', hs.length + ts.length + as.length + ss.length)}</div><div class="list">${ss.join('')}${hs.map(houseCard).join('')}${ts.map(trCard).join('')}${as.map(adRow).join('')}</div>` : emptyBlock();
   }
   return { tabs: true, html: topbar(t('catalog'), { noBack: stack.length < 2 }) + `<div class="wrap">
     <label class="search" style="box-shadow:var(--shadow)">${ic('search')}<input id="q2" type="search" value="${esc(p.q || '')}" placeholder="${t('search_ph')}" enterkeyhint="search" aria-label="${t('search_ph')}"></label>
@@ -418,7 +421,7 @@ V.ads = (p) => {
   return { tabs: true, html: topbar(t('s_ads'), { right: `<button class="ibtn" data-act="postad" aria-label="${t('ad_post')}">${ic('plus')}</button>` }) + `<div class="wrap">
   <div class="banner green">${ic('lock')}<div>${t('ad_contact_note')}<br>${ST('free_ads')}</div></div>
   ${chipsRow(ADCATS, c, 'c')}
-  <div class="count">${nf(items.length)} ${t('results')}</div>
+  <div class="count">${nf(items.length)} ${tn('results', items.length)}</div>
   <div class="list">${items.map(adRow).join('') || emptyBlock()}</div>
   <button class="btn primary full" style="margin-top:16px" data-act="postad">${ic('plus')}${t('ad_post')} · ${t('ad_free')}</button></div>` };
 };
@@ -489,7 +492,7 @@ V.majlis = () => {
   return { tabs: true, html: topbar(t('s_majlis')) + `<div class="wrap">
   <div class="card" style="background:var(--palm);color:#fff;display:flex;gap:14px;align-items:center"><span style="width:52px;height:52px;border-radius:16px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;flex:none">${ic('majlis').replace('<svg', '<svg style="width:28px;height:28px"')}</span><div><b style="font-size:17px">${t('s_majlis')}</b><div style="opacity:.85;font-size:13.5px">${t('majlis_tag')}</div></div></div>
   <button class="banner" style="margin-top:12px;width:100%;text-align:start" data-act="rules">${ic('info')}<div><b>${t('rules_title')}</b>${t('rules_text').split('.')[0]}.</div></button>
-  <div class="topics" style="margin-top:14px">${TOPICS.map((k, i) => `<button class="topic" data-act="go" data-v="topic" data-id="${k}"><i class="b-${TOPIC_C[i % 5]} c-${TOPIC_C[i % 5]}">${ic(TOPIC_IC[k])}</i><span>${t('t_' + k)}<small class="num">${nf(postsFor(k).length)} · ${nf(postsFor(k).reduce((a, p) => a + (p.a || []).length, 0))} ${t('answers')}</small></span></button>`).join('')}</div>
+  <div class="topics" style="margin-top:14px">${TOPICS.map((k, i) => `<button class="topic" data-act="go" data-v="topic" data-id="${k}"><i class="b-${TOPIC_C[i % 5]} c-${TOPIC_C[i % 5]}">${ic(TOPIC_IC[k])}</i><span>${t('t_' + k)}<small class="num">${nf(postsFor(k).length)} · ${nf(postsFor(k).reduce((a, p) => a + (p.a || []).length, 0))} ${tn('answers', postsFor(k).reduce((a, p) => a + (p.a || []).length, 0))}</small></span></button>`).join('')}</div>
   </div>` };
 };
 V.topic = (p) => {
@@ -572,7 +575,7 @@ V.room = (p) => {
   const bub = msgs.map(m => m.who === '@me'
     ? `<div class="bubble me">${m.to ? `<span class="rto">${small('chev')}${esc(who(m.to))}</span>` : ''}${esc(txt(m.text))}</div>`
     : `<div class="msg">${pBtn(m.who, avatar(m.who))}<div class="bubble op">${pBtn(m.who, `<b class="nm">${esc(m.who)}</b>`)}${m.to ? `<span class="rto">${small('chev')}${esc(who(m.to))}</span>` : ''}${esc(txt(m.text))}<div class="ma"><button data-act="rreply" data-v="${esc(m.who)}">${t('reply')}</button><button data-act="dm" data-v="${esc(m.who)}">${t('dm')}</button></div></div></div>`).join('');
-  return { composer: 'room', html: topbar(L(r.name), { right: `<span class="tag green num">${nf(r.n)} ${t('members')}</span>` }) + `<div class="wrap chat-wrap">
+  return { composer: 'room', html: topbar(L(r.name), { right: `<span class="tag green num">${nf(r.n)} ${tn('members', r.n)}</span>` }) + `<div class="wrap chat-wrap">
     <div class="banner" style="font-size:12.5px">${ic('info')}<div>${t('room_rule')}</div></div>
     <div class="msg"><span class="av" style="background:var(--palm);color:#fff">N</span><div class="bubble op"><b class="nm">${t('operator')}</b>${t('room_hello')}</div></div>
     ${bub}
