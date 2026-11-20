@@ -59,6 +59,13 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;paddin
   animation:pulse 1.8s ease-in-out infinite}
 #collect:active{transform:translateX(-50%) scale(.96)}
 @keyframes pulse{0%,100%{box-shadow:0 6px 18px rgba(255,159,26,.45),inset 0 -3px 0 rgba(0,0,0,.12)}50%{box-shadow:0 6px 30px rgba(255,197,61,.85),inset 0 -3px 0 rgba(0,0,0,.12)}}
+#myBtn{position:fixed;left:calc(14px + var(--safe-l));bottom:calc(104px + var(--safe-b));z-index:10;width:52px;height:52px;border-radius:26px;
+  background:rgba(255,255,255,.94);box-shadow:0 3px 12px rgba(6,30,50,.22);font-size:24px;display:flex;align-items:center;justify-content:center}
+#myBtn:active{transform:scale(.95)}
+#myBtn .badge{position:absolute;top:-3px;right:-3px;min-width:20px;height:20px;border-radius:10px;background:var(--sea);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 5px}
+#myBtn .badge.gold{background:var(--gold2)}
+#myBtn .lbl{position:absolute;bottom:-17px;left:50%;transform:translateX(-50%);font-size:10.5px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6);white-space:nowrap}
+.status{font-size:12.5px;font-weight:600;margin-top:4px}
 #hint{position:fixed;left:50%;bottom:calc(30px + var(--safe-b));transform:translateX(-50%);z-index:9;
   color:#fff;font-size:13px;font-weight:600;background:rgba(8,40,64,.5);padding:8px 14px;border-radius:16px;
   pointer-events:none;white-space:nowrap;transition:opacity .4s}
@@ -190,6 +197,7 @@ input[type=range]{width:100%;accent-color:var(--sea);height:30px}
 </div>
 <div id="season">☀️ Солнечный сезон</div>
 
+<button id="myBtn" aria-label="Мои здания">🏠<span class="badge hidden" id="myBadge">0</span><span class="lbl">Мои здания</span></button>
 <button id="collect" class="hidden"><span>🪙</span><span id="collectTxt">Забрать доход</span></button>
 <div id="hint">Нажмите на участок «+», чтобы построить здание</div>
 
@@ -456,6 +464,11 @@ const plusTex = canvasTex(128, 128, (g) => {
   g.fillStyle = '#1b9bd1'; g.fillRect(56, 32, 16, 64); g.fillRect(32, 56, 64, 16);
 });
 const tagTex = {};
+const mineTex = canvasTex(128, 64, (g) => {
+  g.fillStyle = '#1b9bd1'; roundRect(g, 6, 6, 116, 44, 16); g.fill();
+  g.beginPath(); g.moveTo(52, 48); g.lineTo(64, 62); g.lineTo(76, 48); g.fill();
+  g.fillStyle = '#fff'; g.font = 'bold 26px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('МОЁ', 64, 29);
+});
 function saleTex() {
   if (tagTex.sale) return tagTex.sale;
   tagTex.sale = canvasTex(128, 64, (g) => {
@@ -643,7 +656,7 @@ function buildCity(code) {
     const hit = new THREE.Mesh(new THREE.BoxGeometry(5, 6, 5), new THREE.MeshBasicMaterial({ visible: false })); hit.position.y = 3; hit.userData.plot = idx; g.add(hit);
     pickables.push(hit);
     world.add(g);
-    plotObjs[idx] = { group: g, pad, building: null, plus: null, coin: null, sale: null, crane: null };
+    plotObjs[idx] = { group: g, pad, building: null, plus: null, coin: null, sale: null, crane: null, pin: null };
     refreshPlot(idx);
   });
   updateHUD();
@@ -654,6 +667,7 @@ function refreshPlot(idx) {
   if (o.building) { o.group.remove(o.building); o.building.traverse((x) => x.geometry && x.geometry.dispose()); o.building = null; }
   if (o.plus) { o.group.remove(o.plus); o.plus = null; }
   if (o.sale) { o.group.remove(o.sale); o.sale = null; }
+  if (o.pin) { o.group.remove(o.pin); o.pin = null; }
   if (o.coin) { o.group.remove(o.coin); coinMeshes = coinMeshes.filter((c) => c !== o.coin); o.coin = null; }
   if (!p.b) {
     o.pad.material = lam(0xd9c49a);
@@ -666,6 +680,10 @@ function refreshPlot(idx) {
   o.building = buildingMesh(p.b, S.city);
   if (isExpired(p.b)) o.building.traverse((x) => { if (x.isMesh && x.material && x.material.color) { x.material = x.material.clone(); x.material.color.multiplyScalar(0.7); } });
   o.group.add(o.building);
+  if (mine && !p.b.listing) {
+    const pin = new THREE.Sprite(new THREE.SpriteMaterial({ map: mineTex, depthWrite: false }));
+    pin.scale.set(2.2, 1.1, 1); pin.position.y = o.building.userData.height + 0.9; o.group.add(pin); o.pin = pin;
+  }
   if (p.b.listing) {
     const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: saleTex(), depthWrite: false }));
     s.scale.set(2.2, 1.1, 1); s.position.y = o.building.userData.height + 1.0; o.group.add(s); o.sale = s;
@@ -676,7 +694,7 @@ function refreshPlot(idx) {
 function addCoin(idx) {
   const o = plotObjs[idx]; if (!o || o.coin || !o.building) return;
   const c = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 0.16, 28), GOLD);
-  c.rotation.x = Math.PI / 2; c.position.y = o.building.userData.height + 1.3; c.userData.baseY = c.position.y; c.userData.plot = idx;
+  c.rotation.x = Math.PI / 2; c.position.y = o.building.userData.height + 2.4; c.userData.baseY = c.position.y; c.userData.plot = idx;
   o.group.add(c); o.coin = c; coinMeshes.push(c);
 }
 
@@ -687,6 +705,7 @@ function playBuildAnim(idx) {
   o.building.scale.y = 0.01;
   if (o.coin) o.coin.visible = false;
   if (o.sale) o.sale.visible = false;
+  if (o.pin) o.pin.visible = false;
   anims.push({ idx, t0: performance.now(), dur: 2500, crane, b: o.building });
   // пыль
   for (let i = 0; i < 10; i++) {
@@ -829,7 +848,7 @@ function loop(t) {
     a.crane.userData.jib.rotation.y = Math.sin(k * Math.PI * 3) * 0.8;
     if (k >= 1) {
       a.b.scale.y = 1; const o = plotObjs[a.idx];
-      if (o) { o.group.remove(a.crane); o.crane = null; if (o.coin) o.coin.visible = true; if (o.sale) o.sale.visible = true; }
+      if (o) { o.group.remove(a.crane); o.crane = null; if (o.coin) o.coin.visible = true; if (o.sale) o.sale.visible = true; if (o.pin) o.pin.visible = true; }
       anims.splice(i, 1);
     }
   }
@@ -984,6 +1003,9 @@ function updateHUD() {
   if (ready) { btn.classList.remove('hidden'); $('collectTxt').textContent = `Забрать доход · ${fmt(total)} ☀`; btn.title = ready + ' зд.'; $('hint').style.opacity = 0; }
   else { btn.classList.add('hidden'); }
   const mineCount = curPlots().filter((p) => p.b && p.b.owner === 'me').length;
+  let allMine = 0, allReady = 0;
+  for (const code of Object.keys(S.cities)) S.cities[code].plots.forEach((p) => { if (p.b && p.b.owner === 'me') { allMine++; if (isReady(p.b)) allReady++; } });
+  const bd = $('myBadge'); bd.classList.toggle('hidden', !allMine); bd.textContent = allReady ? '🪙' + allReady : allMine; bd.classList.toggle('gold', !!allReady);
   $('hint').style.opacity = (!ready && mineCount === 0 && !sheetCtx) ? 1 : 0;
   // «погода»
   const ratio = S.platform.pool ? 1 : 1;
@@ -1038,6 +1060,7 @@ function renderSheet(live) {
   else if (k === 'wallet') html = walletSheet();
   else if (k === 'profile') html = profileSheet();
   else if (k === 'city') html = citySheet();
+  else if (k === 'mine') html = mineSheet();
   if (live && html === lastSheetHtml) return;
   lastSheetHtml = html;
   body.innerHTML = html;
@@ -1186,6 +1209,33 @@ function profileSheet() {
   return h;
 }
 
+function mineSheet() {
+  $('sheetTitle').textContent = 'Мои здания';
+  const items = [];
+  for (const code of CITY_ORDER) { if (!S.cities[code]) continue; S.cities[code].plots.forEach((p, idx) => { if (p.b && p.b.owner === 'me') items.push({ code, idx, p }); }); }
+  const perDay = items.reduce((a, it) => a + (isExpired(it.p.b) || it.p.b.listing ? 0 : incomeOf(it.p.b, it.p.line)), 0);
+  const ready = items.filter((it) => isReady(it.p.b));
+  let h = `<div class="card"><div class="kv"><span>Зданий</span><span>${items.length}</span><span>Бонус со всех за сутки</span><span>${sun(perDay, true)}</span>
+    <span>Готово к сбору</span><span>${ready.length ? '<span class="tag gold">' + ready.length + ' 🪙</span>' : '—'}</span><span>Мой доход сейчас</span><span>${sun(S.income, true)}</span></div></div>
+    <div class="card" style="background:#fff8e6"><div class="bname" style="margin-bottom:4px">Откуда берётся доход</div>
+    <p class="note" style="margin:0;color:var(--ink)">Каждое ваше здание раз в игровые сутки (1 минута) приносит бонус: над крышей появляется золотая монета. Нажмите на монету или на золотую кнопку «Забрать доход» — сумма поступит в «Доход» вверху экрана. Следующая монета начнёт копиться только после сбора. Чем выше уровень здания и ближе к морю, тем больше бонус.</p></div>`;
+  if (!items.length) return h + `<div class="empty">У вас пока нет зданий.<br>Нажмите на участок со знаком «+» на карте, чтобы построить первое.</div>`;
+  for (const it of items) {
+    const b = it.p.b, T = TYPES[b.type];
+    let st;
+    if (isExpired(b)) st = '<span style="color:var(--bad)">Лицензия истекла — продлите</span>';
+    else if (b.listing) st = `<span style="color:#0d6f9b">На Рынке за ${sun(b.listing.price)}</span>`;
+    else if (isReady(b)) st = '<span style="color:#9a5b00">🪙 Монета готова — заберите!</span>';
+    else st = `<span style="color:var(--ink2)">Следующая монета через ${timeLeft(b.readyAt - Date.now())}</span>`;
+    h += `<div class="card"><div class="row">${bico(T, true)}<div class="grow"><div class="bname">${T.short} · ур. ${b.level}</div>
+      <div class="meta">${esc(CITIES[it.code].name)} · участок №${it.p.id} · ${it.p.line === 'sea' ? 'первая линия' : 'у дороги'}</div>
+      <div class="meta">≈ ${sun(incomeOf(b, it.p.line), true)} в сутки</div><div class="status">${st}</div></div></div>
+      <div class="btns two" style="margin-top:10px">${isReady(b) ? `<button class="btn sm gold" data-act="mcollect" data-c="${it.code}" data-i="${it.idx}">Забрать</button>` : `<button class="btn sm ghost" data-act="open" data-c="${it.code}" data-i="${it.idx}">Подробнее</button>`}
+      <button class="btn sm primary" data-act="show" data-c="${it.code}" data-i="${it.idx}">📍 На карте</button></div></div>`;
+  }
+  return h;
+}
+
 function citySheet() {
   $('sheetTitle').textContent = 'Выбор города';
   let h = '<div class="cities">';
@@ -1227,6 +1277,8 @@ function act(a, el) {
     case 'unlist': unlist(idx); break;
     case 'buy': buyListing(S.city, idx); break;
     case 'mbuy': buyListing(el.dataset.c, +el.dataset.i); break;
+    case 'open': { const code = el.dataset.c, i = +el.dataset.i; if (code !== S.city) switchCity(code, i); else openPlot(i); break; }
+    case 'mcollect': { const code = el.dataset.c, i = +el.dataset.i; if (code !== S.city) { switchCity(code); setTimeout(() => collectOne(i), 300); } else { const pt = worldToScreen(i); collectOne(i, pt.x, pt.y); renderSheet(); } break; }
     case 'show': { const code = el.dataset.c, i = +el.dataset.i; if (code !== S.city) switchCity(code, i); else openPlot(i); break; }
     case 'bonus': if (S.bonusAt <= Date.now()) { S.purchase += 100000; S.bonusAt = Date.now() + BONUS_MS; addLog('Бонус мэрии', 100000, 'in'); flyCoins({ x: innerWidth / 2, y: innerHeight * 0.6 }, 6); save(); updateHUD(); renderSheet(); } break;
     case 'sponsor': sponsorVideo(); break;
@@ -1262,6 +1314,7 @@ $('marketBtn').onclick = () => { Audio.init(); openSheet({ kind: 'market', live:
 $('wallet').onclick = () => { Audio.init(); openSheet({ kind: 'wallet', live: true }); };
 $('profileBtn').onclick = () => { Audio.init(); openSheet({ kind: 'profile' }); };
 $('collect').onclick = collectAll;
+$('myBtn').onclick = () => { Audio.init(); openSheet({ kind: 'mine', live: true }); };
 
 // =========================================================================
 //  PWA: install + onboarding
@@ -1307,6 +1360,7 @@ function showWelcome() {
       <li><span class="n">🎁</span><span>Вам подарены <b>3 000 ☀</b> и бесплатная кофейня на первой линии моря</span></li>
       <li><span class="n">＋</span><span>Нажмите на свободный участок, выберите здание — кран построит его за пару секунд</span></li>
       <li><span class="n">🪙</span><span>Над крышей появится золотая монета — нажмите «Забрать доход»</span></li>
+      <li><span class="n">🏠</span><span>Все ваши здания — по кнопке «Мои здания» внизу слева. Над ними синяя метка «МОЁ»</span></li>
       <li><span class="n">🏪</span><span>Улучшайте здания до 5 уровня и продавайте их другим игрокам на «Рынке»</span></li>
     </ul>
     <button class="btn gold full" id="startGame">Начать строить</button></div></div>`;
