@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Nakhlio — бизнес-план</title>
+<style>
+@page{size:A4;margin:0}
+:root{--g:#0f5c4a;--g2:#e7f1ed;--a:#e3a23b;--a2:#fbf1df;--ink:#1d2523;--mut:#5d6a66;--line:#dfe6e3}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,sans-serif;color:var(--ink);font-size:10.6pt;line-height:1.55;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page{width:210mm;height:297mm;padding:20mm 20mm 18mm;position:relative;page-break-after:always;overflow:hidden}
+.page:last-child{page-break-after:auto}
+.foot{position:absolute;bottom:10mm;left:20mm;right:20mm;font-size:8pt;color:var(--mut);display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:3mm}
+h1{font-size:30pt;line-height:1.1;margin:0 0 6mm;font-weight:700;letter-spacing:-.02em}
+h2{font-size:17pt;margin:0 0 4mm;color:var(--g);font-weight:700;letter-spacing:-.01em}
+h3{font-size:11.5pt;margin:5mm 0 1.5mm;font-weight:600}
+p{margin:0 0 3mm}
+.num{display:inline-block;font-size:9pt;font-weight:600;color:var(--a);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2mm}
+.cover{background:var(--g);color:#fff;display:flex;flex-direction:column;justify-content:space-between}
+.cover .logo{display:flex;align-items:center;gap:4mm;font-size:16pt;font-weight:700}
+.cover .logo i{width:13mm;height:13mm;border-radius:3.5mm;background:#fff;display:grid;place-items:center;font-style:normal;font-size:20pt}
+.cover h1{font-size:34pt;color:#fff}
+.cover .sub{font-size:13pt;opacity:.88;max-width:150mm}
+.cover .link{background:var(--a);color:var(--ink);border-radius:3mm;padding:5mm 6mm;font-size:11pt}
+.cover .link b{font-size:14pt;display:block}
+.box{background:var(--g2);border-radius:3mm;padding:4mm 5mm;margin:3mm 0}
+.box.a{background:var(--a2)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:4mm}
+.card{border:1px solid var(--line);border-radius:3mm;padding:4mm 5mm}
+.card h3{margin-top:0}
+ul{margin:0 0 3mm;padding-left:5mm}li{margin-bottom:1mm}
+table{width:100%;border-collapse:collapse;font-size:9.6pt;margin:2mm 0 3mm}
+th{text-align:left;font-weight:600;color:var(--mut);font-size:8.6pt;text-transform:uppercase;letter-spacing:.04em;border-bottom:1.5px solid var(--ink);padding:2mm 2mm}
+td{border-bottom:1px solid var(--line);padding:2mm 2mm;vertical-align:top}
+td.r,th.r{text-align:right;white-space:nowrap}
+tr.tot td{font-weight:700;border-bottom:none;border-top:1.5px solid var(--ink)}
+.small{font-size:8.6pt;color:var(--mut)}
+.tag{display:inline-block;font-size:8pt;background:var(--a2);color:#8a5a0c;border-radius:10mm;padding:.5mm 2.5mm;font-weight:600;margin-left:1mm}
+.big{font-size:22pt;font-weight:700;color:var(--g);letter-spacing:-.02em}
+.tight td{padding:1.3mm 2mm;font-size:9pt;line-height:1.35}.tight th{padding:1.5mm 2mm}
+</style></head><body>
+
+<!-- 1 COVER -->
+<section class="page cover">
+  <div class="logo"><i>🌴</i>Nakhlio</div>
+  <div>
+    <h1>Жильё, транспорт и&nbsp;услуги для приезжих в&nbsp;Медине — в&nbsp;одном приложении</h1>
+    <p class="sub">Бизнес-план для частных инвесторов. Коротко и по делу: какую проблему решает Nakhlio, на чём зарабатывает и сколько нужно, чтобы запустить.</p>
+  </div>
+  <div class="link"><b>verghethorn.com/nakhlio/demo/</b>Рабочий прототип: открывается с телефона и с компьютера, можно всё потрогать. Все объявления в прототипе — примеры.</div>
+</section>
+
+<!-- 2 PROBLEM -->
+<section class="page">
+  <span class="num">01 · Проблема</span>
+  <h2>Приехать в Медину легко. Обустроиться — трудно.</h2>
+  <p>В Медину каждый год приезжают жить, учиться и работать люди из десятков стран: студенты Исламского университета, семьи, специалисты по контракту, паломники на длительный срок. Почти у всех одни и те же трудности в первые недели:</p>
+  <div class="grid2">
+    <div class="card"><h3>Жильё</h3>Объявления — в основном на арабском. Фото часто не совпадают с реальностью. Нужно звонить, торговаться, разбираться с договором Ejar и залогом.</div>
+    <div class="card"><h3>Транспорт</h3>Непонятно, где арендовать машину или скутер на месяц, какие документы нужны иностранцу и сколько это стоит на самом деле.</div>
+    <div class="card"><h3>Документы и быт</h3>Икама, Absher, переводы, банк, SIM-карта, школа для детей. Информация разбросана, на родном языке её почти нет.</div>
+    <div class="card"><h3>Доверие</h3>Новичок не знает, кому можно доверять. Посредники без лицензии, предоплаты «на слово» — частая история.</div>
+  </div>
+  <div class="box"><b>Итог:</b> человек теряет время и деньги, а хорошие предложения жилья и услуг не доходят до тех, кому они нужны, — из-за языка.</div>
+
+  <span class="num" style="margin-top:6mm">02 · Решение</span>
+  <h2>Nakhlio</h2>
+  <p>Мобильное приложение (и сайт) для приезжих в Медину. Работает на 11 языках: русский, английский, арабский, урду, турецкий, индонезийский, малайский, бенгали, хинди, фарси, французский. Человек пишет на своём языке — команда Nakhlio говорит с арендодателем и партнёрами на арабском.</p>
+  <ul>
+    <li><b>Жильё</b> посуточно, помесячно и на год. Квартиры, которые команда сама посетила, проверила и сфотографировала.</li>
+    <li><b>Транспорт:</b> автомобили, скутеры, электросамокаты — через проверенных прокатчиков.</li>
+    <li><b>Услуги</b> через лицензированных партнёров: переводы, икама и визы, открытие бизнеса, переезд, страховка, трансферы на умру.</li>
+    <li><b>Сообщество:</b> объявления, вопросы-ответы, мужской и женский разделы, посылки. Это то, что удерживает людей в приложении каждый день.</li>
+  </ul>
+  <div class="foot"><span>Nakhlio · бизнес-план</span><span>2</span></div>
+</section>
+
+<!-- 3 HOW HOUSING WORKS -->
+<section class="page">
+  <span class="num">03 · Как это работает</span>
+  <h2>Жильё: Nakhlio не владеет квартирами — Nakhlio их проверяет</h2>
+  <p>Модель простая. Квартиры уже есть у крупных площадок и лицензированных агентств. Nakhlio договаривается с ними о партнёрстве и делает то, чего не хватает приезжему:</p>
+  <table>
+    <tr><th>Шаг</th><th>Что делает Nakhlio</th></tr>
+    <tr><td>1</td><td>Выезжает на объект, проверяет состояние, делает свои фото и видео.</td></tr>
+    <tr><td>2</td><td>Публикует объявление на 11 языках с честным описанием и ценой.</td></tr>
+    <tr><td>3</td><td>Отвечает клиенту в чате на его языке, организует просмотр.</td></tr>
+    <tr><td>4</td><td>Сделку оформляет партнёр (договор, Ejar, оплата). Nakhlio получает процент.</td></tr>
+  </table>
+
+  <h3>Выбранные партнёры для переговоров</h3>
+  <div class="card" style="margin-bottom:3mm"><h3>Посуточно и помесячно — Gathern (جاذر إن)</h3>
+  Крупнейшая в Саудии платформа краткосрочной аренды, лицензирована Министерством туризма. По данным самой компании — около 44% рынка альтернативного размещения и более 72 000 объектов; в 2025 году привлекла $72 млн и готовится к IPO. Публичной партнёрской программы с фиксированным процентом найдено не было — условия нужно согласовывать напрямую.</div>
+  <div class="card"><h3>На год — лицензированное агентство в Медине (объявления на Aqar)</h3>
+  Aqar — самое посещаемое приложение недвижимости в Саудии, но само процент со сделок не берёт: сделки проводят лицензированные брокеры. По закону о брокерской деятельности комиссия — 2,5% от арендной платы за первый год (если стороны не договорились иначе). План: договориться с одним сильным агентством Медины о делении комиссии за приведённых клиентов, а затем получить собственную лицензию FAL и работать с частными владельцами напрямую.</div>
+  <p class="small" style="margin-top:3mm">Важно: проценты ниже — цели для переговоров, а не подписанные условия.</p>
+  <div class="foot"><span>Nakhlio · бизнес-план</span><span>3</span></div>
+</section>
+
+<!-- 4 REVENUE -->
+<section class="page">
+  <span class="num">04 · Доходы</span>
+  <h2>На чём зарабатывает Nakhlio — по одной сделке</h2>
+  <p>Курс риала привязан к доллару: 1 USD = 3,75 SAR. Цены аренды в примерах — типичные для Медины по объявлениям, а не гарантия.</p>
+  <table>
+    <tr><th>Источник</th><th>Пример сделки</th><th class="r">Доля Nakhlio</th><th class="r">≈ USD</th></tr>
+    <tr><td><b>Посуточно</b> (Gathern)</td><td>5 ночей × 280 SAR = 1 400 SAR</td><td class="r">5% = 70 SAR</td><td class="r">$19</td></tr>
+    <tr><td><b>Помесячно</b></td><td>1 месяц = 4 500 SAR</td><td class="r">5% = 225 SAR</td><td class="r">$60</td></tr>
+    <tr><td><b>На год</b> через агентство</td><td>36 000 SAR/год; комиссия агентства 2,5% = 900 SAR</td><td class="r">½ = 450 SAR</td><td class="r">$120</td></tr>
+    <tr><td><b>На год</b> со своей лицензией FAL</td><td>36 000 SAR/год</td><td class="r">2,5% = 900 SAR</td><td class="r">$240</td></tr>
+    <tr><td><b>Автомобиль</b> (Lumi)</td><td>аренда на месяц ≈ 3 000 SAR</td><td class="r">5–10% = 150–300 SAR</td><td class="r">$40–80</td></tr>
+    <tr><td><b>Скутер</b> (местный прокат)</td><td>аренда на месяц ≈ 1 200 SAR</td><td class="r">10% = 120 SAR</td><td class="r">$32</td></tr>
+    <tr><td><b>Электросамокат</b> (Careem Bike)</td><td>поездки по городу</td><td class="r">по договорённости</td><td class="r">—</td></tr>
+    <tr><td><b>Поднятие объявления</b></td><td>частное объявление в ленте</td><td class="r">10–25 SAR</td><td class="r">$3–7</td></tr>
+  </table>
+  <h3>Почему эти партнёры по транспорту</h3>
+  <ul>
+    <li><b>Автомобили — Lumi.</b> Одна из крупнейших прокатных компаний Саудии, есть филиал в Медине, сдаёт машины и на месяц.</li>
+    <li><b>Скутеры — местный лицензированный прокат.</b> Крупного национального игрока по мотоскутерам в Медине найти не удалось. Партнёра нужно выбирать на месте.</li>
+    <li><b>Электросамокаты — Careem Bike.</b> Городская сеть электровелосипедов и самокатов в Медине, запущена вместе с инвестиционной компанией муниципалитета. Доход здесь скорее небольшой (промокоды, партнёрские поездки). Главная ценность — удобство для пользователей.</li>
+  </ul>
+  <div class="box a">Цифры по транспорту — оценки. Точные тарифы и процент партнёра станут известны только после переговоров.</div>
+  <div class="foot"><span>Nakhlio · бизнес-план</span><span>4</span></div>
+</section>
+
+<!-- 5 SERVICES + LATER -->
+<section class="page">
+  <span class="num">05 · Услуги</span>
+  <h2>Услуги Nakhlio — только через лицензированных партнёров</h2>
+  <p>Nakhlio не оформляет визы и документы сам. Клиент оставляет заявку в приложении, сотрудник Nakhlio связывается с ним на его языке, а работу выполняет лицензированный партнёр (бюро переводов, офис по оформлению, страховой брокер, перевозчик). Nakhlio следит за сроками и получает процент от стоимости услуги партнёра. Цель переговоров — <b>10–20%</b>.</p>
+  <table>
+    <tr><th>Услуга</th><th class="r">Пример цены партнёра</th><th class="r">Доля Nakhlio 10–20%</th><th class="r">≈ USD</th></tr>
+    <tr><td>Заверенный перевод диплома</td><td class="r">150 SAR</td><td class="r">15–30 SAR</td><td class="r">$4–8</td></tr>
+    <tr><td>Продление икамы (сервис)</td><td class="r">150 SAR</td><td class="r">15–30 SAR</td><td class="r">$4–8</td></tr>
+    <tr><td>Гостевая семейная виза (сервис)</td><td class="r">250 SAR</td><td class="r">25–50 SAR</td><td class="r">$7–13</td></tr>
+    <tr><td>Трансфер Медина → Мекка на умру</td><td class="r">450 SAR</td><td class="r">45–90 SAR</td><td class="r">$12–24</td></tr>
+    <tr><td>Переезд под ключ</td><td class="r">350 SAR</td><td class="r">35–70 SAR</td><td class="r">$9–19</td></tr>
+    <tr><td>Открытие компании (сопровождение)</td><td class="r">например 5 000 SAR</td><td class="r">500–1 000 SAR</td><td class="r">$133–267</td></tr>
+  </table>
+  <p class="small">Государственные пошлины в эти суммы не входят и оплачиваются отдельно.</p>
+
+  <span class="num" style="margin-top:5mm">06 · Позже</span>
+  <h2>Спонсорство и реклама</h2>
+  <p>Когда в приложении появится постоянная аудитория, открываются ещё два источника:</p>
+  <ul>
+    <li><b>Спонсоры разделов.</b> Например, клиника — в разделе «Семья и дети», школа арабского — в «Учёбе», банк — в разделе про счета.</li>
+    <li><b>Реклама</b> для местного бизнеса: рестораны, магазины, туристические компании. Показ на нужном языке нужной аудитории.</li>
+  </ul>
+  <p>Цены на рекламу в этом плане не указаны: они зависят от числа пользователей, которого пока нет. Честнее посчитать их после первых месяцев работы.</p>
+  <div class="box"><b>Сильная сторона модели:</b> одному человеку в первый год обычно нужно несколько вещей сразу — жильё, машина, перевод документов, икама. Каждая из этих сделок приносит Nakhlio свой процент.</div>
+  <div class="foot"><span>Nakhlio · бизнес-план</span><span>5</span></div>
+</section>
+
+<!-- 6 INVESTMENT -->
+<section class="page">
+  <span class="num">07 · Вложения</span>
+  <h2>Сколько нужно на запуск и первый год</h2>
+  <p>Состав первой фазы: основатель, живущий в Медине, и один помощник. Все суммы — <b>примерные (±)</b>, собраны по открытым источникам и объявлениям. Точные цифры даст юрист и реальные предложения.</p>
+  <table class="tight">
+    <tr><th>Статья</th><th>Пояснение</th><th class="r">USD, от – до</th></tr>
+    <tr><td>Лицензия инвестора MISA, 1-й год</td><td>источники расходятся: от 2 000 до ~60 000 SAR в год</td><td class="r">530 – 16 000</td></tr>
+    <tr><td>Регистрация компании</td><td>CR, торговая палата, муниципальная лицензия, адрес</td><td class="r">500 – 1 500</td></tr>
+    <tr><td>Лицензия FAL (брокерская)</td><td>курсы + лицензия для компании</td><td class="r">600</td></tr>
+    <tr><td>Юрист / консультант по открытию</td><td>оценка</td><td class="r">2 700 – 5 300</td></tr>
+    <tr><td>Офис в Медине, 12 мес.</td><td>по объявлениям: 112–120 м² ≈ 40–46 тыс. SAR/год; меньший — дешевле</td><td class="r">6 700 – 12 300</td></tr>
+    <tr><td>Ремонт и мебель офиса</td><td>оценка</td><td class="r">3 000 – 6 000</td></tr>
+    <tr><td>Основатель, 12 мес.</td><td>8 000–10 000 SAR в месяц на жизнь и работу</td><td class="r">25 600 – 32 000</td></tr>
+    <tr><td>Помощник, 12 мес.</td><td>5 000–7 000 SAR + соцстрахование ≈ 12%</td><td class="r">17 900 – 25 100</td></tr>
+    <tr><td>Икама, сбор за работника, медстраховка</td><td>икама ≈ 650 SAR, сбор ≈ 800 SAR/мес., страховка</td><td class="r">3 500 – 4 900</td></tr>
+    <tr><td>Машина для выездов на объекты</td><td>аренда на месяц, 12 мес.</td><td class="r">6 400 – 9 600</td></tr>
+    <tr><td>Техника</td><td>камера, телефон, ноутбук</td><td class="r">2 500 – 4 500</td></tr>
+    <tr><td>Доработка приложения</td><td>сервер, база, оплата, публикация в магазинах</td><td class="r">10 000 – 25 000</td></tr>
+    <tr><td>Сервера, SMS, карты, 12 мес.</td><td>оценка</td><td class="r">1 500 – 3 000</td></tr>
+    <tr><td>Маркетинг, 12 мес.</td><td>соцсети, университеты, общины</td><td class="r">6 000 – 12 000</td></tr>
+    <tr><td>Бухгалтерия и отчёты ZATCA</td><td>оценка</td><td class="r">2 400 – 4 000</td></tr>
+    <tr><td>Резерв на непредвиденное</td><td>≈ 10%</td><td class="r">9 000 – 16 200</td></tr>
+    <tr class="tot"><td colspan="2">Итого на первые 12 месяцев (±)</td><td class="r">≈ 99 000 – 178 000</td></tr>
+  </table>
+  <div class="box a"><b>Самая большая неопределённость — лицензия MISA.</b> Источники в интернете дают разные суммы, и это сильно двигает итог. Первое, что стоит сделать до вложений, — получить точный расчёт от юриста в Саудии.</div>
+  <div class="foot"><span>Nakhlio · бизнес-план</span><span>6</span></div>
+</section>
+
+<!-- 7 STEPS + RISKS -->
+<section class="page">
+  <span class="num">08 · План</span>
+  <h2>Первые шаги</h2>
+  <table>
+    <tr><th>Срок</th><th>Что сделать</th></tr>
+    <tr><td>Месяц 1–2</td><td>Консультация юриста, открытие компании, офис. Первые переговоры с Gathern, агентством недвижимости и Lumi.</td></tr>
+    <tr><td>Месяц 2–4</td><td>Доработка приложения до рабочей версии. Проверка и съёмка первых 50–100 квартир. Договоры с 3–5 партнёрами по услугам.</td></tr>
+    <tr><td>Месяц 4–6</td><td>Запуск. Продвижение через университеты, общины и соцсети на разных языках. Первые сделки.</td></tr>
+    <tr><td>Месяц 6–12</td><td>Своя лицензия FAL, работа с частными владельцами напрямую. Первые спонсоры разделов.</td></tr>
+  </table>
+
+  <span class="num" style="margin-top:4mm">09 · Риски</span>
+  <h2>Что может пойти не так</h2>
+  <ul>
+    <li><b>Партнёры могут не согласиться на проценты из этого плана.</b> Модель тогда работает, но доход с одной сделки будет ниже.</li>
+    <li><b>Лицензии и сборы</b> могут оказаться дороже оценки. Это проверяется до основных вложений.</li>
+    <li><b>Сезонность.</b> В Рамадан и хадж спрос на жильё высокий, в другие месяцы — ниже.</li>
+    <li><b>Модерация сообщества.</b> По саудовскому закону площадка отвечает за публикации. Нужны чёткие правила и модерация, они уже заложены в приложение.</li>
+  </ul>
+
+  <span class="num" style="margin-top:4mm">10 · Что уже есть</span>
+  <h2>Готовый прототип</h2>
+  <p>Рабочий прототип на 11 языках: жильё, транспорт, услуги, сообщество, мужской и женский разделы, чат с оператором. Его можно открыть по ссылке и пройти весь путь клиента.</p>
+  <div class="box"><span class="big">verghethorn.com/nakhlio/demo/</span></div>
+
+  <h3>Источники</h3>
+  <p class="small">Gathern: wamda.com, shorttermrentalz.com (раунд $72 млн, доля рынка по данным компании) · Aqar: sa.aqar.fm, arabnews.com · Комиссия 2,5%: закон о брокерской деятельности, rega.gov.sa · Лицензия MISA: misa.gov.sa, middleeastbriefing.com, etqanlawfirm-sa.com · Сборы за икаму и работника: middleeastbriefing.com, ksaexpats.com · Офисы в Медине: объявления на sa.aqar.fm · Lumi: lumirental.com · Careem Bike: help.careem.com, zawya.com. Данные проверены в ноябре 2026 года и могут измениться.</p>
+  <div class="foot"><span>Nakhlio · бизнес-план</span><span>7</span></div>
+</section>
+</body></html>
