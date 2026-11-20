@@ -1,0 +1,1351 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>SUNBAY — Живой город у моря</title>
+<meta name="description" content="SUNBAY — градостроительная игра: стройте курортный город у моря с высоты дрона.">
+<meta name="theme-color" content="#0b3a5b">
+<meta name="robots" content="noindex">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SUNBAY">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+:root{
+  --gold:#ffc53d; --gold2:#ff9f1a; --ink:#10263a; --ink2:#4a6378; --sheet:#ffffff; --sheet2:#f3f7fa;
+  --line:#e1e9ef; --sea:#1b9bd1; --ok:#1fa971; --bad:#e5484d; --hold:#8b6cff;
+  --safe-t:env(safe-area-inset-top,0px); --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-l:env(safe-area-inset-left,0px); --safe-r:env(safe-area-inset-right,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#0b3a5b;color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  -webkit-user-select:none;user-select:none;overscroll-behavior:none;touch-action:none}
+canvas#world{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0}
+.hidden{display:none!important}
+
+/* ---------- top HUD ---------- */
+#hud{position:fixed;left:0;right:0;top:0;z-index:10;display:flex;align-items:center;gap:8px;
+  padding:calc(8px + var(--safe-t)) calc(10px + var(--safe-r)) 8px calc(10px + var(--safe-l));pointer-events:none}
+.pill{pointer-events:auto;height:40px;border-radius:20px;background:rgba(255,255,255,.92);
+  box-shadow:0 2px 10px rgba(6,30,50,.18);display:flex;align-items:center;gap:6px;padding:0 12px;
+  font-weight:600;font-size:14px;white-space:nowrap}
+.pill:active{transform:scale(.97)}
+#cityBtn .chev{opacity:.5;font-size:11px}
+#wallet{margin-left:auto;gap:10px;padding:0 12px 0 10px}
+#wallet .w{display:flex;flex-direction:column;line-height:1.05}
+#wallet .w small{font-size:9.5px;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:.03em}
+#wallet .w b{font-size:14px}
+#wallet .sep{width:1px;height:22px;background:var(--line)}
+.iconbtn{width:40px;padding:0;justify-content:center;font-size:18px}
+@media (max-width:420px){ #marketBtn .lbl{display:none} #marketBtn{width:40px;padding:0;justify-content:center} }
+@media (max-width:360px){ #cityBtn .nm{max-width:58px;overflow:hidden;text-overflow:ellipsis} }
+
+/* season chip */
+#season{position:fixed;left:calc(10px + var(--safe-l));top:calc(56px + var(--safe-t));z-index:9;
+  font-size:12px;font-weight:600;color:#fff;background:rgba(8,40,64,.45);padding:5px 10px;border-radius:12px;
+  pointer-events:none;backdrop-filter:blur(2px)}
+
+/* ---------- collect button ---------- */
+#collect{position:fixed;left:50%;bottom:calc(22px + var(--safe-b));z-index:10;transform:translateX(-50%);
+  height:56px;padding:0 26px;border-radius:28px;font-size:17px;font-weight:700;color:#4a2a00;
+  background:linear-gradient(180deg,#ffe27a,var(--gold) 45%,var(--gold2));
+  box-shadow:0 6px 18px rgba(255,159,26,.45),inset 0 -3px 0 rgba(0,0,0,.12);display:flex;align-items:center;gap:8px;white-space:nowrap;
+  animation:pulse 1.8s ease-in-out infinite}
+#collect:active{transform:translateX(-50%) scale(.96)}
+@keyframes pulse{0%,100%{box-shadow:0 6px 18px rgba(255,159,26,.45),inset 0 -3px 0 rgba(0,0,0,.12)}50%{box-shadow:0 6px 30px rgba(255,197,61,.85),inset 0 -3px 0 rgba(0,0,0,.12)}}
+#hint{position:fixed;left:50%;bottom:calc(30px + var(--safe-b));transform:translateX(-50%);z-index:9;
+  color:#fff;font-size:13px;font-weight:600;background:rgba(8,40,64,.5);padding:8px 14px;border-radius:16px;
+  pointer-events:none;white-space:nowrap;transition:opacity .4s}
+
+/* ---------- sheet ---------- */
+#scrim{position:fixed;inset:0;z-index:20;background:rgba(5,25,40,.25);opacity:0;pointer-events:none;transition:opacity .25s}
+#scrim.on{opacity:1;pointer-events:auto}
+#sheet{position:fixed;z-index:21;left:0;right:0;bottom:0;max-height:82vh;background:var(--sheet);
+  border-radius:20px 20px 0 0;box-shadow:0 -6px 30px rgba(6,30,50,.25);transform:translateY(105%);
+  transition:transform .3s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;
+  padding-bottom:var(--safe-b);touch-action:pan-y}
+#sheet.on{transform:translateY(0)}
+#sheet .grab{width:40px;height:5px;border-radius:3px;background:#cfdbe4;margin:8px auto 2px;flex:none}
+#sheet .head{display:flex;align-items:center;gap:10px;padding:6px 16px 10px;flex:none}
+#sheet .head h2{margin:0;font-size:19px;flex:1;line-height:1.2}
+#sheet .head .x{width:34px;height:34px;border-radius:17px;background:var(--sheet2);font-size:16px;color:var(--ink2)}
+#sheetBody{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px 18px;flex:1;touch-action:pan-y;user-select:text;-webkit-user-select:text}
+@media (min-width:900px), (orientation:landscape) and (min-width:640px){
+  #sheet{left:auto;top:calc(64px + var(--safe-t));bottom:16px;right:16px;width:400px;max-height:none;border-radius:20px;
+    transform:translateX(calc(100% + 30px))}
+  #sheet.on{transform:translateX(0)}
+  #sheet .grab{display:none}
+  #scrim{background:transparent}
+  body.sheet-on #collect{left:calc((100% - 430px) / 2)}
+}
+.sub{color:var(--ink2);font-size:13px;margin:0 0 12px;line-height:1.4}
+.card{background:var(--sheet2);border-radius:14px;padding:12px;margin-bottom:10px}
+.row{display:flex;align-items:center;gap:10px}
+.grow{flex:1;min-width:0}
+.bico{width:54px;height:54px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;flex:none}
+.bname{font-weight:700;font-size:15px}
+.meta{font-size:12.5px;color:var(--ink2);margin-top:2px}
+.price{font-weight:700;white-space:nowrap}
+.btn{height:46px;border-radius:13px;padding:0 16px;font-weight:700;font-size:15px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn.primary{background:var(--sea);color:#fff}
+.btn.gold{background:linear-gradient(180deg,#ffe27a,var(--gold) 50%,var(--gold2));color:#4a2a00}
+.btn.ghost{background:var(--sheet2);color:var(--ink)}
+.btn.danger{background:#fdecec;color:var(--bad)}
+.btn.sm{height:36px;font-size:13.5px;padding:0 12px;border-radius:11px}
+.btn.full{width:100%}
+.btn:disabled{opacity:.42;cursor:default}
+.btn:not(:disabled):active{transform:scale(.97)}
+.btns{display:grid;gap:8px;margin-top:12px}
+.btns.two{grid-template-columns:1fr 1fr}
+.kv{display:grid;grid-template-columns:1fr auto;gap:7px 10px;font-size:14px}
+.kv span:nth-child(odd){color:var(--ink2)}
+.kv span:nth-child(even){font-weight:600;text-align:right}
+.bar{height:7px;border-radius:4px;background:#dde7ee;overflow:hidden;margin-top:5px}
+.bar i{display:block;height:100%;background:var(--ok);border-radius:4px}
+.lv{display:flex;gap:4px}
+.lv i{width:16px;height:6px;border-radius:3px;background:#d6e1e9}
+.lv i.on{background:var(--gold2)}
+.tabs{display:flex;background:var(--sheet2);border-radius:12px;padding:3px;margin-bottom:12px}
+.tabs button{flex:1;height:34px;border-radius:9px;font-size:13.5px;font-weight:600;color:var(--ink2)}
+.tabs button.on{background:#fff;color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.chips{display:flex;gap:6px;overflow-x:auto;margin-bottom:10px;padding-bottom:2px}
+.chips button{height:32px;padding:0 12px;border-radius:16px;background:var(--sheet2);font-size:13px;font-weight:600;white-space:nowrap;color:var(--ink2)}
+.chips button.on{background:var(--ink);color:#fff}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:8px;background:#e6f4fb;color:#0d6f9b;vertical-align:middle}
+.tag.hold{background:#efe9ff;color:var(--hold)}
+.tag.ok{background:#e3f6ee;color:var(--ok)}
+.tag.bad{background:#fdecec;color:var(--bad)}
+.tag.gold{background:#fff3d6;color:#9a5b00}
+.log{font-size:13px}
+.log .it{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.log .it:last-child{border-bottom:0}
+.log .t{color:var(--ink2);font-size:11.5px;width:44px;flex:none;padding-top:1px}
+.plus{color:var(--ok);font-weight:700;white-space:nowrap}
+.minus{color:var(--ink);font-weight:700;white-space:nowrap}
+.note{font-size:12px;color:var(--ink2);line-height:1.45;margin-top:10px}
+input[type=range]{width:100%;accent-color:var(--sea);height:30px}
+.empty{text-align:center;color:var(--ink2);padding:24px 8px;font-size:14px}
+.cities{display:grid;gap:8px}
+.cities button{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;background:var(--sheet2);text-align:left}
+.cities button.on{outline:2px solid var(--sea);background:#e9f6fc}
+.swatch{width:44px;height:44px;border-radius:12px;flex:none}
+.toggle{width:50px;height:30px;border-radius:15px;background:#cfdbe4;position:relative;flex:none;transition:background .2s}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:12px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s}
+.toggle.on{background:var(--ok)}
+.toggle.on::after{transform:translateX(20px)}
+
+/* ---------- toast & fx ---------- */
+#toasts{position:fixed;left:50%;top:calc(62px + var(--safe-t));transform:translateX(-50%);z-index:40;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none;width:92%}
+.toast{background:rgba(16,38,58,.94);color:#fff;font-size:14px;font-weight:600;padding:10px 16px;border-radius:14px;
+  box-shadow:0 4px 16px rgba(0,0,0,.2);animation:tin .25s ease-out;max-width:100%;text-align:center}
+@keyframes tin{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.flycoin{position:fixed;z-index:39;width:26px;height:26px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle at 35% 35%,#fff3b0,var(--gold) 45%,var(--gold2));box-shadow:0 0 10px rgba(255,197,61,.9);
+  display:flex;align-items:center;justify-content:center;font-size:14px;color:#8a5200;font-weight:800}
+#wallet.bump{animation:bump .35s ease-out}
+@keyframes bump{50%{transform:scale(1.08)}}
+
+/* ---------- overlays ---------- */
+.overlay{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end;justify-content:center;
+  background:linear-gradient(180deg,rgba(6,40,66,.15),rgba(6,40,66,.75));padding:16px;padding-bottom:calc(16px + var(--safe-b))}
+@media (min-width:600px){.overlay{align-items:center}}
+.ov{background:#fff;border-radius:24px;padding:22px 20px 18px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.35);
+  animation:pop .35s cubic-bezier(.2,.8,.2,1)}
+@keyframes pop{from{opacity:0;transform:translateY(20px) scale(.98)}to{opacity:1;transform:none}}
+.ov .logo{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.ov .logo img{width:56px;height:56px;border-radius:14px}
+.ov h1{margin:0;font-size:22px;letter-spacing:.02em}
+.ov p{margin:0 0 10px;color:var(--ink2);font-size:14.5px;line-height:1.45}
+.steps{list-style:none;margin:6px 0 14px;padding:0;display:grid;gap:10px}
+.steps li{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.4}
+.steps .n{width:26px;height:26px;border-radius:13px;background:#e6f4fb;color:#0d6f9b;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none;font-size:13px}
+.ios-share{display:inline-block;width:18px;height:18px;vertical-align:-3px}
+#loading{position:fixed;inset:0;z-index:60;background:linear-gradient(180deg,#7fd3f5,#0b3a5b);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;gap:14px;transition:opacity .5s}
+#loading .sun{width:70px;height:70px;border-radius:50%;background:radial-gradient(circle,#fff3b0,var(--gold) 50%,var(--gold2));box-shadow:0 0 50px rgba(255,197,61,.8);animation:spin 3s linear infinite}
+#loading b{font-size:24px;letter-spacing:.2em}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="loading"><div class="sun"></div><b>SUNBAY</b><span style="opacity:.8;font-size:13px">Дрон взлетает…</span></div>
+
+<canvas id="world"></canvas>
+
+<div id="hud">
+  <button class="pill" id="cityBtn" aria-label="Выбрать город"><span id="cityFlag">🏖</span><span class="nm" id="cityName">Сочи</span><span class="chev">▼</span></button>
+  <button class="pill" id="marketBtn" aria-label="Рынок города"><span>🏪</span><span class="lbl">Рынок</span></button>
+  <button class="pill" id="wallet" aria-label="Кошелёк">
+    <span class="w"><small>Покупки</small><b id="balP">0</b></span>
+    <span class="sep"></span>
+    <span class="w"><small>Доход</small><b id="balI">0</b></span>
+  </button>
+  <button class="pill iconbtn" id="profileBtn" aria-label="Профиль и настройки">⚙️</button>
+</div>
+<div id="season">☀️ Солнечный сезон</div>
+
+<button id="collect" class="hidden"><span>🪙</span><span id="collectTxt">Забрать доход</span></button>
+<div id="hint">Нажмите на участок «+», чтобы построить здание</div>
+
+<div id="scrim"></div>
+<section id="sheet" aria-modal="true" role="dialog">
+  <div class="grab"></div>
+  <div class="head"><h2 id="sheetTitle"></h2><button class="x" id="sheetClose" aria-label="Закрыть">✕</button></div>
+  <div id="sheetBody"></div>
+</section>
+
+<div id="toasts"></div>
+<div id="overlayRoot"></div>
+
+<script src="three.min.js"></script>
+<script>
+'use strict';
+/* =========================================================================
+   SUNBAY — Живой город у моря. Игровой прототип (PWA).
+   Все суммы хранятся целыми числами в «сотых» (minor units), как в ТЗ.
+   Валюта игровая: ☀ «солнышки». Реальные платежи не подключены.
+   ========================================================================= */
+
+// ---------- constants ----------
+const DAY = 60 * 1000;             // одни игровые «сутки» = 1 минута реального времени
+const LICENSE_DAYS = 90;
+const FOUNDER_PCT = 30, SERVICE_PCT = 15, MARKET_FEE = 8;
+const HOLD_MS = 45 * 1000;          // «Проверка безопасной сделки»
+const BONUS_MS = 5 * 60 * 1000;     // бонус мэрии
+const SPONSOR_MS = 3 * 60 * 1000;
+const PLOTS_PER_ROW = 8;
+const SPACING = 6;
+const ROW_Z = { sea: 3.6, road: -3.0 };
+
+const TYPES = [
+  null,
+  { id:1, name:'Кофейня у дороги', short:'Кофейня', emoji:'☕', price:50000,  daily:850,   color:'#c8865a', w:2.4, d:2.0, fh:1.15, base:1, add:1 },
+  { id:2, name:'Пляжный ресторан', short:'Ресторан', emoji:'🍽', price:100000, daily:1750,  color:'#f2f2ea', w:3.6, d:2.8, fh:1.1,  base:1, add:1 },
+  { id:3, name:'Дом с квартирами', short:'Дом', emoji:'🏢', price:250000, daily:4500,  color:'#f4dcc0', w:2.8, d:2.8, fh:0.9,  base:4, add:2 },
+  { id:4, name:'Гранд-Отель у моря', short:'Гранд-Отель', emoji:'🏨', price:500000, daily:9200,  color:'#eaf2f8', w:3.6, d:2.6, fh:0.85, base:7, add:3 },
+  { id:5, name:'Королевская Марина', short:'Марина', emoji:'⛵', price:1000000,daily:19000, color:'#ffffff', w:3.9, d:3.3, fh:0.95, base:3, add:2 },
+];
+
+const CITIES = {
+  sochi:   { name:'Сочи',    flag:'🌲', sky:0x9fd8f2, fog:0xbfe6f7, sea:0x1a8fc4, deep:0x0d5d8f, sand:0xe9d3a6, ground:0x9cc478, roof:0xb5533c, accent:0x2f9e6f, hills:0x5f8f5a, hillH:16 },
+  dubai:   { name:'Дубай',   flag:'🌴', sky:0xa9dcf0, fog:0xf2e3c2, sea:0x22b3c9, deep:0x0e7f9a, sand:0xf1d9a5, ground:0xe6cf9a, roof:0xc8a46a, accent:0xd4a63a, hills:0xd9bd86, hillH:4 },
+  miami:   { name:'Майами',  flag:'🌺', sky:0x8fd3ff, fog:0xc9ecff, sea:0x2ec4c9, deep:0x118a9e, sand:0xf6e7c3, ground:0xa8d47e, roof:0xf27b9b, accent:0xff6fa3, hills:0x7fbf8a, hillH:3 },
+  monaco:  { name:'Монако',  flag:'⛰',  sky:0xa6d6f5, fog:0xd5ebf7, sea:0x1d7fc2, deep:0x0b4d86, sand:0xe3d2b0, ground:0x8fb36e, roof:0xd36b42, accent:0xc23b3b, hills:0x6e8f6b, hillH:22 },
+  istanbul:{ name:'Стамбул', flag:'🕌', sky:0xb3dcf2, fog:0xdbe9f2, sea:0x2a7fb5, deep:0x154f80, sand:0xe5d4b2, ground:0xa2bf84, roof:0xb8573a, accent:0x3a8fb7, hills:0x7a9a78, hillH:8 },
+};
+const CITY_ORDER = ['sochi','dubai','miami','monaco','istanbul'];
+
+const NPC = ['Алина','Марк','Тимур','Ева','Денис','Ксения','Артём','София','Руслан','Мила','Игорь','Диана','Олег','Вера','Глеб','Нина','Эмиль','Яна','Лев','Карина'];
+
+// ---------- utils ----------
+const $ = (id) => document.getElementById(id);
+const rnd = (a, b) => a + Math.random() * (b - a);
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+function fmt(minor, withCents) {
+  const neg = minor < 0; minor = Math.abs(Math.round(minor));
+  const whole = Math.floor(minor / 100), cents = minor % 100;
+  let s = whole.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  if (withCents || (cents && whole < 1000)) s += ',' + String(cents).padStart(2, '0');
+  return (neg ? '−' : '') + s;
+}
+const sun = (m, c) => fmt(m, c) + ' ☀';
+function timeLeft(ms) {
+  ms = Math.max(0, ms); const s = Math.ceil(ms / 1000);
+  if (s < 60) return s + ' с';
+  const m = Math.floor(s / 60), r = s % 60;
+  if (m < 60) return m + ' мин ' + (r ? r + ' с' : '');
+  return Math.floor(m / 60) + ' ч ' + (m % 60) + ' мин';
+}
+function hhmm(t) { const d = new Date(t); return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0'); }
+function esc(s) { return String(s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+// ---------- state ----------
+const SAVE_KEY = 'sunbay_save_v1';
+let S;
+
+function newCityState(code) {
+  const plots = [];
+  for (const line of ['sea', 'road']) {
+    for (let i = 0; i < PLOTS_PER_ROW; i++) {
+      plots.push({ id: plots.length + 1, line, i, b: null });
+    }
+  }
+  // заселяем часть участков «другими игроками»
+  const now = Date.now();
+  plots.forEach((p) => {
+    if (Math.random() < (p.line === 'sea' ? 0.5 : 0.35)) {
+      const type = pick([1,1,2,2,3,3,4,5]);
+      const owner = pick(NPC);
+      p.b = { type, level: 1 + Math.floor(Math.random() * 3), owner, history: [owner],
+              renewedAt: now - rnd(2, 40) * DAY, expiresAt: now + rnd(30, 85) * DAY, readyAt: now + DAY, listing: null };
+      if (Math.random() < 0.35) p.b.listing = { price: Math.round(buildingValue(p.b) * rnd(0.95, 1.25) / 100) * 100, since: now };
+    }
+  });
+  return { plots };
+}
+
+function defaultState() {
+  const st = {
+    v: 1, purchase: 300000, income: 0, hold: [], log: [], city: 'sochi', cities: {},
+    bonusAt: 0, sponsorAt: 0, sound: true, onboarded: false, installSeen: false,
+    stats: { built: 0, upgrades: 0, collected: 0, sold: 0, bought: 0 },
+    platform: { founder: 0, pool: 0, fees: 0 } // учёт сплита 30/70 (демо)
+  };
+  return st;
+}
+
+function load() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (raw) { const s = JSON.parse(raw); if (s && s.v === 1) return s; }
+  } catch (e) {}
+  return null;
+}
+let saveTimer = 0;
+function save() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {} }, 150);
+}
+
+function cityState(code) {
+  if (!S.cities[code]) S.cities[code] = newCityState(code);
+  return S.cities[code];
+}
+function curPlots() { return cityState(S.city).plots; }
+
+function addLog(text, amt, kind) {
+  S.log.unshift({ t: Date.now(), text, amt: amt || 0, kind: kind || '' });
+  if (S.log.length > 120) S.log.length = 120;
+}
+
+// ---------- economy ----------
+function incomeOf(b, line) {
+  const t = TYPES[b.type];
+  let v = t.daily * (1 + 0.25 * (b.level - 1));
+  if (line === 'sea') v *= 1.1;
+  v *= conditionOf(b) / 100;
+  return Math.round(v);
+}
+function conditionOf(b) {
+  const days = (Date.now() - b.renewedAt) / DAY;
+  return Math.round(clamp(100 - days * 0.6, 55, 100));
+}
+function upgradeCost(b) { return Math.round(TYPES[b.type].price * 0.4 * b.level); }
+function renewCost(b) { return Math.round(TYPES[b.type].price * 0.3); }
+function buildingValue(b) {
+  const t = TYPES[b.type];
+  let v = t.price * (1 + 0.4 * (b.level - 1));
+  const leftDays = Math.max(0, (b.expiresAt - Date.now()) / DAY);
+  v *= 0.55 + 0.45 * Math.min(1, leftDays / LICENSE_DAYS);
+  return Math.round(v / 1000) * 1000;
+}
+function isExpired(b) { return Date.now() >= b.expiresAt; }
+function isReady(b) { return b.owner === 'me' && !b.listing && !isExpired(b) && Date.now() >= b.readyAt; }
+function spendable() { return S.purchase + S.income; }
+
+function spend(amount, reason) {
+  if (spendable() < amount) return false;
+  const fromP = Math.min(S.purchase, amount);
+  S.purchase -= fromP; S.income -= (amount - fromP);
+  addLog(reason, -amount);
+  return true;
+}
+function splitPrimary(amount) {
+  const f = Math.round(amount * FOUNDER_PCT / 100);
+  S.platform.founder += f; S.platform.pool += amount - f;
+}
+
+// ---------- audio ----------
+const Audio = (() => {
+  let ctx = null, master = null, surf = null;
+  function init() {
+    if (ctx) return;
+    try {
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      master = ctx.createGain(); master.gain.value = S.sound ? 0.6 : 0; master.connect(ctx.destination);
+      // тихий прибой: отфильтрованный шум с медленной модуляцией
+      const len = ctx.sampleRate * 4, buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0);
+      let last = 0; for (let i = 0; i < len; i++) { last = (last + 0.02 * (Math.random() * 2 - 1)) / 1.02; d[i] = last * 3.2; }
+      const src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;
+      const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 700;
+      surf = ctx.createGain(); surf.gain.value = 0.08;
+      const lfo = ctx.createOscillator(), lfoG = ctx.createGain(); lfo.frequency.value = 0.12; lfoG.gain.value = 0.05;
+      lfo.connect(lfoG); lfoG.connect(surf.gain); lfo.start();
+      src.connect(lp); lp.connect(surf); surf.connect(master); src.start();
+    } catch (e) { ctx = null; }
+  }
+  function tone(freq, t0, dur, type, vol) {
+    if (!ctx || !S.sound) return;
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type || 'sine'; o.frequency.setValueAtTime(freq, ctx.currentTime + t0);
+    g.gain.setValueAtTime(0, ctx.currentTime + t0);
+    g.gain.linearRampToValueAtTime(vol || 0.2, ctx.currentTime + t0 + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0005, ctx.currentTime + t0 + dur);
+    o.connect(g); g.connect(master); o.start(ctx.currentTime + t0); o.stop(ctx.currentTime + t0 + dur + 0.05);
+  }
+  return {
+    init,
+    setOn(on) { if (master) master.gain.value = on ? 0.6 : 0; },
+    coin() { tone(1318, 0, 0.25, 'triangle', 0.18); tone(1760, 0.07, 0.35, 'triangle', 0.15); },
+    tap() { tone(660, 0, 0.06, 'sine', 0.06); },
+    build() { for (let i = 0; i < 6; i++) tone(180 + i * 40, i * 0.32, 0.18, 'square', 0.04); tone(784, 2.3, 0.3, 'triangle', 0.15); tone(1046, 2.42, 0.45, 'triangle', 0.15); },
+    pay() { tone(988, 0, 0.12, 'sine', 0.15); tone(1480, 0.1, 0.3, 'sine', 0.15); },
+    err() { tone(220, 0, 0.18, 'sawtooth', 0.06); },
+  };
+})();
+
+// =========================================================================
+//  3D WORLD
+// =========================================================================
+const canvas = $('world');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(48, 1, 0.5, 400);
+const PITCH = THREE.MathUtils.degToRad(42);
+const cam = { tx: 0, tz: 0.5, dist: 40, targetDist: 40, ox: 0, oz: 0 };
+
+const hemi = new THREE.HemisphereLight(0xdfefff, 0x6b5a3a, 0.5); scene.add(hemi);
+const sunLight = new THREE.DirectionalLight(0xfff1d6, 0.72);
+sunLight.position.set(-30, 50, -10);
+sunLight.castShadow = true;
+sunLight.shadow.mapSize.set(1024, 1024);
+Object.assign(sunLight.shadow.camera, { left: -40, right: 40, top: 30, bottom: -30, near: 1, far: 140 });
+sunLight.shadow.bias = -0.0008;
+scene.add(sunLight); scene.add(sunLight.target);
+
+let world = new THREE.Group(); scene.add(world);
+let water, waterBase, foam, cars, carData = [], yachts = [], plotObjs = [], pickables = [], coinMeshes = [];
+const anims = []; // строительные анимации
+
+// --- textures ---
+function canvasTex(w, h, draw) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c); t.anisotropy = 4; return t;
+}
+const winTexCache = {};
+function windowTex(kind) {
+  if (winTexCache[kind]) return winTexCache[kind];
+  const t = canvasTex(64, 64, (g, w, h) => {
+    g.fillStyle = '#ffffff'; g.fillRect(0, 0, w, h);
+    if (kind === 'glass') {
+      g.fillStyle = '#7fb6d6'; g.fillRect(4, 6, 56, 46);
+      g.fillStyle = 'rgba(255,255,255,.35)'; g.fillRect(4, 6, 20, 46);
+      g.fillStyle = '#dfe9ef'; g.fillRect(0, 52, 64, 12);
+    } else {
+      g.fillStyle = '#6fa4c4'; g.fillRect(10, 12, 18, 30); g.fillRect(36, 12, 18, 30);
+      g.fillStyle = 'rgba(255,255,255,.4)'; g.fillRect(10, 12, 6, 30); g.fillRect(36, 12, 6, 30);
+      g.fillStyle = '#d9d2c6'; g.fillRect(6, 44, 52, 5);
+    }
+  });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  winTexCache[kind] = t; return t;
+}
+const plusTex = canvasTex(128, 128, (g) => {
+  g.fillStyle = 'rgba(255,255,255,0.95)'; g.beginPath(); g.arc(64, 64, 54, 0, Math.PI * 2); g.fill();
+  g.strokeStyle = '#1b9bd1'; g.lineWidth = 8; g.stroke();
+  g.fillStyle = '#1b9bd1'; g.fillRect(56, 32, 16, 64); g.fillRect(32, 56, 64, 16);
+});
+const tagTex = {};
+function saleTex() {
+  if (tagTex.sale) return tagTex.sale;
+  tagTex.sale = canvasTex(128, 64, (g) => {
+    g.fillStyle = '#10263a'; roundRect(g, 4, 4, 120, 56, 18); g.fill();
+    g.fillStyle = '#ffc53d'; g.font = 'bold 30px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('SALE', 64, 34);
+  });
+  return tagTex.sale;
+}
+function roundRect(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+
+const M = {}; // material cache
+function lam(color) { const k = 'l' + color; return M[k] || (M[k] = new THREE.MeshLambertMaterial({ color })); }
+const GOLD = new THREE.MeshPhongMaterial({ color: 0xffc53d, emissive: 0x7a4a00, shininess: 90, specular: 0xffffff });
+
+function box(w, h, d, mat, x, y, z, cast) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+  m.position.set(x || 0, y || 0, z || 0); m.castShadow = cast !== false; m.receiveShadow = true; return m;
+}
+
+function plotPos(p) { return { x: -((PLOTS_PER_ROW - 1) * SPACING) / 2 + p.i * SPACING, z: ROW_Z[p.line] }; }
+
+// --- palm ---
+const palmTrunkG = new THREE.CylinderGeometry(0.12, 0.2, 3.2, 6);
+const palmLeafG = new THREE.ConeGeometry(1.4, 0.5, 7);
+function palm(x, z, s) {
+  const g = new THREE.Group();
+  const t = new THREE.Mesh(palmTrunkG, lam(0x8b6b4a)); t.position.y = 1.6; t.rotation.z = 0.08; t.castShadow = true; g.add(t);
+  const l = new THREE.Mesh(palmLeafG, lam(0x2f8f4e)); l.position.set(0.12, 3.3, 0); l.castShadow = true; g.add(l);
+  const l2 = new THREE.Mesh(palmLeafG, lam(0x3aa35a)); l2.position.set(0.12, 3.15, 0); l2.rotation.y = 0.4; l2.scale.set(0.8, 1, 0.8); g.add(l2);
+  g.position.set(x, 0, z); g.scale.setScalar(s || 1); return g;
+}
+
+// --- buildings ---
+function buildingMesh(b, cityCode) {
+  const t = TYPES[b.type], C = CITIES[cityCode];
+  const g = new THREE.Group();
+  const floors = t.base + (b.level - 1) * t.add;
+  const H = floors * t.fh;
+  const wallMat = (kind, rx, ry, color) => {
+    const tex = windowTex(kind).clone(); tex.needsUpdate = true; tex.repeat.set(rx, ry);
+    return new THREE.MeshLambertMaterial({ color: color || t.color, map: tex });
+  };
+  const roofC = C.roof, acc = C.accent;
+  if (b.type === 1) {
+    g.add(box(t.w, H, t.d, wallMat('glass', 2, floors), 0, H / 2, 0));
+    g.add(box(t.w + 0.3, 0.14, t.d + 0.3, lam(0xffffff), 0, H + 0.07, 0));
+    const aw = box(t.w, 0.08, 0.9, lam(acc), 0, 0.95, t.d / 2 + 0.4); aw.rotation.x = 0.25; g.add(aw);
+    g.add(box(0.9, 0.5, 0.1, lam(0x3b2a1e), 0, H + 0.45, 0));
+    for (let i = -1; i <= 1; i += 2) { g.add(box(0.5, 0.45, 0.5, lam(0xffffff), i * 0.75, 0.22, t.d / 2 + 1.25)); }
+  } else if (b.type === 2) {
+    g.add(box(t.w, H, t.d, wallMat('glass', 3, floors), 0, H / 2, 0));
+    g.add(box(t.w + 0.2, 0.12, t.d + 0.2, lam(0xe8e1d4), 0, H + 0.06, 0));
+    for (let i = -1; i <= 1; i++) {
+      const pole = box(0.06, 0.8, 0.06, lam(0xffffff), i * 1.1, H + 0.5, 0.3); g.add(pole);
+      const um = new THREE.Mesh(new THREE.ConeGeometry(0.62, 0.3, 8), lam(i === 0 ? acc : 0xffffff)); um.position.set(i * 1.1, H + 0.95, 0.3); um.castShadow = true; g.add(um);
+    }
+    g.add(box(t.w + 0.6, 0.06, 1.1, lam(0xb08a5e), 0, 0.03, t.d / 2 + 0.55, false));
+  } else if (b.type === 3) {
+    g.add(box(t.w, H, t.d, wallMat('flat', 3, floors), 0, H / 2, 0));
+    const roof = new THREE.Mesh(new THREE.ConeGeometry(t.w * 0.78, 1.1, 4), lam(roofC)); roof.rotation.y = Math.PI / 4; roof.position.y = H + 0.55; roof.castShadow = true; g.add(roof);
+    for (let f = 1; f < floors; f += 1) g.add(box(t.w + 0.25, 0.08, 0.35, lam(0xffffff), 0, f * t.fh, t.d / 2 + 0.1, false));
+  } else if (b.type === 4) {
+    g.add(box(t.w, H, t.d, wallMat('glass', 4, floors, 0xdfeaf2), 0, H / 2, 0));
+    g.add(box(t.w + 1.2, 1.0, t.d + 0.8, lam(0xffffff), 0, 0.5, 0.2));
+    g.add(box(t.w * 0.7, 0.9, t.d * 0.7, lam(acc), 0, H + 0.45, 0));
+    const ant = box(0.08, 1.6, 0.08, lam(0xdddddd), 0, H + 1.7, 0); g.add(ant);
+    g.add(box(2.2, 0.1, 1.2, lam(0x4fc3e8), 0.9, 0.05, t.d / 2 + 0.9, false));
+  } else if (b.type === 5) {
+    g.add(box(t.w, H, t.d, wallMat('glass', 4, floors, 0xf7f3ea), 0, H / 2, -0.3));
+    g.add(box(t.w * 0.65, H * 0.45, t.d * 0.6, wallMat('glass', 3, Math.max(1, Math.round(floors * 0.45)), 0xf7f3ea), 0, H + H * 0.225, -0.3));
+    const dome = new THREE.Mesh(new THREE.SphereGeometry(0.9, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2), GOLD); dome.position.set(0, H * 1.45, -0.3); dome.castShadow = true; g.add(dome);
+    const flag = box(0.06, 1.6, 0.06, lam(0xffffff), 1.6, H + 0.8, 1.2); g.add(flag);
+    g.add(box(0.7, 0.4, 0.04, lam(acc), 1.95, H + 1.35, 1.2));
+    g.add(box(t.w + 0.8, 0.12, 1.4, lam(0xd9c7a3), 0, 0.06, t.d / 2 + 0.4, false));
+  }
+  g.userData.height = (b.type === 5 ? H * 1.45 + 0.9 : H + 1);
+  g.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+  return g;
+}
+
+function craneMesh(h) {
+  const g = new THREE.Group(); const y = lam(0xffb400);
+  g.add(box(0.25, h, 0.25, y, 2.2, h / 2, -1.8));
+  const jib = new THREE.Group(); jib.position.set(2.2, h, -1.8);
+  jib.add(box(4.5, 0.2, 0.2, y, -1.6, 0, 0)); jib.add(box(0.6, 0.5, 0.5, lam(0x555555), 0.8, -0.1, 0));
+  const cable = box(0.03, 1.6, 0.03, lam(0x333333), -3.2, -0.8, 0, false); jib.add(cable);
+  g.add(jib); g.userData.jib = jib; return g;
+}
+
+function buildCity(code) {
+  // очистка
+  scene.remove(world);
+  world.traverse((o) => { if (o.geometry) o.geometry.dispose(); });
+  world = new THREE.Group(); scene.add(world);
+  plotObjs = []; pickables = []; coinMeshes = []; yachts = []; anims.length = 0;
+  const C = CITIES[code];
+  scene.background = new THREE.Color(C.sky);
+  scene.fog = new THREE.Fog(C.fog, 70, 190);
+
+  // земля / пляж / море
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 60), lam(C.ground)); ground.rotation.x = -Math.PI / 2; ground.position.set(0, 0, -24); ground.receiveShadow = true; world.add(ground);
+  const plotArea = new THREE.Mesh(new THREE.PlaneGeometry(200, 13), lam(new THREE.Color(C.ground).lerp(new THREE.Color(C.sand), 0.55).getHex())); plotArea.rotation.x = -Math.PI / 2; plotArea.position.set(0, 0.01, 0.6); plotArea.receiveShadow = true; world.add(plotArea);
+  const beach = new THREE.Mesh(new THREE.PlaneGeometry(200, 10), lam(C.sand)); beach.rotation.x = -Math.PI / 2; beach.position.set(0, 0.01, 11); beach.receiveShadow = true; world.add(beach);
+  const prom = new THREE.Mesh(new THREE.PlaneGeometry(200, 1.6), lam(0xd8d0c4)); prom.rotation.x = -Math.PI / 2; prom.position.set(0, 0.02, 7.6); prom.receiveShadow = true; world.add(prom);
+
+  const wg = new THREE.PlaneGeometry(260, 140, 64, 32); wg.rotateX(-Math.PI / 2);
+  waterBase = Float32Array.from(wg.attributes.position.array);
+  water = new THREE.Mesh(wg, new THREE.MeshPhongMaterial({ color: C.sea, emissive: C.deep, emissiveIntensity: 0.25, shininess: 80, specular: 0x99ccee, flatShading: true, transparent: true, opacity: 0.96 }));
+  water.position.set(0, -0.12, 84); water.receiveShadow = true; world.add(water);
+  foam = new THREE.Mesh(new THREE.PlaneGeometry(200, 0.7), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.7 }));
+  foam.rotation.x = -Math.PI / 2; foam.position.set(0, 0.03, 14.3); world.add(foam);
+
+  // горизонт: холмы / острова
+  for (let i = 0; i < 14; i++) {
+    const h = C.hillH * rnd(0.5, 1.2) + 2;
+    const hill = new THREE.Mesh(new THREE.ConeGeometry(rnd(10, 22), h, 6), lam(C.hills));
+    hill.position.set(-110 + i * 17 + rnd(-4, 4), h / 2 - 1, 150 + rnd(-8, 10)); world.add(hill);
+  }
+  // солнце
+  const sunS = new THREE.Sprite(new THREE.SpriteMaterial({ map: canvasTex(128, 128, (g) => { const gr = g.createRadialGradient(64, 64, 4, 64, 64, 64); gr.addColorStop(0, 'rgba(255,250,220,1)'); gr.addColorStop(0.3, 'rgba(255,220,120,.8)'); gr.addColorStop(1, 'rgba(255,200,100,0)'); g.fillStyle = gr; g.fillRect(0, 0, 128, 128); }), fog: false, depthWrite: false }));
+  sunS.scale.set(40, 40, 1); sunS.position.set(-50, 45, 170); world.add(sunS);
+
+  // дорога
+  const road = new THREE.Mesh(new THREE.PlaneGeometry(200, 3.4), lam(0x4a5058)); road.rotation.x = -Math.PI / 2; road.position.set(0, 0.02, -9); road.receiveShadow = true; world.add(road);
+  for (let x = -100; x < 100; x += 4) { const d = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 0.14), lam(0xf2f2f2)); d.rotation.x = -Math.PI / 2; d.position.set(x, 0.03, -9); world.add(d); }
+  const walk = new THREE.Mesh(new THREE.PlaneGeometry(200, 1.1), lam(0xcfc9bf)); walk.rotation.x = -Math.PI / 2; walk.position.set(0, 0.025, -6.8); world.add(walk);
+
+  // машины (InstancedMesh)
+  const N = 16;
+  cars = new THREE.InstancedMesh(new THREE.BoxGeometry(1.5, 0.65, 0.75), new THREE.MeshLambertMaterial({ color: 0xffffff }), N);
+  cars.castShadow = true;
+  const carColors = [0xffffff, 0xe5484d, 0x1b9bd1, 0x222222, 0xffc53d, 0x9aa5b1, 0x1fa971];
+  carData = [];
+  for (let i = 0; i < N; i++) {
+    const dir = i % 2 ? 1 : -1;
+    carData.push({ x: rnd(-60, 60), z: dir > 0 ? -9.8 : -8.2, dir, v: rnd(4, 8) });
+    cars.setColorAt(i, new THREE.Color(pick(carColors)));
+  }
+  world.add(cars);
+  // крыши машин
+  // городская застройка за дорогой (декор)
+  const fillerN = 26;
+  const filler = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshLambertMaterial({ color: 0xffffff }), fillerN);
+  const mtx = new THREE.Matrix4();
+  for (let i = 0; i < fillerN; i++) {
+    const h = rnd(2, 9), w = rnd(3, 4.5);
+    mtx.compose(new THREE.Vector3(-65 + i * 5.2, h / 2, -15.5 - rnd(0, 3)), new THREE.Quaternion(), new THREE.Vector3(w, h, rnd(3, 4.5)));
+    filler.setMatrixAt(i, mtx);
+    filler.setColorAt(i, new THREE.Color(pick([0xf3eee6, 0xe8dccb, 0xdfe7ec, 0xf6e3d3])));
+  }
+  filler.castShadow = true; filler.receiveShadow = true; world.add(filler);
+
+  // пальмы вдоль набережной
+  for (let x = -60; x <= 60; x += 6) world.add(palm(x + 3, 7.6 + (x % 12 === 0 ? 0.4 : -0.4), rnd(0.85, 1.1)));
+  for (let x = -60; x <= 60; x += 9) world.add(palm(x, -6.2, 0.75));
+  // зонтики и лежаки
+  for (let x = -60; x <= 60; x += 4.5) {
+    if (Math.random() < 0.35) continue;
+    const z = rnd(10, 12.5);
+    const pole = box(0.06, 1.3, 0.06, lam(0xffffff), x, 0.65, z); world.add(pole);
+    const um = new THREE.Mesh(new THREE.ConeGeometry(0.9, 0.35, 8), lam(pick([0xffffff, C.accent, 0xffc53d, 0x1b9bd1]))); um.position.set(x, 1.35, z); um.castShadow = true; world.add(um);
+    world.add(box(0.5, 0.12, 1.2, lam(0xffffff), x + 0.7, 0.1, z + 0.3));
+  }
+  // пирс у марины
+  world.add(box(1.4, 0.3, 14, lam(0xa98458), 14, 0.05, 20));
+  world.add(box(1.4, 0.3, 14, lam(0xa98458), -16, 0.05, 20));
+
+  // яхты
+  for (let i = 0; i < 7; i++) {
+    const y = new THREE.Group();
+    const hull = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.6, 1.1), lam(0xffffff)); hull.position.y = 0.2; y.add(hull);
+    y.add(box(1.4, 0.5, 0.8, lam(0xdfe9ef), -0.2, 0.7, 0));
+    if (i % 2) { const mast = box(0.06, 3.5, 0.06, lam(0xffffff), 0.2, 2.2, 0); y.add(mast); const sail = new THREE.Mesh(new THREE.ConeGeometry(0.9, 3, 3), lam(0xfafafa)); sail.position.set(0.7, 2.0, 0); sail.scale.z = 0.15; y.add(sail); }
+    y.position.set(rnd(-60, 60), 0, rnd(18, 45));
+    y.userData = { v: rnd(0.6, 1.8) * (Math.random() < 0.5 ? -1 : 1), bob: Math.random() * 6 };
+    if (y.userData.v < 0) y.rotation.y = Math.PI;
+    world.add(y); yachts.push(y);
+  }
+
+  // участки
+  cityState(code).plots.forEach((p, idx) => {
+    const pos = plotPos(p);
+    const g = new THREE.Group(); g.position.set(pos.x, 0, pos.z);
+    const pad = box(4.8, 0.12, 4.8, lam(0xd9c49a), 0, 0.06, 0, false); pad.userData.plot = idx; g.add(pad);
+    const hit = new THREE.Mesh(new THREE.BoxGeometry(5, 6, 5), new THREE.MeshBasicMaterial({ visible: false })); hit.position.y = 3; hit.userData.plot = idx; g.add(hit);
+    pickables.push(hit);
+    world.add(g);
+    plotObjs[idx] = { group: g, pad, building: null, plus: null, coin: null, sale: null, crane: null };
+    refreshPlot(idx);
+  });
+  updateHUD();
+}
+
+function refreshPlot(idx) {
+  const p = curPlots()[idx], o = plotObjs[idx]; if (!o) return;
+  if (o.building) { o.group.remove(o.building); o.building.traverse((x) => x.geometry && x.geometry.dispose()); o.building = null; }
+  if (o.plus) { o.group.remove(o.plus); o.plus = null; }
+  if (o.sale) { o.group.remove(o.sale); o.sale = null; }
+  if (o.coin) { o.group.remove(o.coin); coinMeshes = coinMeshes.filter((c) => c !== o.coin); o.coin = null; }
+  if (!p.b) {
+    o.pad.material = lam(0xd9c49a);
+    const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: plusTex, depthWrite: false }));
+    s.scale.set(1.7, 1.7, 1); s.position.y = 1.4; o.group.add(s); o.plus = s;
+    return;
+  }
+  const mine = p.b.owner === 'me';
+  o.pad.material = lam(mine ? 0x56c6e0 : 0xcbb88f);
+  o.building = buildingMesh(p.b, S.city);
+  if (isExpired(p.b)) o.building.traverse((x) => { if (x.isMesh && x.material && x.material.color) { x.material = x.material.clone(); x.material.color.multiplyScalar(0.7); } });
+  o.group.add(o.building);
+  if (p.b.listing) {
+    const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: saleTex(), depthWrite: false }));
+    s.scale.set(2.2, 1.1, 1); s.position.y = o.building.userData.height + 1.0; o.group.add(s); o.sale = s;
+  }
+  if (isReady(p.b)) addCoin(idx);
+}
+
+function addCoin(idx) {
+  const o = plotObjs[idx]; if (!o || o.coin || !o.building) return;
+  const c = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 0.16, 28), GOLD);
+  c.rotation.x = Math.PI / 2; c.position.y = o.building.userData.height + 1.3; c.userData.baseY = c.position.y; c.userData.plot = idx;
+  o.group.add(c); o.coin = c; coinMeshes.push(c);
+}
+
+function playBuildAnim(idx) {
+  const o = plotObjs[idx]; if (!o || !o.building) return;
+  const crane = craneMesh(o.building.userData.height + 2.5);
+  o.group.add(crane); o.crane = crane;
+  o.building.scale.y = 0.01;
+  if (o.coin) o.coin.visible = false;
+  if (o.sale) o.sale.visible = false;
+  anims.push({ idx, t0: performance.now(), dur: 2500, crane, b: o.building });
+  // пыль
+  for (let i = 0; i < 10; i++) {
+    const d = new THREE.Mesh(new THREE.SphereGeometry(rnd(0.2, 0.45), 6, 4), new THREE.MeshBasicMaterial({ color: 0xe8dcc2, transparent: true, opacity: 0.8 }));
+    d.position.set(rnd(-2, 2), 0.3, rnd(-2, 2)); o.group.add(d);
+    anims.push({ dust: d, t0: performance.now(), dur: 1800 + Math.random() * 700, g: o.group, vx: rnd(-0.6, 0.6), vz: rnd(-0.6, 0.6) });
+  }
+}
+
+// --- camera ---
+function resize() {
+  const w = window.innerWidth, h = window.innerHeight;
+  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+  const portrait = h > w;
+  cam.minD = 16; cam.maxD = portrait ? 70 : 55;
+}
+window.addEventListener('resize', resize);
+let lastInteract = performance.now();
+function applyCamera(t) {
+  const idle = performance.now() - lastInteract > 5000;
+  const sway = idle ? 1 : 0;
+  cam.ox += ((sway ? Math.sin(t * 0.00012) * 4 : 0) - cam.ox) * 0.01;
+  cam.oz += ((sway ? Math.sin(t * 0.0002) * 0.8 : 0) - cam.oz) * 0.01;
+  cam.dist += (cam.targetDist - cam.dist) * 0.12;
+  const tx = cam.tx + cam.ox, tz = cam.tz + cam.oz;
+  camera.position.set(tx + Math.sin(t * 0.00009) * 0.6 * sway, cam.dist * Math.sin(PITCH), tz - cam.dist * Math.cos(PITCH));
+  camera.lookAt(tx, 0, tz);
+  sunLight.position.set(tx - 30, 50, tz - 10); sunLight.target.position.set(tx, 0, tz);
+}
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), gplane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+function groundAt(cx, cy) {
+  ndc.set((cx / window.innerWidth) * 2 - 1, -(cy / window.innerHeight) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  const v = new THREE.Vector3(); return ray.ray.intersectPlane(gplane, v) ? v : null;
+}
+function flyTo(x, z, dist) {
+  const from = { tx: cam.tx, tz: cam.tz, d: cam.targetDist }, t0 = performance.now();
+  flight = { from, to: { tx: clamp(x, -26, 26), tz: clamp(z, -12, 14), d: dist || cam.targetDist }, t0, dur: 700 };
+}
+let flight = null;
+
+// pointer controls
+const pointers = new Map();
+let dragStart = null, moved = false, pinch0 = null;
+canvas.addEventListener('pointerdown', (e) => {
+  Audio.init();
+  canvas.setPointerCapture(e.pointerId);
+  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  lastInteract = performance.now(); flight = null;
+  if (pointers.size === 1) { dragStart = { x: e.clientX, y: e.clientY, g: groundAt(e.clientX, e.clientY), tx: cam.tx, tz: cam.tz }; moved = false; }
+  if (pointers.size === 2) { const [a, b] = [...pointers.values()]; pinch0 = { d: Math.hypot(a.x - b.x, a.y - b.y), dist: cam.targetDist }; moved = true; }
+});
+canvas.addEventListener('pointermove', (e) => {
+  if (!pointers.has(e.pointerId)) return;
+  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  lastInteract = performance.now();
+  if (pointers.size === 2 && pinch0) {
+    const [a, b] = [...pointers.values()]; const d = Math.hypot(a.x - b.x, a.y - b.y);
+    cam.targetDist = clamp(pinch0.dist * pinch0.d / Math.max(d, 1), cam.minD, cam.maxD); cam.dist = cam.targetDist;
+    return;
+  }
+  if (!dragStart) return;
+  if (Math.hypot(e.clientX - dragStart.x, e.clientY - dragStart.y) > 8) moved = true;
+  if (moved && dragStart.g) {
+    // перенос камеры так, чтобы точка земли «прилипла» к пальцу
+    const save = { tx: cam.tx, tz: cam.tz };
+    cam.tx = dragStart.tx; cam.tz = dragStart.tz; cam.ox = 0; cam.oz = 0; applyCamera(performance.now());
+    const g = groundAt(e.clientX, e.clientY);
+    if (g) { cam.tx = clamp(dragStart.tx + (dragStart.g.x - g.x), -26, 26); cam.tz = clamp(dragStart.tz + (dragStart.g.z - g.z), -12, 14); }
+    else { cam.tx = save.tx; cam.tz = save.tz; }
+  }
+});
+function endPointer(e) {
+  const wasTap = pointers.size === 1 && !moved && dragStart;
+  pointers.delete(e.pointerId);
+  if (pointers.size < 2) pinch0 = null;
+  if (wasTap) onTap(e.clientX, e.clientY);
+  if (pointers.size === 0) dragStart = null;
+  else { const [a] = [...pointers.values()]; dragStart = { x: a.x, y: a.y, g: groundAt(a.x, a.y), tx: cam.tx, tz: cam.tz }; }
+}
+canvas.addEventListener('pointerup', endPointer);
+canvas.addEventListener('pointercancel', (e) => { pointers.delete(e.pointerId); pinch0 = null; dragStart = null; });
+canvas.addEventListener('wheel', (e) => { e.preventDefault(); lastInteract = performance.now(); cam.targetDist = clamp(cam.targetDist * (1 + e.deltaY * 0.0012), cam.minD, cam.maxD); }, { passive: false });
+
+function onTap(cx, cy) {
+  ndc.set((cx / window.innerWidth) * 2 - 1, -(cy / window.innerHeight) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  // сначала монеты
+  const ch = ray.intersectObjects(coinMeshes, false);
+  if (ch.length) { collectOne(ch[0].object.userData.plot, cx, cy); return; }
+  const hits = ray.intersectObjects(pickables, false);
+  if (hits.length) { Audio.tap(); openPlot(hits[0].object.userData.plot); }
+}
+
+// --- render loop ---
+let lastT = performance.now(), frame = 0;
+const tmpM = new THREE.Matrix4(), tmpQ = new THREE.Quaternion(), tmpS = new THREE.Vector3(1, 1, 1), tmpV = new THREE.Vector3();
+function loop(t) {
+  requestAnimationFrame(loop);
+  const dt = Math.min(0.05, (t - lastT) / 1000); lastT = t; frame++;
+  if (flight) {
+    const k = clamp((t - flight.t0) / flight.dur, 0, 1), e = 1 - Math.pow(1 - k, 3);
+    cam.tx = flight.from.tx + (flight.to.tx - flight.from.tx) * e;
+    cam.tz = flight.from.tz + (flight.to.tz - flight.from.tz) * e;
+    cam.targetDist = flight.from.d + (flight.to.d - flight.from.d) * e;
+    if (k >= 1) flight = null;
+  }
+  applyCamera(t);
+  // вода
+  if (water && frame % 2 === 0) {
+    const pos = water.geometry.attributes.position, a = pos.array, s = t * 0.001;
+    for (let i = 0; i < a.length; i += 3) { const x = waterBase[i], z = waterBase[i + 2]; a[i + 1] = Math.sin(x * 0.18 + s * 1.3) * 0.18 + Math.cos(z * 0.22 + s) * 0.16; }
+    pos.needsUpdate = true;
+  }
+  if (foam) { foam.position.z = 14.3 + Math.sin(t * 0.0012) * 0.5; foam.material.opacity = 0.45 + Math.sin(t * 0.0012 + 1) * 0.25; }
+  // машины
+  if (cars) {
+    for (let i = 0; i < carData.length; i++) {
+      const c = carData[i]; c.x += c.dir * c.v * dt; if (c.x > 70) c.x = -70; if (c.x < -70) c.x = 70;
+      tmpQ.setFromAxisAngle(tmpV.set(0, 1, 0), c.dir > 0 ? 0 : Math.PI);
+      tmpM.compose(tmpV.set(c.x, 0.4, c.z), tmpQ, tmpS); cars.setMatrixAt(i, tmpM);
+    }
+    cars.instanceMatrix.needsUpdate = true;
+  }
+  // яхты
+  for (const y of yachts) { y.position.x += y.userData.v * dt; if (y.position.x > 80) y.position.x = -80; if (y.position.x < -80) y.position.x = 80; y.position.y = Math.sin(t * 0.0015 + y.userData.bob) * 0.12; y.rotation.z = Math.sin(t * 0.001 + y.userData.bob) * 0.04; }
+  // монеты
+  for (const c of coinMeshes) { c.rotation.z += dt * 2.2; c.position.y = c.userData.baseY + Math.sin(t * 0.003 + c.userData.plot) * 0.18; }
+  // стройка
+  for (let i = anims.length - 1; i >= 0; i--) {
+    const a = anims[i], k = clamp((t - a.t0) / a.dur, 0, 1);
+    if (a.dust) {
+      a.dust.position.x += a.vx * dt; a.dust.position.z += a.vz * dt; a.dust.position.y += dt * 0.8;
+      a.dust.material.opacity = 0.8 * (1 - k); a.dust.scale.setScalar(1 + k * 1.5);
+      if (k >= 1) { a.g.remove(a.dust); a.dust.geometry.dispose(); anims.splice(i, 1); }
+      continue;
+    }
+    const steps = Math.floor(k * 6) / 6; // поэтажный рост
+    a.b.scale.y = Math.max(0.01, steps + (k * 6 % 1) * 0.12 / 6);
+    a.crane.userData.jib.rotation.y = Math.sin(k * Math.PI * 3) * 0.8;
+    if (k >= 1) {
+      a.b.scale.y = 1; const o = plotObjs[a.idx];
+      if (o) { o.group.remove(a.crane); o.crane = null; if (o.coin) o.coin.visible = true; if (o.sale) o.sale.visible = true; }
+      anims.splice(i, 1);
+    }
+  }
+  renderer.render(scene, camera);
+}
+
+// =========================================================================
+//  GAME ACTIONS
+// =========================================================================
+function toast(msg) {
+  const el = document.createElement('div'); el.className = 'toast'; el.textContent = msg;
+  $('toasts').appendChild(el); setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; }, 2600); setTimeout(() => el.remove(), 3000);
+}
+function worldToScreen(idx) {
+  const o = plotObjs[idx]; if (!o) return { x: innerWidth / 2, y: innerHeight / 2 };
+  const v = new THREE.Vector3(); (o.coin || o.group).getWorldPosition(v); v.project(camera);
+  return { x: (v.x + 1) / 2 * innerWidth, y: (1 - v.y) / 2 * innerHeight };
+}
+function flyCoins(from, n) {
+  const w = $('wallet').getBoundingClientRect(), tx = w.left + w.width * 0.75, ty = w.top + w.height / 2;
+  for (let i = 0; i < n; i++) {
+    const c = document.createElement('div'); c.className = 'flycoin'; c.textContent = '☀';
+    const sx = from.x + rnd(-20, 20), sy = from.y + rnd(-20, 20);
+    c.style.left = sx - 13 + 'px'; c.style.top = sy - 13 + 'px'; document.body.appendChild(c);
+    const anim = c.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${(tx - sx) * 0.3}px,${(ty - sy) * 0.1 - 60}px) scale(1.2)`, opacity: 1, offset: 0.35 }, { transform: `translate(${tx - sx}px,${ty - sy}px) scale(.6)`, opacity: 0.9 }], { duration: 750 + i * 60, easing: 'cubic-bezier(.4,0,.6,1)' });
+    anim.onfinish = () => c.remove();
+  }
+  setTimeout(() => { $('wallet').classList.remove('bump'); void $('wallet').offsetWidth; $('wallet').classList.add('bump'); Audio.coin(); }, 750);
+}
+
+function collectOne(idx, cx, cy, silent) {
+  const p = curPlots()[idx]; if (!p || !p.b || !isReady(p.b)) return 0;
+  const net = incomeOf(p.b, p.line);
+  S.income += net; S.stats.collected += net;
+  p.b.readyAt = Date.now() + DAY; // правило «пауза при неактивности»: следующее начисление стартует только после сбора
+  addLog(`Бонус сезона: ${TYPES[p.b.type].short} №${p.id} (−${SERVICE_PCT}% обслуживание)`, net, 'in');
+  const o = plotObjs[idx]; if (o && o.coin) { o.group.remove(o.coin); coinMeshes = coinMeshes.filter((c) => c !== o.coin); o.coin = null; }
+  if (!silent) { flyCoins(cx != null ? { x: cx, y: cy } : worldToScreen(idx), 5); toast(`+${sun(net)} в «Мой доход»`); }
+  save(); updateHUD(); return net;
+}
+function collectAll() {
+  Audio.init();
+  let total = 0, count = 0;
+  curPlots().forEach((p, idx) => { if (p.b && isReady(p.b)) { const pt = worldToScreen(idx); const v = collectOne(idx, 0, 0, true); if (v) { total += v; count++; flyCoins(pt, 3); } } });
+  if (count) toast(`Собрано ${sun(total)} с ${count} ${count === 1 ? 'здания' : 'зданий'}`);
+  if (sheetCtx) renderSheet();
+}
+
+function construct(idx, type) {
+  const p = curPlots()[idx], t = TYPES[type];
+  if (p.b) return;
+  if (!spend(t.price, `Строительство: ${t.short}, участок №${p.id}`)) { Audio.err(); toast('Недостаточно ☀ на балансе'); return; }
+  splitPrimary(t.price);
+  const now = Date.now();
+  p.b = { type, level: 1, owner: 'me', history: ['Вы'], renewedAt: now, expiresAt: now + LICENSE_DAYS * DAY, readyAt: now + DAY, listing: null };
+  S.stats.built++;
+  refreshPlot(idx); playBuildAnim(idx); Audio.build();
+  closeSheet(); save(); updateHUD();
+  setTimeout(() => toast(`${t.emoji} ${t.short} построен! Первый бонус — через ${timeLeft(DAY)}`), 2600);
+}
+function upgrade(idx) {
+  const p = curPlots()[idx], b = p.b; if (!b || b.level >= 5) return;
+  const cost = upgradeCost(b);
+  if (!spend(cost, `Улучшение: ${TYPES[b.type].short} №${p.id} → ур. ${b.level + 1}`)) { Audio.err(); toast('Недостаточно ☀'); return; }
+  splitPrimary(cost);
+  b.level++; S.stats.upgrades++;
+  refreshPlot(idx); playBuildAnim(idx); Audio.build(); save(); updateHUD(); renderSheet();
+}
+function renew(idx) {
+  const p = curPlots()[idx], b = p.b; const cost = renewCost(b);
+  if (!spend(cost, `Продление лицензии: ${TYPES[b.type].short} №${p.id}`)) { Audio.err(); toast('Недостаточно ☀'); return; }
+  splitPrimary(cost);
+  const now = Date.now(); b.expiresAt = Math.max(now, b.expiresAt) + LICENSE_DAYS * DAY; b.renewedAt = now; if (b.readyAt < now) b.readyAt = now + DAY;
+  refreshPlot(idx); Audio.pay(); toast('Лицензия продлена на 90 игровых суток, износ сброшен'); save(); updateHUD(); renderSheet();
+}
+function listForSale(idx, price) {
+  const p = curPlots()[idx]; p.b.listing = { price, since: Date.now() };
+  addLog(`Выставлено на Рынок: ${TYPES[p.b.type].short} №${p.id} за ${sun(price)}`, 0);
+  refreshPlot(idx); save(); renderSheet(); toast('Объявление опубликовано на «Рынке города»');
+}
+function unlist(idx) {
+  const p = curPlots()[idx]; p.b.listing = null; if (p.b.readyAt < Date.now()) p.b.readyAt = Date.now() + DAY;
+  refreshPlot(idx); save(); renderSheet(); toast('Объявление снято');
+}
+function buyListing(cityCode, idx) {
+  const p = cityState(cityCode).plots[idx], b = p.b; if (!b || !b.listing || b.owner === 'me') return;
+  const price = b.listing.price;
+  if (!spend(price, `Покупка на Рынке: ${TYPES[b.type].short} №${p.id} (${CITIES[cityCode].name})`)) { Audio.err(); toast('Недостаточно ☀'); return; }
+  S.platform.fees += Math.round(price * MARKET_FEE / 100);
+  b.owner = 'me'; b.history.push('Вы'); b.listing = null; b.readyAt = Date.now() + DAY;
+  S.stats.bought++;
+  if (cityCode === S.city) { refreshPlot(idx); playBuildAnim(idx); }
+  Audio.pay(); toast(`${TYPES[b.type].emoji} Теперь это ваш объект!`); save(); updateHUD();
+  if (cityCode !== S.city) switchCity(cityCode, idx); else { flyTo(plotPos(p).x, plotPos(p).z, 26); openPlot(idx); }
+}
+
+// NPC-симуляция рынка
+function simulateMarket() {
+  const now = Date.now();
+  for (const code of Object.keys(S.cities)) {
+    const plots = S.cities[code].plots;
+    plots.forEach((p, idx) => {
+      const b = p.b; if (!b) return;
+      if (b.owner === 'me' && b.listing) {
+        const ratio = b.listing.price / Math.max(1, buildingValue(b));
+        const waited = (now - b.listing.since) / 1000;
+        const chance = ratio <= 0.9 ? 0.25 : ratio <= 1.05 ? 0.08 : ratio <= 1.25 ? 0.03 : ratio <= 1.5 ? 0.008 : 0;
+        if (waited > 12 && Math.random() < chance) {
+          const buyer = pick(NPC), price = b.listing.price, fee = Math.round(price * MARKET_FEE / 100), net = price - fee;
+          S.platform.fees += fee;
+          S.hold.push({ amt: net, releaseAt: now + HOLD_MS, text: `${TYPES[b.type].short} №${p.id}` });
+          addLog(`Продажа на Рынке: ${TYPES[b.type].short} №${p.id} → ${buyer}. Комиссия ${MARKET_FEE}%: ${sun(fee)}. Проверка безопасной сделки`, net, 'hold');
+          b.owner = buyer; b.history.push(buyer); b.listing = null; b.readyAt = now + DAY;
+          S.stats.sold++;
+          if (code === S.city) refreshPlot(idx);
+          toast(`🤝 ${buyer} купил(а) ваш объект за ${sun(price)}`); Audio.pay();
+        }
+      } else if (b.owner !== 'me') {
+        if (b.listing && Math.random() < 0.004) { b.listing = null; if (code === S.city) refreshPlot(idx); }
+        else if (!b.listing && Math.random() < 0.003) { b.listing = { price: Math.round(buildingValue(b) * rnd(0.92, 1.3) / 100) * 100, since: now }; if (code === S.city) refreshPlot(idx); }
+        if (isExpired(b)) { b.expiresAt = now + rnd(40, 90) * DAY; b.renewedAt = now; }
+      }
+      // свободные участки иногда застраивают другие игроки
+    });
+    plots.forEach((p, idx) => {
+      if (!p.b && Math.random() < 0.0015) {
+        const owner = pick(NPC);
+        p.b = { type: pick([1, 2, 3, 4]), level: 1, owner, history: [owner], renewedAt: now, expiresAt: now + LICENSE_DAYS * DAY, readyAt: now + DAY, listing: null };
+        if (code === S.city && !(sheetCtx && sheetCtx.kind === 'plot' && sheetCtx.idx === idx)) { refreshPlot(idx); playBuildAnim(idx); }
+        else if (code === S.city) { p.b = null; }
+      }
+    });
+  }
+  // HOLD → доход
+  const rel = S.hold.filter((h) => h.releaseAt <= now);
+  if (rel.length) {
+    S.hold = S.hold.filter((h) => h.releaseAt > now);
+    rel.forEach((h) => { S.income += h.amt; addLog(`Сделка подтверждена: ${h.text}`, 0, 'ok'); toast(`✅ ${sun(h.amt)} зачислено в «Мой доход»`); });
+  }
+}
+
+// =========================================================================
+//  UI: HUD, sheets
+// =========================================================================
+function updateHUD() {
+  $('balP').textContent = fmt(S.purchase);
+  $('balI').textContent = fmt(S.income);
+  const C = CITIES[S.city]; $('cityName').textContent = C.name; $('cityFlag').textContent = C.flag;
+  let ready = 0, total = 0;
+  curPlots().forEach((p) => { if (p.b && isReady(p.b)) { ready++; total += incomeOf(p.b, p.line); } });
+  const btn = $('collect');
+  if (ready) { btn.classList.remove('hidden'); $('collectTxt').textContent = `Забрать доход · ${fmt(total)} ☀`; btn.title = ready + ' зд.'; $('hint').style.opacity = 0; }
+  else { btn.classList.add('hidden'); }
+  const mineCount = curPlots().filter((p) => p.b && p.b.owner === 'me').length;
+  $('hint').style.opacity = (!ready && mineCount === 0 && !sheetCtx) ? 1 : 0;
+  // «погода»
+  const ratio = S.platform.pool ? 1 : 1;
+  $('season').textContent = ratio >= 1 ? '☀️ Солнечный сезон' : '🌤 Бархатный сезон';
+}
+setInterval(() => {
+  // появление созревших монет
+  curPlots().forEach((p, idx) => {
+    if (!p.b) return;
+    if (isReady(p.b) && !plotObjs[idx].coin && !anims.some((a) => a.idx === idx)) addCoin(idx);
+    if (p.b.owner === 'me' && isExpired(p.b) && !p.b._exp) { p.b._exp = 1; refreshPlot(idx); toast(`Лицензия ${TYPES[p.b.type].short} №${p.id} истекла — продлите, чтобы получать бонусы`); }
+  });
+  simulateMarket();
+  updateHUD();
+  if (sheetCtx && sheetCtx.live) renderSheet(true);
+  save();
+}, 1000);
+
+let sheetCtx = null, lastSheetHtml = '', sheetPressing = false;
+$('sheet').addEventListener('pointerdown', () => { sheetPressing = true; });
+['pointerup', 'pointercancel'].forEach((ev) => window.addEventListener(ev, () => setTimeout(() => { sheetPressing = false; }, 80)));
+function openSheet(ctx) { sheetCtx = ctx; renderSheet(); $('sheet').classList.add('on'); $('scrim').classList.add('on'); document.body.classList.add('sheet-on'); $('hint').style.opacity = 0; }
+function closeSheet() { sheetCtx = null; $('sheet').classList.remove('on'); $('scrim').classList.remove('on'); document.body.classList.remove('sheet-on'); updateHUD(); }
+$('sheetClose').onclick = closeSheet; $('scrim').onclick = closeSheet;
+// свайп вниз для закрытия
+(() => { let y0 = null; const sh = $('sheet');
+  sh.addEventListener('touchstart', (e) => { if ($('sheetBody').scrollTop <= 0) y0 = e.touches[0].clientY; else y0 = null; }, { passive: true });
+  sh.addEventListener('touchmove', (e) => { if (y0 == null) return; const dy = e.touches[0].clientY - y0; if (dy > 0 && innerWidth < 640) sh.style.transform = `translateY(${dy}px)`; }, { passive: true });
+  sh.addEventListener('touchend', (e) => { if (y0 == null) return; const dy = e.changedTouches[0].clientY - y0; sh.style.transform = ''; if (dy > 90 && innerWidth < 640) closeSheet(); y0 = null; });
+})();
+
+function openPlot(idx) {
+  const pos = plotPos(curPlots()[idx]);
+  const portrait = innerHeight > innerWidth;
+  flyTo(pos.x, pos.z + (portrait ? -5 : 0), Math.min(cam.targetDist, 30));
+  openSheet({ kind: 'plot', idx, live: true });
+}
+
+function lvlDots(l) { let s = '<span class="lv">'; for (let i = 1; i <= 5; i++) s += `<i class="${i <= l ? 'on' : ''}"></i>`; return s + '</span>'; }
+function bico(t, mine) { return `<div class="bico" style="background:${mine ? '#dff3fb' : '#f6ecdb'}">${t.emoji}</div>`; }
+
+function renderSheet(live) {
+  if (!sheetCtx) return;
+  const body = $('sheetBody');
+  const keepScroll = body.scrollTop;
+  // не перерисовываем, пока пользователь двигает ползунок
+  if (live && (sheetPressing || (document.activeElement && document.activeElement.type === 'range'))) return;
+  let html = '';
+  const k = sheetCtx.kind;
+  if (k === 'plot') html = plotSheet(sheetCtx.idx);
+  else if (k === 'market') html = marketSheet();
+  else if (k === 'wallet') html = walletSheet();
+  else if (k === 'profile') html = profileSheet();
+  else if (k === 'city') html = citySheet();
+  if (live && html === lastSheetHtml) return;
+  lastSheetHtml = html;
+  body.innerHTML = html;
+  body.scrollTop = keepScroll;
+  bindSheet();
+}
+
+function plotSheet(idx) {
+  const p = curPlots()[idx], line = p.line === 'sea' ? 'Первая линия моря' : 'У дороги';
+  if (!p.b) {
+    $('sheetTitle').textContent = `Участок №${p.id}`;
+    let h = `<p class="sub">${esc(CITIES[S.city].name)} · ${line}${p.line === 'sea' ? ' · <span class="tag gold">+10% к бонусу</span>' : ''}</p>`;
+    for (let t = 1; t <= 5; t++) {
+      const T = TYPES[t];
+      const daily = Math.round(T.daily * (p.line === 'sea' ? 1.1 : 1));
+      const can = spendable() >= T.price;
+      h += `<div class="card"><div class="row">${bico(T)}<div class="grow"><div class="bname">${T.name}</div>
+        <div class="meta">≈ ${sun(daily, true)} / сутки · лицензия ${LICENSE_DAYS} сут.</div></div>
+        <button class="btn sm ${can ? 'primary' : 'ghost'}" data-act="build" data-t="${t}" ${can ? '' : 'disabled'}>${fmt(T.price)} ☀</button></div></div>`;
+    }
+    h += `<p class="note">1 игровые сутки = ${DAY / 60000} мин. Бонус активности появляется монеткой над крышей; следующий начисляется только после того, как вы заберёте текущий. ${SERVICE_PCT}% удерживается на обслуживание здания.</p>`;
+    return h;
+  }
+  const b = p.b, T = TYPES[b.type], mine = b.owner === 'me';
+  $('sheetTitle').textContent = `${T.name}`;
+  const cond = conditionOf(b), left = b.expiresAt - Date.now(), exp = left <= 0;
+  let h = `<p class="sub">Участок №${p.id} · ${line} · ${mine ? '<span class="tag">Ваш объект</span>' : 'Владелец: ' + esc(b.owner)}</p>`;
+  h += `<div class="card"><div class="row">${bico(T, mine)}<div class="grow"><div class="bname">Уровень ${b.level} из 5</div><div style="margin-top:6px">${lvlDots(b.level)}</div></div>
+        <div style="text-align:right"><div class="meta">Оценка</div><div class="price">${sun(buildingValue(b))}</div></div></div></div>`;
+  h += `<div class="card"><div class="kv">
+    <span>Бонус за сутки</span><span>${sun(incomeOf(b, p.line), true)}</span>
+    <span>Износ / состояние</span><span>${cond}%</span>
+    <span>Лицензия</span><span>${exp ? '<span class="tag bad">истекла</span>' : 'ещё ' + Math.ceil(left / DAY) + ' сут.'}</span>
+    ${mine && !exp && !b.listing ? `<span>Следующая монета</span><span>${isReady(b) ? '<span class="tag gold">готова!</span>' : timeLeft(b.readyAt - Date.now())}</span>` : ''}
+    ${b.listing ? `<span>На Рынке</span><span>${sun(b.listing.price)}</span>` : ''}
+  </div><div class="bar"><i style="width:${cond}%;background:${cond > 75 ? 'var(--ok)' : cond > 62 ? 'var(--gold2)' : 'var(--bad)'}"></i></div></div>`;
+  h += `<div class="card"><div class="meta" style="margin:0 0 6px">История владельцев</div><div style="font-size:14px">${b.history.map(esc).join(' → ')}</div></div>`;
+  if (mine) {
+    h += '<div class="btns">';
+    if (isReady(b)) h += `<button class="btn gold full" data-act="collect">🪙 Забрать ${sun(incomeOf(b, p.line), true)}</button>`;
+    if (exp) h += `<button class="btn primary full" data-act="renew">Продлить лицензию · ${sun(renewCost(b))}</button>`;
+    if (!b.listing) {
+      h += `<div class="btns two" style="margin:0"><button class="btn primary" data-act="upgrade" ${b.level >= 5 || exp || spendable() < upgradeCost(b) ? 'disabled' : ''}>${b.level >= 5 ? 'Макс. уровень' : '⬆ Этаж · ' + fmt(upgradeCost(b)) + ' ☀'}</button>
+            <button class="btn ghost" data-act="sellform">Выставить на Рынок</button></div>`;
+      if (!exp && cond < 90) h += `<button class="btn ghost full" data-act="renew">Реновация и продление · ${sun(renewCost(b))}</button>`;
+    } else {
+      h += `<button class="btn danger full" data-act="unlist">Снять с продажи</button>`;
+    }
+    h += '</div>';
+    if (sheetCtx.sell && !b.listing) {
+      const v = buildingValue(b), price = sheetCtx.sellPrice || v;
+      h += `<div class="card" style="margin-top:12px"><div class="bname">Цена продажи</div>
+        <input type="range" id="sellRange" min="${Math.round(v * 0.5 / 100)}" max="${Math.round(v * 2 / 100)}" value="${Math.round(price / 100)}" step="1">
+        <div class="kv"><span>Цена для покупателя</span><span id="sp1">${sun(price)}</span>
+        <span>Комиссия платформы ${MARKET_FEE}%</span><span id="sp2">−${sun(Math.round(price * MARKET_FEE / 100))}</span>
+        <span>Вы получите</span><span id="sp3">${sun(price - Math.round(price * MARKET_FEE / 100))}</span></div>
+        <p class="note">Ниже оценки — продаётся быстрее. После продажи сумма 45 с проходит «Проверку безопасной сделки» (HOLD) и поступает в «Мой доход».</p>
+        <button class="btn primary full" data-act="list" style="margin-top:6px">Опубликовать объявление</button></div>`;
+    }
+  } else if (b.listing) {
+    const can = spendable() >= b.listing.price;
+    h += `<div class="btns"><button class="btn primary full" data-act="buy" ${can ? '' : 'disabled'}>Купить за ${sun(b.listing.price)}</button></div>
+      <p class="note">Безопасная покупка в 1 клик. Комиссия платформы ${MARKET_FEE}% уже включена в цену и удерживается из выручки продавца.</p>`;
+  } else {
+    h += `<p class="note">Объект сейчас не продаётся. Загляните на «Рынок города» — там появляются новые предложения.</p>`;
+  }
+  return h;
+}
+
+function marketSheet() {
+  $('sheetTitle').textContent = 'Рынок города';
+  const f = sheetCtx.filter || 'city', sort = sheetCtx.sort || 'price';
+  let items = [];
+  for (const code of CITY_ORDER) {
+    if (f === 'city' && code !== S.city) continue;
+    if (!S.cities[code]) continue;
+    S.cities[code].plots.forEach((p, idx) => { if (p.b && p.b.listing) items.push({ code, idx, p }); });
+  }
+  if (sort === 'price') items.sort((a, b) => a.p.b.listing.price - b.p.b.listing.price);
+  if (sort === 'level') items.sort((a, b) => b.p.b.level - a.p.b.level);
+  if (sort === 'deal') items.sort((a, b) => a.p.b.listing.price / buildingValue(a.p.b) - b.p.b.listing.price / buildingValue(b.p.b));
+  let h = `<p class="sub">Готовые здания, которые игроки выставили на продажу</p>
+    <div class="chips"><button data-f="city" class="${f === 'city' ? 'on' : ''}">${esc(CITIES[S.city].name)}</button><button data-f="all" class="${f === 'all' ? 'on' : ''}">Все города</button>
+    <span style="width:8px;flex:none"></span>
+    <button data-s="price" class="${sort === 'price' ? 'on' : ''}">Дешевле</button><button data-s="deal" class="${sort === 'deal' ? 'on' : ''}">Выгоднее</button><button data-s="level" class="${sort === 'level' ? 'on' : ''}">Уровень</button></div>`;
+  if (!items.length) h += `<div class="empty">Сейчас предложений нет.<br>Новые объявления появляются каждые несколько минут.</div>`;
+  for (const it of items) {
+    const b = it.p.b, T = TYPES[b.type], mine = b.owner === 'me';
+    const ratio = b.listing.price / buildingValue(b);
+    h += `<div class="card"><div class="row">${bico(T, mine)}<div class="grow"><div class="bname">${T.short} · ур. ${b.level}</div>
+      <div class="meta">${esc(CITIES[it.code].name)} · №${it.p.id} · ${it.p.line === 'sea' ? 'первая линия' : 'у дороги'} · ${mine ? 'ваше' : esc(b.owner)}</div>
+      <div class="meta">${ratio < 0.98 ? '<span class="tag ok">ниже оценки</span> ' : ''}≈ ${sun(incomeOf(b, it.p.line), true)}/сут.</div></div>
+      <div style="text-align:right;display:grid;gap:6px;justify-items:end"><div class="price">${sun(b.listing.price)}</div>
+      ${mine ? '<span class="tag">ваше</span>' : `<button class="btn sm primary" data-act="mbuy" data-c="${it.code}" data-i="${it.idx}" ${spendable() >= b.listing.price ? '' : 'disabled'}>Купить</button>`}
+      </div></div>
+      <button class="btn sm ghost full" style="margin-top:8px" data-act="show" data-c="${it.code}" data-i="${it.idx}">Показать на карте</button></div>`;
+  }
+  h += `<p class="note">Цена продавца включает комиссию платформы ${MARKET_FEE}%. Сделки проходят через защищённый буфер HOLD.</p>`;
+  return h;
+}
+
+function walletSheet() {
+  $('sheetTitle').textContent = 'Кошелёк';
+  const tab = sheetCtx.tab || 'top';
+  const holdSum = S.hold.reduce((a, h) => a + h.amt, 0);
+  let h = `<div class="card"><div class="kv">
+    <span>Баланс покупок</span><span>${sun(S.purchase, true)}</span>
+    <span>Мой доход</span><span>${sun(S.income, true)}</span>
+    ${holdSum ? `<span>Проверка безопасной сделки</span><span><span class="tag hold">HOLD</span> ${sun(holdSum, true)}</span>` : ''}
+  </div></div>
+  <div class="tabs"><button data-tab="top" class="${tab === 'top' ? 'on' : ''}">Пополнить</button><button data-tab="move" class="${tab === 'move' ? 'on' : ''}">Перевести</button><button data-tab="log" class="${tab === 'log' ? 'on' : ''}">История</button></div>`;
+  if (tab === 'top') {
+    const bLeft = S.bonusAt - Date.now(), sLeft = S.sponsorAt - Date.now();
+    h += `<div class="card"><div class="row"><div class="bico" style="background:#fff3d6">🎁</div><div class="grow"><div class="bname">Бонус мэрии</div><div class="meta">+1 000 ☀ на Баланс покупок раз в 5 минут</div></div>
+      <button class="btn sm gold" data-act="bonus" ${bLeft > 0 ? 'disabled' : ''}>${bLeft > 0 ? timeLeft(bLeft) : 'Забрать'}</button></div></div>
+      <div class="card"><div class="row"><div class="bico" style="background:#e9f6fc">📺</div><div class="grow"><div class="bname">Задание спонсора</div><div class="meta">Посмотрите ролик партнёра — +500 ☀</div></div>
+      <button class="btn sm primary" data-act="sponsor" ${sLeft > 0 ? 'disabled' : ''}>${sLeft > 0 ? timeLeft(sLeft) : 'Смотреть'}</button></div></div>
+      <div class="card" style="opacity:.75"><div class="row"><div class="bico" style="background:#eef2f5">💳</div><div class="grow"><div class="bname">СБП / Карта / USDT</div><div class="meta">Подключается на следующем этапе</div></div><span class="tag">скоро</span></div></div>`;
+  } else if (tab === 'move') {
+    h += `<div class="card"><div class="bname">Реинвест без комиссии</div><p class="note" style="margin-top:4px">Переведите «Мой доход» на Баланс покупок, чтобы строить и улучшать здания. Строить можно и напрямую из дохода — он списывается после Баланса покупок.</p>
+      <button class="btn primary full" data-act="reinvest" ${S.income > 0 ? '' : 'disabled'} style="margin-top:8px">Перевести ${sun(S.income, true)}</button></div>
+      <div class="card" style="opacity:.75"><div class="row"><div class="grow"><div class="bname">Вывод на карту / СБП</div><div class="meta">Недоступно: в этой версии игровая валюта не выводится</div></div><span class="tag">скоро</span></div></div>`;
+  } else {
+    h += `<div class="log">${S.log.length ? S.log.map((l) => `<div class="it"><div class="t">${hhmm(l.t)}</div><div class="grow">${esc(l.text)}</div>
+      ${l.amt ? `<div class="${l.amt > 0 ? 'plus' : 'minus'}">${l.amt > 0 ? '+' : ''}${fmt(l.amt, true)}</div>` : l.kind === 'ok' ? '<span class="tag ok">PAID</span>' : ''}</div>`).join('') : '<div class="empty">Пока операций нет</div>'}</div>`;
+  }
+  h += `<p class="note">☀ — игровая валюта SUNBAY. В текущей версии не покупается и не выводится за реальные деньги.</p>`;
+  return h;
+}
+
+function profileSheet() {
+  $('sheetTitle').textContent = 'Профиль и настройки';
+  let mine = 0, worth = 0;
+  for (const code of Object.keys(S.cities)) S.cities[code].plots.forEach((p) => { if (p.b && p.b.owner === 'me') { mine++; worth += buildingValue(p.b); } });
+  const st = S.stats;
+  let h = `<div class="card"><div class="kv">
+    <span>Мои здания</span><span>${mine}</span><span>Оценка имущества</span><span>${sun(worth)}</span>
+    <span>Построено / улучшено</span><span>${st.built} / ${st.upgrades}</span><span>Куплено / продано на Рынке</span><span>${st.bought} / ${st.sold}</span>
+    <span>Собрано бонусов</span><span>${sun(st.collected, true)}</span></div></div>
+  <div class="card"><div class="row"><div class="grow"><div class="bname">Звук</div><div class="meta">Прибой, стройка, монеты</div></div><button class="toggle ${S.sound ? 'on' : ''}" data-act="sound" aria-label="Звук"></button></div></div>
+  <div class="card"><div class="row"><div class="grow"><div class="bname">Иконка на экране «Домой»</div><div class="meta">${isStandalone() ? 'Уже установлено ✓' : 'Открывайте SUNBAY как приложение'}</div></div>${isStandalone() ? '' : '<button class="btn sm primary" data-act="install">Установить</button>'}</div></div>
+  <div class="card"><div class="bname" style="margin-bottom:6px">Экономика платформы (демо-учёт)</div><div class="kv">
+    <span>Доля создателя 30%</span><span>${sun(S.platform.founder)}</span><span>Фонд активности 70%</span><span>${sun(S.platform.pool)}</span><span>Комиссии Рынка 8%</span><span>${sun(S.platform.fees)}</span></div></div>
+  <div class="card"><div class="bname" style="margin-bottom:4px">Правила</div><p class="note" style="margin:0">SUNBAY — развлекательная градостроительная игра. Здания — игровые объекты с цифровой лицензией на ${LICENSE_DAYS} игровых суток. Бонусы сезона — игровые начисления, не доход и не вклад. Названия городов и объектов художественные.</p></div>
+  <button class="btn danger full" data-act="reset">Начать игру заново</button>`;
+  return h;
+}
+
+function citySheet() {
+  $('sheetTitle').textContent = 'Выбор города';
+  let h = '<div class="cities">';
+  for (const code of CITY_ORDER) {
+    const C = CITIES[code], st = S.cities[code];
+    const mine = st ? st.plots.filter((p) => p.b && p.b.owner === 'me').length : 0;
+    const free = st ? st.plots.filter((p) => !p.b).length : '—';
+    const c1 = '#' + new THREE.Color(C.sea).getHexString(), c2 = '#' + new THREE.Color(C.sand).getHexString();
+    h += `<button data-city="${code}" class="${code === S.city ? 'on' : ''}"><span class="swatch" style="background:linear-gradient(180deg,${c1} 50%,${c2} 50%)"></span>
+      <span class="grow"><span class="bname">${C.flag} ${C.name}</span><br><span class="meta">${mine ? 'Ваших зданий: ' + mine + ' · ' : ''}свободно участков: ${free}</span></span></button>`;
+  }
+  return h + '</div>';
+}
+
+function bindSheet() {
+  const body = $('sheetBody');
+  body.querySelectorAll('[data-act]').forEach((el) => el.addEventListener('click', () => { Audio.init(); act(el.dataset.act, el); }));
+  body.querySelectorAll('[data-tab]').forEach((el) => el.addEventListener('click', () => { sheetCtx.tab = el.dataset.tab; renderSheet(); }));
+  body.querySelectorAll('[data-f]').forEach((el) => el.addEventListener('click', () => { sheetCtx.filter = el.dataset.f; renderSheet(); }));
+  body.querySelectorAll('[data-s]').forEach((el) => el.addEventListener('click', () => { sheetCtx.sort = el.dataset.s; renderSheet(); }));
+  body.querySelectorAll('[data-city]').forEach((el) => el.addEventListener('click', () => { switchCity(el.dataset.city); }));
+  const r = $('sellRange');
+  if (r) r.addEventListener('input', () => {
+    const price = +r.value * 100; sheetCtx.sellPrice = price; const fee = Math.round(price * MARKET_FEE / 100);
+    $('sp1').textContent = sun(price); $('sp2').textContent = '−' + sun(fee); $('sp3').textContent = sun(price - fee);
+  });
+  if (r) r.addEventListener('change', () => r.blur());
+}
+
+function act(a, el) {
+  const idx = sheetCtx && sheetCtx.idx;
+  switch (a) {
+    case 'build': construct(idx, +el.dataset.t); break;
+    case 'collect': { const pt = worldToScreen(idx); collectOne(idx, pt.x, pt.y); renderSheet(); break; }
+    case 'upgrade': upgrade(idx); break;
+    case 'renew': renew(idx); break;
+    case 'sellform': sheetCtx.sell = true; sheetCtx.sellPrice = buildingValue(curPlots()[idx].b); renderSheet(); break;
+    case 'list': listForSale(idx, sheetCtx.sellPrice || buildingValue(curPlots()[idx].b)); sheetCtx.sell = false; break;
+    case 'unlist': unlist(idx); break;
+    case 'buy': buyListing(S.city, idx); break;
+    case 'mbuy': buyListing(el.dataset.c, +el.dataset.i); break;
+    case 'show': { const code = el.dataset.c, i = +el.dataset.i; if (code !== S.city) switchCity(code, i); else openPlot(i); break; }
+    case 'bonus': if (S.bonusAt <= Date.now()) { S.purchase += 100000; S.bonusAt = Date.now() + BONUS_MS; addLog('Бонус мэрии', 100000, 'in'); flyCoins({ x: innerWidth / 2, y: innerHeight * 0.6 }, 6); save(); updateHUD(); renderSheet(); } break;
+    case 'sponsor': sponsorVideo(); break;
+    case 'reinvest': if (S.income > 0) { const v = S.income; S.purchase += v; S.income = 0; addLog('Реинвест: Мой доход → Баланс покупок', 0, 'ok'); Audio.pay(); toast(`${sun(v, true)} переведено на Баланс покупок`); save(); updateHUD(); renderSheet(); } break;
+    case 'sound': S.sound = !S.sound; Audio.setOn(S.sound); save(); renderSheet(); break;
+    case 'install': closeSheet(); showInstall(true); break;
+    case 'reset': if (confirm('Удалить весь прогресс и начать заново?')) { try { localStorage.removeItem(SAVE_KEY); } catch (e) {} location.reload(); } break;
+  }
+}
+
+function sponsorVideo() {
+  const root = $('overlayRoot');
+  root.innerHTML = `<div class="overlay"><div class="ov" style="text-align:center"><div style="font-size:12px;color:var(--ink2);font-weight:700;letter-spacing:.08em">РЕКЛАМА ПАРТНЁРА</div>
+    <div style="height:180px;border-radius:16px;margin:12px 0;background:linear-gradient(135deg,#1b9bd1,#ffc53d);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:800;line-height:1.3">Здесь будет<br>ролик спонсора</div>
+    <div class="bar" style="height:8px"><i id="spBar" style="width:0%;background:var(--sea);transition:width .1s linear"></i></div>
+    <p class="note" id="spTxt" style="text-align:center">Осталось 5 с</p>
+    <button class="btn gold full" id="spDone" disabled>Получить +500 ☀</button></div></div>`;
+  let t = 0; const iv = setInterval(() => { t += 0.1; $('spBar').style.width = Math.min(100, t / 5 * 100) + '%'; $('spTxt').textContent = t >= 5 ? 'Спасибо за просмотр!' : 'Осталось ' + Math.ceil(5 - t) + ' с'; if (t >= 5) { clearInterval(iv); $('spDone').disabled = false; } }, 100);
+  $('spDone').onclick = () => { root.innerHTML = ''; S.purchase += 50000; S.sponsorAt = Date.now() + SPONSOR_MS; addLog('Задание спонсора: просмотр ролика', 50000, 'in'); flyCoins({ x: innerWidth / 2, y: innerHeight * 0.6 }, 5); save(); updateHUD(); if (sheetCtx) renderSheet(); };
+}
+
+function switchCity(code, focusIdx) {
+  if (code === S.city && focusIdx == null) { closeSheet(); return; }
+  S.city = code; save(); closeSheet();
+  buildCity(code);
+  if (focusIdx != null) { const p = curPlots()[focusIdx]; const pos = plotPos(p); cam.tx = pos.x; cam.tz = pos.z; setTimeout(() => openPlot(focusIdx), 200); }
+  else { cam.tx = 0; cam.tz = 0.5; }
+  toast(`${CITIES[code].flag} Добро пожаловать в ${CITIES[code].name}`);
+}
+
+$('cityBtn').onclick = () => { Audio.init(); openSheet({ kind: 'city' }); };
+$('marketBtn').onclick = () => { Audio.init(); openSheet({ kind: 'market', live: true }); };
+$('wallet').onclick = () => { Audio.init(); openSheet({ kind: 'wallet', live: true }); };
+$('profileBtn').onclick = () => { Audio.init(); openSheet({ kind: 'profile' }); };
+$('collect').onclick = collectAll;
+
+// =========================================================================
+//  PWA: install + onboarding
+// =========================================================================
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
+window.addEventListener('appinstalled', () => { toast('SUNBAY добавлен на экран «Домой» 🎉'); $('overlayRoot').innerHTML = ''; });
+function isStandalone() { return window.matchMedia('(display-mode: standalone)').matches || window.matchMedia('(display-mode: fullscreen)').matches || navigator.standalone === true; }
+function platform() {
+  const ua = navigator.userAgent;
+  if (/iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) return 'ios';
+  if (/Android/.test(ua)) return 'android';
+  return 'desktop';
+}
+const shareIcon = '<svg class="ios-share" viewBox="0 0 24 24" fill="none" stroke="#1b9bd1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 11v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8"/></svg>';
+
+function showInstall(fromSettings) {
+  const pf = platform();
+  let steps;
+  if (pf === 'ios') steps = `<li><span class="n">1</span><span>Нажмите кнопку «Поделиться» ${shareIcon} внизу Safari</span></li><li><span class="n">2</span><span>Выберите «На экран “Домой”»</span></li><li><span class="n">3</span><span>Нажмите «Добавить» — иконка SUNBAY появится рядом с приложениями</span></li>`;
+  else if (pf === 'android') steps = `<li><span class="n">1</span><span>Нажмите «Установить» ниже</span></li><li><span class="n">2</span><span>Если кнопка не сработала: меню ⋮ браузера → «Добавить на главный экран»</span></li>`;
+  else steps = `<li><span class="n">1</span><span>Нажмите «Установить» или значок установки в адресной строке</span></li><li><span class="n">2</span><span>Лучше всего играть с телефона — откройте эту ссылку на смартфоне</span></li>`;
+  $('overlayRoot').innerHTML = `<div class="overlay"><div class="ov">
+    <div class="logo"><img src="icon-192.png" alt=""><div><h1>SUNBAY</h1><div style="color:var(--ink2);font-size:13px">Живой город у моря</div></div></div>
+    <p>Установите иконку SUNBAY на экран «Домой» — игра будет открываться во весь экран, как обычное приложение, без App Store и Google Play.</p>
+    <ul class="steps">${steps}</ul>
+    <div class="btns">${pf !== 'ios' ? '<button class="btn primary full" id="doInstall">📲 Установить SUNBAY</button>' : ''}
+    <button class="btn ghost full" id="skipInstall">${fromSettings ? 'Закрыть' : 'Играть в браузере'}</button></div></div></div>`;
+  const di = $('doInstall');
+  if (di) di.onclick = async () => {
+    if (deferredPrompt) { deferredPrompt.prompt(); const r = await deferredPrompt.userChoice.catch(() => null); deferredPrompt = null; if (r && r.outcome === 'accepted') { $('overlayRoot').innerHTML = ''; afterInstallStep(); } }
+    else toast(pf === 'android' ? 'Откройте меню ⋮ → «Добавить на главный экран»' : 'Используйте значок установки в адресной строке браузера');
+  };
+  $('skipInstall').onclick = () => { $('overlayRoot').innerHTML = ''; S.installSeen = true; save(); if (!fromSettings) afterInstallStep(); };
+}
+
+function afterInstallStep() { if (!S.onboarded) showWelcome(); }
+
+function showWelcome() {
+  $('overlayRoot').innerHTML = `<div class="overlay"><div class="ov">
+    <div class="logo"><img src="icon-192.png" alt=""><div><h1>Добро пожаловать!</h1><div style="color:var(--ink2);font-size:13px">Тест-драйв мэра курортного города</div></div></div>
+    <ul class="steps">
+      <li><span class="n">🎁</span><span>Вам подарены <b>3 000 ☀</b> и бесплатная кофейня на первой линии моря</span></li>
+      <li><span class="n">＋</span><span>Нажмите на свободный участок, выберите здание — кран построит его за пару секунд</span></li>
+      <li><span class="n">🪙</span><span>Над крышей появится золотая монета — нажмите «Забрать доход»</span></li>
+      <li><span class="n">🏪</span><span>Улучшайте здания до 5 уровня и продавайте их другим игрокам на «Рынке»</span></li>
+    </ul>
+    <button class="btn gold full" id="startGame">Начать строить</button></div></div>`;
+  $('startGame').onclick = () => {
+    Audio.init();
+    $('overlayRoot').innerHTML = '';
+    S.onboarded = true;
+    // подарочная кофейня на свободном участке первой линии
+    const plots = curPlots(); let idx = plots.findIndex((p) => p.line === 'sea' && !p.b && p.i >= 2 && p.i <= 5);
+    if (idx < 0) idx = plots.findIndex((p) => !p.b);
+    if (idx >= 0) {
+      const now = Date.now();
+      plots[idx].b = { type: 1, level: 1, owner: 'me', history: ['Вы'], renewedAt: now, expiresAt: now + 30 * DAY, readyAt: now + 20 * 1000, listing: null, trial: true };
+      addLog('Подарок новичку: пробная кофейня (лицензия 30 сут.)', 0, 'ok');
+      const pos = plotPos(plots[idx]); flyTo(pos.x, pos.z - 2, 30);
+      setTimeout(() => { refreshPlot(idx); playBuildAnim(idx); Audio.build(); }, 700);
+      setTimeout(() => toast('☕ Ваша кофейня готова! Первая монета — через 20 секунд'), 3300);
+    }
+    addLog('Стартовый подарок', 300000, 'in');
+    save(); updateHUD();
+  };
+}
+
+// =========================================================================
+//  BOOT
+// =========================================================================
+(function boot() {
+  S = load() || defaultState();
+  cityState(S.city);
+  resize();
+  if (innerHeight > innerWidth) { cam.dist = cam.targetDist = 46; }
+  buildCity(S.city);
+  requestAnimationFrame(loop);
+  setTimeout(() => { $('loading').style.opacity = 0; setTimeout(() => $('loading').remove(), 500); }, 400);
+  if (!isStandalone() && !S.installSeen) setTimeout(() => showInstall(false), 900);
+  else if (!S.onboarded) setTimeout(showWelcome, 900);
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
+  document.addEventListener('visibilitychange', () => { if (document.hidden) { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {} } });
+})();
+</script>
+</body>
+</html>
