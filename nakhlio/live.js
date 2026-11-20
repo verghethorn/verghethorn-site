@@ -139,5 +139,34 @@ L.translate = async (text, from, to) => {
   return null;
 };
 
+/* community: Majlis/family, classifieds, parcels, rooms, events */
+L.byName = (n) => Object.values(PC).find(p => p.name === n) || null;
+L.forum = async () => { const rows = ok(await sb.from('forum_posts').select('*').order('created_at', { ascending: false }).limit(500)); await L.prof(rows.map(r => r.author)); return rows; };
+L.forumPost = async (topic, kind, body, lang) => ok(await sb.from('forum_posts').insert({ author: L.user.id, topic, kind, body, lang }).select().single());
+L.items = async () => { const rows = ok(await sb.from('items').select('*').order('created_at', { ascending: false }).limit(300)); await L.prof(rows.map(r => r.author)); return rows; };
+L.addItem = async (f) => ok(await sb.from('items').insert(Object.assign({ author: L.user.id }, f)).select().single());
+L.delItem = async (id) => ok(await sb.from('items').delete().eq('id', id));
+L.delForum = async (id) => ok(await sb.from('forum_posts').delete().eq('id', id));
+L.comments = async (prefix) => { const rows = ok(await sb.from('comments').select('*').like('target', prefix + '%').order('created_at').limit(2000)); await L.prof(rows.map(r => r.author)); return rows; };
+L.addComment = async (target, body, lang, to_name) => ok(await sb.from('comments').insert({ target, author: L.user.id, body, lang, to_name: to_name || '' }).select().single());
+L.delComment2 = async (id) => ok(await sb.from('comments').delete().eq('id', id));
+L.helpful = async () => ok(await sb.from('helpful').select('*').limit(5000));
+L.setHelpful = async (target, on) => { if (on) await sb.from('helpful').insert({ target, user_id: L.user.id }); else await sb.from('helpful').delete().eq('target', target).eq('user_id', L.user.id); };
+L.roomMsgs = async (space) => { const rows = ok(await sb.from('room_messages').select('*').like('room', space + ':%').order('created_at').limit(2000)); await L.prof(rows.map(r => r.author)); return rows; };
+L.roomSend = async (room, body, lang, to_name) => ok(await sb.from('room_messages').insert({ room, author: L.user.id, body, lang, to_name: to_name || '' }).select().single());
+L.delRoomMsg = async (id) => ok(await sb.from('room_messages').delete().eq('id', id));
+L.events = async () => { const rows = ok(await sb.from('events').select('*, event_going(user_id)').order('created_at', { ascending: false }).limit(200)); await L.prof(rows.map(r => r.author)); return rows; };
+L.addEvent = async (f) => ok(await sb.from('events').insert(Object.assign({ author: L.user.id }, f)).select().single());
+L.delEvent = async (id) => ok(await sb.from('events').delete().eq('id', id));
+L.going = async (id, on) => { if (on) await sb.from('event_going').insert({ event_id: id, user_id: L.user.id }); else await sb.from('event_going').delete().eq('event_id', id).eq('user_id', L.user.id); };
+L.itemChat = async (itemId, other) => {
+  const me = L.user.id;
+  const rows = ok(await sb.from('chats').select('*').eq('kind', 'dm').or(`and(user1.eq.${me},user2.eq.${other}),and(user1.eq.${other},user2.eq.${me})`));
+  if (rows[0]) return rows[0];
+  return ok(await sb.from('chats').insert({ kind: 'dm', user1: me, user2: other, topic: 'item:' + itemId }).select().single());
+};
+let rchan = null; L.roomListeners = [];
+L.onRoom = (cb) => { L.roomListeners.push(cb); if (rchan) return; rchan = sb.channel('rooms').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'room_messages' }, (p) => L.roomListeners.forEach(f => { try { f(p.new); } catch (e) {} })).subscribe(); };
+
 window.LIVE = L;
 })();

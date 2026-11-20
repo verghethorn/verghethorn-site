@@ -24,7 +24,7 @@ const browserLang = (() => { const n = (navigator.language || 'en').slice(0, 2);
 let lang = S.lang || browserLang;
 const TRL = () => (window.TR && window.TR[lang]) || { u: {}, c: {} };
 const t = (k) => (I18N[lang] && I18N[lang][k]) || TRL().u[k] || I18N.en[k] || k;
-const L = (o) => (o == null ? '' : typeof o === 'string' ? o : (o[lang] || (o.en && TRL().c[o.en]) || o.en || o.ru || ''));
+const L = (o) => (o == null ? '' : typeof o === 'string' ? o : o.__live ? liveTx(o) : (o[lang] || (o.en && TRL().c[o.en]) || o.en || o.ru || ''));
 const dir = () => (LANGS.find(l => l.code === lang) || {}).dir || 'ltr';
 const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const locale = () => ({ ar: 'ar-SA', fa: 'fa-IR', ur: 'ur-PK', ru: 'ru-RU', tr: 'tr-TR', fr: 'fr-FR', id: 'id-ID', ms: 'ms-MY', bn: 'bn-BD', hi: 'hi-IN' }[lang] || 'en-US');
@@ -33,7 +33,7 @@ const nfy = (n) => new Intl.NumberFormat(locale(), { useGrouping: false }).forma
 const PLF = { ru: { results: ['объявление', 'объявления', 'объявлений'], answers: ['ответ', 'ответа', 'ответов'], members: ['участник', 'участника', 'участников'] }, en: { results: ['listing', 'listings'], answers: ['answer', 'answers'], members: ['member', 'members'] } };
 const tn = (k, n) => { const f = PLF[lang] && PLF[lang][k]; if (!f) return t(k); if (lang === 'en') return f[n === 1 ? 0 : 1]; const a = n % 10, b = n % 100; return f[a === 1 && b !== 11 ? 0 : a >= 2 && a <= 4 && (b < 12 || b > 14) ? 1 : 2]; };
 const money = (n) => nf(n) + ' ' + t('sar');
-const img = (name) => 'img/' + name + '.jpg';
+const img = (name) => (name && /^(https?:|data:|blob:)/.test(name) ? name : 'img/' + name + '.jpg');
 
 /* ---------- icons ---------- */
 const P = {
@@ -379,7 +379,9 @@ V.vehicle = (p) => {
     <div class="block"><h4>${t('included')}</h4><div class="amen"><span>${ic('shield')}${t('insurance_inc')}</span><span>${ic('pin')}${t('delivery')}</span><span>${ic('headset')}${t('operator')} · 24/7</span></div></div>
     <div class="block"><div class="banner">${ic('idcard')}<div><b>${t('requirements')}</b>${req}</div></div></div>
     <div class="block"><div class="banner green">${ic('contract')}<div>${t('rental_by')}</div></div></div>
-    <p class="note" style="margin-top:18px">${t('listing_no')} <b class="num">${x.id}</b></p>
+    ${x.live && (x.mine || isAdmin()) ? `<button class="btn soft full" style="margin-top:14px;color:var(--rose)" data-act="ldel" data-v="item:${x.id}">${small('x')}${FXL('act_delete')}</button>` : ''}
+    ${x.live && !x.mine ? `<button class="btn soft full" style="margin-top:10px" data-act="lrep" data-v="item:${x.id}">${small('flag')}${t('report')}</button>` : ''}
+    <p class="note" style="margin-top:18px">${t('listing_no')} <b class="num">${x.live ? x.id.slice(0, 8).toUpperCase() : x.id}</b></p>
   </div>` };
 };
 
@@ -426,9 +428,9 @@ function commentsBlock(key, list, opts) {
 }
 const chipsRow = (map, curK, act) => `<div class="chips"><button class="chip ${curK === 'all' ? 'on' : ''}" data-act="${act}" data-v="all">${t('all')}</button>${Object.keys(map).map(k => `<button class="chip ${k === curK ? 'on' : ''}" data-act="${act}" data-v="${k}">${esc(L(map[k]))}</button>`).join('')}</div>`;
 const cCount = (x) => (x.comments || []).length + (S.cm['c:' + x.id] || []).length;
-const myAds = () => S.myAds || [];
+const myAds = () => (window.LIVE ? [] : S.myAds || []);
 
-const adRow = (a) => `<button class="row-card" data-act="go" data-v="item" data-id="${a.id}" style="${a.boosted ? 'background:var(--date-tint)' : ''}"><span class="thumb"><img src="${img(a.photos[0])}" alt="" loading="lazy"></span><span class="grow">
+const adRow = (a) => `<button class="row-card" data-act="go" data-v="item" data-id="${a.id}" style="${a.boosted ? 'background:var(--date-tint)' : ''}">${a.photos ? `<span class="thumb"><img src="${img(a.photos[0])}" alt="" loading="lazy"></span>` : `<span class="thumb b-date c-date" style="display:flex;align-items:center;justify-content:center">${ic(a.cat === 'food' ? 'cake' : a.cat === 'free' ? 'heart' : 'tag').replace('<svg', '<svg style="width:30px;height:30px"')}</span>`}<span class="grow">
   <span class="sub" style="display:flex;gap:6px;align-items:center;margin:0 0 3px;flex-wrap:wrap">${esc(catLabel(a.cat, ADCATS))}${a.boosted ? `<span class="tag gold">${t('top')}</span>` : ''}${a.pro ? `<span class="tag green">${t('pro')}</span>` : ''}${a.mine ? `<span class="tag">${t('yours')}</span>` : ''}</span>
   <span class="ttl" style="display:block">${esc(txt(a.title))}</span><span class="sub" style="display:block">${esc(who(a.seller.name))} · ${esc(loc(a.seller.dist))}</span>
   <span style="display:flex;justify-content:space-between;align-items:center;margin-top:5px;gap:8px"><span class="price">${esc(txt(a.price))}</span><span class="sub" style="display:inline-flex;gap:4px;align-items:center;margin:0">${small('chat')}<span class="num">${nf(cCount(a))}</span></span></span></span></button>`;
@@ -445,13 +447,13 @@ V.ads = (p) => {
 const HELP_IC = { airport: 'plane', translate: 'translate', elderly: 'hand', tours: 'pin' };
 const helpRow = (x) => `<button class="row-card" data-act="go" data-v="item" data-id="${x.id}"><span class="thumb b-palm c-palm" style="display:flex;align-items:center;justify-content:center">${ic(HELP_IC[x.cat]).replace('<svg', '<svg style="width:30px;height:30px"')}</span><span class="grow">
   <span class="sub" style="margin:0 0 3px;display:block">${esc(catLabel(x.cat, HELPCATS))}</span><span class="ttl" style="display:block">${esc(L(x.title))}</span>
-  <span class="sub" style="display:block">${esc(x.seller.name)} · ${esc(x.seller.langs)} · ★ ${nf(x.seller.rating, 1)}</span>
+  <span class="sub" style="display:block">${esc(who(x.seller.name))} · ${esc(x.seller.langs)} · ${x.seller.rating ? '★ ' + nf(x.seller.rating, 1) : ''}</span>
   <span style="display:flex;justify-content:space-between;align-items:center;margin-top:5px"><span class="price">${esc(L(x.price))}</span><span class="sub" style="display:inline-flex;gap:4px;align-items:center;margin:0">${small('chat')}<span class="num">${nf(cCount(x))}</span></span></span></span></button>`;
 V.help = () => V.services();
 const parcelRow = (x) => `<button class="row-card" data-act="go" data-v="item" data-id="${x.id}"><span class="thumb b-${x.kind === 'flying' ? 'date c-date' : 'clay c-clay'}" style="display:flex;align-items:center;justify-content:center">${ic(x.kind === 'flying' ? 'plane' : 'box').replace('<svg', '<svg style="width:30px;height:30px"')}</span><span class="grow">
   <span class="ttl" style="display:block">${esc(x.from)} → ${esc(x.to)}</span>
   <span class="sub num" style="display:block">${new Date(x.date).toLocaleDateString(locale(), { day: 'numeric', month: 'long' })} · ${nf(x.kg, 1)} ${t('kg')}${x.what ? ' · ' + esc(L(x.what)) : ''}</span>
-  <span class="sub" style="display:flex;justify-content:space-between;margin-top:4px"><span>${esc(x.seller.name)} · ★ ${nf(x.seller.rating, 1)}</span><span style="display:inline-flex;gap:4px;align-items:center">${small('chat')}<span class="num">${nf(cCount(x))}</span></span></span></span></button>`;
+  <span class="sub" style="display:flex;justify-content:space-between;margin-top:4px"><span>${esc(who(x.seller.name))} · ${x.seller.rating ? '★ ' + nf(x.seller.rating, 1) : ''}</span><span style="display:inline-flex;gap:4px;align-items:center">${small('chat')}<span class="num">${nf(cCount(x))}</span></span></span></span></button>`;
 V.parcels = (p) => {
   const k = p.k || 'flying';
   return { tabs: true, html: topbar(t('s_parcels')) + `<div class="wrap">
@@ -462,10 +464,10 @@ V.parcels = (p) => {
 };
 function findItem(id) { return ADS.find(x => x.id === id) || myAds().find(x => x.id === id) || HELP.find(x => x.id === id) || PARCELS.find(x => x.id === id); }
 function sellerCard(s) {
-  return `<div class="seller">${pBtn(s.name, avatar(s.name, 'lg'))}<div class="grow">${pBtn(s.name, `<b>${esc(who(s.name))}</b>${vmark(s.name)}`)}<small>${t('langs_spoken')}: ${esc(s.langs || '—')}</small><small>★ ${nf(s.rating || 5, 1)} · ${t('on_since')} ${esc(s.since || '2026')} · ${esc(loc(s.dist))}</small></div>${s.name === '@me' ? '' : `<button class="btn sm soft" data-act="dm" data-v="${esc(s.name)}">${small('chat')}${t('dm')}</button>`}</div>`;
+  return `<div class="seller">${pBtn(s.name, avatar(s.name, 'lg'))}<div class="grow">${pBtn(s.name, `<b>${esc(who(s.name))}</b>${vmark(s.name)}`)}<small>${t('langs_spoken')}: ${esc(s.langs || '—')}</small><small>${s.rating ? '★ ' + nf(s.rating, 1) + ' · ' : ''}${t('on_since')} ${esc(s.since || '2026')} · ${esc(loc(s.dist))}</small></div>${s.name === '@me' ? '' : `<button class="btn sm soft" data-act="dm" data-v="${esc(s.name)}">${small('chat')}${t('dm')}</button>`}</div>`;
 }
 V.item = (p) => {
-  const x = findItem(p.id); if (!x) return V.home();
+  const x = findItem(p.id); if (!x) return LV && !(DATA['c:items'] && DATA['c:items'].v) ? { tabs: true, html: topbar('') + '<p class="note" style="text-align:center;padding:40px">…</p>' } : V.home();
   const kind = PARCELS.includes(x) ? 'parcel' : HELP.includes(x) ? 'help' : 'ad';
   const title = kind === 'parcel' ? `${x.from} → ${x.to}` : txt(x.title);
   const price = kind === 'parcel' ? `${nf(x.kg, 1)} ${t('kg')}` : txt(x.price);
@@ -474,7 +476,7 @@ V.item = (p) => {
   const head = x.photos ? gallery(x.photos, null) : `<div class="item-head"><div class="float"><button class="ibtn" data-act="back" aria-label="${t('back')}">${ic('back', 'flip')}</button><span class="fr">${homeBtn()}</span></div><span class="big-ic">${ic(icn)}</span></div>`;
   const sub = kind === 'parcel' ? `<span>${small('calendar')}<span class="num">${new Date(x.date).toLocaleDateString(locale(), { day: 'numeric', month: 'long', year: 'numeric' })}</span></span><span>${small('box')}${nf(x.kg, 1)} ${t('kg')}</span>` : `<span>${small('pin')}${esc(loc(x.seller.dist))}</span>`;
   const me = x.seller.name === '@me';
-  return { raw: true, cta: me ? null : `<div class="p"><b class="num">${esc(price)}</b><small>${esc(cat)}</small></div><button class="btn primary" data-act="dm" data-v="${esc(x.seller.name)}">${ic('chat')}${t('write')}</button>`, html: head + `
+  return { raw: true, cta: me ? null : `<div class="p"><b class="num">${esc(price)}</b><small>${esc(cat)}</small></div><button class="btn primary" data-act="dm" data-v="${esc(who(x.seller.name))}">${ic('chat')}${t('write')}</button>`, html: head + `
   <div class="sheetbody wrap">
     <span class="tag green">${esc(cat)}</span>
     <h2 class="d-title" style="margin-top:8px">${esc(title)}</h2>
@@ -491,8 +493,16 @@ V.item = (p) => {
 
 const TOPIC_IC = { iqama: 'idcard', bank: 'bank', sim: 'sim', insurance: 'medic', licence: 'car', ejar: 'contract', travel: 'train', study: 'grad', places: 'pin', doctors: 'medic' };
 const TOPIC_C = ['palm', 'date', 'sky', 'rose', 'clay'];
-const postsFor = (k) => (S.posts[k] || []).concat(POSTS[k] || []);
+const postsFor = (k) => (window.LIVE ? [] : S.posts[k] || []).concat(POSTS[k] || []);
 function postHtml(pst, i, k) {
+  if (pst.id && LV) { const key = 'f:' + pst.id; const n = (pst.a || []).length; const mine = pst.who === '@me';
+    return `<div class="post ${pst.hidden ? 'hid' : ''}"><div class="who">${pBtn(pst.who, avatar(pst.who, 'sm'))}${pBtn(pst.who, `<b style="color:var(--ink)">${esc(who(pst.who))}</b>${vmark(pst.who)}`)}<span class="num">· ${pst.date}</span><span class="tag ${pst.q ? 'gold' : 'green'}">${pst.q ? t('q_tag') : t('e_tag')}</span></div>
+    <p>${esc(txt(pst.text))}</p>${pst.text.lang && pst.text.lang !== lang ? `<span class="mgtr" style="margin:0 0 6px">${small('translate')}${t('auto_tr')}</span>` : ''}
+    <div class="acts"><button class="${pst.mineH ? 'on' : ''}" data-act="lhelp" data-v="forum:${pst.id}" data-on="${pst.mineH ? 1 : 0}">${ic('check')}${t('helped')} · <span class="num">${nf(pst.helped)}</span></button>
+    <button data-act="comment" data-k="${key}">${ic('chat')}${t('comment')} · <span class="num">${nf(n)}</span></button>
+    ${mine ? '' : `<button data-act="dm" data-v="${esc(pst.who)}" aria-label="${t('dm')}" title="${t('dm')}">${ic('send')}</button>`}
+    ${mine || isAdmin() ? `<button class="rep" data-act="ldel" data-v="forum:${pst.id}" aria-label="${FXL('act_delete')}" title="${FXL('act_delete')}">${ic('x')}</button>` : `<button class="rep" data-act="lrep" data-v="forum:${pst.id}" aria-label="${t('report')}" title="${t('report')}">${ic('flag')}</button>`}</div>
+    ${n || openC[key] ? `<div class="thread">${commentsBlock(key, pst.a, { collapsed: true })}</div>` : ''}</div>`; }
   const id = k + ':' + i; const hl = S.helped[id];
   if (S.reported[id]) return '';
   const key = 'p:' + id; const n = (pst.a || []).length + (S.cm[key] || []).length;
@@ -522,12 +532,12 @@ V.topic = (p) => {
 V.family = () => ({ tabs: true, html: topbar(t('s_family')) + `<div class="wrap narrow">
   <div class="banner green">${ic('family')}<div>${t('s_family_d')}</div></div>
   <div class="two-btn" style="margin-top:12px"><button class="btn green" data-act="compose" data-v="q" data-id="family">${ic('majlis')}${t('ask_family')}</button><button class="btn primary" data-act="compose" data-v="e" data-id="family">${ic('book')}${t('share_exp')}</button></div>
-  <div style="margin-top:14px">${(S.posts.family || []).concat(FAMILY).map((x, i) => postHtml(x, i, 'family')).join('')}</div></div>` });
+  <div style="margin-top:14px">${(window.LIVE ? [] : S.posts.family || []).concat(FAMILY).map((x, i) => postHtml(x, i, 'family')).join('')}</div></div>` });
 
 const allEvents = () => MEN_EVENTS.concat(WOMEN_EVENTS);
 function eventCard(e, full) {
-  const g = S.going[e.id]; const n = e.going + (g ? 1 : 0); const cn = (e.comments || []).length + (S.cm['e:' + e.id] || []).length;
-  return `<div class="event"><div class="top"><span class="date">${ic('calendar')}</span><div style="flex:1;min-width:0"><b>${esc(L(e.title))}</b><small>${esc(L(e.when))}</small><small>${small('pin')} ${esc(e.where)}</small><small>${t('event_org')}: ${pBtn(e.org, `<b style="color:var(--palm)">${esc(e.org)}</b>`)}</small></div></div>
+  const g = e.live ? e.mineG : S.going[e.id]; const n = e.going + (g ? 1 : 0); const cn = (e.comments || []).length + (S.cm['e:' + e.id] || []).length;
+  return `<div class="event"><div class="top"><span class="date">${ic('calendar')}</span><div style="flex:1;min-width:0"><b>${esc(L(e.title))}</b><small>${esc(L(e.when))}</small><small>${small('pin')} ${esc(e.where)}</small><small>${t('event_org')}: ${pBtn(e.org, `<b style="color:var(--palm)">${esc(who(e.org))}</b>`)}</small></div></div>
     <div class="progress"><i style="width:${Math.min(100, n / e.need * 100)}%"></i></div>
     <div class="foot"><span class="num">${nf(n)} / ${nf(e.need)} ${t('going_n')}</span>${full ? '' : `<button class="btn sm soft" data-act="go" data-v="event" data-id="${e.id}">${small('chat')}<span class="num">${nf(cn)}</span></button>`}<button class="btn sm ${g ? 'green' : 'primary'}" data-act="going" data-v="${e.id}">${g ? ic('check') : '✋'} ${t('going')}</button></div></div>`;
 }
@@ -539,7 +549,7 @@ function spaceView(which) {
   return { tabs: true, html: topbar(t('s_' + which)) + `<div class="wrap">
     <div class="seg">${['rooms', 'events'].map(x => `<button class="${x === k ? 'on' : ''}" data-act="spk" data-v="${x}">${t(x === 'rooms' ? 'rooms_title' : 'events')}</button>`).join('')}</div>
     <div style="margin-top:14px" class="${k === 'rooms' ? 'rooms-grid' : 'list'}">${k === 'rooms' ? rooms.map(r => `<button class="room" data-act="go" data-v="room" data-id="${which}:${r.id}"><i class="b-${col} c-${col}">${ic(r.icon)}</i><span class="grow"><b>${esc(L(r.name))}</b><small>${esc(last(r))}</small></span><em class="num">${nf(r.n)}</em></button>`).join('') : events.map(e => eventCard(e)).join('')}</div>
-    ${k === 'events' ? `<button class="btn soft full" style="margin-top:14px" data-act="toastdemo">${ic('plus')}${t('create_event')}</button>` : ''}
+    ${k === 'events' ? `<button class="btn soft full" style="margin-top:14px" data-act="${LV ? 'levent' : 'toastdemo'}" data-v="${which}">${ic('plus')}${t('create_event')}</button>` : ''}
   </div>` };
 }
 const PLEDGE = {
@@ -581,17 +591,17 @@ V.women = () => {
   return spaceView('women');
 };
 V.event = (p) => {
-  const e = allEvents().find(x => x.id === p.id);
+  const e = allEvents().find(x => x.id === p.id); if (!e) return { tabs: true, html: topbar('') + '<p class="note" style="text-align:center;padding:40px">…</p>' };
   return { tabs: true, html: topbar(L(e.title)) + `<div class="wrap narrow">${eventCard(e, true)}
     <div class="block"><h4>${t('comments_t')}</h4>${commentsBlock('e:' + e.id, e.comments)}</div></div>` };
 };
 V.room = (p) => {
   const [sp, id] = p.id.split(':'); const r = (sp === 'men' ? MEN_ROOMS : WOMEN_ROOMS).find(x => x.id === id);
-  const mine = ((S.rooms && S.rooms[p.id]) || []).map(m => typeof m === 'string' ? { who: '@me', text: m } : m);
+  const mine = (LV ? [] : (S.rooms && S.rooms[p.id]) || []).map(m => typeof m === 'string' ? { who: '@me', text: m } : m);
   const msgs = r.msgs.concat(mine);
   const bub = msgs.map(m => m.who === '@me'
     ? `<div class="bubble me">${m.to ? `<span class="rto">${small('chev')}${esc(who(m.to))}</span>` : ''}${esc(txt(m.text))}</div>`
-    : `<div class="msg">${pBtn(m.who, avatar(m.who))}<div class="bubble op">${pBtn(m.who, `<b class="nm">${esc(m.who)}${vmark(m.who)}</b>`)}${m.to ? `<span class="rto">${small('chev')}${esc(who(m.to))}</span>` : ''}${esc(txt(m.text))}<div class="ma"><button data-act="rreply" data-v="${esc(m.who)}">${t('reply')}</button><button data-act="dm" data-v="${esc(m.who)}">${t('dm')}</button></div></div></div>`).join('');
+    : `<div class="msg">${pBtn(m.who, avatar(m.who))}<div class="bubble op">${pBtn(m.who, `<b class="nm">${esc(m.who)}${vmark(m.who)}</b>`)}${m.to ? `<span class="rto">${small('chev')}${esc(who(m.to))}</span>` : ''}${esc(txt(m.text))}<div class="ma">${LV && m.mid ? (isAdmin() ? `<button data-act="ldel" data-v="room:${m.mid}">${FXL('act_delete')}</button>` : `<button data-act="lrep" data-v="room:${m.mid}">${t('report')}</button>`) : ''}<button data-act="rreply" data-v="${esc(m.who)}">${t('reply')}</button><button data-act="dm" data-v="${esc(m.who)}">${t('dm')}</button></div></div></div>`).join('');
   return { composer: 'room', html: topbar(L(r.name), { right: `<span class="tag green num">${nf(r.n)} ${tn('members', r.n)}</span>` }) + `<div class="wrap chat-wrap">
     <div class="banner" style="font-size:12.5px">${ic('info')}<div>${t('room_rule')}</div></div>
     <div class="msg"><span class="av" style="background:var(--palm);color:#fff">N</span><div class="bubble op"><b class="nm">${t('operator')}</b>${t('room_hello')}</div></div>
@@ -634,6 +644,7 @@ function avatarSvg(n) {
   return `<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" fill="${bg}"/><path d="M8 64c2-14 12-20 24-20s22 6 24 20z" fill="${cl}"/><rect x="28" y="38" width="8" height="8" fill="${skin}"/><ellipse cx="32" cy="32" rx="9.5" ry="11" fill="${skin}"/>${beard ? `<path d="M23 34c1 8 5 12 9 12s8-4 9-12c-2 3-5 4-9 4s-7-1-9-4z" fill="#3a2a20"/>` : ''}${head}</svg>`;
 }
 function avatar(n, size) {
+  if (window.LIVE && n !== '@me' && LV.byName(n)) return liveAv(LV.byName(n).id, size);
   const me = n === '@me' && S.me;
   const ph = me && S.me.photos && S.me.photos[0];
   return ph ? `<span class="av ${size || ''}" style="background:url(${ph}) center/cover"></span>` : `<span class="av ill ${size || ''}">${avatarSvg(n === '@me' && S.me ? S.me.name + '@' : n)}</span>`;
@@ -788,6 +799,53 @@ function gateRegLive() {
     }
   }));
 }
+
+function liveTx(o) { const c = liveTx.c || (liveTx.c = {}); if (!o.lang || o.lang === lang || !window.LIVE) return o.t; const k = o.lang + '|' + lang + '|' + o.t; if (c[k]) return c[k];
+  if (!c[k + '#']) { c[k + '#'] = 1; window.LIVE.translate(o.t, o.lang, lang).then(r => { if (r) { c[k] = r; if (!document.querySelector('.sheet-wrap') && !(document.activeElement && /TEXTAREA|INPUT/.test(document.activeElement.tagName))) render(); } }); } return o.t; }
+const lt = (body, lg) => ({ __live: 1, t: body || '', lang: lg || '' });
+const ym = (d) => (d || '').slice(0, 7);
+const meU = () => LV && LV.user && LV.user.id;
+const nm = (uid) => (uid === meU() ? '@me' : pname(uid));
+function cmMap(rows, hc) { const byT = {}; rows.forEach(c => (byT[c.target] = byT[c.target] || []).push({ who: nm(c.author), uid: c.author, cid: c.id, date: ym(c.created_at), text: lt(c.body, c.lang), to: c.to_name || undefined })); return byT; }
+function liveCommunity() {
+  if (!LV) return;
+  want('c:forum', async () => {
+    const [posts, cms, hl] = await Promise.all([LV.forum(), LV.comments('forum:'), LV.helpful()]);
+    const hc = {}, mine = {}; hl.forEach(h => { hc[h.target] = (hc[h.target] || 0) + 1; if (h.user_id === meU()) mine[h.target] = 1; });
+    const byT = cmMap(cms);
+    Object.keys(POSTS).forEach(k => { POSTS[k] = []; }); TOPICS.forEach(k => { POSTS[k] = []; }); FAMILY.length = 0;
+    posts.forEach(x => { const o = { id: x.id, q: x.kind === 'q', who: nm(x.author), uid: x.author, date: ym(x.created_at), text: lt(x.body, x.lang), helped: hc['forum:' + x.id] || 0, mineH: !!mine['forum:' + x.id], a: byT['forum:' + x.id] || [], hidden: x.hidden };
+      if (x.topic === 'family') FAMILY.push(o); else (POSTS[x.topic] = POSTS[x.topic] || []).push(o); });
+    return true; });
+  want('c:items', async () => {
+    const [rows, cms] = await Promise.all([LV.items(), LV.comments('item:')]); const byT = cmMap(cms);
+    ADS.length = 0; PARCELS.length = 0;
+    rows.forEach(r => { const pr = LV.cached(r.author) || {}; const mine = r.author === meU();
+      const seller = { name: mine ? '@me' : (pr.name || '…'), uid: r.author, langs: (LANGS.find(l => l.code === pr.ui_lang) || {}).latin || '', since: (pr.created_at || '').slice(0, 4), rating: null, dist: r.dist || pr.dist || 'central' };
+      const comments = byT['item:' + r.id] || [];
+      if (r.kind === 'ad') ADS.push({ id: r.id, live: 1, cat: r.cat, photos: r.photos && r.photos.length ? r.photos : null, seller, title: lt(r.title, r.lang), price: r.price || '—', desc: r.descr ? lt(r.descr, r.lang) : '', comments, mine, hidden: r.hidden });
+      else PARCELS.push({ id: r.id, live: 1, kind: r.cat, from: r.route_from, to: r.route_to, date: r.pdate || r.created_at, kg: +r.kg || 0, desc: r.descr ? lt(r.descr, r.lang) : '', seller, comments, mine }); });
+    return true; });
+}
+function liveSpace(space) {
+  if (!LV || !S.me) return;
+  want('c:sp:' + space, async () => {
+    const [msgs, evs, cms] = await Promise.all([LV.roomMsgs(space), LV.events(), LV.comments('event:')]); const byT = cmMap(cms);
+    (space === 'men' ? MEN_ROOMS : WOMEN_ROOMS).forEach(r => { r.msgs = msgs.filter(m => m.room === space + ':' + r.id).map(m => ({ who: nm(m.author), uid: m.author, mid: m.id, text: lt(m.body, m.lang), to: m.to_name || undefined })); r.n = new Set(r.msgs.map(m => m.uid)).size; });
+    const arr = space === 'men' ? MEN_EVENTS : WOMEN_EVENTS; arr.length = 0;
+    evs.filter(e => e.space === space).forEach(e => arr.push({ id: e.id, live: 1, title: lt(e.title, e.lang), when: e.when_text, where: e.place, org: nm(e.author), need: e.need || 10, going: (e.event_going || []).filter(g => g.user_id !== meU()).length, mineG: (e.event_going || []).some(g => g.user_id === meU()), comments: byT['event:' + e.id] || [] }));
+    return true; });
+}
+function eventSheet(space) {
+  const w = sheet(`<h3>${t('create_event')}</h3>
+    <div class="field"><label for="ev1">${t('title_f')}</label><input id="ev1"></div>
+    <div class="field"><label for="ev2">${t('date')}</label><input id="ev2" placeholder="${lang === 'ru' ? 'Суббота, 20:00' : 'Saturday, 8 pm'}"></div>
+    <div class="field"><label for="ev3">${t('location')}</label><input id="ev3" placeholder="Al Aziziyah"></div>
+    <div class="field"><label for="ev4">${t('members')}</label><input id="ev4" inputmode="numeric" value="10"></div>
+    <button class="btn green full" style="margin-top:14px" id="evgo">${t('publish')}</button>`);
+  w.querySelector('#evgo').addEventListener('click', () => { const ti = w.querySelector('#ev1').value.trim(); if (!ti) { w.querySelector('#ev1').focus(); return; }
+    LV.addEvent({ space, title: ti, when_text: w.querySelector('#ev2').value.trim(), place: w.querySelector('#ev3').value.trim(), need: Math.max(2, parseInt(w.querySelector('#ev4').value, 10) || 10), lang }).then(() => { w.remove(); toast(t('published')); dropData('c:sp:'); render(); }).catch(e => toast(FXL('send_fail'))); });
+}
 const OWNER_H = '81d40b4d82d36fea86c23f3b610f9626bb16e35459c65aa15ce8ea88377b5c13';
 async function ownerCheck(phone) { try { const d = String(phone).replace(/\D/g, '').slice(-9); const h = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(d)); return [...new Uint8Array(h)].map(x => x.toString(16).padStart(2, '0')).join('') === OWNER_H; } catch (e) { return false; } }
 const isAdmin = () => !!(S.me && S.me.admin);
@@ -833,6 +891,7 @@ function gateReg() {
 }
 /* person data for any name */
 function person(n) {
+  if (window.LIVE && n !== '@me' && LV.byName(n)) { const pr = LV.byName(n); return { name: n, display: n, uid: pr.id, job: pr.job, about: pr.about ? lt(pr.about, pr.ui_lang) : '', dist: pr.dist, langs: (LANGS.find(l => l.code === pr.ui_lang) || {}).latin || '', since: (pr.created_at || '').slice(0, 4), rating: null, items: ADS.concat(PARCELS).filter(x => x.seller && x.seller.uid === pr.id), reviews: [] }; }
   if (n === '@me') { const m = S.me || {}; return { name: '@me', display: m.name || t('you'), job: m.job, about: m.about, dist: m.dist, langs: m.langs, since: m.since, rating: null, photos: m.photos || [], me: true }; }
   const items = ADS.concat(HELP, PARCELS).filter(x => x.seller && x.seller.name === n);
   const s = (items[0] && items[0].seller) || {};
@@ -841,7 +900,7 @@ function person(n) {
 }
 const FXL = (k) => L(FX[k]);
 const VER = new Set(window.VERIFIED || []);
-const vmark = (n) => VER.has(n) ? `<span class="vmk" title="${t('v_nakhlio')}">${small('check')}</span>` : '';
+const vmark = (n) => (window.LIVE && LV.byName(n) ? LV.byName(n).verified : VER.has(n)) ? `<span class="vmk" title="${t('v_nakhlio')}">${small('check')}</span>` : '';
 let HELPS = null;
 function helpsOf(n) { if (!HELPS) { HELPS = {}; const all = [].concat(...Object.values(POSTS), FAMILY); for (const x of all) { HELPS[x.who] = (HELPS[x.who] || 0) + (x.helped || 0); for (const a of x.a || []) HELPS[a.who] = (HELPS[a.who] || 0) + (a.helped || 0); } } return HELPS[n] || 0; }
 function badgesOf(n, p) { const b = []; if (VER.has(n)) b.push('verified'); const h = helpsOf(n); if (h >= 45) b.push('mentor'); else if (h >= 25) b.push('helper'); if (p && p.rating >= 4.8 && (p.reviews || []).length >= 2) b.push('seller'); return b; }
@@ -1022,7 +1081,7 @@ V.operator = (p) => {
     else { const reps = want('reports', () => LV.reports());
       body = reps === undefined ? `<p class="note">…</p>` : !reps || !reps.length ? `<p class="note">${FXL('no_reports')}</p>` : `<div class="list one">${reps.map(r => `<div class="card rep ${r.status}"><div class="sub" style="margin:0 0 4px">${esc(r.target_type)} · ${new Date(r.created_at).toLocaleString(locale())} · ${esc(pname(r.reporter))}</div>
         <b>${r.target_type === 'user' ? esc(pname(r.target_id)) : esc(r.target_id)}</b>${r.reason ? `<p style="margin:4px 0 0">${esc(r.reason)}</p>` : ''}
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">${r.target_type === 'post' ? `<button class="btn sm soft" data-act="mgpost" data-v="${r.target_id}">${t('open')}</button><button class="btn sm soft" data-act="admdelpost" data-v="${r.target_id}">${FXL('act_delete')}</button>` : ''}${r.target_type === 'user' ? `<button class="btn sm soft" data-act="mgp" data-v="${r.target_id}">${t('open')}</button>` : ''}${r.status === 'open' ? `<button class="btn sm green" data-act="admdone" data-v="${r.id}">${FXL('act_done')}</button>` : `<span class="tag green">${FXL('act_done')}</span>`}</div></div>`).join('')}</div>`; }
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">${r.target_type === 'post' ? (r.target_id.includes(':') ? `${r.target_id.startsWith('item:') ? `<button class="btn sm soft" data-act="go" data-v="item" data-id="${r.target_id.slice(5)}">${t('open')}</button>` : ''}<button class="btn sm soft" data-act="ldel" data-v="${r.target_id}">${FXL('act_delete')}</button>` : `<button class="btn sm soft" data-act="mgpost" data-v="${r.target_id}">${t('open')}</button><button class="btn sm soft" data-act="admdelpost" data-v="${r.target_id}">${FXL('act_delete')}</button>`) : ''}${r.target_type === 'user' ? `<button class="btn sm soft" data-act="mgp" data-v="${r.target_id}">${t('open')}</button>` : ''}${r.status === 'open' ? `<button class="btn sm green" data-act="admdone" data-v="${r.id}">${FXL('act_done')}</button>` : `<span class="tag green">${FXL('act_done')}</span>`}</div></div>`).join('')}</div>`; }
     return { tabs: true, html: topbar(t('operator_panel')) + `<div class="wrap">${seg}${body}</div>` };
   }
   const ids = Object.keys(S.chats).filter(id => !id.startsWith('U:'));
@@ -1081,7 +1140,10 @@ root.addEventListener('click', (e) => {
     case 'reply': replyTo[el.dataset.k] = v; openC[el.dataset.k] = true; render(); focusBox(el.dataset.k); break;
     case 'unreply': replyTo[el.dataset.k] = null; render(); break;
     case 'comment': openC[el.dataset.k] = !openC[el.dataset.k]; render(); if (openC[el.dataset.k]) focusBox(el.dataset.k); break;
-    case 'csend': { const k = el.dataset.k; const ta = root.querySelector(`textarea[data-ck="${k}"]`); const tx = ta && ta.value.trim(); if (!tx) { ta && ta.focus(); break; } S.cm[k] = (S.cm[k] || []).concat({ who: '@me', text: tx, to: replyTo[k] || undefined, date: new Date().toISOString().slice(0, 7) }); replyTo[k] = null; save(); render(); break; }
+    case 'csend': if (LV) { const k = el.dataset.k; const ta = root.querySelector(`textarea[data-ck="${k}"]`); const tx = ta && ta.value.trim(); if (!tx) { ta && ta.focus(); break; }
+      const target = k.startsWith('c:') ? 'item:' + k.slice(2) : k.startsWith('f:') ? 'forum:' + k.slice(2) : k.startsWith('e:') ? 'event:' + k.slice(2) : null;
+      if (!target) break; LV.addComment(target, tx, lang, replyTo[k]).then(() => { replyTo[k] = null; dropData('c:'); render(); }).catch(e => toast(FXL('send_fail'))); ta.value = ''; break; }
+    case 'csend_local': { const k = el.dataset.k; const ta = root.querySelector(`textarea[data-ck="${k}"]`); const tx = ta && ta.value.trim(); if (!tx) { ta && ta.focus(); break; } S.cm[k] = (S.cm[k] || []).concat({ who: '@me', text: tx, to: replyTo[k] || undefined, date: new Date().toISOString().slice(0, 7) }); replyTo[k] = null; save(); render(); break; }
     case 'rreply': cur().replyTo = v; render(); setTimeout(() => { const m = document.getElementById('msg'); if (m) m.focus(); }, 30); break;
     case 'rclear': cur().replyTo = null; render(); break;
     case 'spk': cur().k = v; render(); break;
@@ -1098,7 +1160,13 @@ root.addEventListener('click', (e) => {
     case 'helped': S.helped[v] = !S.helped[v]; save(); render(); break;
     case 'report': S.reported[v] = true; save(); toast(t('reported')); render(); break;
     case 'compose': composeSheet(v, id); break;
-    case 'going': S.going[v] = !S.going[v]; save(); render(); break;
+    case 'going': if (LV) { const e = allEvents().find(x => x.id === v); if (!e) break; e.mineG = !e.mineG; render(); LV.going(v, e.mineG).then(() => dropData('c:sp:')).catch(er => toast(FXL('send_fail'))); break; } S.going[v] = !S.going[v]; save(); render(); break;
+    case 'lhelp': { const on = el.dataset.on !== '1'; LV.setHelpful(v, on).then(() => { dropData('c:forum'); render(); }).catch(er => toast(FXL('send_fail'))); break; }
+    case 'lrep': LV.report('post', v).then(() => toast(t('reported'))).catch(er => toast(FXL('send_fail'))); break;
+    case 'ldel': { if (!confirm(FXL('act_delete') + '?')) break; const [ty, id2] = [v.slice(0, v.indexOf(':')), v.slice(v.indexOf(':') + 1)];
+      const fn = { item: LV.delItem, forum: LV.delForum, room: LV.delRoomMsg, event: LV.delEvent, cm: LV.delComment2 }[ty]; if (!fn) break;
+      fn(ty === 'room' || ty === 'cm' ? +id2 : id2).then(() => { toast(FXL('act_delete') + ' ✓'); dropData('c:'); if (ty === 'item' && cur().v === 'item') back(); else render(); }).catch(er => toast(FXL('send_fail'))); break; }
+    case 'levent': eventSheet(v); break;
     case 'oath': S.pledge[v] = true; save(); render(true); break;
     case 'postad': adSheet(); break;
     case 'postparcel': parcelSheet(); break;
@@ -1121,6 +1189,11 @@ root.addEventListener('keydown', (e) => {
 function focusBox(k) { setTimeout(() => { const ta = root.querySelector(`textarea[data-ck="${k}"]`); if (ta) { ta.focus(); ta.scrollIntoView({ block: 'center', behavior: 'smooth' }); } }, 40); }
 function openDM(name) {
   if (!name || name === '@me') return;
+  if (LV) { const pr = LV.byName(name); if (!pr) return toast(MG_T ? L(MG_T.dm_lock) : t('dm'));
+    const it = cur().v === 'item' ? findItem(cur().id) : null; const fail = (e) => { console.warn(e); toast(FXL('send_fail')); };
+    const open = (c) => { const key = 'D:' + pr.id; S.chats[key] = Object.assign(S.chats[key] || { msgs: [] }, { live: true, cid: c.id, kind: 'dm', t: Date.now() }); save(); go('chat', { id: key, draft: it ? txt(it.title) + ' — ' : '' }); };
+    if (it && it.live && it.seller.uid === pr.id) { LV.itemChat(it.id, pr.id).then(open).catch(fail); return; }
+    LV.rel().then(rel => { if (!rel.friends.has(pr.id)) { toast(L(MG_T.dm_lock)); return; } return LV.dmChat(pr.id).then(open); }).catch(fail); return; }
   const id = 'U:' + name;
   if (!S.chats[id]) S.chats[id] = { msgs: [], person: name };
   S.chats[id].t = S.chats[id].t || Date.now(); save();
@@ -1141,6 +1214,42 @@ function sendChat(text, num) {
   setTimeout(() => { const ty = document.getElementById('typing'); if (ty) { ty.innerHTML = '<div class="bubble op typing"><i></i><i></i><i></i></div>'; scrollEnd(); } }, 500);
   setTimeout(() => { c.msgs.push({ from: 'op', text: id.startsWith('U:') ? PERSON_REPLY : nOp === 0 ? OP_REPLY : OP_REPLY_2 }); c.t = Date.now(); save(); if (cur().v === 'chat' && cur().id === id) render(); }, 2200);
 }
+function adSheetLive() {
+  let photo = null;
+  const w = sheet(`<h3>${t('ad_post')}</h3><p class="note">${ST('free_ads')}</p>
+    <div class="field"><label for="adcat">${t('category')}</label><select id="adcat">${Object.keys(ADCATS).map(k => `<option value="${k}">${esc(L(ADCATS[k]))}</option>`).join('')}</select></div>
+    <div class="field"><label for="adt">${t('title_f')}</label><input id="adt" maxlength="120"></div>
+    <div class="field"><label for="adp">${t('price_from')}, ${t('sar')}</label><input id="adp" inputmode="numeric" placeholder="300"></div>
+    <div class="field"><label for="add">${t('description')}</label><textarea id="add" rows="3" maxlength="2000"></textarea></div>
+    <div class="field"><label>${t('photo')}</label><label class="mgpick" style="height:140px"><input type="file" id="adf" accept="image/*" hidden><span id="adprev">${ic('camera')}<b>${t('add_photo')}</b></span></label></div>
+    <div class="field"><label for="adds">${t('district_l')}</label><select id="adds">${Object.keys(DIST).map(k => `<option value="${k}" ${k === (S.me.dist || 'central') ? 'selected' : ''}>${esc(DIST[k].en)}</option>`).join('')}</select></div>
+    <button class="btn green full" style="margin-top:16px" id="adgo">${t('publish')}</button>`);
+  w.querySelector('#adf').onchange = async (e) => { const f = e.target.files[0]; if (!f) return; photo = await resizeImg(f); w.querySelector('#adprev').innerHTML = `<img src="${photo}" alt="" style="width:100%;height:140px;object-fit:cover">`; };
+  w.querySelector('#adgo').addEventListener('click', async (ev) => {
+    const ti = w.querySelector('#adt').value.trim(); if (!ti) { w.querySelector('#adt').focus(); return; }
+    const b = ev.currentTarget; b.disabled = true;
+    try { const photos = photo ? [await LV.upload(photo, 'ad')] : []; const pr = w.querySelector('#adp').value.trim(); const cat = w.querySelector('#adcat').value;
+      await LV.addItem({ kind: 'ad', cat, title: ti, price: cat === 'free' ? '0 SAR' : pr ? pr + ' SAR' : '', descr: w.querySelector('#add').value.trim(), photos, dist: w.querySelector('#adds').value, lang });
+      w.remove(); toast(t('published')); dropData('c:items'); if (cur().v !== 'ads') go('ads'); else render();
+    } catch (e) { console.warn(e); toast(FXL('send_fail')); b.disabled = false; }
+  });
+}
+function parcelSheetLive() {
+  let kind = 'flying';
+  const w = sheet(`<h3>${t('post_parcel')}</h3>
+    <div class="seg" style="margin-top:10px"><button class="on" type="button" data-k="flying">${t('flying')}</button><button type="button" data-k="need">${t('need_send')}</button></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="field"><label for="pf">${t('from_to').split(' ')[0]} →</label><input id="pf" value="Medina"></div><div class="field"><label for="pt">→</label><input id="pt" placeholder="Istanbul"></div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="field"><label for="pr2">${t('date')}</label><input id="pr2" type="date"></div><div class="field"><label for="pr3">${t('weight')}, ${t('kg')}</label><input id="pr3" inputmode="decimal" placeholder="3"></div></div>
+    <div class="field"><label for="pdx">${t('description')}</label><textarea id="pdx" rows="2"></textarea></div>
+    <div class="banner rose" style="margin-top:14px;font-size:12.5px">${ic('shield')}<div>${t('parcel_rules')}</div></div>
+    <label class="check"><input type="checkbox" id="pagree"><span>${t('agree_rules')}</span></label>
+    <button class="btn green full" style="margin-top:14px" id="pgo" disabled>${t('publish')}</button>`);
+  const segs = w.querySelectorAll('.seg button'); segs.forEach(b => b.addEventListener('click', () => { kind = b.dataset.k; segs.forEach(x => x.classList.toggle('on', x === b)); }));
+  const ag = w.querySelector('#pagree'), btn = w.querySelector('#pgo'); ag.addEventListener('change', () => { btn.disabled = !ag.checked; });
+  btn.addEventListener('click', () => { const to = w.querySelector('#pt').value.trim(); if (!to) { w.querySelector('#pt').focus(); return; } btn.disabled = true;
+    LV.addItem({ kind: 'parcel', cat: kind, route_from: w.querySelector('#pf').value.trim() || 'Medina', route_to: to, pdate: w.querySelector('#pr2').value || null, kg: parseFloat(w.querySelector('#pr3').value) || null, descr: w.querySelector('#pdx').value.trim(), lang })
+      .then(() => { w.remove(); toast(t('published')); dropData('c:items'); if (cur().v !== 'parcels') go('parcels'); else render(); }).catch(e => { toast(FXL('send_fail')); btn.disabled = false; }); });
+}
 const scrollEnd = () => window.scrollTo(0, document.body.scrollHeight);
 
 function composeSheet(kind, topic) {
@@ -1150,11 +1259,13 @@ function composeSheet(kind, topic) {
     <button class="btn green full" style="margin-top:14px" id="cpub">${t('publish')}</button>`);
   w.querySelector('#cpub').addEventListener('click', () => {
     const txt = w.querySelector('#ctext').value.trim(); if (!txt) return;
+    if (LV) { LV.forumPost(topic, kind === 'q' ? 'q' : 'e', txt, lang).then(() => { w.remove(); toast(t('published')); dropData('c:forum'); render(); }).catch(e => toast(FXL('send_fail'))); return; }
     S.posts[topic] = [{ q: kind === 'q', who: '@me', date: new Date().toISOString().slice(0, 7), text: txt, helped: 0 }].concat(S.posts[topic] || []);
     save(); w.remove(); toast(t('published')); render();
   });
 }
 function adSheet() {
+  if (LV) return adSheetLive();
   const w = sheet(`<h3>${t('ad_post')}</h3><p class="note">${ST('free_ads')}</p>
     <div class="field"><label for="adcat">${t('category')}</label><select id="adcat">${Object.keys(ADCATS).map(k => `<option value="${k}">${esc(L(ADCATS[k]))}</option>`).join('')}</select></div>
     <div class="field"><label for="adt">${t('title_f')}</label><input id="adt" placeholder="${lang === 'ru' ? 'Например: Стиральная машина, 2 года' : lang === 'ar' ? 'مثال: غسالة، عمرها سنتان' : 'e.g. Washing machine, 2 years old'}"></div>
@@ -1172,6 +1283,7 @@ function adSheet() {
   });
 }
 function parcelSheet() {
+  if (LV) return parcelSheetLive();
   const w = sheet(`<h3>${t('post_parcel')}</h3>
     <div class="seg" style="margin-top:10px"><button class="on" type="button">${t('flying')}</button><button type="button">${t('need_send')}</button></div>
     <div class="field"><label for="pr1">${t('from_to')}</label><input id="pr1" placeholder="${lang === 'ru' ? 'Медина → Казань' : lang === 'ar' ? 'المدينة ← القاهرة' : 'Medina → Istanbul'}"></div>
@@ -1214,7 +1326,7 @@ function render(scrollTop) {
   if (msg) {
     const auto = () => { msg.style.height = 'auto'; msg.style.height = Math.min(120, msg.scrollHeight) + 'px'; };
     msg.addEventListener('input', () => { c.draft = msg.value; auto(); }); auto();
-    const doSend = () => { const v = msg.value; if (!v.trim()) return; c.draft = ''; if (r.composer === 'chat') sendChat(v); else { S.rooms = S.rooms || {}; (S.rooms[c.id] = S.rooms[c.id] || []).push({ who: '@me', text: v.trim(), to: c.replyTo || undefined }); c.replyTo = null; save(); render(); } setTimeout(scrollEnd, 50); };
+    const doSend = () => { const v = msg.value; if (!v.trim()) return; c.draft = ''; if (r.composer === 'chat') sendChat(v); else if (LV) { const room = c.id, to = c.replyTo; c.replyTo = null; LV.roomSend(room, v.trim(), lang, to).then(() => { dropData('c:sp:'); render(); setTimeout(scrollEnd, 50); }).catch(e => toast(FXL('send_fail'))); msg.value = ''; } else { S.rooms = S.rooms || {}; (S.rooms[c.id] = S.rooms[c.id] || []).push({ who: '@me', text: v.trim(), to: c.replyTo || undefined }); c.replyTo = null; save(); render(); } setTimeout(scrollEnd, 50); };
     document.getElementById('sendBtn').addEventListener('click', doSend);
     msg.addEventListener('keydown', ev => { if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); doSend(); } });
     const sn = document.querySelector('[data-act=sharenum]'); if (sn) sn.addEventListener('click', ev => { ev.stopPropagation(); sendChat('', true); });
@@ -1244,6 +1356,15 @@ function boot() {
   if (!S.lang) return gateLang(false);
   if (stack.length && stack[stack.length - 1].v === 'lang' && !document.querySelector('.app')) stack = [{ v: 'home' }];
   render(true);
+}
+if (LV) {
+  ADS.length = 0; PARCELS.length = 0; Object.keys(POSTS).forEach(k => { POSTS[k] = []; }); FAMILY.length = 0;
+  MEN_ROOMS.concat(WOMEN_ROOMS).forEach(r => { r.msgs = []; r.n = 0; }); MEN_EVENTS.length = 0; WOMEN_EVENTS.length = 0;
+  const wrapV = (name, pre) => { const f = V[name]; V[name] = (pp) => { try { pre(pp); } catch (e) { console.warn(e); } return f(pp); }; };
+  ['ads', 'parcels', 'item', 'majlis', 'topic', 'family', 'explore', 'person'].forEach(n => wrapV(n, () => liveCommunity()));
+  wrapV('men', () => liveSpace('men')); wrapV('women', () => liveSpace('women'));
+  wrapV('room', (pp) => liveSpace(pp.id.split(':')[0])); wrapV('event', () => liveSpace(S.me && S.me.gender === 'f' ? 'women' : 'men'));
+  LV.onRoom && setTimeout(() => LV.onRoom(m => { if (m.author === meU()) return; dropData('c:sp:'); if (cur().v === 'room' && cur().id === m.room) { liveSpace(m.room.split(':')[0]); } }), 0);
 }
 window.NK = { isPhone, isAdmin, want, dropData, liveAv, pname, meFrom, applyLive, liveSyncChats, loadChat, V, t, L, ic, esc, small, img, avatar, vmark, commentsBlock, loc, nf, toast, sheet, go, back, render, save, openDM, authSheet, resizeImg, txt, cur,
   get S() { return S; }, get lang() { return lang; }, get stack() { return stack; } };
