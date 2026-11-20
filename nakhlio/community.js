@@ -6,9 +6,7 @@ const P = (name, langs, since, rating, dist) => ({ name, langs, since, rating, d
 
 window.ADCATS = {
   food: D('Домашняя еда', 'Home food', 'أكل بيتي'),
-  things: D('Вещи', 'Things', 'أغراض'),
-  services: D('Услуги', 'Services', 'خدمات'),
-  lessons: D('Учёба', 'Lessons', 'دروس'),
+  things: D('Вещи и книги', 'Things & books', 'أغراض وكتب'),
   free: D('Даром', 'Free', 'مجاناً'),
 };
 window.HELPCATS = {
@@ -67,7 +65,6 @@ window.ADS = [
     comments: [
       { who: 'Siti', text: D('Можно доставку до Al Fath?', 'Can you deliver to Al Fath?', 'ممكن توصيل إلى Al Fath؟') },
       { who: 'Ahmad', to: 'Siti', text: D('Да, с другом на машине привезём за 30 SAR.', 'Yes, a friend and I can bring it by car for 30 SAR.', 'نعم، أوصلها مع صديقي بالسيارة مقابل 30 ر.س.') },
-      { who: 'Timur', text: D('Если вдруг нужна помощь с переездом техники — пишите, у меня машина.', 'If you need help moving appliances, write to me — I have a van.', 'إذا احتجتم مساعدة في نقل الأجهزة راسلوني، عندي سيارة نقل.') },
     ] },
   { id: 'A-710', cat: 'things', photos: ['book1', 'book2'], seller: P('Abdulla', 'RU · AR', '2025', 5.0, 'jamiah'),
     title: D('Учебники арабского «Мединский курс», 3 тома', 'Arabic textbooks “Madinah Course”, 3 volumes', 'كتب «دروس اللغة العربية» – المدينة، 3 أجزاء'), price: D('45 SAR', '45 SAR', '45 ر.س'),
@@ -77,55 +74,6 @@ window.ADS = [
     comments: [
       { who: 'Yusuf', text: D('Брат, забронируй за мной, пожалуйста, заберу завтра после зухра.', 'Brother, please reserve them for me — I’ll pick up tomorrow after Dhuhr.', 'أخي احجزها لي من فضلك، آخذها غداً بعد الظهر.') },
       { who: 'Abdulla', to: 'Yusuf', text: D('Хорошо, держу до завтра.', 'OK, holding them until tomorrow.', 'تمام، محجوزة لك حتى الغد.') },
-    ] },
-  /* ---- services ---- */
-  { id: 'A-703', cat: 'services', pro: true, photos: ['elec1', 'elec2'], seller: P('Usman', 'UR · EN · AR', '2022', 4.9, 'qaswa'),
-    title: D('Электрик: розетки, свет, кондиционеры', 'Electrician: sockets, lights, AC', 'كهربائي: أفياش وإنارة ومكيفات'), price: D('от 80 SAR', 'from 80 SAR', 'من 80 ر.س'),
-    desc: D('12 лет опыта. Установка люстр, розеток, водонагревателей, обслуживание сплит-кондиционеров. Выезд по всей Медине, в день обращения.',
-            '12 years of experience. Chandeliers, sockets, water heaters, split AC servicing. I come anywhere in Medina, same day.',
-            'خبرة 12 سنة. تركيب ثريات وأفياش وسخانات، وصيانة مكيفات سبليت. أحضر لأي مكان في المدينة في نفس اليوم.'),
-    comments: [
-      { who: 'Denis', text: D('Сколько стоит повесить люстру и поменять 3 розетки?', 'How much to hang a chandelier and change 3 sockets?', 'كم تكلفة تركيب ثريا وتغيير 3 أفياش؟') },
-      { who: 'Usman', to: 'Denis', text: D('Всё вместе 150 SAR, могу сегодня после асра.', '150 SAR for everything, I can come today after Asr.', 'الكل بـ 150 ر.س، أقدر آجي اليوم بعد العصر.') },
-      { who: 'Kamila', text: D('Чистил нам 2 кондиционера — аккуратно и быстро, всё убрал за собой.', 'He cleaned 2 ACs for us — neat and quick, left everything tidy.', 'نظّف لنا مكيفين بسرعة ونظافة وترك المكان مرتباً.') },
-    ] },
-  { id: 'A-704', cat: 'services', photos: ['move1', 'move2'], seller: P('Timur', 'RU · AR', '2024', 4.8, 'aziziyah'),
-    title: D('Переезд: грузчики и машина', 'Moving: movers and a van', 'نقل عفش: عمال وسيارة'), price: D('от 250 SAR', 'from 250 SAR', 'من 250 ر.س'),
-    desc: D('Закрытая машина, 2 грузчика, разборка и сборка мебели. Перевозим по Медине и в Jeddah. Упаковочные коробки — бесплатно.',
-            'Closed van, 2 movers, furniture assembly and disassembly. We move within Medina and to Jeddah. Packing boxes free.',
-            'سيارة مغلقة وعاملان مع فك وتركيب الأثاث. ننقل داخل المدينة وإلى Jeddah. كراتين التغليف مجاناً.'),
-    comments: [
-      { who: 'Olga', text: D('Сколько будет 2-комнатная квартира с 3 этажа без лифта?', 'How much for a 2-bedroom flat from the 3rd floor, no lift?', 'كم سعر نقل شقة غرفتين من الدور الثالث بدون مصعد؟') },
-      { who: 'Timur', to: 'Olga', text: D('Около 400 SAR, точнее скажу по фото. Скиньте лично.', 'Around 400 SAR, I’ll confirm from photos. Send them privately.', 'حوالي 400 ر.س، أحدد السعر من الصور. أرسليها على الخاص.') },
-    ] },
-  { id: 'A-711', cat: 'services', photos: ['kit5', 'liv12'], seller: P('Mariam', 'AR · EN', '2025', 4.7, 'ranuna'),
-    title: D('Уборка квартир после выезда и до заселения', 'Move-out and move-in cleaning', 'تنظيف الشقق قبل السكن وبعد الإخلاء'), price: D('от 180 SAR', 'from 180 SAR', 'من 180 ر.س'),
-    desc: D('Генеральная уборка: кухня, санузлы, окна, кондиционеры снаружи. Работаем вдвоём, свои средства.',
-            'Deep cleaning: kitchen, bathrooms, windows, AC units outside. Two of us, our own products.',
-            'تنظيف شامل: المطبخ ودورات المياه والنوافذ والمكيفات من الخارج. نعمل اثنتين وبمنتجاتنا.'),
-    comments: [
-      { who: 'Aisha', text: D('Работаете в пятницу?', 'Do you work on Friday?', 'هل تعملون يوم الجمعة؟') },
-      { who: 'Mariam', to: 'Aisha', text: D('В пятницу после джума, с 15:00.', 'On Friday after Jumu’ah, from 15:00.', 'يوم الجمعة بعد الصلاة، من الساعة 3 عصراً.') },
-    ] },
-  /* ---- lessons ---- */
-  { id: 'A-705', cat: 'lessons', pro: true, photos: ['book2', 'liv8'], seller: P('Ustaz Khalid', 'AR · EN · RU', '2023', 5.0, 'jamiah'),
-    title: D('Арабский язык с нуля, онлайн и очно', 'Arabic from zero, online and in person', 'العربية من الصفر، عن بعد وحضورياً'), price: D('60 SAR / урок', '60 SAR / lesson', '60 ر.س / درس'),
-    desc: D('Выпускник Islamic University of Madinah. Разговорный арабский для жизни в Медине и литературный по «Мединскому курсу». Первый урок бесплатно.',
-            'Islamic University of Madinah graduate. Spoken Arabic for daily life in Medina and classical Arabic with the Madinah Course. First lesson free.',
-            'خريج الجامعة الإسلامية بالمدينة. عربية محكية للحياة اليومية وفصحى بمنهج «دروس اللغة العربية». الدرس الأول مجاني.'),
-    comments: [
-      { who: 'Ruslan', text: D('Занимаюсь у устаза 3 месяца — уже свободно говорю в магазине и в такси 👍', 'I’ve studied with the ustaz for 3 months — I already speak easily in shops and taxis 👍', 'أدرس عند الأستاذ منذ 3 أشهر، وصرت أتكلم بسهولة في المحلات والتاكسي 👍') },
-      { who: 'Nur', text: D('Есть ли группы для сестёр?', 'Are there groups for sisters?', 'هل توجد مجموعات للأخوات؟') },
-      { who: 'Ustaz Khalid', to: 'Nur', text: D('Да, женскую группу ведёт моя супруга, онлайн по вторникам.', 'Yes, my wife teaches the sisters’ group online on Tuesdays.', 'نعم، زوجتي تدرّس مجموعة الأخوات عن بعد يوم الثلاثاء.') },
-    ] },
-  { id: 'A-712', cat: 'lessons', photos: ['book1', 'bed6'], seller: P('Zaynab', 'RU · AR', '2025', 4.9, 'salam'),
-    title: D('Таджвид и Коран для детей онлайн', 'Tajweed and Quran for kids, online', 'تجويد وقرآن للأطفال عن بعد'), price: D('200 SAR / месяц', '200 SAR / month', '200 ر.س / شهر'),
-    desc: D('Группы по 4 ребёнка 6–12 лет, 3 раза в неделю по 40 минут. Иджаза по чтению Хафса.',
-            'Groups of 4 children aged 6–12, three times a week for 40 minutes. Ijazah in Hafs recitation.',
-            'مجموعات من 4 أطفال بعمر 6–12 سنة، ثلاث مرات أسبوعياً لمدة 40 دقيقة. مُجازة برواية حفص.'),
-    comments: [
-      { who: 'Farida', text: D('Сыну 5 лет, возьмёте?', 'My son is 5 — would you take him?', 'ابني عمره 5 سنوات، هل تقبلينه؟') },
-      { who: 'Zaynab', to: 'Farida', text: D('Можно попробовать на пробном уроке, посмотрим, как ему будет.', 'Let’s try a trial lesson and see how he does.', 'نجرب درساً تجريبياً ونرى كيف يتفاعل.') },
     ] },
   /* ---- free ---- */
   { id: 'A-706', cat: 'free', photos: ['crib1', 'crib2'], seller: P('Maryam', 'RU · EN', '2024', 4.8, 'salam'),
@@ -316,23 +264,19 @@ window.ABOUT = {
   'Amina': { job: D('Домашний кондитер', 'Home baker', 'صانعة حلويات منزلية'), about: D('Из Казани, в Медине 4 года с мужем и тремя детьми. Пеку на заказ и веду кулинарные встречи для сестёр.', 'From Kazan, in Medina for 4 years with my husband and three kids. I bake to order and host cooking meetups for sisters.', 'من قازان، أعيش في المدينة منذ 4 سنوات مع زوجي وأطفالي الثلاثة. أخبز حسب الطلب وأنظم لقاءات طبخ للأخوات.') },
   'Gulnara': { job: D('Домашняя кухня', 'Home cooking', 'طبخ منزلي'), about: D('Из Ташкента. Готовлю узбекскую еду по маминым рецептам.', 'From Tashkent. I cook Uzbek food from my mother’s recipes.', 'من طشقند، أطبخ الأكل الأوزبكي على وصفات أمي.') },
   'Sana': { job: D('Пакистанская кухня', 'Pakistani cooking', 'مطبخ باكستاني'), about: D('Из Лахора, готовлю для семейных встреч и праздников.', 'From Lahore, I cook for family gatherings and celebrations.', 'من لاهور، أطبخ للمناسبات العائلية والاحتفالات.') },
-  'Usman': { job: D('Электрик, 12 лет опыта', 'Electrician, 12 years’ experience', 'كهربائي، خبرة 12 سنة'), about: D('Работаю по всей Медине. Розетки, свет, водонагреватели и кондиционеры. Даю гарантию на работу 3 месяца.', 'I work all over Medina: sockets, lights, water heaters and AC. 3-month guarantee on my work.', 'أعمل في كل المدينة: أفياش وإنارة وسخانات ومكيفات. ضمان 3 أشهر على العمل.') },
-  'Timur': { job: D('Переезды и грузоперевозки', 'Moving and transport', 'نقل عفش'), about: D('Есть закрытая машина и двое помощников. Перевозим аккуратно, собираем мебель.', 'I have a closed van and two helpers. We move carefully and assemble furniture.', 'عندي سيارة مغلقة ومساعدان، ننقل بعناية ونركّب الأثاث.') },
-  'Ustaz Khalid': { job: D('Преподаватель арабского', 'Arabic teacher', 'معلم لغة عربية'), about: D('Выпускник Islamic University of Madinah. 8 лет преподаю арабский иностранцам, говорю по-английски и по-русски.', 'Islamic University of Madinah graduate. 8 years teaching Arabic to foreigners; I speak English and Russian.', 'خريج الجامعة الإسلامية بالمدينة، أدرّس العربية لغير الناطقين بها منذ 8 سنوات وأتحدث الإنجليزية والروسية.') },
-  'Zarina': { job: D('Переводчик RU · AR · EN', 'Interpreter RU · AR · EN', 'مترجمة روسي · عربي · إنجليزي'), about: D('Живу в Медине 9 лет. Сопровождаю к врачам, в банки и госучреждения.', 'I’ve lived in Medina for 9 years. I accompany people to doctors, banks and government offices.', 'أعيش في المدينة منذ 9 سنوات، أرافق الناس إلى الأطباء والبنوك والدوائر الحكومية.') },
-  'Abdullah': { job: D('Водитель, трансферы', 'Driver, transfers', 'سائق وتوصيل'), about: D('Встречаю гостей в аэропорту и вожу на зиярат. Машина на 6 мест.', 'I meet guests at the airport and drive them on Ziyarah. 6-seat car.', 'أستقبل الضيوف في المطار وأوصلهم للزيارة. سيارة 6 مقاعد.') },
-  'Yusuf': { job: D('Студент Islamic University, гид', 'Islamic University student, guide', 'طالب في الجامعة الإسلامية ومرشد'), about: D('Провожу экскурсии по истории Медины и организую футбол по субботам.', 'I run history tours of Medina and organise football on Saturdays.', 'أنظم جولات تاريخية في المدينة وكرة قدم كل سبت.') },
-  'Muhammad': { job: D('Сопровождение пожилых', 'Elderly companion', 'مرافق لكبار السن'), about: D('Помогаю пожилым паломникам, есть кресло-коляска.', 'I help elderly pilgrims; I have a wheelchair.', 'أساعد الزوار كبار السن، ولدي كرسي متحرك.') },
+  'Usman': { job: D('Инженер-строитель', 'Civil engineer', 'مهندس مدني') },
+  'Timur': { job: D('Логист', 'Logistics manager', 'مسؤول لوجستيات') },
+  'Ustaz Khalid': { job: D('Преподаватель арабского', 'Arabic teacher', 'معلم لغة عربية') },
+  'Zarina': { job: D('Мама и домохозяйка', 'Mum and homemaker', 'أم وربة منزل') },
+  'Abdullah': { job: D('Менеджер', 'Manager', 'مدير') },
+  'Yusuf': { job: D('Студент', 'Student', 'طالب') },
+  'Muhammad': { job: D('Инженер', 'Engineer', 'مهندس') },
   'Ruslan': { job: D('IT-специалист', 'IT specialist', 'مختص تقنية'), about: D('Работаю удалённо, люблю поездки по Саудии. Часто организую выезды в AlUla.', 'I work remotely and love trips around Saudi. I often organise outings to AlUla.', 'أعمل عن بعد وأحب الرحلات في المملكة، أنظم طلعات إلى العلا كثيراً.') },
   'Ibrahim': { job: D('Инженер', 'Engineer', 'مهندس'), about: D('Переезжаю в Jeddah, распродаю мебель.', 'Moving to Jeddah, selling my furniture.', 'منتقل إلى جدة وأبيع أثاثي.') },
 };
 const R = (who, stars, text) => ({ who, stars, text });
 window.PREVIEWS = {
   'Amina': [R('Leyla', 5, D('Торт был просто сказка, дети в восторге!', 'The cake was a dream, the kids loved it!', 'الكيك كان رائعاً والأطفال انبسطوا!')), R('Fatima', 5, D('Всё вовремя и очень вкусно.', 'On time and delicious.', 'في الوقت ولذيذ جداً.'))],
-  'Usman': [R('Kamila', 5, D('Аккуратно, быстро, убрал за собой.', 'Neat, fast, cleaned up after himself.', 'مرتب وسريع ونظّف بعده.')), R('Denis', 5, D('Приехал в тот же день, цена как договорились.', 'Came the same day, price as agreed.', 'حضر في نفس اليوم والسعر كما اتفقنا.'))],
-  'Timur': [R('Olga', 5, D('Перевезли без единой царапины.', 'Moved everything without a scratch.', 'نقلوا كل شيء بدون خدش.'))],
-  'Ustaz Khalid': [R('Ruslan', 5, D('Лучший преподаватель, объясняет просто.', 'The best teacher, explains things simply.', 'أفضل معلم، يشرح ببساطة.'))],
-  'Zarina': [R('Leyla', 5, D('Очень спокойная и внимательная.', 'Very calm and attentive.', 'هادئة جداً ومهتمة.'))],
   'Gulnara': [R('Daniyar', 5, D('Манты как дома!', 'Manti just like home!', 'مانتي مثل البيت!'))],
 };
 })();
@@ -346,7 +290,7 @@ Object.assign(window.ABOUT, {
   'Denis': { job: D('Программист', 'Software developer', 'مبرمج'), about: D('Переехал с семьёй в 2026, всё узнаю впервые и делюсь опытом.', 'Moved here with my family in 2026; learning everything for the first time and sharing.', 'انتقلت مع عائلتي في 2026، أتعلم كل شيء لأول مرة وأشارك تجربتي.') },
   'Hasan': { job: D('Студент', 'Student', 'طالب'), about: D('Учусь в Islamic University, подрабатываю переводами.', 'Studying at the Islamic University and doing translations part-time.', 'أدرس في الجامعة الإسلامية وأعمل بالترجمة جزئياً.') },
   'Daniyar': { job: D('Логист', 'Logistics manager', 'مسؤول لوجستيات'), about: D('Из Ташкента. Бегаю по утрам, приглашаю на пробежки.', 'From Tashkent. I run in the mornings — join the runs!', 'من طشقند، أجري صباحاً وأدعوكم للجري معي.') },
-  'Imran': { job: D('Водитель, трансферы на умру', 'Driver, Umrah transfers', 'سائق ورحلات عمرة'), about: D('Из Лахора, вожу семьи в Мекку и по Медине.', 'From Lahore; I drive families to Makkah and around Medina.', 'من لاهور، أنقل العائلات إلى مكة وداخل المدينة.') },
+  'Imran': { job: D('Программист', 'Software developer', 'مبرمج') },
   'Siti': { job: D('Медсестра', 'Nurse', 'ممرضة'), about: D('Из Индонезии, работаю в больнице в Медине.', 'From Indonesia, working at a hospital in Medina.', 'من إندونيسيا، أعمل في مستشفى في المدينة.') },
   'Olga': { job: D('Бухгалтер', 'Accountant', 'محاسبة'), about: D('Приняла ислам 5 лет назад, в Медине с мужем.', 'Embraced Islam 5 years ago, living in Medina with my husband.', 'أسلمت قبل 5 سنوات وأعيش في المدينة مع زوجي.') },
   'Aliya': { job: D('Дизайнер', 'Designer', 'مصممة'), about: D('Из Казахстана, ждём второго малыша.', 'From Kazakhstan, expecting our second baby.', 'من كازاخستان، ننتظر مولودنا الثاني.') },

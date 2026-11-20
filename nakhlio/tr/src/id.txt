@@ -6,7 +6,7 @@ u:install_menu|Jendela pemasangan tidak muncul? Buka menu browser ⋮ lalu pilih
 u:prayer_note|Kalender Ummul Qura · Madinah
 u:s_housing_d|Harian, bulanan, tahunan
 u:s_transport_d|Mobil, skuter, skuter listrik
-u:s_ads_d|Barang, makanan, jasa
+u:s_ads_d|Barang, buku, makanan
 u:s_parcels_d|Siapa terbang, siapa titip
 u:s_help_d|Bandara, penerjemah, urusan
 u:s_majlis_d|Pertanyaan dan pengalaman nyata
@@ -804,3 +804,4 @@ c557|Uhud, Quba, Qiblatain, Khandaq
 c558|Sirah dalam bahasa Anda
 c559|Penerjemah, antar-jemput, dokumen, visa
 c560|Semua layanan melalui mitra Nakhlio yang terverifikasi dan berlisensi. Perorangan tidak menawarkan layanan ini di sini. Nakhlio menjaga kualitas dan menangani setiap keluhan.
+c561|Barang & buku

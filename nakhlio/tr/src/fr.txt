@@ -6,7 +6,7 @@ u:install_menu|Pas de fenêtre d’installation ? Ouvrez le menu ⋮ du navigate
 u:prayer_note|Calendrier Umm al-Qura · Médine
 u:s_housing_d|À la nuit, au mois, à l’année
 u:s_transport_d|Voitures, scooters, trottinettes
-u:s_ads_d|Objets, cuisine, services
+u:s_ads_d|Objets, livres, cuisine
 u:s_parcels_d|Qui voyage, qui envoie
 u:s_help_d|Aéroport, traduction, démarches
 u:s_majlis_d|Questions et vraies expériences
@@ -804,3 +804,4 @@ c557|Uhud, Quba, Qiblatain, Khandaq
 c558|La Sîra dans votre langue
 c559|Interprètes, transferts, documents, visas
 c560|Tous les services passent par des partenaires Nakhlio vérifiés et agréés. Les particuliers ne proposent pas ces services ici. Nakhlio veille à la qualité et traite chaque réclamation.
+c561|Objets et livres

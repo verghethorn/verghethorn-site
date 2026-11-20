@@ -370,7 +370,8 @@ V.explore = (p) => {
     const hs = HOUSING.filter(h => [L(h.title), h.title.en, h.title.ru, DIST[h.dist].en].join(' ').toLowerCase().includes(q));
     const ts = TRANSPORT.filter(x => (x.model + ' ' + t(x.kind)).toLowerCase().includes(q));
     const as = myAds().concat(ADS).filter(a => (txt(a.title) + ' ' + catLabel(a.cat, ADCATS) + ' ' + a.seller.name).toLowerCase().includes(q));
-    res = (hs.length + ts.length + as.length) ? `<div class="count">${nf(hs.length + ts.length + as.length)} ${t('results')}</div><div class="list">${hs.map(houseCard).join('')}${ts.map(trCard).join('')}${as.map(adRow).join('')}</div>` : emptyBlock();
+    const ss = []; for (const c of SVC_CATS) for (const it of c.items) if ([L(it.title), it.title.en, it.title.ru, L(c.name)].join(' ').toLowerCase().includes(q)) ss.push(svcRow(c, it));
+    res = (hs.length + ts.length + as.length + ss.length) ? `<div class="count">${nf(hs.length + ts.length + as.length + ss.length)} ${t('results')}</div><div class="list">${ss.join('')}${hs.map(houseCard).join('')}${ts.map(trCard).join('')}${as.map(adRow).join('')}</div>` : emptyBlock();
   }
   return { tabs: true, html: topbar(t('catalog'), { noBack: stack.length < 2 }) + `<div class="wrap">
     <label class="search" style="box-shadow:var(--shadow)">${ic('search')}<input id="q2" type="search" value="${esc(p.q || '')}" placeholder="${t('search_ph')}" enterkeyhint="search" aria-label="${t('search_ph')}"></label>
@@ -822,7 +823,7 @@ V.profile = () => ({ tabs: true, html: topbar(t('profile_title'), { noBack: true
     <button data-act="go" data-v="about"><i class="b-sky c-sky">${ic('home')}</i><span class="grow">${t('about')}</span>${ic('chev', 'flip chev')}</button>
   </div>
   <div class="plist" style="margin-top:14px"><button data-act="go" data-v="operator"><i class="b-clay c-clay">${ic('headset')}</i><span class="grow">${t('operator_panel')}<small>${t('operator_panel_d')}</small></span>${ic('chev', 'flip chev')}</button></div>
-  <div class="plist" style="margin-top:14px">${S.me ? '' : '<!--'}<button data-act="logout"><i class="b-sky c-sky">${ic('back', 'flip')}</i><span class="grow">${t('logout')}<small dir="ltr" style="text-align:start">${esc(S.me ? S.me.phone + ' · ' + S.me.email : '')}</small></span></button><button data-act="reset"><i class="b-rose c-rose">${ic('x')}</i><span class="grow">${t('reset')}</span></button>${S.me ? '' : '-->'}</div>
+  <div class="plist" style="margin-top:14px">${S.me ? '' : '<!--'}<button data-act="logout"><i class="b-sky c-sky">${ic('back', 'flip')}</i><span class="grow">${t('logout')}<small dir="ltr" style="text-align:start">${esc(S.me ? [S.me.phone, S.me.email].filter(Boolean).join(' · ') : '')}</small></span></button><button data-act="reset"><i class="b-rose c-rose">${ic('x')}</i><span class="grow">${t('reset')}</span></button>${S.me ? '' : '-->'}</div>
   <p class="note" style="text-align:center;margin-top:16px">${t('license')} FAL-1200000000 (${t('example')}) · ${t('demo_badge')}</p></div>` });
 V.about = () => ({ tabs: true, html: topbar(t('about')) + `<div class="wrap"><div class="card" style="text-align:center"><div style="width:72px;margin:0 auto 10px">${logo()}</div><b style="font-size:20px">Nakhlio</b><p style="margin:10px 0 0;line-height:1.6">${t('about_text')}</p></div>
   <div class="kv" style="margin-top:14px"><div><span>${t('license')}</span><b>FAL-1200000000 (${t('example')})</b></div><div><span>${t('verified').split('·')[0]}</span><b>✓</b></div></div><p class="note" style="margin-top:14px;text-align:center">${t('photo_credit')}</p></div>` });

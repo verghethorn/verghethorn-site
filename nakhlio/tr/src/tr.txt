@@ -6,7 +6,7 @@ u:install_menu|Yükleme penceresi çıkmadı mı? Tarayıcı menüsünü ⋮ aç
 u:prayer_note|Ümmül Kura takvimi · Medine
 u:s_housing_d|Günlük, aylık, yıllık
 u:s_transport_d|Araba, scooter, elektrikli scooter
-u:s_ads_d|Eşya, yemek, hizmet
+u:s_ads_d|Eşya, kitap, yemek
 u:s_parcels_d|Kim uçuyor, kim gönderiyor
 u:s_help_d|Havalimanı, tercüme, işler
 u:s_majlis_d|Sorular ve gerçek deneyimler
@@ -804,3 +804,4 @@ c557|Uhud, Kuba, Kıbleteyn, Hendek
 c558|Siyer sizin dilinizde
 c559|Tercümanlar, transferler, belgeler, vizeler
 c560|Tüm hizmetler doğrulanmış ve lisanslı Nakhlio ortakları üzerinden verilir. Bu hizmetleri burada bireyler sunmaz. Nakhlio kaliteyi takip eder ve her şikâyeti ele alır.
+c561|Eşya ve kitaplar
