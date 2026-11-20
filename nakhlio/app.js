@@ -18,10 +18,12 @@ S.saved = S.saved || []; S.chats = S.chats || {}; S.going = S.going || {}; S.pos
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 
 const DEMO = !!window.NAKHLIO_DEMO || /[?&]demo=1/.test(location.search);
+if (DEMO) { S.demoSkip = true; try { localStorage.setItem('nakhlio_v1', JSON.stringify(S)); } catch (e) {} }
 const browserLang = (() => { const n = (navigator.language || 'en').slice(0, 2); return LANGS.some(l => l.code === n) ? n : 'en'; })();
 let lang = S.lang || browserLang;
-const t = (k) => (I18N[lang] && I18N[lang][k]) || I18N.en[k] || k;
-const L = (o) => (o == null ? '' : typeof o === 'string' ? o : (o[lang] || o.en || o.ru || ''));
+const TRL = () => (window.TR && window.TR[lang]) || { u: {}, c: {} };
+const t = (k) => (I18N[lang] && I18N[lang][k]) || TRL().u[k] || I18N.en[k] || k;
+const L = (o) => (o == null ? '' : typeof o === 'string' ? o : (o[lang] || (o.en && TRL().c[o.en]) || o.en || o.ru || ''));
 const dir = () => (LANGS.find(l => l.code === lang) || {}).dir || 'ltr';
 const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const locale = () => ({ ar: 'ar-SA', fa: 'fa-IR', ur: 'ur-PK', ru: 'ru-RU', tr: 'tr-TR', fr: 'fr-FR', id: 'id-ID', ms: 'ms-MY', bn: 'bn-BD', hi: 'hi-IN' }[lang] || 'en-US');
@@ -1021,7 +1023,13 @@ function render(scrollTop) {
 }
 
 /* ---------- boot ---------- */
+const TR_LANGS = ['ur', 'id', 'ms', 'tr', 'bn', 'hi', 'fa', 'fr'];
+const trTried = {};
 function boot() {
+  if (TR_LANGS.includes(lang) && !(window.TR && window.TR[lang]) && !trTried[lang]) {
+    trTried[lang] = true; const sc = document.createElement('script'); sc.src = 'tr/' + lang + '.js?v=' + (window.NAKHLIO_V || 1);
+    sc.onload = sc.onerror = () => boot(); document.head.appendChild(sc); return;
+  }
   setDoc();
   const desk = !isPhone();
   document.body.classList.toggle('dsk', desk);

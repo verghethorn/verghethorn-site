@@ -1,0 +1,776 @@
+u:inapp_title|Buka Nakhlio di browser Anda
+u:inapp_text|Browser bawaan ini tidak bisa memasang aplikasi. Ketuk menu ⋯ lalu pilih “Buka di browser” (Safari atau Chrome).
+u:copy_link|Salin tautan
+u:copied|Tautan disalin
+u:install_menu|Jendela pemasangan tidak muncul? Buka menu browser ⋮ lalu pilih “Instal aplikasi” atau “Tambahkan ke layar utama”.
+u:prayer_note|Kalender Ummul Qura · Madinah
+u:s_housing_d|Harian, bulanan, tahunan
+u:s_transport_d|Mobil, skuter, skuter listrik
+u:s_ads_d|Barang, makanan, jasa
+u:s_parcels_d|Siapa terbang, siapa titip
+u:s_help_d|Bandara, penerjemah, urusan
+u:s_majlis_d|Pertanyaan dan pengalaman nyata
+u:s_men_d|Olahraga, perjalanan, pertemuan
+u:s_women_d|Khusus wanita
+u:s_family_d|Sekolah, TK, dokter
+u:s_days_d|Hari raya dan musim
+u:rate|Kurs riyal
+u:rate_note|Perkiraan · riyal dipatok: 1 USD = 3,75 SAR
+u:emergency|Nomor darurat
+u:police|Polisi
+u:ambulance|Ambulans
+u:fire|Pertahanan sipil
+u:traffic|Kecelakaan lalu lintas
+u:unified|Nomor darurat terpadu
+u:per_night|/ malam
+u:per_month|/ bulan
+u:per_year|/ tahun
+u:per_day|/ hari
+u:all|Semua
+u:furnished|Berperabot
+u:unfurnished|Tanpa perabot
+u:families|Keluarga
+u:singles|Lajang
+u:near_haram|Dekat Haram
+u:under|Hemat
+u:min_walk|menit jalan kaki ke Masjid Nabawi
+u:km_haram|km ke Masjid Nabawi
+u:rooms|Kamar tidur
+u:baths|Kamar mandi
+u:guests|Tamu
+u:floor|Lantai
+u:type|Jenis
+u:verified|Foto oleh Nakhlio · Dicek langsung
+u:included|Termasuk dalam harga
+u:terms|Ketentuan
+u:payment|Pembayaran
+u:deposit|Deposit
+u:description|Deskripsi
+u:reviews|Ulasan
+u:review_example|contoh
+u:listing_no|Iklan No.
+u:results|iklan
+u:location|Lokasi
+u:location_note|Alamat lengkap setelah kunjungan dikonfirmasi
+u:cars|Mobil
+u:scooters|Skuter
+u:escooters|Skuter listrik
+u:year|Tahun
+u:gearbox|Transmisi
+u:auto|Otomatis
+u:seats|Kursi
+u:km_limit|Batas kilometer
+u:range|Jarak tempuh
+u:insurance_inc|Termasuk asuransi
+u:delivery|Antar di Madinah
+u:requirements|Syarat sewa
+u:req_car|SIM yang berlaku dan iqama atau paspor
+u:req_sco|SIM motor dan iqama atau paspor
+u:req_esc|Iqama atau paspor, usia 16+
+u:rental_by|Kontrak sewa ditandatangani dengan perusahaan mitra. Nakhlio mengatur semuanya untuk Anda.
+u:chats_empty|Belum ada pesan. Buka iklan lalu ketuk “Kirim pesan”.
+u:translated|Diterjemahkan dari bahasa Arab
+u:show_original|Lihat asli
+u:show_translation|Lihat terjemahan
+u:operator|Tim Nakhlio
+u:online|online
+u:chat_intro|Halo! Saya tertarik dengan iklan No.
+u:privacy_note|Kontak Anda tersembunyi. Bagikan nomor Anda hanya jika Anda mau.
+u:share_number|Bagikan nomor saya
+u:number_shared|Anda membagikan nomor Anda
+u:saved_empty|Ketuk ♡ pada iklan untuk menyimpannya di sini.
+u:about|Tentang Nakhlio
+u:rules|Aturan komunitas
+u:license|Izin No.
+u:operator_panel|Panel operator
+u:operator_panel_d|Permintaan masuk (demo)
+u:demo_badge|Prototipe · iklan contoh
+u:about_text|Nakhlio membantu ekspatriat menetap di Madinah: hunian, transportasi, jasa, dan komunitas yang menjawab pertanyaan Anda. Setiap apartemen dicek dan difoto langsung oleh tim kami.
+u:photo_credit|Foto prototipe: Unsplash.
+u:reset|Atur ulang demo
+u:majlis_tag|Bertanyalah — yang sudah mengalaminya akan menjawab
+u:ask_q|Ajukan pertanyaan
+u:share_exp|Ceritakan pengalaman saya
+u:helped|Bermanfaat
+u:answers|jawaban
+u:official|Sumber resmi
+u:rules_title|Mohon dibaca 🤝
+u:rules_text|Majelis adalah tempat kita saling membantu hidup di Madinah. Di sini dilarang membahas politik, mengkritik pemerintah, atau berdebat soal agama. Mengapa: menurut hukum Saudi, tanggung jawab atas tulisan seperti itu bukan hanya pada penulis, tetapi juga pada situs. Satu pesan saja bisa membuat Nakhlio ditutup dan semua orang kehilangan tempat bertanya dan mendapat bantuan. Karena itu kami mohon: hanya pengalaman yang bermanfaat, pertanyaan, dan saran. Pesan yang melanggar aturan kami sembunyikan. Jika melihatnya, ketuk “Laporkan”.
+u:understood|Saya mengerti
+u:report|Laporkan
+u:reported|Terima kasih, moderator kami akan memeriksanya
+u:t_iqama|Iqama & Absher
+u:t_bank|Rekening bank
+u:t_sim|Kartu SIM
+u:t_insurance|Asuransi kesehatan
+u:t_licence|SIM mengemudi
+u:t_ejar|Sewa & Ejar
+u:t_travel|Bandara & kereta
+u:t_study|Kuliah
+u:t_places|Tempat berguna
+u:t_doctors|Dokter & klinik
+u:composer_q_ph|Contoh: berapa lama membuka rekening bank dengan iqama baru?
+u:composer_e_ph|Contoh: saya membuka rekening dalam sehari. Saya membawa iqama dan…
+u:publish|Terbitkan
+u:published|Diterbitkan
+u:rooms_title|Ruang obrolan
+u:events|Pertemuan
+u:going|Saya ikut
+u:going_n|ikut
+u:create_event|Buat pertemuan
+u:ad_post|Pasang iklan
+u:ad_free|Pasang iklan gratis
+u:boost|Naikkan ke atas
+u:highlight|Sorot dengan warna
+u:ad_contact_note|Kontak tidak pernah ditampilkan. Orang menulis kepada Anda di obrolan, masing-masing dalam bahasanya.
+u:flying|Saya terbang
+u:need_send|Perlu kirim
+u:parcel_rules_t|Aturan keamanan titipan
+u:parcel_rules|Bawa hanya barang terbuka dan periksa isinya sendiri sebelum dikemas. Tanpa obat-obatan dan kotak tertutup. Hukum narkoba di Saudi sangat ketat, dan yang membawa titipan yang bertanggung jawab.
+u:days_title|Hari-hari penting di Madinah
+u:days_left|hari lagi
+u:approx|tanggal tergantung rukyat hilal
+u:weekend_note|Akhir pekan di Arab Saudi: Jumat dan Sabtu
+u:close|Tutup
+u:example|contoh
+u:sar|SAR
+u:sent_ok|Pesan terkirim. Tim Nakhlio akan membalas di sini.
+u:req_status_new|Baru
+u:req_status_work|Diproses
+u:req_status_view|Jadwal kunjungan
+u:req_status_done|Tersewa
+u:client|Klien
+u:source|Sumber (internal)
+u:listing|Iklan
+u:catalog|Katalog
+u:nothing|Tidak ditemukan
+u:nothing_d|Coba kata lain atau buka bagian di bawah.
+u:all_sections|Semua bagian
+u:price_from|Harga
+u:title_f|Judul
+u:category|Kategori
+u:photo|Foto
+u:add_photo|Tambah foto
+u:demo_pay|demo
+u:post_parcel|Pasang perjalanan atau permintaan
+u:agree_rules|Saya sudah membaca aturan. Saya hanya membawa barang terbuka dan memeriksa isinya sendiri.
+u:what|Apa
+u:weight|Berat
+u:kg|kg
+u:date|Tanggal
+u:from_to|Rute
+u:guest|Tamu
+u:you|Anda
+u:top|Teratas
+u:yours|milik Anda
+u:members|anggota
+u:room_hello|Assalamu’alaikum! Selamat datang di ruang ini.
+u:room_rule|Ingat aturan Majelis: tanpa politik dan debat agama.
+u:write_room|Tulis di ruang ini…
+u:km|km
+u:min|menit
+u:any|Semua orang
+u:audience|Cocok untuk
+u:term_l|Lama sewa
+u:cc|Mesin
+u:walk_to|jalan kaki
+u:open|Buka
+u:help_post|Tawarkan bantuan
+u:ask_family|Tanya para orang tua
+u:q_tag|Pertanyaan
+u:e_tag|Pengalaman
+u:comment|Komentar
+u:reply|Balas
+u:dm|Pesan pribadi
+u:reply_to|Membalas
+u:comments_t|Pertanyaan & komentar
+u:comment_ph|Tulis komentar…
+u:seller|Pemasang
+u:on_since|di Nakhlio sejak
+u:langs_spoken|Bahasa
+u:event_org|Penyelenggara
+u:auto_tr|Diterjemahkan otomatis
+u:reg_title|Buat profil Anda
+u:reg_sub|Satu menit, tanpa kata sandi. Nomor dan email Anda tidak pernah ditampilkan ke orang lain.
+u:step|Langkah
+u:of|dari
+u:phone_l|Nomor telepon
+u:get_code|Kirim kode
+u:code_title|Masukkan kode
+u:code_sub|Kami mengirim SMS ke
+u:demo_code|Demo: kodenya 1234
+u:code_l|Kode SMS
+u:change_num|Ganti nomor
+u:resend|Kirim ulang
+u:name_l|Nama Anda
+u:name_ph|Dipanggil siapa?
+u:email_l|Email
+u:gender_l|Saya
+u:male|laki-laki
+u:female|perempuan
+u:gender_note|Diperlukan untuk ruang pria dan wanita. Tidak ditampilkan di profil.
+u:photos_l|Foto profil
+u:photos_hint|Maksimal 3. Foto pertama adalah foto utama. Anda bisa memakai gambar, bukan wajah.
+u:add|Tambah
+u:about_l|Tentang saya
+u:about_ph|Contoh: dari Kazan, tinggal di Madinah bersama keluarga, menerima pesanan kue
+u:job_l|Pekerjaan saya
+u:job_ph|Contoh: mahasiswa, tukang listrik, pembuat kue rumahan
+u:optional|opsional
+u:next|Lanjut
+u:finish|Selesai — buka Nakhlio
+u:err_phone|Masukkan nomor tanpa kode negara: 9–10 digit.
+u:err_code|Kode terdiri dari 4 digit. Kode demo: 1234.
+u:err_name|Masukkan nama, minimal 2 huruf.
+u:err_email|Periksa email: harus seperti name@mail.com
+u:err_gender|Pilih salah satu.
+u:edit_profile|Ubah profil
+u:logout|Keluar
+u:save_l|Simpan
+u:saved_ok|Profil disimpan
+u:v_phone|Telepon terverifikasi
+u:v_email|Email terverifikasi
+u:v_nakhlio|Diverifikasi Nakhlio
+u:since_l|Di Nakhlio sejak
+u:reviews_l|Ulasan
+u:listings_l|Iklan
+u:no_listings|Belum ada iklan
+u:no_reviews|Belum ada ulasan
+u:report_user|Laporkan
+u:profile_l|Profil
+u:district_l|Distrik
+u:langs_l|Bahasa
+u:men_only|Ruang ini khusus pria
+u:women_only_m|Ruang ini khusus wanita
+u:main_photo|utama
+u:remove|Hapus
+u:auth_t|Buat profil untuk melanjutkan
+u:auth_d|Anda bisa melihat-lihat tanpa daftar. Untuk menulis, membalas, berkomentar, dan memasang iklan — buat profil dalam 1 menit. Tanpa kata sandi.
+u:create_profile|Buat profil
+u:later|Nanti
+u:guest_d|Lihat-lihat dengan bebas. Buat profil untuk menulis pesan, berkomentar, dan memasang iklan.
+u:chats_guest|Pesan Anda akan muncul di sini setelah membuat profil.
+u:spaces_guest|Ruang ini khusus anggota. Buat profil untuk bergabung.
+u:s_services|Layanan Nakhlio
+u:s_services_d|Dokumen, visa, bisnis, pindahan
+c0|Wi-Fi
+c1|AC
+c2|Air
+c3|Listrik
+c4|Parkir
+c5|Lift
+c6|Dapur
+c7|Mesin cuci
+c8|Kebersihan
+c9|Keamanan 24/7
+c10|Kolam renang
+c21|Studio 5 menit dari Masjid Nabawi
+c22|Studio terang di gedung baru dengan pemandangan menara. Kasur ganda, dapur kecil, dan AC yang tenang. Cocok untuk peziarah dan menginap singkat.
+c23|Bayar saat check-in
+c24|Apartemen keluarga, 3 kamar tidur, untuk 6 orang
+c25|Apartemen keluarga yang luas: ruang tamu besar dengan majelis, dapur lengkap, dan dua kamar mandi. Dekat supermarket dan apotek.
+c26|Apartemen servis: kamar tidur dan ruang tamu
+c27|Apartemen bersih di aparthotel dengan resepsionis 24/7. Dibersihkan setiap hari, parkir di depan, 10 menit naik taksi ke Haram.
+c28|Studio untuk satu orang, termasuk tagihan
+c29|Studio nyaman berperabot. Air, listrik, dan internet sudah termasuk. Halte bus ke Haram dekat.
+c30|Bulanan
+c31|2 kamar tidur, berperabot, 15 menit jalan ke Haram
+c32|Apartemen modern di lantai 8. Dua kamar tidur, ruang tamu, dan dapur dengan peralatan. Ada lift dan keamanan di gedung.
+c33|Apartemen keluarga 3 kamar berperabot
+c34|Apartemen besar di distrik tenang. Majelis tamu terpisah, tiga kamar mandi, dan taman bermain di halaman.
+c35|Kamar mahasiswa dekat Universitas Islam
+c36|Kamar pribadi di flat bersama 3 mahasiswa. Dapur dan ruang tamu bersama, 7 menit jalan kaki ke kampus.
+c37|Flat 3 ruang tanpa perabot untuk keluarga
+c38|Apartemen di gedung baru, dapur dengan lemari terpasang dan pintu masuk sendiri. Cocok untuk keluarga yang tinggal lama.
+c39|2 kali bayar setahun
+c40|4 ruang di gedung baru, parkir
+c41|Apartemen baru dengan ruang tamu besar dan balkon. Tempat parkir sendiri, lift, dekat sekolah dan masjid.
+c42|2 atau 4 kali bayar setahun
+c43|Premium: 3 kamar tidur di kompleks baru
+c44|Apartemen di kompleks berpagar dengan kolam renang dan gym. Desain interior, pemandangan kota, dan parkir bawah tanah.
+c45|1, 2 atau 4 kali bayar setahun
+c46|Kue pesanan dan kue madu
+c47|mulai 120 SAR
+c48|Saya membuat kue di rumah sejak 6 tahun. Kue madu, Napoleon, cokelat, dan kue anak dengan tulisan. Hanya bahan alami. Pesan 2 hari sebelumnya; bisa antar sekitar As Salam.
+c49|Assalamu’alaikum! Bisa pesan kue ulang tahun anak saya untuk hari Jumat, sekitar 12 orang?
+c50|Wa’alaikumussalam! Ya, bisa. Kirim pesan pribadi, kita pilih isi dan tulisannya 🙂
+c51|Minggu lalu saya beli kue madu Amina — enak dan tidak terlalu manis. Rekomendasi!
+c52|Manti, samsa, dan chuchvara buatan rumah
+c53|35 SAR / lusin
+c54|Saya memasak resep Uzbek ibu saya. Ada paket beku, praktis disimpan. Samsa daging atau labu. Ambil di Al Aziziyah atau antar 10 SAR.
+c55|Samsa labu ada setiap hari?
+c56|Samsa labu saya buat Kamis dan Sabtu; bisa pesan dulu.
+c57|Kami beli 3 lusin manti untuk keluarga — seperti di Tashkent. Terima kasih!
+c58|Biryani dan nihari Pakistan pesanan
+c59|mulai 60 SAR
+c60|Biryani ayam atau kambing, nihari di akhir pekan. Satu nampan untuk 4–5 orang. Saya juga memasak untuk acara keluarga.
+c61|Bisa untuk 20 orang hari Sabtu?
+c62|Bisa, insya Allah. Mohon konfirmasi sebelum Kamis.
+c63|Sofa sudut, seperti baru — pindah rumah
+c64|650 SAR
+c65|Dibeli 8 bulan lalu di IKEA Jeddah seharga 1.800 SAR. Abu-abu, bisa jadi kasur, sarung bisa dilepas dan dicuci. Ambil di Al Aziziyah, saya bantu angkat.
+c66|Masih ada? Bisa lihat malam ini?
+c67|Ya, datang setelah Magrib. Kirim pesan pribadi, saya kirim lokasinya.
+c68|Mesin cuci LG, 8 kg
+c69|400 SAR
+c70|Berfungsi sempurna, umur 2 tahun. Bukaan depan, senyap. Dijual karena flat baru sudah ada mesin cuci.
+c71|Bisa antar ke Al Fath?
+c72|Bisa, saya dan teman antar pakai mobil 30 SAR.
+c73|Kalau butuh bantuan angkut barang elektronik, kabari saya — saya punya mobil boks.
+c74|Buku bahasa Arab “Durusul Lughah Madinah”, 3 jilid
+c75|45 SAR
+c76|Hampir tanpa coretan, 3 jilid plus buku latihan. Diskon untuk mahasiswa. Ketemu di Universitas Islam.
+c77|Akhi, tolong simpan untuk saya — besok saya ambil setelah Zuhur.
+c78|Oke, saya simpan sampai besok.
+c79|Tukang listrik: stopkontak, lampu, AC
+c80|mulai 80 SAR
+c81|Pengalaman 12 tahun. Lampu gantung, stopkontak, pemanas air, servis AC split. Datang ke seluruh Madinah di hari yang sama.
+c82|Berapa biaya pasang lampu gantung dan ganti 3 stopkontak?
+c83|Semuanya 150 SAR, saya bisa datang hari ini setelah Asar.
+c84|Dia membersihkan 2 AC kami — rapi, cepat, dan bersih.
+c85|Pindahan: tenaga angkut dan mobil
+c86|mulai 250 SAR
+c87|Mobil boks tertutup, 2 tenaga angkut, bongkar pasang perabot. Dalam Madinah dan ke Jeddah. Kardus gratis.
+c88|Berapa untuk flat 2 kamar di lantai 3 tanpa lift?
+c89|Sekitar 400 SAR, saya pastikan dari foto. Kirim lewat pesan pribadi.
+c90|Bersih-bersih sebelum dan sesudah pindah
+c91|mulai 180 SAR
+c92|Bersih menyeluruh: dapur, kamar mandi, jendela, unit AC luar. Kami berdua, dengan bahan sendiri.
+c93|Apakah bekerja hari Jumat?
+c94|Hari Jumat setelah salat Jumat, mulai pukul 15.00.
+c95|Bahasa Arab dari nol, online dan tatap muka
+c96|60 SAR / pertemuan
+c97|Lulusan Universitas Islam Madinah. Bahasa Arab percakapan untuk hidup di Madinah dan bahasa Arab fusha dengan kitab Madinah. Pertemuan pertama gratis.
+c98|Saya belajar dengan ustaz 3 bulan — sekarang lancar bicara di toko dan taksi 👍
+c99|Ada kelas untuk akhwat?
+c100|Ada, istri saya mengajar kelas akhwat online setiap Selasa.
+c101|Tajwid dan Al-Qur’an untuk anak, online
+c102|200 SAR / bulan
+c103|Kelompok 4 anak usia 6–12, tiga kali seminggu 40 menit. Ijazah bacaan Hafs.
+c104|Anak saya 5 tahun — bisa ikut?
+c105|Kita coba satu kelas percobaan dulu, lihat bagaimana dia.
+c106|Boks bayi dan kereta dorong — gratis
+c107|Gratis
+c108|Anak-anak kami sudah besar — kami berikan kepada yang membutuhkan. Boks dengan kasur, kereta dorong lipat. Ambil di As Salam.
+c109|Assalamu’alaikum, boleh saya ambil? Kami menanti bayi bulan Januari.
+c110|Wa’alaikumussalam, tentu! Semoga dimudahkan. Kirim pesan pribadi.
+c111|20 buku berbahasa Rusia — gratis
+c112|Novel detektif, dongeng anak, dan buku tentang Islam dalam bahasa Rusia. Diberikan sekaligus; mudah diambil di Al Fath.
+c113|Dongeng anaknya masih ada? Untuk putri saya 7 tahun.
+c114|Ada, saya simpan untuk Anda.
+c115|Terbang lewat Jeddah. Hanya bawa barang terbuka: kurma, pakaian, buku. Bertemu di Moskow dekat metro Komsomolskaya.
+c116|Bisa bawa 2 kg kurma Ajwa untuk ibu saya?
+c117|Bisa, serahkan dalam kotak terbuka sebelum 1 Desember.
+c118|Pulang 2 minggu, masih ada tempat di koper. Saya kemas sendiri di depan Anda.
+c119|Boleh titip sajadah untuk keluarga?
+c120|Transit di Istanbul, bisa serahkan di sana. Hanya barang yang bisa saya periksa sendiri.
+c121|Dokumen universitas
+c122|Butuh orang yang membawakan amplop berisi ijazah legalisir saya dari Kazan. Saya bayar 100 SAR dan jemput di bandara.
+c123|Saya terbang dari Kazan tanggal 14, nanti saya kabari.
+c124|Kurma dan oleh-oleh untuk keluarga
+c125|Kurma dan 2 syal, semuanya terbuka. Saudara saya akan menjemput di Lahore.
+c126|Saya terbang ke Lahore tanggal 9, bisa saya bawa.
+c127|Baju musim dingin anak untuk perjalanan
+c128|Ibu saya akan menyerahkan tas berisi baju anak; semuanya bisa dibuka dan diperiksa.
+c129|Saya jemput di bandara dan antar ke tempat Anda
+c130|150 SAR
+c131|Saya menunggu di Bandara Pangeran Mohammad bin Abdulaziz dengan papan nama, membantu kartu SIM dan bagasi. Mobil 6 kursi.
+c132|Pesawat saya mendarat jam 3 pagi — bisa jemput?
+c133|Bisa, saya juga kerja malam, +30 SAR.
+c134|Transfer Madinah → Makkah untuk umrah
+c135|450 SAR / mobil
+c136|Singgah di miqat Dzul Hulaifah untuk ihram. GMC 7 orang, air minum, dan kursi anak.
+c137|Kami keluarga 5 orang, berangkat Kamis pagi.
+c138|Baik, saya kosong hari Kamis. Berangkat jam 6.00?
+c139|Penerjemah untuk rumah sakit, bank, Jawazat
+c140|100 SAR / jam
+c141|Saya tinggal di Madinah 9 tahun. Saya menemani ke dokter, bank, atau kantor pemerintah dan menerjemahkan langsung.
+c142|Zarina menemani saya ke dokter kandungan — menjelaskan semuanya dengan detail dan tenang.
+c143|Terjemahan dokumen dan bantuan Absher
+c144|mulai 50 SAR
+c145|Saya membantu daftar Absher, bayar denda, perpanjang iqama, dan menerjemahkan dokumen melalui kantor terakreditasi.
+c146|Perpanjangan saya beres dalam 15 menit, terima kasih!
+c147|Bantuan orang tua lansia saat ziarah
+c148|200 SAR / hari
+c149|Saya menemani ke Masjid Nabawi, Quba, dan Uhud; ada kursi roda. Saya atur sesuai waktu salat.
+c150|Ibu saya senang sekali dengan Muhammad — sangat sabar.
+c151|Perawat di rumah untuk wanita lansia
+c152|150 SAR / hari
+c153|Lulusan keperawatan. Saya membantu obat sesuai jadwal dokter, jalan-jalan, dan kegiatan sehari-hari.
+c154|Bisa menginap?
+c155|Bisa, sesuai kesepakatan.
+c156|Saya tunjukkan distrik-distrik sebelum Anda menyewa
+c157|120 SAR
+c158|Dalam 3 jam kita keliling 4–5 distrik, saya tunjukkan toko, sekolah, dan masjid sekitar. Membantu melihat di mana paling nyaman tinggal.
+c159|Setelah tur kami langsung pilih Al Rayah — tenang dan dekat sekolah.
+c160|Situs bersejarah Madinah bersama pemandu
+c161|100 SAR / orang
+c162|Uhud, Quba, Masjid Qiblatain, Khandaq. Saya bercerita sirah dalam bahasa Rusia, rombongan sampai 8 orang.
+c163|Kami ikut bersama anak-anak — mereka mendengarkan dengan kagum. Jazakallahu khairan!
+c164|Bagaimana cek iqama sudah jadi setelah perpanjangan?
+c165|Di Absher: “Layanan saya” → “Paspor” → “Perpanjangan iqama”. Status saya berubah setelah 2 hari.
+c166|Terima kasih akhi, sudah ketemu!
+c167|Pengalaman saya: saya daftar Absher di kantor Jawazat dekat stasiun. Paspor dan iqama, antre 40 menit, selesai hari itu juga.
+c168|Istri datang sendiri atau bersama suami?
+c169|Saya datang bersama suami — mereka juga meminta iqamanya.
+c170|Bank mana yang paling cepat membuka rekening dengan iqama baru?
+c171|Saya buka online lewat aplikasi bank dalam 20 menit, kartu datang 3 hari kemudian. Perlu Absher aktif.
+c172|Online gagal karena ejaan latin nama saya — saya ke cabang, selesai dalam satu jam.
+c173|Tips: langsung aktifkan Apple Pay / mada Pay — hampir semua tempat menerima pembayaran ponsel, uang tunai jarang perlu.
+c174|Saya beli SIM langsung di bandara Madinah pakai paspor. Lalu saya daftarkan ke iqama di toko dalam 5 menit.
+c175|Paket apa yang Anda ambil?
+c176|Prabayar bulanan dengan internet tanpa batas, sekitar 100 SAR.
+c177|Bisa dapat eSIM dengan iqama tanpa ke toko?
+c178|Bisa, lewat aplikasi operator dengan verifikasi Nafath — saya cuma 10 menit.
+c179|Apakah asuransi kerja suami saya menanggung persalinan?
+c180|Tergantung kelas polis. Cek bagian “Maternitas” di aplikasi asuransi — punya kami ditanggung 100%.
+c181|Klinik menerima kartu asuransi dari aplikasi — tidak perlu kartu kertas. Simpan di Wallet Anda.
+c182|Bagaimana menukar SIM saya dengan SIM Saudi? Ada ujian?
+c183|Saya daftar lewat Absher di sekolah mengemudi Dallah. Untuk negara saya hanya ujian praktik, lulus sekali coba.
+c184|Total biayanya berapa?
+c185|Sekitar 900 SAR termasuk tes kesehatan.
+c186|Selalu minta kontrak melalui Ejar — tanpa itu Anda tidak bisa menambahkan keluarga di Absher. Agen menyelesaikannya dalam sehari.
+c187|Siapa yang bayar biaya Ejar?
+c188|Kami bagi dua dengan pemilik.
+c189|Bisa bayar sewa tahunan per bulan?
+c190|Biasanya 2 atau 4 kali bayar. Per bulan jarang, tapi Nakhlio menemukan pilihan itu untuk saya.
+c191|Kereta Haramain Madinah → Makkah 2 jam 20 menit. Beli tiket di aplikasi seminggu sebelumnya — akhir pekan cepat habis.
+c192|Boleh pakai ihram di kereta?
+c193|Boleh, banyak yang begitu. Pakai ihram lebih dulu; niat di miqat.
+c194|Cara termurah dari bandara ke pusat kota?
+c195|Bus ke Haram setiap 30 menit, sekitar 15 SAR. Taksi online — 60–80 SAR.
+c196|Siapa yang mendaftar ke Universitas Islam? Berapa lama menunggu?
+c197|Saya daftar di musim semi, jawaban datang bulan Juli. Kuncinya: terjemahkan dan legalisir ijazah lebih awal.
+c198|Tahun persiapan bahasa Arab sangat bagus. Tips: segera cari teman Arab untuk berlatih bicara.
+c199|Bahan makanan Rusia dan Uzbek (soba, keju cottage, krim asam) — di toko kecil dekat pasar Al Aziziyah.
+c200|Ada pelmeni?
+c201|Ada yang beku, datang setiap Rabu.
+c202|Teh karak dan paratha terbaik — kafe dekat Masjid Quba, buka sampai tengah malam.
+c203|Dokter anak yang bagus dan bisa bahasa Inggris di klinik swasta Al Aziziyah. Pesan lewat aplikasi, menunggu 15 menit.
+c204|Ada rekomendasi dokter gigi yang bisa bahasa Rusia?
+c205|Ada klinik gigi di pusat kota dengan dokter dari Dagestan. Namanya saya kirim lewat pesan pribadi.
+c206|Ada TK berbahasa Inggris dekat As Salam?
+c207|Kami di TK swasta di distrik sebelah: kelompok 12 anak, guru berbahasa Inggris, ada bus.
+c208|Berapa per bulan?
+c209|1.400 SAR termasuk makan.
+c210|Anak kami ikut renang: dua kali seminggu, pelatih berbahasa Inggris, kolam wanita/anak di pagi hari.
+c211|Sekolah internasional apa saja di Madinah dan berapa biayanya?
+c212|Kami melihat 3 sekolah kurikulum Inggris — 18.000 sampai 30.000 SAR per tahun. Lebih baik daftar di musim semi.
+c213|Olahraga
+c214|Siapa ikut sepak bola Sabtu? Butuh 4 orang lagi.
+c215|Saya ikut, saya ajak saudara saya.
+c216|Jam berapa dan di mana? Kalau jam 20.00 dekat Al Aziziyah — saya datang.
+c217|Ya, 20.00, lapangan dekat sekolah. Saya sudah buat pertemuan di tab “Pertemuan”.
+c218|Perjalanan & jalan-jalan
+c219|Akhir pekan ke AlUla naik mobil, sisa 2 kursi.
+c220|Berapa patungan bensin?
+c221|80 SAR per orang; menginap di kemah terpisah.
+c222|Bulan lalu saya ke sana — bawa baju hangat, malam +10 derajat.
+c223|Mobil
+c224|Di mana ganti oli yang murah?
+c225|Bengkel dekat Sultanah, 90 SAR dengan filter.
+c226|Benar — cepat, pagi tidak antre.
+c227|Obrolan
+c228|Saudara-saudara, teh karak terbaik di kota di mana?
+c229|Dekat Quba, tidak ada tandingannya ☕
+c230|Setuju, paratha di sana juga selalu hangat.
+c231|Sepak bola 7 lawan 7
+c232|Sabtu, 20.00
+c233|Saya bawa bola dan rompi.
+c234|Kami berdua, sudah daftar.
+c235|Perjalanan ke AlUla
+c236|Jumat, 06.00
+c237|Boleh ajak anak saya yang 14 tahun?
+c238|Tentu, ada tempat.
+c239|Lari pagi 5 km
+c240|Selasa, 06.15
+c241|Pas setelah Subuh, saya ikut.
+c242|Anak & kesehatan
+c243|Ibu-ibu, vaksin apa saja di usia 1 tahun?
+c244|Kami vaksin di puskesmas sesuai jadwal di aplikasi Sehhaty — semuanya tertulis di sana.
+c245|Pesannya juga di situ, tanpa antre.
+c246|Masakan & resep
+c247|Di mana beli soba yang bagus?
+c248|Di toko dekat pasar Al Aziziyah, saya selalu beli di sana.
+c249|Ada yang tahu tempat beli beras basmati asli grosir?
+c250|Di toko grosir arah jalan Tabuk, karung 10 kg lebih murah.
+c251|Belanja
+c252|Diskon kain di pasar lama sampai akhir pekan!
+c253|Terima kasih! Ada abaya juga?
+c254|Ada, satu deretan penuh, mulai 80 SAR.
+c255|Pertemuan memasak: kue
+c256|Kamis, 17.00
+c257|Apa yang perlu saya bawa?
+c258|Cukup celemek, bahannya dari saya 🙂
+c259|Jalan-jalan di taman bersama anak
+c260|Sabtu, 16.30
+c261|Saya datang dengan dua anak, saya bawa tikar.
+c262|Halaqah tafsir untuk akhwat
+c263|Senin, 19.30
+c264|Ada rekaman untuk yang berhalangan?
+c265|Ada, di pertemuan yang sama.
+c266|Awal Ramadan 1448
+c267|Menurut Ummul Qura, Isya 2 jam setelah Magrib
+c268|Hari Pendirian
+c269|Libur nasional
+c270|Idulfitri
+c271|Harga sewa naik — pesan lebih awal
+c272|Musim haji
+c273|Penutupan jalan dan permintaan hunian tinggi
+c274|Iduladha
+c275|Hari Nasional
+c276|Flatnya persis seperti di foto; operator membalas dalam beberapa menit dan mengatur semuanya.
+c277|Praktis, saya menulis dalam bahasa Rusia sementara mereka mengurus dengan pemilik dalam bahasa Arab.
+c278|Halo! Terima kasih atas minat Anda. Ya, iklannya masih tersedia. Kapan Anda ingin melihat? Bisa hari ini setelah Asar atau besok pagi.
+c279|Baik, jadwal Anda sudah tercatat. Operator akan mengirim alamat lengkap satu jam sebelum pertemuan.
+c280|Makanan rumahan
+c281|Barang
+c282|Jasa
+c283|Les
+c284|Bandara & transfer
+c285|Penerjemah
+c286|Bantuan lansia
+c287|Tur kota
+c288|Wa’alaikumussalam! Ya, tentu. Mari kita atur — kapan Anda bisa?
+c289|Pembuat kue rumahan
+c290|Dari Kazan, 4 tahun di Madinah bersama suami dan tiga anak. Saya menerima pesanan kue dan mengadakan pertemuan memasak untuk akhwat.
+c291|Masakan rumahan
+c292|Dari Tashkent. Saya memasak makanan Uzbek dengan resep ibu saya.
+c293|Masakan Pakistan
+c294|Dari Lahore, saya memasak untuk acara keluarga dan perayaan.
+c295|Tukang listrik, pengalaman 12 tahun
+c296|Saya bekerja di seluruh Madinah: stopkontak, lampu, pemanas air, dan AC. Garansi kerja 3 bulan.
+c297|Pindahan dan angkutan
+c298|Saya punya mobil boks tertutup dan dua pembantu. Kami angkut dengan hati-hati dan merakit perabot.
+c299|Guru bahasa Arab
+c300|Lulusan Universitas Islam Madinah. 8 tahun mengajar bahasa Arab untuk orang asing; bisa bahasa Inggris dan Rusia.
+c301|Penerjemah RU · AR · EN
+c302|Saya tinggal di Madinah 9 tahun. Saya menemani ke dokter, bank, dan kantor pemerintah.
+c303|Sopir, transfer
+c304|Saya menjemput tamu di bandara dan mengantar ziarah. Mobil 6 kursi.
+c305|Mahasiswa Universitas Islam, pemandu
+c306|Saya memandu tur sejarah Madinah dan mengatur sepak bola setiap Sabtu.
+c307|Pendamping lansia
+c308|Saya membantu jamaah lansia; ada kursi roda.
+c309|Spesialis IT
+c310|Saya bekerja jarak jauh dan suka jalan-jalan di Saudi. Sering mengatur perjalanan ke AlUla.
+c311|Insinyur
+c312|Pindah ke Jeddah, menjual perabot saya.
+c313|Ibu dua anak
+c314|Dari Makhachkala, tahun kedua di Madinah. Mencari dokter yang bagus dan kegiatan anak.
+c315|Guru bahasa Inggris
+c316|Saya mengajar bahasa Inggris online dan senang berbagi tempat berguna di Madinah.
+c317|Ibu rumah tangga
+c318|Dari Almaty, 3 tahun tinggal di Madinah bersama suami.
+c319|Insinyur sipil
+c320|Dari Dagestan. Saya membantu pendatang baru dengan Absher dan SIM.
+c321|Pengembang perangkat lunak
+c322|Pindah ke sini bersama keluarga tahun 2026; mempelajari semuanya pertama kali dan berbagi.
+c323|Mahasiswa
+c324|Kuliah di Universitas Islam dan menerjemah paruh waktu.
+c325|Manajer logistik
+c326|Dari Tashkent. Saya lari pagi — ayo ikut!
+c327|Sopir, transfer umrah
+c328|Dari Lahore; saya mengantar keluarga ke Makkah dan keliling Madinah.
+c329|Perawat
+c330|Dari Indonesia, bekerja di rumah sakit di Madinah.
+c331|Akuntan
+c332|Masuk Islam 5 tahun lalu, tinggal di Madinah bersama suami.
+c333|Desainer
+c334|Dari Kazakhstan, menanti bayi kedua.
+c335|Manajer
+c336|Dari Mesir, 6 tahun bekerja di Madinah.
+c337|Kuenya luar biasa, anak-anak suka sekali!
+c338|Tepat waktu dan lezat.
+c339|Rapi, cepat, bersih setelah bekerja.
+c340|Datang di hari yang sama, harga sesuai kesepakatan.
+c341|Semua dipindahkan tanpa goresan.
+c342|Guru terbaik, menjelaskan dengan mudah.
+c343|Sangat tenang dan perhatian.
+c344|Manti seperti di rumah!
+c345|Dokumen & terjemahan
+c346|Terjemahan tersumpah ijazah atau sertifikat
+c347|mulai 150 SAR
+c348|2–3 hari
+c349|Terjemahan oleh kantor terakreditasi
+c350|Cap dan tanda tangan penerjemah
+c351|Antar di Madinah
+c352|Pindaian atau foto dokumen
+c353|Paspor
+c354|Terjemahan akta nikah atau akta lahir
+c355|1–2 hari
+c356|Terjemahan ke bahasa Arab
+c357|Pengesahan kantor
+c358|Asli atau pindaian dokumen
+c359|Legalisasi dokumen
+c360|mulai 300 SAR
+c361|7–14 hari
+c362|Menyiapkan berkas dokumen
+c363|Pengajuan melalui mitra berizin
+c364|Pemantauan status
+c365|Dokumen asli
+c366|Iqama atau paspor
+c367|Pendidikan
+c368|Dokumen pendaftaran Universitas Islam
+c369|mulai 500 SAR
+c370|2–4 minggu
+c371|Cek syarat dan tenggat
+c372|Terjemahan dan legalisasi
+c373|Bantuan pendaftaran online
+c374|Ijazah sekolah atau diploma
+c375|Kursus bahasa Arab
+c376|mulai 600 SAR / bulan
+c377|mulai setiap bulan
+c378|Kelas sesuai tingkat
+c379|Tatap muka atau online
+c380|Sertifikat
+c381|Mendaftarkan anak ke sekolah atau TK
+c382|mulai 200 SAR
+c383|3–7 hari
+c384|Memilih sekolah sesuai bahasa dan distrik
+c385|Menjadwalkan wawancara
+c386|Bantuan dokumen
+c387|Akta kelahiran
+c388|Iqama orang tua dan anak
+c389|Iqama, visa, Absher
+c390|Perpanjangan iqama
+c391|layanan mulai 150 SAR
+c392|1–5 hari
+c393|Pemeriksaan dokumen
+c394|Diproses melalui kantor berizin
+c395|Biaya pemerintah dibayar terpisah
+c396|Iqama saat ini
+c397|Visa kunjungan keluarga
+c398|layanan mulai 250 SAR
+c399|5–15 hari
+c400|Pengajuan melalui kantor berizin
+c401|Terjemahan dokumen hubungan keluarga
+c402|Iqama Anda
+c403|Paspor kerabat
+c404|Daftar Absher dan bayar denda
+c405|hari yang sama
+c406|Aktivasi Absher
+c407|Cek denda
+c408|Dijelaskan dalam bahasa Anda
+c409|Iqama
+c410|Nomor telepon atas nama Anda
+c411|Bisnis di Saudi
+c412|Pendirian perusahaan dan izin investor
+c413|konsultasi gratis
+c414|mulai 3 minggu
+c415|Memilih jenis perusahaan
+c416|Izin dan pendaftaran usaha melalui mitra
+c417|Rekening bank perusahaan
+c418|Deskripsi usaha
+c419|Visa bisnis dan perjalanan dinas
+c420|layanan mulai 300 SAR
+c421|3–10 hari
+c422|Undangan dan pengajuan
+c423|Penjemputan dan transfer
+c424|Penerjemah untuk rapat
+c425|Data perusahaan
+c426|Sewa kantor dan akuntansi
+c427|mulai 1.500 SAR / bulan
+c428|mulai 1 minggu
+c429|Kantor atau meja kerja
+c430|Akuntan dan laporan ZATCA
+c431|Alamat resmi
+c432|Pendaftaran usaha (CR)
+c433|SIM mengemudi
+c434|Tukar ke SIM Saudi
+c435|1–2 minggu
+c436|Pendaftaran sekolah mengemudi
+c437|Tes kesehatan
+c438|Bantuan terjemahan saat ujian
+c439|SIM yang berlaku
+c440|Les mengemudi
+c441|mulai 100 SAR / pertemuan
+c442|sesuai jadwal
+c443|Instruktur berbahasa Anda
+c444|Mobil sekolah
+c445|Transfer & umrah
+c446|Penjemputan di bandara Madinah
+c447|24/7
+c448|Sopir dengan papan nama
+c449|Bantuan bagasi
+c450|Mobil hingga 7 kursi
+c451|Nomor penerbangan
+c452|Perjalanan umrah: Madinah → Makkah
+c453|mulai 450 SAR / mobil
+c454|setiap hari
+c455|Singgah di miqat Dzul Hulaifah
+c456|Pengangkut berizin
+c457|Pulang sesuai permintaan
+c458|Tanggal dan jumlah orang
+c459|Pindahan & kebersihan
+c460|Pindahan lengkap
+c461|mulai 350 SAR
+c462|dalam 1 hari
+c463|Pengemasan dan kardus
+c464|Bongkar pasang perabot
+c465|Asuransi barang
+c466|Alamat dan lantai
+c467|Foto perabot
+c468|Bersih-bersih sebelum atau sesudah pindah
+c469|3–5 jam
+c470|Dapur dan kamar mandi
+c471|Jendela dan unit AC
+c472|Bahan dari kami
+c473|Alamat dan luas flat
+c474|Pemasangan internet dan peralatan
+c475|mulai 100 SAR
+c476|1–3 hari
+c477|Memilih paket dan memesan
+c478|Pasang mesin cuci, TV, AC
+c479|Alamat
+c480|Iqama untuk kontrak
+c481|Asuransi
+c482|Asuransi kesehatan keluarga
+c483|perbandingan gratis
+c484|Membandingkan penawaran
+c485|Diterbitkan melalui broker berizin
+c486|Cakupan dijelaskan dalam bahasa Anda
+c487|Iqama anggota keluarga
+c488|Asuransi mobil
+c489|Pihak ketiga atau komprehensif
+c490|Melalui broker berizin
+c491|Istimara (STNK)
+c492|Layanan Nakhlio
+c493|Dokumen, visa, bisnis, pindahan
+c494|Layanan dari mitra kami. Anda kirim permintaan — staf Nakhlio menghubungi Anda dan mengurus sampai selesai.
+c495|Mitra berizin
+c496|Cara kerjanya
+c497|Anda mengirim permintaan
+c498|Staf Nakhlio menghubungi Anda lewat obrolan atau telepon
+c499|Mitra mengerjakan layanan, kami memantau tenggat
+c500|Selesai — Anda menilai layanan
+c501|Yang termasuk
+c502|Yang Anda perlukan
+c503|Waktu
+c504|Kirim permintaan
+c505|Bagaimana kami menghubungi Anda
+c506|Lewat obrolan
+c507|Telepon
+c508|Waktu yang nyaman
+c509|Secepatnya
+c510|Pagi
+c511|Malam
+c512|Catatan
+c513|Contoh: perlu terjemahan 2 ijazah sebelum akhir bulan
+c514|Permintaan terkirim. Staf Nakhlio akan menghubungi Anda.
+c515|Permintaan
+c516|Populer
+c517|Halo! Permintaan Anda diterima. Staf yang menangani sedang meninjau detailnya dan akan segera menghubungi Anda. Mohon siapkan dokumen dalam daftar.
+c518|Ruang ini khusus wanita. Pria dilarang masuk.
+c519|Ruang ini khusus pria. Wanita dilarang masuk.
+c520|Pengingat sebelum masuk
+c521|“Janganlah engkau mengikuti sesuatu yang tidak engkau ketahui. Sesungguhnya pendengaran, penglihatan, dan hati, semuanya akan dimintai pertanggungjawaban.”
+c522|Al-Qur’an, Al-Isra 17:36 (terjemahan makna)
+c523|“Rasulullah ﷺ melaknat laki-laki yang menyerupai wanita dan wanita yang menyerupai laki-laki.”
+c524|Shahih al-Bukhari 5885
+c525|“Siapa yang menipu kami, maka ia bukan golongan kami.”
+c526|Shahih Muslim 101
+c527|Saya seorang wanita. Allah menjadi saksi atas ucapan saya.
+c528|Saya seorang laki-laki. Allah menjadi saksi atas ucapan saya.
+c529|Masuk
+c530|Kembali

@@ -1,0 +1,776 @@
+u:inapp_title|Nakhlio’yu tarayıcınızda açın
+u:inapp_text|Bu uygulama içi tarayıcı uygulama yükleyemez. ⋯ menüsüne dokunun ve “Tarayıcıda aç” (Safari veya Chrome) seçin.
+u:copy_link|Bağlantıyı kopyala
+u:copied|Bağlantı kopyalandı
+u:install_menu|Yükleme penceresi çıkmadı mı? Tarayıcı menüsünü ⋮ açın ve “Uygulamayı yükle” veya “Ana ekrana ekle” seçin.
+u:prayer_note|Ümmül Kura takvimi · Medine
+u:s_housing_d|Günlük, aylık, yıllık
+u:s_transport_d|Araba, scooter, elektrikli scooter
+u:s_ads_d|Eşya, yemek, hizmet
+u:s_parcels_d|Kim uçuyor, kim gönderiyor
+u:s_help_d|Havalimanı, tercüme, işler
+u:s_majlis_d|Sorular ve gerçek deneyimler
+u:s_men_d|Spor, geziler, buluşmalar
+u:s_women_d|Sadece kadınlar için
+u:s_family_d|Okullar, kreşler, doktorlar
+u:s_days_d|Bayramlar ve mevsimler
+u:rate|Riyal kuru
+u:rate_note|Yaklaşık · riyal sabittir: 1 USD = 3,75 SAR
+u:emergency|Acil numaralar
+u:police|Polis
+u:ambulance|Ambulans
+u:fire|Sivil savunma
+u:traffic|Trafik kazaları
+u:unified|Tek acil numara
+u:per_night|/ gece
+u:per_month|/ ay
+u:per_year|/ yıl
+u:per_day|/ gün
+u:all|Tümü
+u:furnished|Eşyalı
+u:unfurnished|Eşyasız
+u:families|Aileler
+u:singles|Bekârlar
+u:near_haram|Harem’e yakın
+u:under|Uygun fiyatlı
+u:min_walk|dk yürüyüş Mescid-i Nebevi’ye
+u:km_haram|km Mescid-i Nebevi’ye
+u:rooms|Yatak odası
+u:baths|Banyo
+u:guests|Kişi
+u:floor|Kat
+u:type|Tür
+u:verified|Fotoğraflar Nakhlio’dan · Yerinde kontrol edildi
+u:included|Fiyata dahil
+u:terms|Koşullar
+u:payment|Ödeme
+u:deposit|Depozito
+u:description|Açıklama
+u:reviews|Yorumlar
+u:review_example|örnek
+u:listing_no|İlan No.
+u:results|ilan
+u:location|Konum
+u:location_note|Tam adres, ziyaret onaylandıktan sonra
+u:cars|Arabalar
+u:scooters|Motosikletler
+u:escooters|Elektrikli scooterlar
+u:year|Yıl
+u:gearbox|Vites
+u:auto|Otomatik
+u:seats|Koltuk
+u:km_limit|Kilometre sınırı
+u:range|Menzil
+u:insurance_inc|Sigorta dahil
+u:delivery|Medine içinde teslimat
+u:requirements|Kiralamak için gerekenler
+u:req_car|Geçerli ehliyet ve ikame veya pasaport
+u:req_sco|Motosiklet ehliyeti ve ikame veya pasaport
+u:req_esc|İkame veya pasaport, 16 yaş ve üzeri
+u:rental_by|Kira sözleşmesi ortak şirketle yapılır. Nakhlio her şeyi sizin için ayarlar.
+u:chats_empty|Henüz mesaj yok. Bir ilan açın ve “Mesaj yaz”a dokunun.
+u:translated|Arapçadan çevrildi
+u:show_original|Orijinali göster
+u:show_translation|Çeviriyi göster
+u:operator|Nakhlio ekibi
+u:online|çevrimiçi
+u:chat_intro|Merhaba! Şu ilanla ilgileniyorum: No.
+u:privacy_note|İletişim bilgileriniz gizlidir. Numaranızı yalnızca siz karar verince paylaşın.
+u:share_number|Numaramı paylaş
+u:number_shared|Numaranızı paylaştınız
+u:saved_empty|Bir ilanı burada saklamak için ♡ simgesine dokunun.
+u:about|Nakhlio hakkında
+u:rules|Topluluk kuralları
+u:license|Lisans No.
+u:operator_panel|Operatör paneli
+u:operator_panel_d|Gelen talepler (demo)
+u:demo_badge|Prototip · örnek ilanlar
+u:about_text|Nakhlio, yabancıların Medine’ye yerleşmesine yardım eder: konut, ulaşım, hizmetler ve sorularınızı yanıtlayan bir topluluk. Her daireyi ekibimiz yerinde kontrol eder ve fotoğraflar.
+u:photo_credit|Prototip fotoğrafları: Unsplash.
+u:reset|Demoyu sıfırla
+u:majlis_tag|Sorun — yaşamış olanlar yanıtlasın
+u:ask_q|Soru sor
+u:share_exp|Deneyimimi anlat
+u:helped|Faydalı
+u:answers|yanıt
+u:official|Resmî kaynak
+u:rules_title|Lütfen okuyun 🤝
+u:rules_text|Meclis, Medine’de yaşamak için birbirimize yardım ettiğimiz yerdir. Burada siyaset, yönetimi eleştirmek ve din tartışmaları yasaktır. Neden: Suudi yasalarına göre bu tür paylaşımlardan yalnızca yazan değil, site de sorumludur. Tek bir mesaj Nakhlio’nun kapanmasına yol açabilir ve herkes soru sorup yardım alacağı yeri kaybeder. Bu yüzden rica ediyoruz: sadece faydalı deneyim, soru ve tavsiye. Kurallara aykırı mesajları gizliyoruz. Böyle bir mesaj görürseniz “Şikâyet et”e dokunun.
+u:understood|Anladım
+u:report|Şikâyet et
+u:reported|Teşekkürler, moderatörümüz kontrol edecek
+u:t_iqama|İkame ve Absher
+u:t_bank|Banka hesabı
+u:t_sim|SIM kart
+u:t_insurance|Sağlık sigortası
+u:t_licence|Ehliyet
+u:t_ejar|Kiralama ve Ejar
+u:t_travel|Havalimanı ve tren
+u:t_study|Eğitim
+u:t_places|Faydalı yerler
+u:t_doctors|Doktorlar ve klinikler
+u:composer_q_ph|Örneğin: Yeni ikameyle banka hesabı açmak kaç gün sürer?
+u:composer_e_ph|Örneğin: Bankada bir günde hesap açtım. İkamemi götürdüm ve…
+u:publish|Yayınla
+u:published|Yayınlandı
+u:rooms_title|Odalar
+u:events|Buluşmalar
+u:going|Katılıyorum
+u:going_n|katılıyor
+u:create_event|Buluşma oluştur
+u:ad_post|İlan ver
+u:ad_free|İlan vermek ücretsiz
+u:boost|Öne çıkar
+u:highlight|Renkle vurgula
+u:ad_contact_note|İletişim bilgileri asla gösterilmez. Size sohbette, herkes kendi dilinde yazar.
+u:flying|Uçuyorum
+u:need_send|Gönderilecek
+u:parcel_rules_t|Paketler için güvenlik kuralları
+u:parcel_rules|Sadece açık eşya taşıyın ve paketlemeden önce içeriğini kendiniz kontrol edin. İlaç ve kapalı kutu yok. Suudi Arabistan’da uyuşturucu yasaları çok serttir ve paketi taşıyan kişi sorumludur.
+u:days_title|Medine’de önemli günler
+u:days_left|gün kaldı
+u:approx|tarih hilalin görülmesine bağlıdır
+u:weekend_note|Suudi Arabistan’da hafta sonu: cuma ve cumartesi
+u:close|Kapat
+u:example|örnek
+u:sar|SAR
+u:sent_ok|Mesaj gönderildi. Nakhlio ekibi burada yanıtlayacak.
+u:req_status_new|Yeni
+u:req_status_work|İşlemde
+u:req_status_view|Görüşme ayarlandı
+u:req_status_done|Kiralandı
+u:client|Müşteri
+u:source|Kaynak (dahili)
+u:listing|İlan
+u:catalog|Katalog
+u:nothing|Sonuç bulunamadı
+u:nothing_d|Başka bir kelime deneyin veya aşağıdan bir bölüm açın.
+u:all_sections|Tüm bölümler
+u:price_from|Fiyat
+u:title_f|Başlık
+u:category|Kategori
+u:photo|Fotoğraflar
+u:add_photo|Fotoğraf ekle
+u:demo_pay|demo
+u:post_parcel|Yolculuk veya talep paylaş
+u:agree_rules|Kuralları okudum. Sadece açık eşya taşırım ve içeriği kendim kontrol ederim.
+u:what|Ne
+u:weight|Ağırlık
+u:kg|kg
+u:date|Tarih
+u:from_to|Güzergâh
+u:guest|Misafir
+u:you|Siz
+u:top|Öne çıkan
+u:yours|sizin
+u:members|üye
+u:room_hello|Selamün aleyküm! Odaya hoş geldiniz.
+u:room_rule|Meclis kurallarını unutmayın: siyaset ve din tartışması yok.
+u:write_room|Odaya yazın…
+u:km|km
+u:min|dk
+u:any|Herkes
+u:audience|Uygun
+u:term_l|Kira süresi
+u:cc|Motor
+u:walk_to|yürüyerek
+u:open|Aç
+u:help_post|Yardım teklif et
+u:ask_family|Ebeveynlere sor
+u:q_tag|Soru
+u:e_tag|Deneyim
+u:comment|Yorum yap
+u:reply|Yanıtla
+u:dm|Özel mesaj
+u:reply_to|Yanıt:
+u:comments_t|Sorular ve yorumlar
+u:comment_ph|Yorum yazın…
+u:seller|İlan sahibi
+u:on_since|Nakhlio’da şu tarihten beri:
+u:langs_spoken|Konuştuğu diller
+u:event_org|Düzenleyen
+u:auto_tr|Otomatik çeviri
+u:reg_title|Profilinizi oluşturun
+u:reg_sub|Bir dakika, şifre yok. Telefonunuz ve e-postanız başkalarına asla gösterilmez.
+u:step|Adım
+u:of|/
+u:phone_l|Telefon numarası
+u:get_code|Kodu al
+u:code_title|Kodu girin
+u:code_sub|SMS gönderdik:
+u:demo_code|Demo: kod 1234
+u:code_l|SMS kodu
+u:change_num|Numarayı değiştir
+u:resend|Tekrar gönder
+u:name_l|Adınız
+u:name_ph|Size nasıl hitap edelim?
+u:email_l|E-posta
+u:gender_l|Ben
+u:male|erkeğim
+u:female|kadınım
+u:gender_note|Erkek ve kadın alanları için gereklidir. Profilinizde gösterilmez.
+u:photos_l|Profil fotoğrafları
+u:photos_hint|En fazla 3. İlki ana fotoğraftır. Yüzünüz yerine bir resim koyabilirsiniz.
+u:add|Ekle
+u:about_l|Hakkımda
+u:about_ph|Örneğin: Kazanlıyım, ailemle Medine’deyim, siparişe pasta yapıyorum
+u:job_l|Ne iş yapıyorum
+u:job_ph|Örneğin: öğrenci, elektrikçi, evde pastacı
+u:optional|isteğe bağlı
+u:next|Devam
+u:finish|Tamam — Nakhlio’yu aç
+u:err_phone|Numarayı ülke kodu olmadan girin: 9–10 hane.
+u:err_code|Kod 4 hanelidir. Demo kodu: 1234.
+u:err_name|Adınızı girin, en az 2 harf.
+u:err_email|E-postayı kontrol edin: name@mail.com gibi olmalı
+u:err_gender|Bir seçenek seçin.
+u:edit_profile|Profili düzenle
+u:logout|Çıkış yap
+u:save_l|Kaydet
+u:saved_ok|Profil kaydedildi
+u:v_phone|Telefon doğrulandı
+u:v_email|E-posta doğrulandı
+u:v_nakhlio|Nakhlio tarafından kontrol edildi
+u:since_l|Nakhlio’da
+u:reviews_l|Yorumlar
+u:listings_l|İlanlar
+u:no_listings|Henüz ilan yok
+u:no_reviews|Henüz yorum yok
+u:report_user|Şikâyet et
+u:profile_l|Profil
+u:district_l|Semt
+u:langs_l|Diller
+u:men_only|Bu alan sadece erkekler içindir
+u:women_only_m|Bu alan sadece kadınlar içindir
+u:main_photo|ana
+u:remove|Kaldır
+u:auth_t|Devam etmek için profil oluşturun
+u:auth_d|Kayıt olmadan gezinebilirsiniz. Yazmak, yanıtlamak, yorum yapmak ve ilan vermek için 1 dakikada profil oluşturun. Şifre yok.
+u:create_profile|Profil oluştur
+u:later|Sonra
+u:guest_d|Serbestçe gezinin. Mesaj yazmak, yorum yapmak ve ilan vermek için profil oluşturun.
+u:chats_guest|Profil oluşturduktan sonra mesajlarınız burada görünecek.
+u:spaces_guest|Bu alan sadece üyeler içindir. Katılmak için profil oluşturun.
+u:s_services|Nakhlio Hizmetleri
+u:s_services_d|Belgeler, vizeler, iş, taşınma
+c0|Wi-Fi
+c1|Klima
+c2|Su
+c3|Elektrik
+c4|Otopark
+c5|Asansör
+c6|Mutfak
+c7|Çamaşır makinesi
+c8|Temizlik
+c9|7/24 güvenlik
+c10|Havuz
+c21|Mescid-i Nebevi’ye 5 dakika stüdyo
+c22|Yeni binada, minare manzaralı aydınlık stüdyo. Çift kişilik yatak, küçük mutfak ve sessiz klima. Hacılar ve kısa konaklamalar için ideal.
+c23|Girişte ödeme
+c24|Aile dairesi, 3 yatak odası, 6 kişilik
+c25|Geniş aile dairesi: meclisli büyük salon, tam donanımlı mutfak ve iki banyo. Yakında market ve eczane var.
+c26|Apart daire: yatak odası ve salon
+c27|7/24 resepsiyonlu apart otelde temiz daire. Günlük temizlik, girişte otopark, Harem’e taksiyle 10 dakika.
+c28|Tek kişilik stüdyo, faturalar dahil
+c29|Eşyalı, rahat stüdyo. Su, elektrik ve internet fiyata dahil. Yakında Harem’e giden otobüs durağı var.
+c30|Aylık
+c31|2 yatak odası, eşyalı, Harem’e 15 dk yürüyüş
+c32|8. katta modern daire. İki yatak odası, salon ve beyaz eşyalı mutfak. Binada asansör ve güvenlik.
+c33|Eşyalı 3 yatak odalı aile dairesi
+c34|Sakin semtte büyük daire. Misafirler için ayrı meclis, üç banyo ve bahçede çocuk parkı.
+c35|İslam Üniversitesi yakınında öğrenci odası
+c36|3 öğrencinin paylaştığı dairede özel oda. Ortak mutfak ve salon, üniversiteye 7 dakika yürüyüş.
+c37|Aile için eşyasız 3 odalı daire
+c38|Yeni binada daire, dolaplı mutfak ve ayrı giriş. Uzun süre kalacak bir aileye uygun.
+c39|Yılda 2 ödeme
+c40|Yeni binada 4 oda, otopark
+c41|Büyük salonlu ve balkonlu yeni daire. Kendi otopark yeri, asansör, yakında okullar ve cami.
+c42|Yılda 2 veya 4 ödeme
+c43|Premium: yeni sitede 3 yatak odası
+c44|Havuzlu ve spor salonlu güvenlikli sitede daire. Tasarım dekorasyon, şehir manzarası ve kapalı otopark.
+c45|Yılda 1, 2 veya 4 ödeme
+c46|Siparişe pastalar ve ballı pasta
+c47|120 SAR’dan başlayan
+c48|6 yıldır evde pasta yapıyorum. Ballı pasta, Napolyon, çikolatalı ve yazılı çocuk pastaları. Sadece doğal malzeme. Lütfen 2 gün önce sipariş verin; As Salam çevresine teslimat mümkün.
+c49|Selamün aleyküm! Oğlumun doğum günü için cumaya yaklaşık 12 kişilik pasta sipariş edebilir miyim?
+c50|Aleyküm selam! Evet, yetiştirebilirim. Bana özelden yazın, dolguyu ve yazıyı seçelim 🙂
+c51|Geçen hafta Amina’nın ballı pastasını aldım — çok lezzetli ve fazla tatlı değil. Tavsiye ederim!
+c52|Ev yapımı mantı, samsa ve çüçvara
+c53|Düzinesi 35 SAR
+c54|Annemin Özbek tariflerini pişiriyorum. Dondurulmuş paketler de var, evde tutmak kolay. Etli veya balkabaklı samsa. Al Aziziyah’tan teslim alma veya 10 SAR’a teslimat.
+c55|Balkabaklı samsa her gün var mı?
+c56|Balkabaklıları perşembe ve cumartesi yapıyorum; önceden sipariş verebilirsiniz.
+c57|Aile için 3 düzine mantı aldık — tıpkı Taşkent’teki gibi. Teşekkürler!
+c58|Siparişe Pakistan biryani ve nihari
+c59|60 SAR’dan başlayan
+c60|Tavuklu veya kuzulu biryani, hafta sonları nihari. Bir tepsi 4–5 kişiye yeter. Aile toplantıları ve davetler için de pişiriyorum.
+c61|Cumartesi 20 kişi için yapabilir misiniz?
+c62|Evet, inşallah. Lütfen perşembeye kadar onaylayın.
+c63|Köşe koltuk, yeni gibi — taşınıyoruz
+c64|650 SAR
+c65|8 ay önce IKEA Jeddah’tan 1.800 SAR’a alındı. Gri, yatağa dönüşüyor, kılıfları çıkarılıp yıkanabilir. Al Aziziyah’tan teslim, taşımaya yardım ederim.
+c66|Hâlâ satılık mı? Bu akşam görebilir miyim?
+c67|Evet, akşam namazından sonra gelin. Özelden yazın, konumu göndereyim.
+c68|LG çamaşır makinesi, 8 kg
+c69|400 SAR
+c70|Kusursuz çalışıyor, 2 yaşında. Önden yüklemeli, sessiz. Yeni dairede zaten olduğu için satıyorum.
+c71|Al Fath’a teslimat yapabilir misiniz?
+c72|Evet, bir arkadaşla 30 SAR’a arabayla getiririz.
+c73|Beyaz eşya taşımak için yardım lazımsa yazın — kamyonetim var.
+c74|Arapça ders kitapları “Medine Kursu”, 3 cilt
+c75|45 SAR
+c76|Neredeyse hiç not yok, 3 cilt ve alıştırma kitabı. Öğrencilere indirim. İslam Üniversitesi’nde buluşabiliriz.
+c77|Kardeşim, benim için ayırır mısın — yarın öğleden sonra alırım.
+c78|Tamam, yarına kadar ayırıyorum.
+c79|Elektrikçi: priz, aydınlatma, klima
+c80|80 SAR’dan başlayan
+c81|12 yıllık tecrübe. Avize, priz, şofben, split klima bakımı. Medine’nin her yerine aynı gün gelirim.
+c82|Bir avize asmak ve 3 priz değiştirmek ne kadar?
+c83|Hepsi 150 SAR, bugün ikindiden sonra gelebilirim.
+c84|Bizim 2 klimayı temizledi — titiz ve hızlı, her yeri temiz bıraktı.
+c85|Taşınma: hamallar ve kamyonet
+c86|250 SAR’dan başlayan
+c87|Kapalı kamyonet, 2 hamal, mobilya söküp takma. Medine içinde ve Jeddah’a taşıyoruz. Koliler ücretsiz.
+c88|Asansörsüz 3. kattan 2 odalı daire ne kadar?
+c89|Yaklaşık 400 SAR, fotoğraflara bakıp kesinleştiririm. Özelden gönderin.
+c90|Taşınma öncesi ve sonrası temizlik
+c91|180 SAR’dan başlayan
+c92|Detaylı temizlik: mutfak, banyolar, camlar, klimaların dışı. İki kişiyiz, malzemeler bizden.
+c93|Cuma günü çalışıyor musunuz?
+c94|Cuma namazından sonra, saat 15:00’ten itibaren.
+c95|Sıfırdan Arapça, online ve yüz yüze
+c96|Ders başı 60 SAR
+c97|Medine İslam Üniversitesi mezunu. Medine’de günlük hayat için konuşma Arapçası ve Medine Kursu ile fasih Arapça. İlk ders ücretsiz.
+c98|3 aydır ustazla çalışıyorum — artık markette ve takside rahatça konuşuyorum 👍
+c99|Kız kardeşler için grup var mı?
+c100|Evet, eşim salı günleri online kadınlar grubunu yürütüyor.
+c101|Çocuklar için tecvid ve Kur’an, online
+c102|Aylık 200 SAR
+c103|6–12 yaş, 4 çocukluk gruplar, haftada üç kez 40 dakika. Hafs kıraatinde icazetliyim.
+c104|Oğlum 5 yaşında — kabul eder misiniz?
+c105|Bir deneme dersi yapalım, nasıl gideceğine bakalım.
+c106|Bebek karyolası ve bebek arabası — ücretsiz
+c107|Ücretsiz
+c108|Çocuklarımız büyüdü — ihtiyacı olana veriyoruz. Yataklı karyola, katlanır bebek arabası. As Salam’dan teslim.
+c109|Selamün aleyküm, alabilir miyim? Ocakta bebek bekliyoruz.
+c110|Aleyküm selam, tabii! Allah kolaylık versin. Özelden yazın.
+c111|Rusça 20 kitap — ücretsiz
+c112|Polisiye romanlar, çocuk masalları ve Rusça İslami kitaplar. Hepsini birlikte veriyorum; Al Fath’tan kolay teslim.
+c113|Çocuk masalları hâlâ var mı? 7 yaşındaki kızım için.
+c114|Evet, sizin için ayırırım.
+c115|Jeddah üzerinden uçuyorum. Sadece açık eşya alırım: hurma, giysi, kitap. Moskova’da Komsomolskaya metrosu yanında buluşma.
+c116|Annem için 2 kg Acve hurması götürebilir misiniz?
+c117|Evet, 1 Aralık’a kadar açık bir kutuyla verin.
+c118|2 haftalığına eve gidiyorum, bavulumda yer var. Önünüzde kendim paketlerim.
+c119|Ailem için seccade gönderebilir miyim?
+c120|İstanbul aktarmalı, orada teslim edebilirim. Sadece kendim kontrol edebildiğim eşyalar.
+c121|Üniversite belgeleri
+c122|Kazan’dan onaylı diplomamın olduğu bir zarfı getirecek biri lazım. 100 SAR öderim ve havalimanında karşılarım.
+c123|14’ünde Kazan’dan uçuyorum, size yazacağım.
+c124|Aile için hurma ve hediyeler
+c125|Hurma ve 2 şal, hepsi açık. Kardeşim Lahor’da karşılayacak.
+c126|9’unda Lahor’a uçuyorum, alabilirim.
+c127|Yolculuk için çocuk kışlıkları
+c128|Annem çocuk giysileri dolu bir çanta verecek; her şey açılıp kontrol edilebilir.
+c129|Sizi havalimanında karşılar, evinize götürürüm
+c130|150 SAR
+c131|Prens Muhammed bin Abdülaziz Havalimanı’nda isim tabelasıyla karşılarım, SIM kart ve bagajla yardım ederim. 6 kişilik araba.
+c132|Uçağım gece 3’te iniyor — karşılayabilir misiniz?
+c133|Evet, gece de çalışıyorum, +30 SAR.
+c134|Umre için Medine → Mekke transferi
+c135|Araç başı 450 SAR
+c136|İhram için Zülhuleyfe mikatında mola. 7 kişilik GMC, su ve çocuk koltuğu.
+c137|5 kişilik bir aileyiz, perşembe sabahı.
+c138|Harika, perşembe müsaitim. Saat 6:00’da çıkalım mı?
+c139|Hastane, banka, Cevazat için tercüman
+c140|Saatlik 100 SAR
+c141|9 yıldır Medine’de yaşıyorum. Doktora, bankaya veya resmi daireye sizinle gelir ve yerinde tercüme ederim.
+c142|Zarina benimle kadın doğumcuya geldi — her şeyi detaylı ve çok sakin anlattı.
+c143|Belge tercümesi ve Absher yardımı
+c144|50 SAR’dan başlayan
+c145|Absher’e kayıt, ceza ödeme, ikame yenileme ve yetkili büro üzerinden belge tercümesinde yardım ederim.
+c146|Yenilememi 15 dakikada hallettik, teşekkürler!
+c147|Ziyarette yaşlı ebeveynlere yardım
+c148|Günlük 200 SAR
+c149|Mescid-i Nebevi, Kuba ve Uhud’a eşlik ederim; tekerlekli sandalyem var. Namaz vakitlerine göre planlarım.
+c150|Annem Muhammed’den çok memnun — çok sabırlı.
+c151|Yaşlı bir kadın için evde bakıcı
+c152|Günlük 150 SAR
+c153|Hemşireyim. Doktorun planına göre ilaçlar, yürüyüşler ve günlük işlerde yardım ederim.
+c154|Gece kalıyor musunuz?
+c155|Evet, anlaşmaya göre.
+c156|Kiralamadan önce semtleri gösteririm
+c157|120 SAR
+c158|3 saatte 4–5 semti gezer, yakındaki marketleri, okulları ve camileri gösteririm. Nerede yaşamanın daha kolay olduğunu görmenizi sağlar.
+c159|Turdan sonra hemen Al Rayah’ı seçtik — sakin ve okul yakında.
+c160|Rehberle Medine’nin tarihî yerleri
+c161|Kişi başı 100 SAR
+c162|Uhud, Kuba, Kıbleteyn Mescidi, Hendek. Siyeri Rusça anlatırım, 8 kişiye kadar gruplar.
+c163|Çocuklarla gittik — ağızları açık dinlediler. Cezakallahu hayran!
+c164|Yenilemeden sonra ikamemin hazır olup olmadığını nasıl kontrol ederim?
+c165|Absher’de: “Hizmetlerim” → “Pasaportlar” → “İkame yenileme”. Durumum 2 gün sonra güncellendi.
+c166|Sağ ol kardeşim, buldum!
+c167|Deneyimim: Absher kaydını istasyon yanındaki Cevazat ofisinde yaptım. Pasaport ve ikame, 40 dakika sıra, aynı gün bitti.
+c168|Eş ayrı mı gidiyor, kocasıyla mı?
+c169|Eşimle gittim — onun ikamesini de istediler.
+c170|Hangi banka yeni ikameyle en hızlı hesap açıyor?
+c171|Bankanın uygulamasında 20 dakikada online açtım, kart 3 günde geldi. Aktif Absher gerekiyor.
+c172|Adımın Latin harflerle yazımı yüzünden online olmadı — şubeye gittim, bir saatte bitti.
+c173|Tavsiye: hemen Apple Pay / mada Pay kurun — neredeyse her yerde telefonla ödeniyor, nakit pek gerekmiyor.
+c174|SIM’i Medine havalimanında pasaportla aldım. Sonra mağazada 5 dakikada ikameye geçirdim.
+c175|Hangi paketi aldınız?
+c176|Sınırsız internetli aylık ön ödemeli, yaklaşık 100 SAR.
+c177|Mağazaya gitmeden ikameyle eSIM alınabilir mi?
+c178|Evet, operatörün uygulamasından Nafath doğrulamasıyla — bana 10 dakika sürdü.
+c179|Eşimin iş sigortası doğumu karşılıyor mu?
+c180|Poliçe sınıfına bağlı. Sigortacının uygulamasında “Annelik” bölümüne bakın — bizimki %100 karşılandı.
+c181|Klinikler uygulamadaki sigorta kartını kabul ediyor — kâğıt karta gerek yok. Cüzdanınıza kaydedin.
+c182|Ehliyetimi Suudi ehliyetiyle nasıl değiştiririm? Sınav var mı?
+c183|Absher’den Dallah Sürücü Kursu’na randevu aldım. Benim ülkem için sadece direksiyon sınavı vardı, ilk seferde geçtim.
+c184|Toplam ne kadar tuttu?
+c185|Sağlık kontrolüyle birlikte yaklaşık 900 SAR.
+c186|Sözleşmeyi mutlaka Ejar üzerinden isteyin — o olmadan ailenizi Absher’e ekleyemezsiniz. Emlakçı bir günde yaptı.
+c187|Ejar ücretini kim ödüyor?
+c188|Ev sahibiyle yarı yarıya paylaştık.
+c189|Yıllık kirayı aylık ödeyebilir miyim?
+c190|Genelde 2 veya 4 ödeme. Aylık nadir ama Nakhlio bana böyle bir seçenek buldu.
+c191|Haremeyn treni Medine → Mekke 2 saat 20 dakika. Biletleri uygulamadan bir hafta önce alın — hafta sonları tükeniyor.
+c192|Trende ihramlı olunur mu?
+c193|Evet, birçok kişi öyle gidiyor. İhramı önceden giyin; niyet mikatta yapılır.
+c194|Havalimanından merkeze en ucuz yol?
+c195|Harem’e her 30 dakikada bir otobüs var, yaklaşık 15 SAR. Uygulamadan taksi — 60–80 SAR.
+c196|İslam Üniversitesi’ne kim başvurdu? Ne kadar beklediniz?
+c197|İlkbaharda başvurdum, cevap temmuzda geldi. Önemli olan diplomayı erkenden tercüme ve onaylatmak.
+c198|Arapça hazırlık yılı çok güçlü. Tavsiye: hemen Arap bir konuşma arkadaşı bulun.
+c199|Rus ve Özbek ürünleri (karabuğday, lor, ekşi krema) — Al Aziziyah’taki pazarın yanındaki küçük dükkânda.
+c200|Pelmeni de var mı?
+c201|Dondurulmuş var, çarşamba günleri geliyor.
+c202|En iyi karak çay ve paratha — Kuba Mescidi yanındaki kafe, gece yarısına kadar açık.
+c203|Al Aziziyah’taki özel klinikte İngilizce konuşan iyi bir çocuk doktoru. Uygulamadan randevu, 15 dakika bekledik.
+c204|Rusça konuşan bir diş hekimi önerir misiniz?
+c205|Merkezde Dağıstanlı bir doktorun olduğu diş kliniği var. Adını özelden yazarım.
+c206|As Salam yakınında İngilizce konuşulan bir kreş önerir misiniz?
+c207|Yandaki semtte özel bir kreşe gidiyoruz: 12 kişilik gruplar, İngilizce konuşan öğretmenler, servis var.
+c208|Aylık ne kadar?
+c209|Yemekli 1.400 SAR.
+c210|Oğlumuzu yüzmeye yazdırdık: haftada iki kez, İngilizce konuşan antrenör, sabahları kadın/çocuk havuzu.
+c211|Medine’de hangi uluslararası okullar var ve ücretleri ne kadar?
+c212|İngiliz müfredatlı 3 okula baktık — yılda 18.000 ile 30.000 SAR arası. İlkbaharda başvurmak daha iyi.
+c213|Spor
+c214|Cumartesi futbol oynayacak kim var? 4 kişi daha lazım.
+c215|Ben varım, kardeşimi de getiririm.
+c216|Saat kaçta ve nerede? 20:00’de Al Aziziyah yakınındaysa gelirim.
+c217|Evet, 20:00, okulun yanındaki saha. “Buluşmalar” sekmesinde buluşma oluşturdum.
+c218|Geziler ve gezintiler
+c219|Hafta sonu arabayla AlUla’ya gidiyoruz, 2 yer kaldı.
+c220|Benzin için ne kadar katılalım?
+c221|Kişi başı 80 SAR; kampta konaklama ayrı.
+c222|Geçen ay oradaydım — sıcak giysi alın, gece +10 derece.
+c223|Arabalar
+c224|Yağ değişimini nerede ucuza yaptırabilirim?
+c225|Sultanah yakınındaki istasyon, filtreyle 90 SAR.
+c226|Doğru — sabahları hızlı, sıra yok.
+c227|Sohbet
+c228|Kardeşler, şehirdeki en iyi karak çay nerede?
+c229|Kuba’nın yanında, tartışmasız ☕
+c230|Katılıyorum, oradaki paratha da hep sıcak.
+c231|7’ye 7 futbol
+c232|Cumartesi, 20:00
+c233|Topu ve yelekleri ben getiriyorum.
+c234|İki kişiyiz, kaydolduk.
+c235|AlUla gezisi
+c236|Cuma, 06:00
+c237|14 yaşındaki oğlumu getirebilir miyim?
+c238|Tabii, yer var.
+c239|Sabah koşusu, 5 km
+c240|Salı, 06:15
+c241|Sabah namazından sonra harika, geliyorum.
+c242|Çocuklar ve sağlık
+c243|Hanımlar, 1 yaşında hangi aşılar yapılıyor?
+c244|Sağlık merkezinde Sehhaty uygulamasındaki takvime göre yaptırdık — hepsi orada yazıyor.
+c245|Randevu da oradan, sırasız.
+c246|Mutfak ve tarifler
+c247|İyi karabuğday nereden alınır?
+c248|Al Aziziyah’taki pazarın yanındaki dükkândan, hep oradan alıyorum.
+c249|Toptan gerçek basmati nereden alınır bilen var mı?
+c250|Tabuk yolu üzerindeki toptancıda 10 kg’lık çuval daha ucuz.
+c251|Alışveriş
+c252|Eski çarşıda hafta sonuna kadar kumaş indirimi!
+c253|Teşekkürler! Ferace de var mı?
+c254|Evet, koca bir sıra, 80 SAR’dan başlıyor.
+c255|Mutfak buluşması: hamur işleri
+c256|Perşembe, 17:00
+c257|Yanımda ne getireyim?
+c258|Sadece bir önlük, malzemeler benden 🙂
+c259|Çocuklarla parkta yürüyüş
+c260|Cumartesi, 16:30
+c261|İki çocukla geliyoruz, battaniye getiririm.
+c262|Kız kardeşler için tefsir halkası
+c263|Pazartesi, 19:30
+c264|Katılamayanlar için kayıt olacak mı?
+c265|Evet, aynı buluşmada.
+c266|1448 Ramazan’ının başlangıcı
+c267|Ümmül Kura’ya göre yatsı, akşamdan 2 saat sonra
+c268|Kuruluş Günü
+c269|Resmî tatil
+c270|Ramazan Bayramı
+c271|Konut fiyatları artar — erken ayırtın
+c272|Hac mevsimi
+c273|Yol kapanmaları ve yüksek konut talebi
+c274|Kurban Bayramı
+c275|Ulusal Gün
+c276|Daire fotoğraflardaki gibiydi; operatör dakikalar içinde yanıt verdi ve her şeyi ayarladı.
+c277|Ben Rusça yazarken onların ev sahibiyle Arapça anlaşması çok pratikti.
+c278|Merhaba! İlginiz için teşekkürler. Evet, ilan güncel. Ne zaman görmek istersiniz? Bugün ikindiden sonra veya yarın sabah gösterebiliriz.
+c279|Harika, randevunuz alındı. Operatör tam adresi buluşmadan bir saat önce gönderecek.
+c280|Ev yemeği
+c281|Eşya
+c282|Hizmetler
+c283|Dersler
+c284|Havalimanı ve transfer
+c285|Tercüman
+c286|Yaşlılara yardım
+c287|Şehir turları
+c288|Aleyküm selam! Evet, tabii. Anlaşalım — size ne zaman uygun?
+c289|Evde pastacı
+c290|Kazanlıyım, 4 yıldır eşim ve üç çocuğumla Medine’deyim. Siparişe pasta yapıyor ve kız kardeşler için mutfak buluşmaları düzenliyorum.
+c291|Ev yemekleri
+c292|Taşkentliyim. Annemin tarifleriyle Özbek yemekleri pişiriyorum.
+c293|Pakistan mutfağı
+c294|Lahorluyum, aile toplantıları ve kutlamalar için yemek yapıyorum.
+c295|Elektrikçi, 12 yıllık tecrübe
+c296|Medine’nin her yerinde çalışıyorum: priz, aydınlatma, şofben ve klima. İşime 3 ay garanti.
+c297|Taşımacılık
+c298|Kapalı kamyonetim ve iki yardımcım var. Dikkatle taşır, mobilyaları kurarız.
+c299|Arapça öğretmeni
+c300|Medine İslam Üniversitesi mezunu. 8 yıldır yabancılara Arapça öğretiyorum; İngilizce ve Rusça konuşuyorum.
+c301|Tercüman RU · AR · EN
+c302|9 yıldır Medine’de yaşıyorum. Doktora, bankaya ve resmi dairelere eşlik ediyorum.
+c303|Şoför, transferler
+c304|Misafirleri havalimanında karşılar, ziyarete götürürüm. 6 kişilik araba.
+c305|İslam Üniversitesi öğrencisi, rehber
+c306|Medine’de tarih turları yapıyor, cumartesi futbol düzenliyorum.
+c307|Yaşlılara refakatçi
+c308|Yaşlı hacılara yardım ediyorum; tekerlekli sandalyem var.
+c309|BT uzmanı
+c310|Uzaktan çalışıyorum, Suudi Arabistan’da gezmeyi seviyorum. Sık sık AlUla’ya gezi düzenliyorum.
+c311|Mühendis
+c312|Jeddah’a taşınıyorum, mobilyalarımı satıyorum.
+c313|İki çocuk annesi
+c314|Mahaçkalalıyım, Medine’de ikinci yılım. İyi doktorlar ve çocuk kursları arıyorum.
+c315|İngilizce öğretmeni
+c316|Online İngilizce öğretiyorum, Medine’deki faydalı yerleri paylaşmayı seviyorum.
+c317|Anne ve ev hanımı
+c318|Almatılıyım, 3 yıldır eşimle Medine’de yaşıyoruz.
+c319|İnşaat mühendisi
+c320|Dağıstanlıyım. Yeni gelenlere Absher ve ehliyet konusunda yardım ediyorum.
+c321|Yazılımcı
+c322|2026’da ailemle taşındım; her şeyi ilk kez öğreniyor ve paylaşıyorum.
+c323|Öğrenci
+c324|İslam Üniversitesi’nde okuyor, yarı zamanlı tercüme yapıyorum.
+c325|Lojistik müdürü
+c326|Taşkentliyim. Sabahları koşuyorum — siz de katılın!
+c327|Şoför, umre transferleri
+c328|Lahorluyum; aileleri Mekke’ye ve Medine içinde taşıyorum.
+c329|Hemşire
+c330|Endonezyalıyım, Medine’de bir hastanede çalışıyorum.
+c331|Muhasebeci
+c332|5 yıl önce Müslüman oldum, eşimle Medine’de yaşıyorum.
+c333|Tasarımcı
+c334|Kazakistanlıyım, ikinci bebeğimizi bekliyoruz.
+c335|Yönetici
+c336|Mısırlıyım, 6 yıldır Medine’de çalışıyorum.
+c337|Pasta rüya gibiydi, çocuklar bayıldı!
+c338|Zamanında ve lezzetli.
+c339|Titiz, hızlı, arkasını temizledi.
+c340|Aynı gün geldi, fiyat anlaştığımız gibi.
+c341|Her şeyi çiziksiz taşıdılar.
+c342|En iyi öğretmen, basitçe anlatıyor.
+c343|Çok sakin ve ilgili.
+c344|Tıpkı evdeki gibi mantı!
+c345|Belgeler ve tercüme
+c346|Diploma veya sertifikanın yeminli tercümesi
+c347|150 SAR’dan başlayan
+c348|2–3 gün
+c349|Yetkili büroda tercüme
+c350|Tercüman kaşesi ve imzası
+c351|Medine içinde teslimat
+c352|Belgenin taraması veya fotoğrafı
+c353|Pasaport
+c354|Evlilik veya doğum belgesinin tercümesi
+c355|1–2 gün
+c356|Arapçaya tercüme
+c357|Büro onayı
+c358|Belgenin aslı veya taraması
+c359|Belge tasdiki
+c360|300 SAR’dan başlayan
+c361|7–14 gün
+c362|Belge dosyasının hazırlanması
+c363|Lisanslı ortak üzerinden başvuru
+c364|Durum takibi
+c365|Belgenin aslı
+c366|İkame veya pasaport
+c367|Eğitim
+c368|İslam Üniversitesi başvuru belgeleri
+c369|500 SAR’dan başlayan
+c370|2–4 hafta
+c371|Şartların ve tarihlerin kontrolü
+c372|Tercüme ve onay
+c373|Online başvuruda yardım
+c374|Diploma veya mezuniyet belgesi
+c375|Arapça dil kursları
+c376|Aylık 600 SAR’dan başlayan
+c377|her ay başlıyor
+c378|Seviyeye göre gruplar
+c379|Yüz yüze veya online
+c380|Sertifika
+c381|Çocuğu okula veya kreşe kaydettirme
+c382|200 SAR’dan başlayan
+c383|3–7 gün
+c384|Dile ve semte göre okul seçimi
+c385|Görüşme randevusu
+c386|Belgelerde yardım
+c387|Doğum belgesi
+c388|Ebeveyn ve çocuğun ikamesi
+c389|İkame, vize, Absher
+c390|İkame yenileme
+c391|hizmet 150 SAR’dan başlayan
+c392|1–5 gün
+c393|Belge kontrolü
+c394|Lisanslı büro üzerinden işlem
+c395|Devlet harçları ayrıca ödenir
+c396|Mevcut ikame
+c397|Aile ziyaret vizesi
+c398|hizmet 250 SAR’dan başlayan
+c399|5–15 gün
+c400|Lisanslı büro üzerinden başvuru
+c401|Akrabalık belgelerinin tercümesi
+c402|İkameniz
+c403|Akrabaların pasaportları
+c404|Absher kaydı ve ceza ödeme
+c405|aynı gün
+c406|Absher aktivasyonu
+c407|Ceza sorgulama
+c408|Kendi dilinizde açıklama
+c409|İkame
+c410|Adınıza kayıtlı telefon numarası
+c411|Suudi Arabistan’da iş
+c412|Şirket kuruluşu ve yatırımcı lisansı
+c413|ücretsiz danışmanlık
+c414|3 haftadan başlayan
+c415|Şirket türünün seçimi
+c416|Ortak üzerinden lisans ve ticaret sicili
+c417|Şirket banka hesabı
+c418|İş tanımı
+c419|İş vizesi ve iş seyahatleri
+c420|hizmet 300 SAR’dan başlayan
+c421|3–10 gün
+c422|Davet ve başvuru
+c423|Karşılama ve transfer
+c424|Toplantılar için tercüman
+c425|Şirket bilgileri
+c426|Ofis kiralama ve muhasebe
+c427|Aylık 1.500 SAR’dan başlayan
+c428|1 haftadan başlayan
+c429|Ofis veya masa
+c430|Muhasebeci ve ZATCA raporları
+c431|Resmî adres
+c432|Ticaret sicili
+c433|Ehliyet
+c434|Suudi ehliyetine çevirme
+c435|1–2 hafta
+c436|Sürücü kursu randevusu
+c437|Sağlık kontrolü
+c438|Sınavda tercüme desteği
+c439|Geçerli ehliyet
+c440|Direksiyon dersleri
+c441|Ders başı 100 SAR’dan başlayan
+c442|programa göre
+c443|Kendi dilinizde eğitmen
+c444|Kurs aracı
+c445|Transfer ve umre
+c446|Medine havalimanında karşılama
+c447|7/24
+c448|İsim tabelalı şoför
+c449|Bagaj yardımı
+c450|7 kişiye kadar araç
+c451|Uçuş numarası
+c452|Umre yolculuğu: Medine → Mekke
+c453|Araç başı 450 SAR’dan başlayan
+c454|her gün
+c455|Zülhuleyfe mikatında mola
+c456|Lisanslı taşıyıcı
+c457|İsteğe göre dönüş
+c458|Tarihler ve kişi sayısı
+c459|Taşınma ve temizlik
+c460|Anahtar teslim taşınma
+c461|350 SAR’dan başlayan
+c462|1 günde
+c463|Paketleme ve koliler
+c464|Mobilya sökme ve kurma
+c465|Eşya sigortası
+c466|Adresler ve katlar
+c467|Mobilya fotoğrafları
+c468|Taşınma öncesi veya sonrası temizlik
+c469|3–5 saat
+c470|Mutfak ve banyolar
+c471|Camlar ve klimalar
+c472|Malzemeler bizden
+c473|Dairenin adresi ve büyüklüğü
+c474|İnternet ve cihaz kurulumu
+c475|100 SAR’dan başlayan
+c476|1–3 gün
+c477|Paket seçimi ve başvuru
+c478|Çamaşır makinesi, TV, klima kurulumu
+c479|Adres
+c480|Sözleşme için ikame
+c481|Sigorta
+c482|Aile sağlık sigortası
+c483|karşılaştırma ücretsiz
+c484|Tekliflerin karşılaştırılması
+c485|Lisanslı aracı üzerinden düzenlenir
+c486|Teminat kendi dilinizde açıklanır
+c487|Aile üyelerinin ikameleri
+c488|Araç sigortası
+c489|Trafik veya kasko
+c490|Lisanslı aracı üzerinden
+c491|İstimara (araç ruhsatı)
+c492|Nakhlio Hizmetleri
+c493|Belgeler, vizeler, iş, taşınma
+c494|Ortaklarımızın hizmetleri. Talep gönderirsiniz — bir Nakhlio çalışanı sizinle iletişime geçer ve işi sonuna kadar takip eder.
+c495|Lisanslı ortak
+c496|Nasıl çalışır
+c497|Talep gönderirsiniz
+c498|Bir Nakhlio çalışanı sohbetten veya telefonla size ulaşır
+c499|Ortak işi yapar, biz süreleri takip ederiz
+c500|Tamam — hizmeti değerlendirirsiniz
+c501|Neler dahil
+c502|Size gerekenler
+c503|Süre
+c504|Talep gönder
+c505|Size nasıl ulaşalım
+c506|Sohbetten
+c507|Telefonla
+c508|Uygun zaman
+c509|En kısa sürede
+c510|Sabah
+c511|Akşam
+c512|Not
+c513|Örneğin: ay sonuna kadar 2 diplomanın tercümesi lazım
+c514|Talep gönderildi. Bir Nakhlio çalışanı size ulaşacak.
+c515|Talep
+c516|Popüler
+c517|Merhaba! Talebiniz alındı. Sorumlu çalışanınız ayrıntıları inceliyor ve yakında size ulaşacak. Lütfen listedeki belgeleri hazırlayın.
+c518|Bu alan sadece kadınlar içindir. Erkeklerin girmesi yasaktır.
+c519|Bu alan sadece erkekler içindir. Kadınların girmesi yasaktır.
+c520|Girmeden önce bir hatırlatma
+c521|“Hakkında bilgin olmayan şeyin ardına düşme. Çünkü kulak, göz ve kalp — bunların hepsi ondan sorumludur.”
+c522|Kur’an, İsrâ 17:36 (meal)
+c523|“Allah’ın Resûlü ﷺ kadınlara benzeyen erkeklere ve erkeklere benzeyen kadınlara lanet etti.”
+c524|Sahîh-i Buhârî 5885
+c525|“Bizi aldatan bizden değildir.”
+c526|Sahîh-i Müslim 101
+c527|Ben bir kadınım. Allah sözlerime şahittir.
+c528|Ben bir erkeğim. Allah sözlerime şahittir.
+c529|Gir
+c530|Geri dön

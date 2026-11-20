@@ -1,0 +1,776 @@
+u:inapp_title|Ouvrez Nakhlio dans votre navigateur
+u:inapp_text|Ce navigateur intégré ne peut pas installer d’applications. Touchez le menu ⋯ et choisissez « Ouvrir dans le navigateur » (Safari ou Chrome).
+u:copy_link|Copier le lien
+u:copied|Lien copié
+u:install_menu|Pas de fenêtre d’installation ? Ouvrez le menu ⋮ du navigateur et choisissez « Installer l’application » ou « Ajouter à l’écran d’accueil ».
+u:prayer_note|Calendrier Umm al-Qura · Médine
+u:s_housing_d|À la nuit, au mois, à l’année
+u:s_transport_d|Voitures, scooters, trottinettes
+u:s_ads_d|Objets, cuisine, services
+u:s_parcels_d|Qui voyage, qui envoie
+u:s_help_d|Aéroport, traduction, démarches
+u:s_majlis_d|Questions et vraies expériences
+u:s_men_d|Sport, sorties, rencontres
+u:s_women_d|Réservé aux femmes
+u:s_family_d|Écoles, crèches, médecins
+u:s_days_d|Fêtes et saisons
+u:rate|Taux du riyal
+u:rate_note|Indicatif · le riyal est fixé : 1 USD = 3,75 SAR
+u:emergency|Numéros d’urgence
+u:police|Police
+u:ambulance|Ambulance
+u:fire|Protection civile
+u:traffic|Accidents de la route
+u:unified|Numéro unique
+u:per_night|/ nuit
+u:per_month|/ mois
+u:per_year|/ an
+u:per_day|/ jour
+u:all|Tout
+u:furnished|Meublé
+u:unfurnished|Non meublé
+u:families|Familles
+u:singles|Célibataires
+u:near_haram|Près du Haram
+u:under|Petit budget
+u:min_walk|min à pied de la Mosquée du Prophète
+u:km_haram|km de la Mosquée du Prophète
+u:rooms|Chambres
+u:baths|Salles de bain
+u:guests|Personnes
+u:floor|Étage
+u:type|Type
+u:verified|Photos Nakhlio · Vérifié sur place
+u:included|Inclus dans le prix
+u:terms|Conditions
+u:payment|Paiement
+u:deposit|Caution
+u:description|Description
+u:reviews|Avis
+u:review_example|exemple
+u:listing_no|Annonce n°
+u:results|annonces
+u:location|Emplacement
+u:location_note|Adresse exacte après confirmation de la visite
+u:cars|Voitures
+u:scooters|Scooters
+u:escooters|Trottinettes électriques
+u:year|Année
+u:gearbox|Boîte
+u:auto|Automatique
+u:seats|Places
+u:km_limit|Limite de km
+u:range|Autonomie
+u:insurance_inc|Assurance incluse
+u:delivery|Livraison à Médine
+u:requirements|Ce qu’il faut pour louer
+u:req_car|Permis valide et Iqama ou passeport
+u:req_sco|Permis moto et Iqama ou passeport
+u:req_esc|Iqama ou passeport, 16 ans et plus
+u:rental_by|Le contrat est signé avec la société partenaire. Nakhlio organise tout pour vous.
+u:chats_empty|Pas encore de messages. Ouvrez une annonce et touchez « Écrire un message ».
+u:translated|Traduit de l’arabe
+u:show_original|Voir l’original
+u:show_translation|Voir la traduction
+u:operator|Équipe Nakhlio
+u:online|en ligne
+u:chat_intro|Bonjour ! L’annonce n° m’intéresse :
+u:privacy_note|Vos coordonnées sont masquées. Partagez votre numéro seulement si vous le décidez.
+u:share_number|Partager mon numéro
+u:number_shared|Vous avez partagé votre numéro
+u:saved_empty|Touchez ♡ sur une annonce pour la garder ici.
+u:about|À propos de Nakhlio
+u:rules|Règles de la communauté
+u:license|Licence n°
+u:operator_panel|Panneau opérateur
+u:operator_panel_d|Demandes reçues (démo)
+u:demo_badge|Prototype · annonces d’exemple
+u:about_text|Nakhlio aide les expatriés à s’installer à Médine : logement, transport, services et une communauté qui répond à vos questions. Chaque appartement est vérifié et photographié par notre équipe.
+u:photo_credit|Photos du prototype : Unsplash.
+u:reset|Réinitialiser la démo
+u:majlis_tag|Demandez — ceux qui l’ont fait répondront
+u:ask_q|Poser une question
+u:share_exp|Raconter mon expérience
+u:helped|Utile
+u:answers|réponses
+u:official|Source officielle
+u:rules_title|Merci de lire 🤝
+u:rules_text|Le Majlis est l’endroit où nous nous aidons à vivre à Médine. La politique, la critique des autorités et les disputes religieuses y sont interdites. Pourquoi : selon la loi saoudienne, la responsabilité de ces messages incombe à l’auteur mais aussi au site. Un seul message de ce type pourrait faire fermer Nakhlio, et tout le monde perdrait un lieu pour demander de l’aide. Nous vous demandons donc : uniquement des expériences utiles, des questions et des conseils. Les messages contraires aux règles sont masqués. Si vous en voyez un, touchez « Signaler ».
+u:understood|J’ai compris
+u:report|Signaler
+u:reported|Merci, notre modérateur va vérifier
+u:t_iqama|Iqama et Absher
+u:t_bank|Compte bancaire
+u:t_sim|Carte SIM
+u:t_insurance|Assurance santé
+u:t_licence|Permis de conduire
+u:t_ejar|Location et Ejar
+u:t_travel|Aéroport et train
+u:t_study|Études
+u:t_places|Adresses utiles
+u:t_doctors|Médecins et cliniques
+u:composer_q_ph|Par exemple : combien de temps pour ouvrir un compte bancaire avec une nouvelle Iqama ?
+u:composer_e_ph|Par exemple : j’ai ouvert un compte en une journée. J’ai apporté mon Iqama et…
+u:publish|Publier
+u:published|Publié
+u:rooms_title|Salons
+u:events|Rencontres
+u:going|J’y vais
+u:going_n|participants
+u:create_event|Créer une rencontre
+u:ad_post|Publier une annonce
+u:ad_free|Publication gratuite
+u:boost|Remonter en tête
+u:highlight|Mettre en couleur
+u:ad_contact_note|Les coordonnées ne sont jamais affichées. On vous écrit dans le chat, chacun dans sa langue.
+u:flying|Je voyage
+u:need_send|À envoyer
+u:parcel_rules_t|Règles de sécurité pour les colis
+u:parcel_rules|Ne transportez que des objets ouverts et vérifiez vous-même le contenu avant l’emballage. Pas de médicaments ni de boîtes fermées. Les lois saoudiennes sur les drogues sont extrêmement strictes et c’est le porteur du colis qui en répond.
+u:days_title|Dates importantes à Médine
+u:days_left|jours restants
+u:approx|date selon l’observation de la lune
+u:weekend_note|Week-end en Arabie saoudite : vendredi et samedi
+u:close|Fermer
+u:example|exemple
+u:sar|SAR
+u:sent_ok|Message envoyé. L’équipe Nakhlio répondra ici.
+u:req_status_new|Nouvelle
+u:req_status_work|En cours
+u:req_status_view|Visite prévue
+u:req_status_done|Loué
+u:client|Client
+u:source|Source (interne)
+u:listing|Annonce
+u:catalog|Catalogue
+u:nothing|Aucun résultat
+u:nothing_d|Essayez un autre mot ou ouvrez une rubrique ci-dessous.
+u:all_sections|Toutes les rubriques
+u:price_from|Prix
+u:title_f|Titre
+u:category|Catégorie
+u:photo|Photos
+u:add_photo|Ajouter des photos
+u:demo_pay|démo
+u:post_parcel|Publier un voyage ou une demande
+u:agree_rules|J’ai lu les règles. Je ne transporte que des objets ouverts et je vérifie moi-même le contenu.
+u:what|Quoi
+u:weight|Poids
+u:kg|kg
+u:date|Date
+u:from_to|Trajet
+u:guest|Invité
+u:you|Vous
+u:top|Top
+u:yours|à vous
+u:members|membres
+u:room_hello|Assalamou alaykoum ! Bienvenue dans le salon.
+u:room_rule|Rappel des règles du Majlis : pas de politique, pas de disputes religieuses.
+u:write_room|Écrire dans le salon…
+u:km|km
+u:min|min
+u:any|Tous
+u:audience|Convient à
+u:term_l|Durée de location
+u:cc|Moteur
+u:walk_to|à pied
+u:open|Ouvrir
+u:help_post|Proposer de l’aide
+u:ask_family|Demander aux parents
+u:q_tag|Question
+u:e_tag|Expérience
+u:comment|Commenter
+u:reply|Répondre
+u:dm|Message privé
+u:reply_to|Réponse à
+u:comments_t|Questions et commentaires
+u:comment_ph|Écrire un commentaire…
+u:seller|Auteur
+u:on_since|sur Nakhlio depuis
+u:langs_spoken|Parle
+u:event_org|Organisateur
+u:auto_tr|Traduit automatiquement
+u:reg_title|Créez votre profil
+u:reg_sub|Une minute, sans mot de passe. Votre téléphone et votre e-mail ne sont jamais montrés aux autres.
+u:step|Étape
+u:of|sur
+u:phone_l|Numéro de téléphone
+u:get_code|Recevoir le code
+u:code_title|Saisissez le code
+u:code_sub|Nous avons envoyé un SMS au
+u:demo_code|Démo : le code est 1234
+u:code_l|Code SMS
+u:change_num|Changer de numéro
+u:resend|Renvoyer
+u:name_l|Votre prénom
+u:name_ph|Comment vous appeler ?
+u:email_l|E-mail
+u:gender_l|Je suis
+u:male|un homme
+u:female|une femme
+u:gender_note|Nécessaire pour les espaces hommes et femmes. Non affiché sur votre profil.
+u:photos_l|Photos de profil
+u:photos_hint|Jusqu’à 3. La première est la principale. Vous pouvez mettre une image au lieu de votre visage.
+u:add|Ajouter
+u:about_l|À propos de moi
+u:about_ph|Par exemple : de Kazan, à Médine avec ma famille, je fais des gâteaux sur commande
+u:job_l|Ce que je fais
+u:job_ph|Par exemple : étudiant, électricien, pâtissière à domicile
+u:optional|facultatif
+u:next|Continuer
+u:finish|Terminé — ouvrir Nakhlio
+u:err_phone|Saisissez le numéro sans indicatif : 9 à 10 chiffres.
+u:err_code|Le code a 4 chiffres. Code démo : 1234.
+u:err_name|Saisissez votre prénom, au moins 2 lettres.
+u:err_email|Vérifiez l’e-mail : il doit ressembler à name@mail.com
+u:err_gender|Choisissez une option.
+u:edit_profile|Modifier le profil
+u:logout|Se déconnecter
+u:save_l|Enregistrer
+u:saved_ok|Profil enregistré
+u:v_phone|Téléphone vérifié
+u:v_email|E-mail vérifié
+u:v_nakhlio|Vérifié par Nakhlio
+u:since_l|Sur Nakhlio depuis
+u:reviews_l|Avis
+u:listings_l|Annonces
+u:no_listings|Pas encore d’annonces
+u:no_reviews|Pas encore d’avis
+u:report_user|Signaler
+u:profile_l|Profil
+u:district_l|Quartier
+u:langs_l|Langues
+u:men_only|Cet espace est réservé aux hommes
+u:women_only_m|Cet espace est réservé aux femmes
+u:main_photo|principale
+u:remove|Retirer
+u:auth_t|Créez un profil pour continuer
+u:auth_d|Vous pouvez parcourir sans inscription. Pour écrire, répondre, commenter et publier — créez un profil en 1 minute. Sans mot de passe.
+u:create_profile|Créer un profil
+u:later|Plus tard
+u:guest_d|Parcourez librement. Créez un profil pour écrire, commenter et publier des annonces.
+u:chats_guest|Vos messages apparaîtront ici après la création de votre profil.
+u:spaces_guest|Cet espace est réservé aux membres. Créez un profil pour entrer.
+u:s_services|Services Nakhlio
+u:s_services_d|Documents, visas, entreprise, déménagement
+c0|Wi-Fi
+c1|Climatisation
+c2|Eau
+c3|Électricité
+c4|Parking
+c5|Ascenseur
+c6|Cuisine
+c7|Lave-linge
+c8|Ménage
+c9|Sécurité 24h/24
+c10|Piscine
+c21|Studio à 5 minutes de la Mosquée du Prophète
+c22|Studio lumineux dans un immeuble neuf avec vue sur les minarets. Lit double, kitchenette et climatisation silencieuse. Idéal pour les pèlerins et les courts séjours.
+c23|Paiement à l’arrivée
+c24|Appartement familial, 3 chambres, 6 personnes
+c25|Grand appartement familial : vaste salon avec majlis, cuisine entièrement équipée et deux salles de bain. Supermarché et pharmacie à proximité.
+c26|Appart-hôtel : chambre et salon
+c27|Appartement propre dans un appart-hôtel avec réception 24h/24. Ménage quotidien, parking à l’entrée, 10 minutes en taxi du Haram.
+c28|Studio pour une personne, charges comprises
+c29|Studio meublé et confortable. Eau, électricité et internet compris. Arrêt de bus vers le Haram à côté.
+c30|Mensuel
+c31|2 chambres meublées, 15 min à pied du Haram
+c32|Appartement moderne au 8e étage. Deux chambres, un salon et une cuisine équipée. Ascenseur et sécurité dans l’immeuble.
+c33|Appartement familial meublé, 3 chambres
+c34|Grand appartement dans un quartier calme. Majlis séparé pour les invités, trois salles de bain et aire de jeux dans la cour.
+c35|Chambre d’étudiant près de l’Université islamique
+c36|Chambre privée dans un appartement partagé par 3 étudiants. Cuisine et salon communs, 7 minutes à pied de l’université.
+c37|Appartement 3 pièces non meublé pour famille
+c38|Appartement dans un immeuble neuf, cuisine avec placards, entrée privée. Convient à une famille pour un long séjour.
+c39|2 paiements par an
+c40|4 pièces dans un immeuble neuf, parking
+c41|Appartement neuf avec grand salon et balcon. Place de parking, ascenseur, écoles et mosquée à proximité.
+c42|2 ou 4 paiements par an
+c43|Premium : 3 chambres dans une résidence neuve
+c44|Appartement dans une résidence sécurisée avec piscine et salle de sport. Finitions design, vue sur la ville et parking souterrain.
+c45|1, 2 ou 4 paiements par an
+c46|Gâteaux sur commande et gâteau au miel
+c47|à partir de 120 SAR
+c48|Je fais des gâteaux à la maison depuis 6 ans. Gâteau au miel, Napoléon, chocolat et gâteaux d’enfants avec inscription. Ingrédients naturels uniquement. Commandez 2 jours à l’avance ; livraison possible autour d’As Salam.
+c49|Assalamou alaykoum ! Puis-je commander un gâteau d’anniversaire pour mon fils pour vendredi, pour environ 12 personnes ?
+c50|Wa alaykoum assalam ! Oui, c’est possible. Écrivez-moi en privé et nous choisirons la garniture et l’inscription 🙂
+c51|J’ai pris le gâteau au miel d’Amina la semaine dernière — délicieux et pas trop sucré. Je recommande !
+c52|Manti, samsa et tchoutchvara faits maison
+c53|35 SAR / douzaine
+c54|Je cuisine selon les recettes ouzbèkes de ma mère. Sachets surgelés disponibles, pratiques à garder. Samsa au bœuf ou à la citrouille. Retrait à Al Aziziyah ou livraison 10 SAR.
+c55|La samsa à la citrouille est disponible tous les jours ?
+c56|Je la fais le jeudi et le samedi ; vous pouvez commander à l’avance.
+c57|Nous avons pris 3 douzaines de manti pour la famille — comme à Tachkent. Merci !
+c58|Biryani et nihari pakistanais sur commande
+c59|à partir de 60 SAR
+c60|Biryani au poulet ou au mouton, nihari le week-end. Un plat pour 4–5 personnes. Je cuisine aussi pour les fêtes de famille.
+c61|C’est possible pour 20 personnes samedi ?
+c62|Oui, inch’Allah. Merci de confirmer avant jeudi.
+c63|Canapé d’angle comme neuf — départ
+c64|650 SAR
+c65|Acheté il y a 8 mois chez IKEA Jeddah pour 1 800 SAR. Gris, convertible, housses amovibles et lavables. À retirer à Al Aziziyah, j’aide à porter.
+c66|Toujours disponible ? Je peux passer ce soir ?
+c67|Oui, venez après le Maghrib. Écrivez-moi en privé, j’envoie la localisation.
+c68|Lave-linge LG, 8 kg
+c69|400 SAR
+c70|Fonctionne parfaitement, 2 ans. Chargement frontal, silencieux. Je vends car le nouvel appartement en a déjà un.
+c71|Livraison possible à Al Fath ?
+c72|Oui, avec un ami on l’apporte en voiture pour 30 SAR.
+c73|Si vous avez besoin d’aide pour transporter de l’électroménager, écrivez-moi — j’ai un utilitaire.
+c74|Manuels d’arabe « Cours de Médine », 3 tomes
+c75|45 SAR
+c76|Presque sans annotations, les 3 tomes plus le cahier d’exercices. Réduction pour les étudiants. Rendez-vous à l’Université islamique.
+c77|Frère, réserve-les pour moi s’il te plaît — je passe demain après le Dhuhr.
+c78|D’accord, je les garde jusqu’à demain.
+c79|Électricien : prises, éclairage, climatisation
+c80|à partir de 80 SAR
+c81|12 ans d’expérience. Lustres, prises, chauffe-eau, entretien des climatiseurs split. J’interviens partout à Médine, le jour même.
+c82|Combien pour poser un lustre et changer 3 prises ?
+c83|150 SAR pour le tout, je peux venir aujourd’hui après l’Asr.
+c84|Il a nettoyé 2 climatiseurs chez nous — soigné et rapide, tout laissé propre.
+c85|Déménagement : déménageurs et camion
+c86|à partir de 250 SAR
+c87|Camion fermé, 2 déménageurs, montage et démontage des meubles. Dans Médine et vers Jeddah. Cartons offerts.
+c88|Combien pour un 2 chambres au 3e étage sans ascenseur ?
+c89|Environ 400 SAR, je confirme d’après les photos. Envoyez-les en privé.
+c90|Ménage avant ou après emménagement
+c91|à partir de 180 SAR
+c92|Grand ménage : cuisine, salles de bain, fenêtres, climatiseurs extérieurs. Nous sommes deux, avec nos produits.
+c93|Vous travaillez le vendredi ?
+c94|Le vendredi après la Joumou’a, à partir de 15 h.
+c95|Arabe depuis zéro, en ligne et en présentiel
+c96|60 SAR / cours
+c97|Diplômé de l’Université islamique de Médine. Arabe parlé pour la vie à Médine et arabe classique avec le Cours de Médine. Premier cours gratuit.
+c98|J’étudie avec l’oustaz depuis 3 mois — je parle déjà facilement dans les magasins et les taxis 👍
+c99|Y a-t-il des groupes pour les sœurs ?
+c100|Oui, ma femme anime le groupe des sœurs en ligne le mardi.
+c101|Tajwid et Coran pour enfants, en ligne
+c102|200 SAR / mois
+c103|Groupes de 4 enfants de 6 à 12 ans, trois fois par semaine pendant 40 minutes. Ijaza en lecture Hafs.
+c104|Mon fils a 5 ans — vous le prenez ?
+c105|Faisons un cours d’essai et voyons comment il s’en sort.
+c106|Lit bébé et poussette — gratuits
+c107|Gratuit
+c108|Nos enfants ont grandi — nous les donnons à qui en a besoin. Lit avec matelas, poussette pliable. À retirer à As Salam.
+c109|Assalamou alaykoum, puis-je les prendre ? Nous attendons un bébé en janvier.
+c110|Wa alaykoum assalam, bien sûr ! Qu’Allah facilite. Écrivez-moi en privé.
+c111|20 livres en russe — gratuits
+c112|Romans policiers, contes pour enfants et livres sur l’islam en russe. Je donne le tout ; retrait facile à Al Fath.
+c113|Les contes pour enfants sont toujours là ? Pour ma fille de 7 ans.
+c114|Oui, je vous les mets de côté.
+c115|Je passe par Jeddah. Je prends seulement des objets ouverts : dattes, vêtements, livres. Rendez-vous à Moscou près du métro Komsomolskaïa.
+c116|Pouvez-vous prendre 2 kg de dattes Ajwa pour ma mère ?
+c117|Oui, donnez-les dans une boîte ouverte avant le 1er décembre.
+c118|Je rentre 2 semaines, j’ai de la place dans ma valise. J’emballe moi-même devant vous.
+c119|Puis-je envoyer des tapis de prière pour ma famille ?
+c120|Escale à Istanbul, je peux remettre là-bas. Seulement des objets que je peux vérifier.
+c121|Documents universitaires
+c122|Il faut ramener de Kazan une enveloppe avec mon diplôme certifié. Je paie 100 SAR et je viens à l’aéroport.
+c123|Je pars de Kazan le 14, je vous écris.
+c124|Dattes et cadeaux pour la famille
+c125|Dattes et 2 foulards, tout est ouvert. Mon frère vous attendra à Lahore.
+c126|Je vais à Lahore le 9, je peux le prendre.
+c127|Vêtements d’hiver pour enfants pour un voyage
+c128|Ma mère remettra un sac de vêtements d’enfants ; tout peut être ouvert et vérifié.
+c129|Je vous accueille à l’aéroport et vous conduis chez vous
+c130|150 SAR
+c131|Je vous attends à l’aéroport Prince Mohammad bin Abdulaziz avec une pancarte, aide pour la carte SIM et les bagages. Voiture 6 places.
+c132|Mon vol arrive à 3 h du matin — vous pouvez venir ?
+c133|Oui, je travaille aussi la nuit, +30 SAR.
+c134|Transfert Médine → La Mecque pour la Omra
+c135|450 SAR / voiture
+c136|Arrêt au miqat de Dhul Hulayfah pour l’ihram. GMC 7 places, eau et siège enfant.
+c137|Nous sommes une famille de 5, départ jeudi matin.
+c138|Parfait, je suis libre jeudi. Départ à 6 h ?
+c139|Interprète pour hôpital, banque, Jawazat
+c140|100 SAR / heure
+c141|Je vis à Médine depuis 9 ans. Je vous accompagne chez le médecin, à la banque ou dans une administration et je traduis sur place.
+c142|Zarina m’a accompagnée chez la gynécologue — tout expliqué en détail, très calmement.
+c143|Traduction de documents et aide Absher
+c144|à partir de 50 SAR
+c145|Je vous aide à vous inscrire sur Absher, payer les amendes, renouveler l’Iqama et traduire des documents via un bureau agréé.
+c146|Mon renouvellement réglé en 15 minutes, merci !
+c147|Aide pour parents âgés pendant la Ziyara
+c148|200 SAR / jour
+c149|Je les accompagne à Masjid an-Nabawi, Quba et Uhud ; j’ai un fauteuil roulant. J’organise selon les heures de prière.
+c150|Ma mère est ravie de Muhammad — très patient.
+c151|Aide à domicile pour une femme âgée
+c152|150 SAR / jour
+c153|Infirmière de formation. J’aide pour les médicaments selon le médecin, les promenades et le quotidien.
+c154|Vous faites des nuits ?
+c155|Oui, sur accord.
+c156|Je vous montre les quartiers avant de louer
+c157|120 SAR
+c158|En 3 heures nous visitons 4–5 quartiers et je montre magasins, écoles et mosquées. Pour voir où il est plus pratique de vivre.
+c159|Après la visite nous avons choisi Al Rayah tout de suite — calme et école à côté.
+c160|Sites historiques de Médine avec un guide
+c161|100 SAR / personne
+c162|Uhud, Quba, Masjid al-Qiblatayn, le Fossé. Je raconte la Sira en russe, groupes jusqu’à 8.
+c163|Nous y sommes allés avec les enfants — ils écoutaient bouche bée. Jazakallahou khayran !
+c164|Comment vérifier si mon Iqama est prête après le renouvellement ?
+c165|Dans Absher : « Mes services » → « Passeports » → « Renouvellement d’Iqama ». Mon statut a changé après 2 jours.
+c166|Merci frère, trouvé !
+c167|Mon expérience : je me suis inscrite à Absher au bureau Jawazat près de la gare. Passeport et Iqama, 40 minutes d’attente, fait le jour même.
+c168|L’épouse y va seule ou avec son mari ?
+c169|J’y suis allée avec mon mari — ils ont aussi demandé son Iqama.
+c170|Quelle banque ouvre un compte le plus vite avec une nouvelle Iqama ?
+c171|Ouvert en ligne dans l’appli de la banque en 20 minutes, carte livrée en 3 jours. Il faut un Absher actif.
+c172|En ligne ça n’a pas marché à cause de l’orthographe latine de mon nom — en agence, fait en une heure.
+c173|Conseil : activez tout de suite Apple Pay / mada Pay — on paie par téléphone presque partout, le liquide sert peu.
+c174|J’ai acheté une SIM directement à l’aéroport de Médine avec mon passeport. Puis je l’ai enregistrée sur mon Iqama en boutique en 5 minutes.
+c175|Quel forfait avez-vous pris ?
+c176|Prépayé mensuel avec internet illimité, environ 100 SAR.
+c177|Peut-on avoir une eSIM sur l’Iqama sans aller en boutique ?
+c178|Oui, via l’appli de l’opérateur avec vérification Nafath — 10 minutes pour moi.
+c179|L’assurance professionnelle de mon mari couvre-t-elle l’accouchement ?
+c180|Cela dépend de la classe du contrat. Regardez la rubrique « Maternité » dans l’appli de l’assureur — chez nous c’était couvert à 100 %.
+c181|Les cliniques acceptent la carte d’assurance de l’appli — pas besoin de carte papier. Enregistrez-la dans votre Wallet.
+c182|Comment échanger mon permis contre un permis saoudien ? Y a-t-il un examen ?
+c183|Rendez-vous via Absher à l’auto-école Dallah. Pour mon pays il n’y avait qu’un examen pratique, réussi du premier coup.
+c184|Combien au total ?
+c185|Environ 900 SAR avec la visite médicale.
+c186|Demandez toujours le contrat via Ejar — sans lui on ne peut pas ajouter sa famille dans Absher. L’agence l’a fait en un jour.
+c187|Qui paie les frais Ejar ?
+c188|Nous avons partagé moitié-moitié avec le propriétaire.
+c189|Peut-on payer un bail annuel au mois ?
+c190|En général 2 ou 4 paiements. Au mois c’est rare, mais Nakhlio m’a trouvé cette option.
+c191|Le train Haramain Médine → La Mecque prend 2 h 20. Achetez les billets dans l’appli une semaine avant — le week-end tout part.
+c192|Peut-on être en ihram dans le train ?
+c193|Oui, beaucoup le font. Mettez l’ihram avant ; l’intention se fait au miqat.
+c194|Le moyen le moins cher de l’aéroport au centre ?
+c195|Un bus vers le Haram toutes les 30 minutes, environ 15 SAR. Taxi par appli — 60–80 SAR.
+c196|Qui a postulé à l’Université islamique ? Combien de temps avez-vous attendu ?
+c197|J’ai postulé au printemps, réponse en juillet. L’essentiel : traduire et certifier son diplôme tôt.
+c198|L’année préparatoire d’arabe est très solide. Conseil : trouvez tout de suite un partenaire arabe pour parler.
+c199|Produits russes et ouzbeks (sarrasin, fromage blanc, crème aigre) — dans une petite boutique près du marché d’Al Aziziyah.
+c200|Ils ont des pelmeni ?
+c201|Surgelés, livrés le mercredi.
+c202|Meilleur thé karak et paratha — le café près de la mosquée Quba, ouvert jusqu’à minuit.
+c203|Une bonne pédiatre qui parle anglais dans une clinique privée d’Al Aziziyah. Rendez-vous par l’appli, 15 minutes d’attente.
+c204|Vous connaissez un dentiste qui parle russe ?
+c205|Il y a un cabinet dentaire au centre avec un médecin du Daghestan. Je vous envoie le nom en privé.
+c206|Une crèche anglophone près d’As Salam ?
+c207|Nous allons dans une crèche privée du quartier voisin : groupes de 12, éducatrices anglophones, il y a un bus.
+c208|Combien par mois ?
+c209|1 400 SAR avec les repas.
+c210|Notre fils fait de la natation : deux fois par semaine, coach anglophone, piscine femmes/enfants le matin.
+c211|Quelles écoles internationales y a-t-il à Médine et à quel prix ?
+c212|Nous avons vu 3 écoles au programme britannique — de 18 000 à 30 000 SAR par an. Mieux vaut s’inscrire au printemps.
+c213|Sport
+c214|Qui joue au foot samedi ? Il manque 4 joueurs.
+c215|Je viens, j’amène mon frère.
+c216|À quelle heure et où ? Si c’est 20 h près d’Al Aziziyah — je viens.
+c217|Oui, 20 h, le terrain près de l’école. J’ai créé une rencontre dans l’onglet « Rencontres ».
+c218|Sorties et voyages
+c219|On part à AlUla ce week-end, 2 places libres dans la voiture.
+c220|Combien pour l’essence ?
+c221|80 SAR chacun ; la nuit au camp est à part.
+c222|J’y étais le mois dernier — prenez des vêtements chauds, il fait +10 la nuit.
+c223|Voitures
+c224|Où faire la vidange pas cher ?
+c225|La station près de Sultanah, 90 SAR avec le filtre.
+c226|Je confirme — rapide, sans attente le matin.
+c227|Discussion
+c228|Frères, où est le meilleur thé karak en ville ?
+c229|Près de Quba, sans discussion ☕
+c230|D’accord, et la paratha y est toujours chaude.
+c231|Foot à 7
+c232|Samedi, 20 h
+c233|J’apporte le ballon et les chasubles.
+c234|Nous sommes deux, inscrits.
+c235|Voyage à AlUla
+c236|Vendredi, 6 h
+c237|Je peux venir avec mon fils de 14 ans ?
+c238|Bien sûr, il y a de la place.
+c239|Footing du matin, 5 km
+c240|Mardi, 6 h 15
+c241|Parfait après le Fajr, je serai là.
+c242|Enfants et santé
+c243|Mesdames, quels vaccins à 1 an ?
+c244|Nous les avons faits au centre de santé selon le calendrier de l’appli Sehhaty — tout y est indiqué.
+c245|Et on prend rendez-vous au même endroit, sans attente.
+c246|Cuisine et recettes
+c247|Où acheter du bon sarrasin ?
+c248|Dans la boutique près du marché d’Al Aziziyah, j’achète toujours là.
+c249|Quelqu’un sait où acheter du vrai basmati en gros ?
+c250|Au magasin de gros sur la route de Tabuk, le sac de 10 kg est moins cher.
+c251|Achats
+c252|Soldes sur les tissus au vieux marché jusqu’à la fin de la semaine !
+c253|Merci ! Il y a aussi des abayas ?
+c254|Oui, toute une rangée, à partir de 80 SAR.
+c255|Atelier cuisine : pâtisserie
+c256|Jeudi, 17 h
+c257|Que faut-il apporter ?
+c258|Juste un tablier, je fournis les ingrédients 🙂
+c259|Promenade au parc avec les enfants
+c260|Samedi, 16 h 30
+c261|Je viens avec deux enfants, j’apporte des plaids.
+c262|Cercle de tafsir pour les sœurs
+c263|Lundi, 19 h 30
+c264|Y aura-t-il un enregistrement pour celles qui ne peuvent pas venir ?
+c265|Oui, dans cette même rencontre.
+c266|Début du Ramadan 1448
+c267|Selon Umm al-Qura, l’Isha est 2 heures après le Maghrib
+c268|Jour de la fondation
+c269|Jour férié
+c270|Aïd al-Fitr
+c271|Les loyers augmentent — réservez tôt
+c272|Saison du Hajj
+c273|Routes fermées et forte demande de logements
+c274|Aïd al-Adha
+c275|Fête nationale
+c276|L’appartement était exactement comme sur les photos ; l’opérateur a répondu en quelques minutes et a tout organisé.
+c277|Pratique de pouvoir écrire en russe pendant qu’ils réglaient tout avec le propriétaire en arabe.
+c278|Bonjour ! Merci de votre intérêt. Oui, l’annonce est disponible. Quand souhaitez-vous visiter ? Nous pouvons la montrer aujourd’hui après l’Asr ou demain matin.
+c279|Parfait, c’est réservé. L’opérateur enverra l’adresse exacte une heure avant le rendez-vous.
+c280|Cuisine maison
+c281|Objets
+c282|Services
+c283|Cours
+c284|Aéroport et transfert
+c285|Interprète
+c286|Aide aux personnes âgées
+c287|Visites de la ville
+c288|Wa alaykoum assalam ! Oui, bien sûr. Fixons cela — quand cela vous convient-il ?
+c289|Pâtissière à domicile
+c290|De Kazan, à Médine depuis 4 ans avec mon mari et nos trois enfants. Je fais des gâteaux sur commande et j’organise des ateliers cuisine pour les sœurs.
+c291|Cuisine maison
+c292|De Tachkent. Je cuisine ouzbek selon les recettes de ma mère.
+c293|Cuisine pakistanaise
+c294|De Lahore, je cuisine pour les réunions de famille et les fêtes.
+c295|Électricien, 12 ans d’expérience
+c296|J’interviens partout à Médine : prises, éclairage, chauffe-eau et climatisation. Garantie de 3 mois.
+c297|Déménagement et transport
+c298|J’ai un camion fermé et deux aides. Nous déménageons avec soin et montons les meubles.
+c299|Professeur d’arabe
+c300|Diplômé de l’Université islamique de Médine. 8 ans d’enseignement de l’arabe aux étrangers ; je parle anglais et russe.
+c301|Interprète RU · AR · EN
+c302|Je vis à Médine depuis 9 ans. J’accompagne chez les médecins, dans les banques et les administrations.
+c303|Chauffeur, transferts
+c304|J’accueille les visiteurs à l’aéroport et les conduis pour la Ziyara. Voiture 6 places.
+c305|Étudiant à l’Université islamique, guide
+c306|J’organise des visites historiques de Médine et du foot le samedi.
+c307|Accompagnateur de personnes âgées
+c308|J’aide les pèlerins âgés ; j’ai un fauteuil roulant.
+c309|Informaticien
+c310|Je travaille à distance et j’adore voyager en Arabie. J’organise souvent des sorties à AlUla.
+c311|Ingénieur
+c312|Je déménage à Jeddah, je vends mes meubles.
+c313|Mère de deux enfants
+c314|De Makhatchkala, deuxième année à Médine. Je cherche de bons médecins et des activités pour enfants.
+c315|Professeure d’anglais
+c316|J’enseigne l’anglais en ligne et j’aime partager les bonnes adresses de Médine.
+c317|Maman au foyer
+c318|D’Almaty, à Médine avec mon mari depuis 3 ans.
+c319|Ingénieur civil
+c320|Du Daghestan. J’aide les nouveaux venus avec Absher et le permis.
+c321|Développeur
+c322|Arrivé avec ma famille en 2026 ; je découvre tout et je partage.
+c323|Étudiant
+c324|J’étudie à l’Université islamique et je fais des traductions à temps partiel.
+c325|Responsable logistique
+c326|De Tachkent. Je cours le matin — venez courir avec moi !
+c327|Chauffeur, transferts Omra
+c328|De Lahore ; je conduis des familles à La Mecque et dans Médine.
+c329|Infirmière
+c330|D’Indonésie, je travaille dans un hôpital à Médine.
+c331|Comptable
+c332|Convertie à l’islam il y a 5 ans, je vis à Médine avec mon mari.
+c333|Designer
+c334|Du Kazakhstan, nous attendons notre deuxième bébé.
+c335|Manager
+c336|D’Égypte, je travaille à Médine depuis 6 ans.
+c337|Le gâteau était un rêve, les enfants ont adoré !
+c338|À l’heure et délicieux.
+c339|Soigné, rapide, a tout nettoyé après lui.
+c340|Venu le jour même, prix comme convenu.
+c341|Tout déménagé sans une rayure.
+c342|Le meilleur professeur, il explique simplement.
+c343|Très calme et attentive.
+c344|Des manti comme à la maison !
+c345|Documents et traductions
+c346|Traduction certifiée d’un diplôme
+c347|à partir de 150 SAR
+c348|2–3 jours
+c349|Traduction par un bureau agréé
+c350|Cachet et signature du traducteur
+c351|Livraison à Médine
+c352|Scan ou photo du document
+c353|Passeport
+c354|Traduction d’un acte de mariage ou de naissance
+c355|1–2 jours
+c356|Traduction en arabe
+c357|Certification du bureau
+c358|Original ou scan du document
+c359|Légalisation de documents
+c360|à partir de 300 SAR
+c361|7–14 jours
+c362|Préparation du dossier
+c363|Dépôt via un partenaire agréé
+c364|Suivi du dossier
+c365|Document original
+c366|Iqama ou passeport
+c367|Études
+c368|Dossier de candidature à l’Université islamique
+c369|à partir de 500 SAR
+c370|2–4 semaines
+c371|Vérification des conditions et délais
+c372|Traduction et certification
+c373|Aide pour la candidature en ligne
+c374|Diplôme ou relevé scolaire
+c375|Cours d’arabe
+c376|à partir de 600 SAR / mois
+c377|début chaque mois
+c378|Groupes par niveau
+c379|En présentiel ou en ligne
+c380|Certificat
+c381|Inscription d’un enfant à l’école ou à la crèche
+c382|à partir de 200 SAR
+c383|3–7 jours
+c384|Choix des écoles selon la langue et le quartier
+c385|Prise de rendez-vous pour l’entretien
+c386|Aide pour les documents
+c387|Acte de naissance
+c388|Iqama du parent et de l’enfant
+c389|Iqama, visas, Absher
+c390|Renouvellement de l’Iqama
+c391|service à partir de 150 SAR
+c392|1–5 jours
+c393|Vérification des documents
+c394|Traitement via un bureau agréé
+c395|Frais officiels payés à part
+c396|Iqama actuelle
+c397|Visa de visite familiale
+c398|service à partir de 250 SAR
+c399|5–15 jours
+c400|Demande via un bureau agréé
+c401|Traduction des documents de parenté
+c402|Votre Iqama
+c403|Passeports des proches
+c404|Inscription Absher et paiement des amendes
+c405|le jour même
+c406|Activation d’Absher
+c407|Vérification des amendes
+c408|Expliqué dans votre langue
+c409|Iqama
+c410|Numéro de téléphone à votre nom
+c411|Entreprendre en Arabie saoudite
+c412|Création d’entreprise et licence d’investisseur
+c413|consultation gratuite
+c414|à partir de 3 semaines
+c415|Choix de la forme juridique
+c416|Licence et registre du commerce via un partenaire
+c417|Compte bancaire de l’entreprise
+c418|Description de l’activité
+c419|Visa d’affaires et voyages professionnels
+c420|service à partir de 300 SAR
+c421|3–10 jours
+c422|Invitation et demande
+c423|Accueil et transfert
+c424|Interprète pour les réunions
+c425|Données de l’entreprise
+c426|Location de bureau et comptabilité
+c427|à partir de 1 500 SAR / mois
+c428|à partir d’1 semaine
+c429|Bureau ou poste de travail
+c430|Comptable et déclarations ZATCA
+c431|Adresse officielle
+c432|Registre du commerce
+c433|Permis de conduire
+c434|Échange contre un permis saoudien
+c435|1–2 semaines
+c436|Inscription en auto-école
+c437|Visite médicale
+c438|Aide avec traduction à l’examen
+c439|Permis valide
+c440|Leçons de conduite
+c441|à partir de 100 SAR / leçon
+c442|selon le planning
+c443|Moniteur dans votre langue
+c444|Voiture de l’école
+c445|Transferts et Omra
+c446|Accueil à l’aéroport de Médine
+c447|24h/24
+c448|Chauffeur avec pancarte
+c449|Aide pour les bagages
+c450|Voiture jusqu’à 7 places
+c451|Numéro de vol
+c452|Voyage Omra : Médine → La Mecque
+c453|à partir de 450 SAR / voiture
+c454|tous les jours
+c455|Arrêt au miqat de Dhul Hulayfah
+c456|Transporteur agréé
+c457|Retour sur demande
+c458|Dates et nombre de personnes
+c459|Déménagement et ménage
+c460|Déménagement clé en main
+c461|à partir de 350 SAR
+c462|en 1 jour
+c463|Emballage et cartons
+c464|Montage et démontage des meubles
+c465|Assurance des biens
+c466|Adresses et étages
+c467|Photos des meubles
+c468|Ménage avant ou après emménagement
+c469|3–5 heures
+c470|Cuisine et salles de bain
+c471|Fenêtres et climatiseurs
+c472|Nos produits
+c473|Adresse et surface de l’appartement
+c474|Internet et installation d’appareils
+c475|à partir de 100 SAR
+c476|1–3 jours
+c477|Choix de l’offre et commande
+c478|Installation lave-linge, TV, climatisation
+c479|Adresse
+c480|Iqama pour le contrat
+c481|Assurance
+c482|Assurance santé familiale
+c483|comparaison gratuite
+c484|Comparaison des offres
+c485|Émise via un courtier agréé
+c486|Couverture expliquée dans votre langue
+c487|Iqama des membres de la famille
+c488|Assurance auto
+c489|Au tiers ou tous risques
+c490|Via un courtier agréé
+c491|Istimara (carte grise)
+c492|Services Nakhlio
+c493|Documents, visas, entreprise, déménagement
+c494|Les services de nos partenaires. Vous envoyez une demande — un membre de l’équipe Nakhlio vous contacte et suit le dossier jusqu’au bout.
+c495|Partenaire agréé
+c496|Comment ça marche
+c497|Vous envoyez une demande
+c498|Un membre de l’équipe Nakhlio vous contacte par chat ou par téléphone
+c499|Le partenaire réalise le service, nous surveillons les délais
+c500|C’est fait — vous notez le service
+c501|Ce qui est inclus
+c502|Ce qu’il vous faut
+c503|Délai
+c504|Envoyer une demande
+c505|Comment vous contacter
+c506|Par chat
+c507|Par téléphone
+c508|Moment préféré
+c509|Dès que possible
+c510|Le matin
+c511|Le soir
+c512|Commentaire
+c513|Par exemple : traduire 2 diplômes avant la fin du mois
+c514|Demande envoyée. Un membre de l’équipe Nakhlio vous contactera.
+c515|Demande
+c516|Populaire
+c517|Bonjour ! Votre demande est acceptée. Votre conseiller étudie les détails et vous contactera bientôt. Merci de préparer les documents de la liste.
+c518|Cet espace est réservé aux femmes. Les hommes n’ont pas le droit d’y entrer.
+c519|Cet espace est réservé aux hommes. Les femmes n’ont pas le droit d’y entrer.
+c520|Un rappel avant d’entrer
+c521|« Ne poursuis pas ce dont tu n’as aucune connaissance. L’ouïe, la vue et le cœur — sur tout cela on sera interrogé. »
+c522|Coran, Al-Isra 17:36 (sens)
+c523|« Le Messager d’Allah ﷺ a maudit les hommes qui imitent les femmes et les femmes qui imitent les hommes. »
+c524|Sahih al-Boukhari 5885
+c525|« Celui qui nous trompe n’est pas des nôtres. »
+c526|Sahih Muslim 101
+c527|Je suis une femme. Allah est témoin de mes paroles.
+c528|Je suis un homme. Allah est témoin de mes paroles.
+c529|Entrer
+c530|Retour
