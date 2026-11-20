@@ -213,7 +213,18 @@ function gateLang(inApp) {
 }
 
 /* ---------- shared pieces ---------- */
-const topbar = (title, opts) => `<div class="topbar">${opts && opts.noBack ? '' : `<button class="ibtn" data-act="back" aria-label="${t('back')}">${ic('back', 'flip')}</button>`}<h1>${esc(title)}</h1>${(opts && opts.right) || ''}</div>`;
+const homeBtn = () => `<button class="ibtn home-btn" data-act="tab" data-v="home" aria-label="Nakhlio" title="Nakhlio">${logo()}</button>`;
+const topbar = (title, opts) => `<div class="topbar">${opts && opts.noBack ? '' : `<button class="ibtn" data-act="back" aria-label="${t('back')}">${ic('back', 'flip')}</button>`}<h1>${esc(title)}</h1>${(opts && opts.right) || ''}${opts && opts.noBack ? '' : homeBtn()}</div>`;
+/* approximate district centres — the map shows the district, never the exact building */
+const GEO = { central: [24.4686, 39.6111], ranuna: [24.4575, 39.6195], fath: [24.4935, 39.5995], sultanah: [24.4795, 39.5860], rayah: [24.5290, 39.5615], jamiah: [24.4810, 39.5480], qaswa: [24.4410, 39.6480], salam: [24.4905, 39.5660], iskan: [24.5095, 39.6215], aziziyah: [24.4245, 39.6150] };
+function mapBlock(dk, capHtml) {
+  const g = GEO[dk] || GEO.central; const name = loc(dk) + ', Medina';
+  const gm = `https://www.google.com/maps/search/?api=1&query=${g[0]},${g[1]}`;
+  const am = `https://maps.apple.com/?ll=${g[0]},${g[1]}&q=${encodeURIComponent(name)}&z=14`;
+  return `<div class="map real"><iframe src="https://maps.google.com/maps?q=${g[0]},${g[1]}&z=14&hl=${lang}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="${esc(name)}"></iframe></div>
+    <div class="map-cap">${capHtml}</div>
+    <div class="maplinks"><a class="btn sm soft" href="${gm}" target="_blank" rel="noopener">${small('pin')}Google Maps</a><a class="btn sm soft" href="${am}" target="_blank" rel="noopener">${small('pin')}Apple Maps</a></div>`;
+}
 const termSuffix = (term, kind) => term === 'daily' ? (kind ? t('per_day') : t('per_night')) : term === 'monthly' ? t('per_month') : t('per_year');
 const isSaved = (id) => S.saved.includes(id);
 const heart = (id) => `<button class="heart ${isSaved(id) ? 'on' : ''}" data-act="save" data-v="${id}" aria-label="♡">${ic('heart')}</button>`;
@@ -307,7 +318,7 @@ const emptyBlock = (txt, kind) => `<div class="empty">${emptyIllus(kind)}<b>${tx
 function gallery(photos, id) {
   return `<div class="gallery"><div class="track" id="gtrack">${photos.map(ph => `<img src="${img(ph)}" alt="">`).join('')}</div>
     <div class="dots" id="gdots">${photos.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div>
-    <div class="float"><button class="ibtn" data-act="back" aria-label="${t('back')}">${ic('back', 'flip')}</button>${id ? `<button class="ibtn ${isSaved(id) ? 'c-rose' : ''}" data-act="save" data-v="${id}" aria-label="♡">${ic('heart')}</button>` : ''}</div></div>`;
+    <div class="float"><button class="ibtn" data-act="back" aria-label="${t('back')}">${ic('back', 'flip')}</button><span class="fr">${homeBtn()}${id ? `<button class="ibtn ${isSaved(id) ? 'c-rose' : ''}" data-act="save" data-v="${id}" aria-label="♡">${ic('heart')}</button>` : ''}</span></div></div>`;
 }
 V.house = (p) => {
   const h = HOUSING.find(x => x.id === p.id);
@@ -324,7 +335,7 @@ V.house = (p) => {
     <div class="block"><h4>${t('terms')}</h4><div class="kv">
       <div><span>${t('term_l')}</span><b>${t(h.term)}</b></div><div><span>${t('payment')}</span><b>${esc(L(h.pay))}</b></div>
       <div><span>${t('deposit')}</span><b class="num">${h.dep ? money(h.dep) : '—'}</b></div><div><span>${t('audience')}</span><b>${aud} · ${h.furnished ? t('furnished') : t('unfurnished')}</b></div></div></div>
-    <div class="block"><h4>${t('location')}</h4><div class="map">${mapSvg(h.walk ? h.walk / 12 : h.km)}<div class="cap"><b>${esc(loc(h.dist))}</b> · ${h.walk ? `${nf(h.walk)} ${t('min_walk')}` : `${nf(h.km, 1)} ${t('km_haram')}`}<br>${t('location_note')}</div></div></div>
+    <div class="block"><h4>${t('location')}</h4>${mapBlock(h.dist, `<b>${esc(loc(h.dist))}</b> · ${h.walk ? `${nf(h.walk)} ${t('min_walk')}` : `${nf(h.km, 1)} ${t('km_haram')}`}<br>${t('location_note')}`)}</div>
     <div class="block"><h4>${t('reviews')} <span class="tag">${t('review_example')}</span></h4>${REVIEWS.map(r => `<div class="review"><div class="who"><i>${esc(r.who[0])}</i>${esc(r.who)}<span class="stars">${ic('star').repeat(r.stars)}</span></div><p>${esc(L(r.text))}</p></div>`).join('')}</div>
     <p class="note" style="margin-top:18px">${t('listing_no')} <b class="num">${h.id}</b></p>
   </div>` };
@@ -442,7 +453,7 @@ V.item = (p) => {
   const price = kind === 'parcel' ? `${nf(x.kg, 1)} ${t('kg')}` : txt(x.price);
   const cat = kind === 'ad' ? catLabel(x.cat, ADCATS) : kind === 'help' ? catLabel(x.cat, HELPCATS) : t(x.kind === 'flying' ? 'flying' : 'need_send');
   const icn = kind === 'help' ? HELP_IC[x.cat] : x.kind === 'flying' ? 'plane' : 'box';
-  const head = x.photos ? gallery(x.photos, null) : `<div class="item-head"><div class="float"><button class="ibtn" data-act="back" aria-label="${t('back')}">${ic('back', 'flip')}</button></div><span class="big-ic">${ic(icn)}</span></div>`;
+  const head = x.photos ? gallery(x.photos, null) : `<div class="item-head"><div class="float"><button class="ibtn" data-act="back" aria-label="${t('back')}">${ic('back', 'flip')}</button><span class="fr">${homeBtn()}</span></div><span class="big-ic">${ic(icn)}</span></div>`;
   const sub = kind === 'parcel' ? `<span>${small('calendar')}<span class="num">${new Date(x.date).toLocaleDateString(locale(), { day: 'numeric', month: 'long', year: 'numeric' })}</span></span><span>${small('box')}${nf(x.kg, 1)} ${t('kg')}</span>` : `<span>${small('pin')}${esc(loc(x.seller.dist))}</span>`;
   const me = x.seller.name === '@me';
   return { raw: true, cta: me ? null : `<div class="p"><b class="num">${esc(price)}</b><small>${esc(cat)}</small></div><button class="btn primary" data-act="dm" data-v="${esc(x.seller.name)}">${ic('chat')}${t('write')}</button>`, html: head + `
@@ -452,6 +463,7 @@ V.item = (p) => {
     <div class="d-sub">${sub}</div>
     ${kind === 'parcel' && x.what ? `<div class="verified" style="background:var(--date-tint);color:#5a3c06">${ic('box')}${esc(L(x.what))}</div>` : ''}
     ${x.desc ? `<div class="block"><h4>${t('description')}</h4><p>${esc(txt(x.desc))}</p></div>` : ''}
+    ${kind !== 'parcel' ? `<div class="block"><h4>${t('location')}</h4>${mapBlock(x.seller.dist, `<b>${esc(loc(x.seller.dist))}</b><br>${t('location_note')}`)}</div>` : ''}
     ${kind === 'parcel' ? `<div class="block"><div class="banner rose">${ic('shield')}<div><b>${t('parcel_rules_t')}</b>${t('parcel_rules')}</div></div></div>` : ''}
     <div class="block"><h4>${t('seller')}</h4>${sellerCard(x.seller)}</div>
     <div class="block"><h4>${t('comments_t')} <span class="num" style="color:var(--ink-3)">${nf(cCount(x))}</span></h4>${commentsBlock('c:' + x.id, x.comments)}</div>
@@ -558,7 +570,7 @@ V.chat = (p) => {
     : `<div class="bubble op">${esc(m.showOrig ? m.text.ar : L(m.text))}${dmChat ? `<span class="tr">${small('translate')}${t('auto_tr')}</span>` : lang !== 'ar' ? `<button class="tr" data-act="orig" data-v="${i}">${small('translate')}${m.showOrig ? t('show_translation') : t('translated') + ' · ' + t('show_original')}</button>` : ''}<small>${esc(dmChat ? li.person : t('operator'))}</small></div>`).join('');
   const head = dmChat ? `<span class="av lg" style="width:40px;height:40px;border-radius:14px">${initial(li.person)}</span><h1 style="font-size:16px">${esc(li.person)}<small style="display:block;font-size:12px;color:var(--palm);font-weight:700">● ${t('online')}</small></h1>`
     : `<span style="width:40px;height:40px;flex:none">${logo()}</span><h1 style="font-size:16px">${t('operator')}<small style="display:block;font-size:12px;color:var(--palm);font-weight:700">● ${t('online')}</small></h1>`;
-  return { composer: 'chat', html: `<div class="topbar"><button class="ibtn" data-act="back" aria-label="${t('back')}">${ic('back', 'flip')}</button>${head}</div>
+  return { composer: 'chat', html: `<div class="topbar"><button class="ibtn" data-act="back" aria-label="${t('back')}">${ic('back', 'flip')}</button>${head}${homeBtn()}</div>
   <div class="wrap chat-wrap">
     ${dmChat ? '' : `<button class="listing-pin" data-act="openlisting" data-v="${id}"><img src="${img(li.photo)}" alt=""><span style="text-align:start;min-width:0"><b>${esc(li.title)}</b><small class="num">${esc(li.price)}${li.price ? ' · ' : ''}${id}</small></span></button>`}
     <div class="banner green" style="font-size:12.5px">${ic('lock')}<div>${t('privacy_note')}</div></div>
