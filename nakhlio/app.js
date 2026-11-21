@@ -268,11 +268,12 @@ V.home = () => {
   const prow = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].map(k => `<div class="${k === np.nx ? 'on' : ''}">${t(k)}<b class="num">${hm(np.pt[k])}</b></div>`).join('');
   const nextDay = DAYS.map(d => ({ d, left: Math.ceil((new Date(d.date + 'T00:00:00+03:00') - Date.now()) / 864e5) })).filter(x => x.left >= 0)[0];
   return { tabs: true, raw: true, html: `
-  <div class="hero">${skyline()}
-    <div class="hero-top"><div class="brand">${logo('rgba(255,255,255,.14)')}Nakhlio</div>
-    <button class="lang-pill" data-act="go" data-v="lang">${ic('globe')}${esc((LANGS.find(l => l.code === lang) || {}).name)}</button></div>
-    <h2>${t('hello')}${S.me && S.me.name ? ', ' + esc(S.me.name) : ''}</h2><p>${t('hello_sub')}</p>
-    <label class="search">${ic('search')}<input id="q" type="search" placeholder="${t('search_ph')}" enterkeyhint="search" aria-label="${t('search_ph')}"></label>
+  <div class="hero hero2">${skyline()}
+    <button class="lang-pill hero2-lang" data-act="go" data-v="lang">${ic('globe')}${esc((LANGS.find(l => l.code === lang) || {}).name)}</button>
+    <div class="hero2-c"><span class="hero2-logo">${logo('rgba(255,255,255,.14)')}</span>
+      <small class="hero2-eye">${lang === 'ar' ? '' : XL('h_eye') + ' · '}<span lang="ar" dir="rtl">المدينة المنورة</span></small>
+      <h2>${XL('h_title')}</h2><p>${XL('h_sub')}</p>
+      <div class="hero2-chips"><button data-act="go" data-v="housing">${ic('home')}${t('s_housing')}</button><button data-act="go" data-v="services">${ic('hand')}${XL('h_help')}</button><button data-act="tab" data-v="chats">${ic('chat')}${XL('h_talk')}</button></div></div>
   </div>
   <div class="prayer" id="prayerCard">
     <div class="prayer-head"><span class="prayer-ico">${ic('moon')}</span><div><small>${t('next_prayer')}</small><b>${t(np.nx)} · <span class="num">${hm(np.pt[np.nx])}</span></b></div>
@@ -362,6 +363,9 @@ const LX = {
   support_t: X3('Служба поддержки', 'Support', 'الدعم'), support_d: X3('Вопрос, жалоба или идея — ответит администрация Nakhlio', 'A question, complaint or idea — the Nakhlio administration replies', 'سؤال أو شكوى أو فكرة — تردّ إدارة نخليو'),
   mg_need: X3('Сообщения пишутся в Магаме. Включите его — это займёт минуту.', 'Messages are written in Magaam. Turn it on — it takes a minute.', 'تُكتب الرسائل في Magaam. فعّله — يستغرق دقيقة.'),
   about_listing: X3('Здравствуйте! Пишу по объявлению «{t}». ', 'Hello! I’m writing about your listing “{t}”. ', 'مرحباً! أكتب بخصوص إعلانك «{t}». '),
+  h_eye: X3('Медина', 'Medina', 'المدينة'), h_title: X3('Ваша жизнь в Медине', 'Your life in Medina', 'حياتك في المدينة'),
+  h_sub: X3('Жильё, помощь и общение с теми, кто живёт рядом — на вашем языке', 'Homes, help and friends who live nearby — in your own language', 'سكن ومساعدة وتواصل مع من يعيشون قربك — بلغتك'),
+  h_help: X3('Помощь', 'Help', 'مساعدة'), h_talk: X3('Общение', 'Chat', 'تواصل'),
   err_req: X3('Заполните это поле.', 'Fill in this field.', 'املأ هذا الحقل.'),
   fresh: X3('Новые объявления', 'New listings', 'أحدث الإعلانات'),
   count_n: X3('объявл.', 'listings', 'إعلانات'), loading: X3('Загружаем…', 'Loading…', 'جارٍ التحميل…'),

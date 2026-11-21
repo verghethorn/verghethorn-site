@@ -1366,3 +1366,8 @@ c1102|Nomor tersimpan
 c1103|Hapus nomor
 c1104|Nomor dihapus
 c1105|Nomor ini sudah dipakai akun lain. Jika ini nomor Anda, hubungi bantuan.
+c1106|Madinah
+c1107|Hidup Anda di Madinah
+c1108|Hunian, bantuan, dan teman yang tinggal di dekat Anda — dalam bahasa Anda sendiri
+c1109|Bantuan
+c227|Obrolan

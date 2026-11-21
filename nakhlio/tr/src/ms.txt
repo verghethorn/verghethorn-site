@@ -1366,3 +1366,8 @@ c1102|Nombor disimpan
 c1103|Padam nombor
 c1104|Nombor dipadam
 c1105|Nombor ini sudah digunakan akaun lain. Jika ia milik anda, hubungi sokongan.
+c1106|Madinah
+c1107|Kehidupan anda di Madinah
+c1108|Kediaman, bantuan dan rakan yang tinggal berdekatan — dalam bahasa anda sendiri
+c1109|Bantuan
+c227|Berbual

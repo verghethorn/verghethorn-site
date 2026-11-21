@@ -1366,3 +1366,8 @@ c1102|Numéro enregistré
 c1103|Supprimer le numéro
 c1104|Numéro supprimé
 c1105|Ce numéro est déjà utilisé par un autre compte. Si c’est le vôtre, contactez l’assistance.
+c1106|Médine
+c1107|Votre vie à Médine
+c1108|Logement, entraide et voisins à qui parler — dans votre langue
+c1109|Entraide
+c227|Discuter

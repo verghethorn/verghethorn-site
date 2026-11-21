@@ -1366,3 +1366,8 @@ c1102|Numara kaydedildi
 c1103|Numarayı kaldır
 c1104|Numara kaldırıldı
 c1105|Bu numara başka bir hesapta kullanılıyor. Sizinse destekle iletişime geçin.
+c1106|Medine
+c1107|Medine’deki hayatınız
+c1108|Konut, yardım ve yakınında yaşayanlarla sohbet — kendi dilinde
+c1109|Yardım
+c227|Sohbet
