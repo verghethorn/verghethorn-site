@@ -1119,3 +1119,10 @@ c865|Kişileri bul
 c866|İnsanlarınız burada olacak. Arkadaşlarınızı davet edin — bağlantınızla hemen arkadaş olurlar.
 c867|Şimdilik sakin. İlk anı paylaşın.
 c868|Kendi dilinizde yazın — {n} anlayacak
+c869|Kişiler
+c870|Ben
+c871|Yeni arkadaşlar
+c872|Anlarım
+c873|Arkadaşlarınızın henüz anı yok. “Şehir”e bakın.
+c688|Magaam kuralları
+c874|Henüz arkadaş yok. Bağlantınızla davet edin — hemen burada görünürler.

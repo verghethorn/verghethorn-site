@@ -1119,3 +1119,10 @@ c865|Trouver des gens
 c866|Vos proches seront ici. Invitez des amis — avec votre lien ils deviennent amis tout de suite.
 c867|Calme pour l’instant. Partagez le premier moment.
 c868|Écrivez dans votre langue — {n} comprendra
+c869|Contacts
+c870|Moi
+c871|Nouveaux amis
+c872|Mes moments
+c873|Vos amis n’ont pas encore de moments. Regardez « Ville ».
+c688|Règles de Magaam
+c874|Pas encore d’amis. Invitez-les avec votre lien — ils apparaîtront ici tout de suite.

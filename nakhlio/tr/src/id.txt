@@ -1119,3 +1119,10 @@ c865|Cari orang
 c866|Orang-orang Anda akan ada di sini. Undang teman — lewat tautan Anda mereka langsung jadi teman.
 c867|Masih sepi. Bagikan momen pertama.
 c868|Tulis dalam bahasa Anda — {n} akan mengerti
+c869|Kontak
+c870|Saya
+c871|Teman baru
+c872|Momen saya
+c873|Teman Anda belum punya momen. Lihat “Kota”.
+c688|Aturan Magaam
+c874|Belum ada teman. Undang lewat tautan Anda — mereka langsung muncul di sini.

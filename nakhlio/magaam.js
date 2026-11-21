@@ -56,6 +56,14 @@ const T = {
   other_email: D('Другой e-mail', 'Another e-mail', 'بريد آخر'),
   explore: D('Поиск', 'Explore', 'استكشاف'),
   city: D('Город', 'City', 'المدينة'),
+  contacts: D('Контакты', 'Contacts', 'جهات الاتصال'),
+  me_t: D('Я', 'Me', 'أنا'),
+  new_friends: D('Новые друзья', 'New friends', 'أصدقاء جدد'),
+  my_moments: D('Мои моменты', 'My moments', 'لحظاتي'),
+  friends_tab: D('Друзья', 'Friends', 'الأصدقاء'),
+  no_friends_m: D('У друзей пока нет моментов. Загляните в «Город».', 'Your friends have no moments yet. Look at “City”.', 'لا لحظات لأصدقائك بعد. انظر إلى «المدينة».'),
+  rules_mg: D('Правила Magaam', 'Magaam rules', 'قواعد Magaam'),
+  no_contacts: D('Пока нет друзей. Позовите их по своей ссылке — они сразу появятся здесь.', 'No friends yet. Invite them with your link — they will appear here right away.', 'لا أصدقاء بعد. ادعهم برابطك — سيظهرون هنا فوراً.'),
   moment_new: D('Момент', 'Moment', 'لحظة'),
   moments: D('Моменты', 'Moments', 'اللحظات'),
   invite_s: D('Позвать', 'Invite', 'ادعُ'),
@@ -170,11 +178,11 @@ const mgAv = (n, sz) => `<span class="mgav ${sz || ''}">${avatar(n)}</span>`;
 const pLink = (n, inner) => `<button class="pbtn" data-act="mgp" data-v="${esc(n)}">${inner}</button>`;
 const capHtml = (p) => { const tr = p.who !== '@me' && LANG_OF[p.who] && LANG_OF[p.who] !== NK.lang; return `${esc(txt(p.cap || ''))}${tr ? `<span class="mgtr">${small('translate')}${t('auto_tr')}</span>` : ''}`; };
 
-const ROOTS = ['mg', 'mgexplore'];
+const ROOTS = ['mg', 'mgchats', 'mgcontacts', 'mgmoments', 'mgme', 'mgexplore'];
 const top = (title, on) => { const live = !!window.LIVE; const root = !live || ROOTS.includes(on);
-  const lead = !root ? `<button class="mgic" data-act="mgback" aria-label="${t('back')}">${ic('back', 'flip')}</button>` : `${window.MG_APP ? '' : `<button class="mgic mgnk" data-act="tab" data-v="home" aria-label="Nakhlio">${ic('back', 'flip')}</button>`}${live && NK.S.me ? `<button class="mgmebtn" data-act="mggo" data-v="mgme" aria-label="${t('profile_l')}">${window.__mgMeAv ? window.__mgMeAv() : ''}</button>` : ''}`;
-  return `<header class="mgtop">${lead}<div class="mgbrand">${title ? `<b>${title}</b>` : '<img class="mgwm" src="img/mgapp/wordmark-dark.png" alt="MAGAAM">'}</div><div class="mgtopr">${live && root ? `<button class="mgic" data-act="mggo" data-v="mgfind" aria-label="${M('search')}">${ic('search')}</button>` : ''}</div></header>`; };
-const nav = (on) => window.LIVE ? `<nav class="mgnav mgnav3"><button class="${on === 'mg' ? 'on' : ''}" data-act="mggo" data-v="mg">${ic('users')}${window.__mgUnread ? `<em class="mgdotn"></em>` : ''}<span>${M('people_s')}</span></button><button class="mgplus" data-act="mgnew" aria-label="${M('moment_new')}">${ic('plus')}</button><button class="${on === 'mgexplore' ? 'on' : ''}" data-act="mggo" data-v="mgexplore">${ic('grid')}<span>${M('city')}</span></button></nav>` : _navOld(on);
+  const lead = !root ? `<button class="mgic" data-act="mgback" aria-label="${t('back')}">${ic('back', 'flip')}</button>` : `${window.MG_APP ? '' : `<button class="mgic mgnk" data-act="tab" data-v="home" aria-label="Nakhlio">${ic('back', 'flip')}</button>`}`;
+  return `<header class="mgtop">${lead}<div class="mgbrand">${title ? `<b>${title}</b>` : '<img class="mgwm" src="img/mgapp/wordmark-dark.png" alt="MAGAAM">'}</div><div class="mgtopr">${live && root && (on === 'mg' || on === 'mgchats' || on === 'mgcontacts') ? `<button class="mgic" data-act="mgplusmenu" aria-label="${M('create')}">${ic('plus')}</button>` : ''}${live && on === 'mgmoments' ? `<button class="mgic" data-act="mgnew" aria-label="${M('moment_new')}">${ic('camera')}</button>` : ''}</div></header>`; };
+const nav = (on) => window.LIVE ? `<nav class="mgnav mgnav4">${[['mgchats', 'chat', 'chats', window.__mgUnread], ['mgcontacts', 'users', 'contacts', window.__mgReq], ['mgmoments', 'camera', 'moments', 0], ['mgme', 'user', 'me_t', 0]].map(([v, i2, k, n]) => `<button class="${on === v || (v === 'mgchats' && on === 'mg') || (v === 'mgmoments' && on === 'mgexplore') ? 'on' : ''}" data-act="mggo" data-v="${v}">${ic(i2)}${n ? `<em class="mgtabn num">${n > 99 ? '99+' : n}</em>` : ''}<span>${M(k)}</span></button>`).join('')}</nav>` : _navOld(on);
 const _navOld = (on) => `<nav class="mgnav">${[['mg', 'home', 'feed'], window.LIVE ? ['mgexplore', 'search', 'explore'] : ['mgreels', 'play', 'reels'], ['mgnew', 'plus', 'create'], window.LIVE ? ['mgchats', 'chat', 'chats'] : ['mgfriends', 'users', 'friends'], ['mgme', 'user', null]].map(([v, i, k]) =>
   v === 'mgnew' ? `<button class="mgplus" data-act="mgnew" aria-label="${M('create')}">${ic('plus')}</button>`
   : `<button class="${on === v || (v === 'mgchats' && on === 'mgfriends') ? 'on' : ''}" data-act="mggo" data-v="${v}">${v === 'mgme' && NK.S.me ? (window.__mgMeAv ? window.__mgMeAv() : mgAv('@me', 'xs')) : ic(i)}${v === 'mgchats' && window.__mgUnread ? `<em class="mgbadge num">${window.__mgUnread > 99 ? '99+' : window.__mgUnread}</em>` : ''}<span>${k ? M(k) : t('profile_l')}</span></button>`).join('')}</nav>`;
@@ -310,7 +318,7 @@ window.MGACT = (a, v, el) => {
   if (!NK.S.me && a !== 'mggo') { authSheet(); return true; }
   const g = st();
   switch (a) {
-    case 'mggo': if (NK.stack.length && NK.stack[NK.stack.length - 1].v === v) return true; if (['mg', 'mgexplore'].includes(cur().v) && ['mg', 'mgexplore'].includes(v)) NK.stack[NK.stack.length - 1] = { v }; else NK.stack.push({ v }); render(true); return true;
+    case 'mggo': if (NK.stack.length && NK.stack[NK.stack.length - 1].v === v) return true; if (['mg', 'mgchats', 'mgcontacts', 'mgmoments', 'mgme', 'mgexplore'].includes(v)) { NK.stack.length = 1; NK.stack[0] = { v }; } else NK.stack.push({ v }); render(true); return true;
     case 'mgp': if (v === '@me') { go('mgme'); return true; } go('mgp', { id: v }); return true;
     case 'mgpost': go('mgpost', { id: v }); return true;
     case 'mglike': g.likes[v] = !g.likes[v]; save(); render(); return true;
@@ -500,7 +508,7 @@ if (LV) {
     const rq = m.reply_to ? list.find(x => x.id === m.reply_to) : null;
     const txtv = mine ? m.body : trText('mg' + m.id, m.body, m.lang);
     return `<div class="mgb ${mine ? 'me' : ''} ${m.media_url && !m.body && m.media_kind !== 'audio' ? 'media' : ''}" data-act="${W_ ? 'noop' : 'mgbtap'}" data-v="${m.id}" data-mid="${m.id}">${W_ ? `<b class="mgwho">${esc(mname(m.sender))}</b>` : ''}${rq ? `<span class="mgq"><b>${esc(mname(rq.sender))}</b>${esc(rq.deleted ? M('deleted') : rq.body || kindTxt(rq))}</span>` : ''}${mediaInBubble(m)}${m.body ? `<span class="mgtx">${esc(txtv)}</span>` : ''}${!mine ? trBadge('mg' + m.id) : ''}<small>${hm(m.created_at)}${mine && !W_ ? ticks(m, chatId) : ''}</small></div>`; };
-  const threadHtml = (chatId) => { const list = MGM[chatId] || []; let last = ''; return list.map(m => { const d = new Date(m.created_at).toDateString(); const sep = d !== last ? `<div class="mgday"><span>${dayLabel(m.created_at)}</span></div>` : ''; last = d; return sep + bubble(m, chatId); }).join(''); };
+  const threadHtml = (chatId) => { const list = MGM[chatId] || []; let last = ''; return list.map(m => { const d = new Date(m.created_at).toDateString(); const sep = d !== last ? `<div class="mgday"><span>${dayLabel(m.created_at)}</span></div>` : ''; last = d; const W_ = WATCH[chatId]; const mine = m.sender === (W_ ? W_.a : meId()); return sep + `<div class="mgbrow ${mine ? 'me' : ''}">${av(m.sender, 'bb')}${bubble(m, chatId)}</div>`; }).join(''); };
   const paintThread = () => { if (!openChat) return; const th = document.getElementById('mgthread'); if (!th) return; const atEnd = window.innerHeight + window.scrollY >= document.body.scrollHeight - 120; th.innerHTML = threadHtml(openChat.id); if (atEnd) scrollEnd(); };
   const scrollEnd = () => setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 20);
   const markRead = (chatId) => { LV.mgRead(chatId).catch(() => {}); };
@@ -663,13 +671,56 @@ if (LV) {
   V.mgfind = () => { const r = ready(); if (r) return r; const q = EXQ.q.trim(); const found = q ? want('mg:ppl:' + q, () => LV.mgPeople(q)) : null;
     const res = q ? (found === undefined ? loading : found && found.length ? found.filter(x => x.id !== meId()).map(x => `<div class="mgrow">${link(x.id, av(x.id, 'md'))}<div class="grow">${link(x.id, `<b>${esc(mname(x.id))}</b>${vm(x.id)}`)}</div><button class="mgb1 soft" style="flex:none" data-act="mgperson" data-v="${x.id}">${t('open')}</button></div>`).join('') : `<p class="mghint">${M('nobody')}</p>`) : '';
     return wrapView('mgfind', `<div class="mgwrap"><form class="mgsearch" onsubmit="event.preventDefault();document.getElementById('mgxgo').click()">${ic('search')}<input id="mgxq" type="search" value="${esc(q)}" placeholder="${M('find_people')}" aria-label="${M('find_people')}" enterkeyhint="search"><button type="button" id="mgxgo" class="mglink" data-act="mgxsearch">${M('search')}</button></form>${res}</div>${q ? '' : friendsBody()}`, M('find_people')); };
-  V.mgchats = () => V.mg(); V.mgfriends = () => V.mgfind(); V.mgreels = () => V.mgexplore();
+  V.mgfriends = () => V.mgfind(); V.mgreels = () => V.mgexplore();
   const momentStrip = (uid) => { const l = (keep(want('mg:up:' + uid, () => LV.posts('grid', uid))) || []).slice(0, 15); if (!l.length) return '';
     return `<div class="mgmoms">${l.map(x => `<button data-act="mgpost" data-v="${x.id}">${x.media_type === 'video' ? `<video src="${esc(x.media_url)}#t=0.5" muted playsinline preload="metadata"></video>` : `<img src="${esc(x.media_url)}" alt="" loading="lazy">`}</button>`).join('')}</div>`; };
   const openPerson = (uid) => { SEEN()[uid] = new Date().toISOString(); save(); const inb = (INBOX || []).find(c => c.other === uid);
     if (inb) return go('mgchat', { id: inb.id, u: uid });
     LV.rel().then(rel => rel.friends.has(uid) ? LV.mgChat(uid).then(c => go('mgchat', { id: c.id, u: uid })) : go('mgp', { id: uid })).catch(fail0); };
   let INBOX = [];
+  /* ===== Magaam 4: Chats · Contacts · Moments · Me ===== */
+  const reqCount = () => { const n = R().inc.length; window.__mgReq = n; return n; };
+  V.mgchats = () => { const r = ready(); if (r) return r; reqCount();
+    const inb = want('mg:inbox', () => LV.mgInbox()); INBOX = inb || []; const P = pins();
+    const list = (inb || []).slice().sort((a, b) => (P.includes(b.id) - P.includes(a.id)) || (new Date(b.last_at) - new Date(a.last_at)));
+    const rows = list.map(c => { const un = Number(c.unread || 0); const mineLast = c.last_sender === meId(); const rd = c.other_read && new Date(c.other_read) >= new Date(c.last_at);
+      return `<button class="mgcl ${P.includes(c.id) ? 'pin' : ''}" data-act="mgopen" data-v="${c.id}" data-u="${c.other}" data-nm="${esc(mname(c.other).toLowerCase())}"><span class="mgcl-av">${av(c.other, 'md')}${un ? `<em class="num">${un > 99 ? '99+' : un}</em>` : ''}</span><span class="grow"><span class="mgcl1"><b>${esc(mname(c.other))}</b>${vm(c.other)}<small class="num">${shortTime(c.last_at)}</small></span><span class="mgcl2">${mineLast ? `<i class="mgtick ${rd ? 'rd' : ''}">${rd ? '✓✓' : '✓'}</i>` : ''}${esc(c.last_body || '')}</span></span></button>`; }).join('');
+    return wrapView('mgchats', `<div class="mgsbar"><div class="mgsearch">${ic('search')}<input type="search" placeholder="${M('search')}" aria-label="${M('search')}" oninput="var q=this.value.toLowerCase();document.querySelectorAll('.mgcl').forEach(function(e){e.hidden=e.dataset.nm.indexOf(q)<0})"></div></div>
+      <div class="mglist">${inb === undefined ? loading : rows || `<div class="mgempty">${mgLogo()}<p>${M('no_chats')}</p><button class="mgb1 dark" style="flex:none;padding:0 20px" data-act="mggo" data-v="mgcontacts">${M('contacts')}</button></div>`}</div>
+      <p class="mgnobar">${small('translate')} ${M('no_barrier')}</p>`, M('chats')); };
+  V.mg = () => V.mgchats();
+  V.mgcontacts = () => { const r = ready(); if (r) return r; const rel = R(); const n = reqCount();
+    const fr = [...rel.friends].sort((a, b) => mname(a).localeCompare(mname(b), NK.lang));
+    let letter = ''; const rows = fr.map(u => { const L0 = (mname(u)[0] || '#').toUpperCase(); const h = L0 !== letter ? `<div class="mgletter">${esc(L0)}</div>` : ''; letter = L0;
+      return h + `<button class="mgcl" data-act="mgp" data-v="${u}"><span class="mgcl-av">${av(u, 'md')}</span><span class="grow"><span class="mgcl1"><b>${esc(mname(u))}</b>${vm(u)}</span></span></button>`; }).join('');
+    const sys = (act, icn, label, badge, v) => `<button class="mgcl sys" data-act="${act}" ${v ? `data-v="${v}"` : ''}><span class="mgsysic">${ic(icn)}</span><span class="grow"><span class="mgcl1"><b>${label}</b></span></span>${badge ? `<em class="mgbadge2 num">${badge}</em>` : ''}${ic('chev', 'flip chev')}</button>`;
+    return wrapView('mgcontacts', `<div class="mglist">${sys('mggo', 'users', M('new_friends'), n, 'mgfind')}${sys('mggo', 'search', M('find_people'), 0, 'mgfind')}${sys('mginvite', 'plus', M('invite'), 0)}</div>
+      <div class="mglist" style="margin-top:12px">${rows || `<p class="mghint" style="padding:16px">${M('no_contacts')}</p>`}</div>`, M('contacts')); };
+  let MT = 'friends';
+  V.mgmoments = () => { const r = ready(); if (r) return r; const rel = R(); const pr = LV.profile || {};
+    const all = MT === 'city' ? keep(want('mg:ex:' + EXQ.n, () => LV.explore(EXQ.n))) : recentAll();
+    const list = all === undefined ? undefined : MT === 'city' ? all : (all || []).filter(x => x.author === meId() || rel.friends.has(x.author) || rel.follow.has(x.author));
+    const item = (p) => `<article class="mgmo"><button class="pbtn" data-act="mgperson" data-v="${p.author}">${av(p.author, 'mo')}</button><div class="grow">
+      <button class="mgmo-nm" data-act="mgperson" data-v="${p.author}">${esc(mname(p.author))}${vm(p.author)}</button>
+      ${p.caption ? `<p class="mgmo-tx">${esc(trText('p' + p.id, p.caption, p.lang))}</p>${trBadge('p' + p.id)}` : ''}
+      <button class="mgmo-media ${p.media_type === 'video' ? 'vid' : ''}" data-act="mgpost" data-v="${p.id}">${p.media_type === 'video' ? `<video src="${esc(p.media_url)}#t=0.5" muted playsinline preload="metadata"></video><i class="mgxp">${ic('play')}</i>` : `<img src="${esc(p.media_url)}" alt="" loading="lazy">`}</button>
+      <div class="mgmo-meta"><small class="num">${ago(p.created_at)}${p.dist ? ' · ' + esc(loc(p.dist)) : ''}</small><span><button class="${p.liked ? 'on' : ''}" data-act="mglike" data-v="${p.id}" aria-label="like">${ic('heart')}${p.likes ? `<b class="num">${nf(p.likes)}</b>` : ''}</button><button data-act="mgpost" data-v="${p.id}" aria-label="${t('comment')}">${ic('chat')}${p.ncm ? `<b class="num">${nf(p.ncm)}</b>` : ''}</button></span></div></div></article>`;
+    const cover = `<div class="mgmocover" style="${pr.cover_url ? `background-image:url(${esc(pr.cover_url)})` : ''}"><button class="mgmocme" data-act="mggo" data-v="mgmine"><b>${esc(mname(meId()))}</b>${av(meId(), 'mc')}</button></div>`;
+    const seg = `<div class="mgseg2"><button class="${MT === 'friends' ? 'on' : ''}" data-act="mgmtab" data-v="friends">${M('friends_tab')}</button><button class="${MT === 'city' ? 'on' : ''}" data-act="mgmtab" data-v="city">${M('city')}</button></div>`;
+    return wrapView('mgmoments', cover + seg + `<div class="mgmolist">${list === undefined ? loading : list.length ? list.map(item).join('') : `<p class="mghint">${M(MT === 'city' ? 'city_empty' : 'no_friends_m')}</p>`}</div>${MT === 'city' && list && list.length >= EXQ.n ? `<div class="mgwrap"><button class="mgb1 soft" style="width:100%" data-act="mgxmore">${M('more')}</button></div>` : ''}`, M('moments')); };
+  V.mgexplore = () => { MT = 'city'; return V.mgmoments(); };
+  V.mgmine = () => { const r = ready(); if (r) return r; return wrapView('mgmine', profView(meId()), M('my_moments')); };
+  V.mgme = () => { const r = ready(); if (r) return r; const pr = LV.profile || {};
+    const row = (act, icn, label, v, extra) => `<button class="mgcl sys" data-act="${act}" ${v ? `data-v="${v}"` : ''}><span class="mgsysic">${ic(icn)}</span><span class="grow"><span class="mgcl1"><b>${label}</b></span></span>${extra || ''}${ic('chev', 'flip chev')}</button>`;
+    return wrapView('mgme', `<button class="mgmecard" data-act="mggo" data-v="mgmine">${av(meId(), 'me')}<span class="grow"><b>${esc(mname(meId()))}${vm(meId())}</b><small>Magaam ID: ${esc(pr.invite_code || '—')}</small>${pr.mg_bio ? `<small>${esc(pr.mg_bio)}</small>` : ''}</span>${ic('chev', 'flip chev')}</button>
+      ${isAdmin() ? `<button class="mgadmmode" data-act="admmode">${small('shield')}<b>${FXM('adm_badge')}</b><span>${FXM('adm_mode_off')}</span></button>` : ''}
+      <div class="mglist">${row('mggo', 'camera', M('my_moments'), 'mgmine')}${row('mginvite', 'users', M('invite'))}${pr.verified ? '' : row('vfopen', 'check', FXM('vf_t'), 'mg')}</div>
+      <div class="mglist">${row('notifset', 'siren', FXM('notif_t'))}${row('mglangs', 'globe', t('language'), '', `<small class="mgrowv">${esc(langName(NK.lang))}</small>`)}${row('mgedit', 'user', t('edit_profile'))}</div>
+      <div class="mglist">${NK.canAdmin() ? row('admmode', 'shield', FXM(isAdmin() ? 'adm_mode_off' : 'adm_mode_on')) : ''}${row('mgrules', 'info', M('rules_mg'))}</div>`, M('me_t')); };
+  const langsSheet = () => { const w = sheet(`<h3>${t('language')}</h3><div class="mgmsheet">${(window.LANGS || []).map(l => `<button data-x="${l.code}" dir="${l.dir}">${l.code === NK.lang ? small('check') : '<i style="width:20px"></i>'}${esc(l.name)}</button>`).join('')}</div>`);
+    w.addEventListener('click', e => { const b = e.target.closest('[data-x]'); if (!b) return; w.remove(); NK.setLang(b.dataset.x); NK.boot(); }); };
+  const plusMenu = () => { const w = sheet(`<div class="mgmsheet"><button data-x="new">${ic('camera')}${M('moment_new')}</button><button data-x="find">${ic('search')}${M('find_people')}</button><button data-x="inv">${ic('users')}${M('invite')}</button></div>`);
+    w.addEventListener('click', e => { const b = e.target.closest('[data-x]'); if (!b) return; w.remove(); const x = b.dataset.x; if (x === 'new') createLive(); if (x === 'find') go('mgfind'); if (x === 'inv') inviteSheet(); }); };
   const prevAct = window.MGACT;
   window.MGACT = (a, v, el) => {
     if (!a.startsWith('mg')) return false;
@@ -698,11 +749,15 @@ if (LV) {
       case 'mgphoto': sendPhoto(); return true;
       case 'mgattach': attachSheet(); return true;
       case 'mgperson': openPerson(v); return true;
+      case 'mgplusmenu': plusMenu(); return true;
+      case 'mgmtab': MT = v; render(); return true;
+      case 'mglangs': langsSheet(); return true;
+      case 'mgrules': NK.S.mg && (NK.S.mg.rulesOk = false); save(); render(); return true;
       case 'mgback': NK.back(); return true;
       case 'mgorig': ORIG[v] = !ORIG[v]; if (cur().v === 'mgchat' && document.getElementById('mgthread')) paintThread(); else render(); return true;
       case 'mgptab': PTAB = v; render(); return true;
       case 'mgcf': if (v === 'friends') { NK.stack[NK.stack.length - 1] = { v: 'mgfriends' }; } else { CF = v; NK.stack[NK.stack.length - 1] = { v: 'mgchats' }; } render(); return true;
-      case 'mgfriendsk': if (cur().v === 'mgme') go('mgfind'); return true;
+      case 'mgfriendsk': go('mgcontacts'); return true;
       case 'mgmenu': { const pr = LV.profile || {}; const w = sheet(`<div class="mgmsheet"><button data-x="notif">${ic('siren')}${FXM('notif_t')}</button><button data-x="invite">${ic('users')}${M('invite')}</button>${pr.verified ? '' : `<button data-x="vf">${ic('check')}${FXM('vf_t')}</button>`}<button data-x="cover">${ic('camera')}${M('cover')}</button>${NK.canAdmin() ? `<button data-x="adm">${ic('shield')}${FXM(isAdmin() ? 'adm_mode_off' : 'adm_mode_on')}</button>` : ''}</div>`);
         w.addEventListener('click', e => { const b = e.target.closest('[data-x]'); if (!b) return; w.remove(); const x = b.dataset.x; if (x === 'notif') NK.notifSheet(); if (x === 'invite') inviteSheet(); if (x === 'vf') NK.verifySheet(true); if (x === 'adm') { NK.S.adminMode = !NK.S.adminMode; save(); render(); } if (x === 'cover') pickImg(async d => { try { const url = await LV.upload(d, 'cover'); const np = await LV.updateProfile({ cover_url: url }); NK.S.me = NK.meFrom(np); save(); render(); } catch (er) { fail(er); } }, 1600); }); return true; }
       case 'mgumenu': { const w = sheet(`<div class="mgmsheet"><button data-x="rep" class="bad">${ic('flag')}${t('report')}</button></div>`); w.addEventListener('click', e => { const b = e.target.closest('[data-x]'); if (!b) return; w.remove(); LV.report('user', v).then(() => toast(t('reported'))).catch(fail); }); return true; }

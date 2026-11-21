@@ -1119,3 +1119,10 @@ c865|Cari orang
 c866|Orang anda akan berada di sini. Jemput rakan — melalui pautan anda mereka terus menjadi rakan.
 c867|Masih sunyi. Kongsi detik pertama.
 c868|Tulis dalam bahasa anda — {n} akan faham
+c869|Kenalan
+c870|Saya
+c871|Rakan baharu
+c872|Detik saya
+c873|Rakan anda belum ada detik. Lihat “Bandar”.
+c688|Peraturan Magaam
+c874|Belum ada rakan. Jemput melalui pautan anda — mereka terus muncul di sini.
