@@ -1333,3 +1333,4 @@ c1072|Alamat internet Anda menunjukkan:
 c1073|Alamat internet Anda menunjukkan “{c}”. Operator seluler sering menampilkan kota lain. Jika Anda di Madinah, konfirmasikan dengan lokasi ponsel.
 c1074|Konfirmasi dengan lokasi
 c1075|Izinkan akses lokasi di pengaturan ponsel lalu coba lagi.
+c1076|Isi kolom ini.

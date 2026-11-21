@@ -1333,3 +1333,4 @@ c1072|İnternet adresiniz şunu gösteriyor:
 c1073|İnternet adresiniz “{c}” gösteriyor. Mobil operatörler çoğu zaman başka bir şehir gösterir. Medine’deyseniz telefonunuzun konumuyla doğrulayın.
 c1074|Konumla doğrula
 c1075|Telefon ayarlarından konum erişimine izin verip tekrar deneyin.
+c1076|Bu alanı doldurun.

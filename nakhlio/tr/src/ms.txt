@@ -1333,3 +1333,4 @@ c1072|Alamat internet anda menunjukkan:
 c1073|Alamat internet anda menunjukkan “{c}”. Pengendali mudah alih sering menunjukkan bandar lain. Jika anda di Madinah, sahkan dengan lokasi telefon.
 c1074|Sahkan dengan lokasi
 c1075|Benarkan akses lokasi dalam tetapan telefon dan cuba lagi.
+c1076|Isi ruangan ini.

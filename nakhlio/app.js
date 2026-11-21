@@ -308,7 +308,7 @@ function docSheet(k) {
   const w = sheet(`<h3>${esc(L(d.name))}</h3><p class="note">${FXL('docs_d')}</p>
     <div class="field"><label for="ddate">${FXL('exp_date')}</label><input id="ddate" type="date" value="${esc(v)}"></div>
     <button class="btn green full" style="margin-top:14px" id="dsave">${t('save_l')}</button>${v ? `<button class="btn line full" style="margin-top:10px" id="ddel">${t('remove')}</button>` : ''}`);
-  w.querySelector('#dsave').addEventListener('click', () => { const val = w.querySelector('#ddate').value; if (!val) { w.querySelector('#ddate').focus(); return; } S.docs = S.docs || {}; S.docs[k] = val; save(); w.remove(); toast(L(d.name) + ' ✓'); render(true); });
+  w.querySelector('#dsave').addEventListener('click', () => { const val = w.querySelector('#ddate').value; if (!val) { fieldBad(w, w.querySelector('#ddate'), XL('err_req')); return; } S.docs = S.docs || {}; S.docs[k] = val; save(); w.remove(); toast(L(d.name) + ' ✓'); render(true); });
   const del = w.querySelector('#ddel'); if (del) del.addEventListener('click', () => { delete S.docs[k]; save(); w.remove(); render(true); });
 }
 const cdTxt = (left) => { const h = Math.floor(left / 60), m = Math.floor(left % 60); return (h ? nf(h) + ':' : '') + (h ? String(m).padStart(2, '0').replace(/\d/g, x => nf(+x)) : nf(m) + ' ' + t('min')); };
@@ -358,10 +358,18 @@ const LX = {
   geo_gps_q: X3('Ваш интернет-адрес определяется как «{c}». Мобильные операторы часто показывают другой город. Если вы в Медине, подтвердите это геолокацией телефона.', 'Your internet address shows “{c}”. Mobile operators often show another city. If you are in Medina, confirm it with your phone’s location.', 'عنوانك على الإنترنت يظهر «{c}». غالباً ما تُظهر شركات الاتصال مدينة أخرى. إن كنت في المدينة المنورة فأكّد ذلك بموقع هاتفك.'),
   geo_gps_btn: X3('Подтвердить геолокацией', 'Confirm with location', 'التأكيد بالموقع'), geo_gps_denied: X3('Разрешите доступ к геолокации в настройках телефона и попробуйте снова.', 'Allow location access in your phone settings and try again.', 'اسمح بالوصول إلى الموقع في إعدادات الهاتف وحاول مجدداً.'),
   wants: X3('Хочет разместить', 'Wants to post', 'يريد أن ينشر'),
+  err_req: X3('Заполните это поле.', 'Fill in this field.', 'املأ هذا الحقل.'),
   fresh: X3('Новые объявления', 'New listings', 'أحدث الإعلانات'),
   count_n: X3('объявл.', 'listings', 'إعلانات'), loading: X3('Загружаем…', 'Loading…', 'جارٍ التحميل…'),
 };
 const XL = (k) => L(LX[k]);
+function fieldBad(w, el, msg) {
+  if (!el) return; w.querySelectorAll('.field.bad').forEach(x => x.classList.remove('bad')); w.querySelectorAll('.ferr-in').forEach(x => x.remove());
+  const f = el.closest('.field') || el; f.classList.add('bad'); const m = document.createElement('p'); m.className = 'ferr-in'; m.setAttribute('role', 'alert'); m.textContent = msg; f.appendChild(m);
+  f.scrollIntoView({ block: 'center', behavior: 'smooth' }); const fc = f.querySelector('input,textarea,select'); if (fc && fc.type !== 'file') setTimeout(() => fc.focus({ preventScroll: true }), 250);
+  const clear = () => { f.classList.remove('bad'); m.remove(); f.removeEventListener('input', clear); f.removeEventListener('change', clear); f.removeEventListener('click', clear); };
+  f.addEventListener('input', clear); f.addEventListener('change', clear); if (!fc) f.addEventListener('click', clear);
+}
 const SVCK = [['escort', 'hand', X3('Сопровождение', 'Escort & assistance', 'مرافقة ومساعدة')], ['translate', 'translate', X3('Переводчик', 'Translator', 'مترجم')], ['guide', 'pin', X3('Гид и зиярат', 'Guide & ziyarah', 'مرشد وزيارات')],
   ['driver', 'car', X3('Водитель и трансфер', 'Driver & transfer', 'سائق وتوصيل')], ['airport', 'plane', X3('Встреча в аэропорту', 'Airport pick-up', 'استقبال من المطار')], ['food', 'cake', X3('Выпечка и домашняя еда', 'Baking & home food', 'مخبوزات وأكل بيتي')],
   ['beauty', 'palette', X3('Красота', 'Beauty', 'تجميل')], ['repair', 'gear', X3('Ремонт и мастера', 'Repairs & handymen', 'صيانة وحرفيون')], ['cleaning', 'cleaning', X3('Уборка', 'Cleaning', 'تنظيف')],
@@ -490,7 +498,7 @@ function lstSheet(sec) {
   wireSeg('lscat', 'cat', () => { const g = w.querySelector('#lsgearf'); if (g) g.hidden = st.cat !== 'cars'; });
   st.gear = 'auto'; wireSeg('lsgear', 'gear');
   const val = (id) => ((w.querySelector('#' + id) || {}).value || '').trim(); const int = (id) => { const n = parseInt(val(id).replace(/\D/g, ''), 10); return isNaN(n) ? null : n; };
-  w.querySelector('#lsgo').onclick = async (ev) => { const er = w.querySelector('#lserr'); const fail = (k) => { er.hidden = false; er.textContent = XL(k); er.scrollIntoView({ block: 'center' }); };
+  w.querySelector('#lsgo').onclick = async (ev) => { const er = w.querySelector('#lserr'); const fail = (k) => { er.hidden = true; fieldBad(w, w.querySelector({ err_photo: '#lsth', err_title: '#lst', err_desc: '#lsx', err_price: '#lsp' }[k] || '#lst'), XL(k)); };
     const title = val('lst'), desc = val('lsx'), unit = val('lsu'), pv = val('lsp').replace(',', '.'); const price = pv === '' ? null : +pv;
     if (sec !== 'services' && !photos.length) return fail('err_photo'); if (title.length < 3) return fail('err_title'); if (desc.length < 20) return fail('err_desc');
     if (unit !== 'neg' && (price == null || isNaN(price) || price <= 0)) return fail('err_price');
@@ -980,7 +988,7 @@ async function verifySheet(mg, purpose, geoOk) {
   const ph = w.querySelector('#vfph'); if (ph) ph.onclick = () => pick(async d => { try { const url = await LV.upload(d, 'avatar'); const np = await LV.updateProfile(mg ? { mg_avatar: url } : { photo_url: url }); S.me = meFrom(np); save(); w.remove(); verifySheet(mg); } catch (e) { toast(FXL('send_fail')); } });
   w.querySelector('#vfdoc').onclick = () => pick(d => { if (!d) return; doc = d; const row = w.querySelector('#vfdocrow'); row.classList.add('ok'); row.querySelector('.vfn').textContent = '✓'; row.querySelector('#vfdoc').outerHTML = `<span class="av" style="background:url(${d}) center/cover;border-radius:8px"></span>`; }, true);
   w.querySelector('#vfgo').onclick = async (ev) => { const er = w.querySelector('#vferr'); const show = (k) => { er.hidden = false; er.textContent = FXL(k); };
-    if (!photo) return show('vf_need_photo'); if (!doc) return show('vf_need_doc');
+    if (!photo) { w.querySelector('.vfstep').classList.add('bad'); return show('vf_need_photo'); } if (!doc) { w.querySelector('#vfdocrow').classList.add('bad'); return show('vf_need_doc'); }
     const b = ev.currentTarget; b.disabled = true; b.textContent = '…';
     try { const blob = await (await fetch(doc)).blob(); await LV.verifySubmit(blob, mg ? 'magaam' : 'nakhlio', purpose || null); w.remove(); sheet(`<h3>${small('check')} ${FXL('vf_t')}</h3><p style="line-height:1.55">${FXL('vf_sent')}</p><button class="btn green full" data-close>${t('understood')}</button>`); }
     catch (e) { console.warn(e); b.disabled = false; b.textContent = FXL('vf_send'); if (/not_medina/.test(String(e && (e.message || e)))) { w.remove(); geoSorry(); return; } show('send_fail'); } };
@@ -1128,7 +1136,7 @@ function eventSheet(space) {
     <div class="field"><label for="ev3">${t('location')}</label><input id="ev3" placeholder="Al Aziziyah"></div>
     <div class="field"><label for="ev4">${t('members')}</label><input id="ev4" inputmode="numeric" value="10"></div>
     <button class="btn green full" style="margin-top:14px" id="evgo">${t('publish')}</button>`);
-  w.querySelector('#evgo').addEventListener('click', () => { const ti = w.querySelector('#ev1').value.trim(); if (!ti) { w.querySelector('#ev1').focus(); return; }
+  w.querySelector('#evgo').addEventListener('click', () => { const ti = w.querySelector('#ev1').value.trim(); if (!ti) { fieldBad(w, w.querySelector('#ev1'), XL('err_title')); return; }
     LV.addEvent({ space, title: ti, when_text: w.querySelector('#ev2').value.trim(), place: w.querySelector('#ev3').value.trim(), need: Math.max(2, parseInt(w.querySelector('#ev4').value, 10) || 10), lang }).then(() => { w.remove(); toast(t('published')); dropData('c:sp:'); render(); }).catch(e => toast(FXL('send_fail'))); });
 }
 const OWNER_H = '81d40b4d82d36fea86c23f3b610f9626bb16e35459c65aa15ce8ea88377b5c13';
@@ -1597,7 +1605,7 @@ function adSheetLive() {
     <button class="btn green full" style="margin-top:16px" id="adgo">${t('publish')}</button>`);
   w.querySelector('#adf').onchange = async (e) => { const f = e.target.files[0]; if (!f) return; photo = await resizeImg(f); w.querySelector('#adprev').innerHTML = `<img src="${photo}" alt="" style="width:100%;height:140px;object-fit:cover">`; };
   w.querySelector('#adgo').addEventListener('click', async (ev) => {
-    const ti = w.querySelector('#adt').value.trim(); if (!ti) { w.querySelector('#adt').focus(); return; }
+    const ti = w.querySelector('#adt').value.trim(); if (!ti) { fieldBad(w, w.querySelector('#adt'), XL('err_title')); return; }
     const b = ev.currentTarget; b.disabled = true;
     try { const photos = photo ? [await LV.upload(photo, 'ad')] : []; const pr = w.querySelector('#adp').value.trim(); const cat = w.querySelector('#adcat').value;
       await LV.addItem({ kind: 'ad', cat, title: ti, price: cat === 'free' ? '0 SAR' : pr ? pr + ' SAR' : '', descr: w.querySelector('#add').value.trim(), photos, dist: w.querySelector('#adds').value, lang });
@@ -1617,7 +1625,7 @@ function parcelSheetLive() {
     <button class="btn green full" style="margin-top:14px" id="pgo" disabled>${t('publish')}</button>`);
   const segs = w.querySelectorAll('.seg button'); segs.forEach(b => b.addEventListener('click', () => { kind = b.dataset.k; segs.forEach(x => x.classList.toggle('on', x === b)); }));
   const ag = w.querySelector('#pagree'), btn = w.querySelector('#pgo'); ag.addEventListener('change', () => { btn.disabled = !ag.checked; });
-  btn.addEventListener('click', () => { const to = w.querySelector('#pt').value.trim(); if (!to) { w.querySelector('#pt').focus(); return; }
+  btn.addEventListener('click', () => { const to = w.querySelector('#pt').value.trim(); if (!to) { fieldBad(w, w.querySelector('#pt'), XL('err_req')); return; }
     const pr0 = LV.profile || {}; if (kind === 'flying' && !(pr0.verified || pr0.is_admin || pr0.is_owner)) { w.remove(); needVerified(() => {}, 'parcels'); return; } btn.disabled = true;
     LV.addItem({ kind: 'parcel', cat: kind, route_from: w.querySelector('#pf').value.trim() || 'Medina', route_to: to, pdate: w.querySelector('#pr2').value || null, kg: parseFloat(w.querySelector('#pr3').value) || null, descr: w.querySelector('#pdx').value.trim(), lang })
       .then(() => { w.remove(); toast(t('published')); dropData('c:items'); if (cur().v !== 'parcels') go('parcels'); else render(); }).catch(e => { toast(FXL('send_fail')); btn.disabled = false; }); });
@@ -1630,7 +1638,7 @@ function composeSheet(kind, topic) {
     <div class="banner" style="margin-top:12px;font-size:12.5px">${ic('info')}<div>${t('room_rule')}</div></div>
     <button class="btn green full" style="margin-top:14px" id="cpub">${t('publish')}</button>`);
   w.querySelector('#cpub').addEventListener('click', () => {
-    const txt = w.querySelector('#ctext').value.trim(); if (!txt) return;
+    const txt = w.querySelector('#ctext').value.trim(); if (!txt) { fieldBad(w, w.querySelector('#ctext'), XL('err_req')); return; }
     if (LV) { LV.forumPost(topic, kind === 'q' ? 'q' : 'e', txt, lang).then(() => { w.remove(); toast(t('published')); dropData('c:forum'); render(); }).catch(e => toast(FXL('send_fail'))); return; }
     S.posts[topic] = [{ q: kind === 'q', who: '@me', date: new Date().toISOString().slice(0, 7), text: txt, helped: 0 }].concat(S.posts[topic] || []);
     save(); w.remove(); toast(t('published')); render();
@@ -1647,7 +1655,7 @@ function adSheet() {
     <label class="opt"><input type="checkbox" id="adh"><span><b>${ic('palette').replace('<svg', '<svg style="width:15px;height:15px;vertical-align:-2px"')} ${t('highlight')}</b></span><span class="pr num">5 ${t('sar')} · ${t('demo_pay')}</span></label>
     <button class="btn green full" style="margin-top:16px" id="adgo">${t('publish')}</button>`);
   w.querySelector('#adgo').addEventListener('click', () => {
-    const ti = w.querySelector('#adt').value.trim(); if (!ti) { w.querySelector('#adt').focus(); return; }
+    const ti = w.querySelector('#adt').value.trim(); if (!ti) { fieldBad(w, w.querySelector('#adt'), XL('err_title')); return; }
     const pr = w.querySelector('#adp').value.trim();
     const cat = w.querySelector('#adcat').value;
     S.myAds = [{ id: 'A-' + (800 + (S.myAds || []).length), cat, title: ti, price: pr ? pr + ' ' + t('sar') : '—', seller: { name: '@me', langs: (LANGS.find(l => l.code === lang) || {}).latin, since: '2026', rating: 5, dist: 'central' }, photos: ['liv2'], desc: '', comments: [], mine: true, boosted: w.querySelector('#adb').checked || w.querySelector('#adh').checked }].concat(S.myAds || []);
@@ -1745,7 +1753,7 @@ if (LV) {
   wrapV('room', (pp) => liveSpace(pp.id.split(':')[0])); wrapV('event', () => { if (isOwner()) { liveSpace('men'); liveSpace('women'); } else liveSpace(S.me && S.me.gender === 'f' ? 'women' : 'men'); });
   LV.onRoom && setTimeout(() => LV.onRoom(m => { if (m.author === meU()) return; dropData('c:sp:'); if (cur().v === 'room' && cur().id === m.room) { liveSpace(m.room.split(':')[0]); } }), 0);
 }
-window.NK = { verifySheet, canAdmin, chime, setBadge, isStandalone, isInApp, notifSheet, setLang: (l) => { if (!LANGS.some(x => x.code === l)) return; lang = l; S.lang = l; save(); if (LV && LV.user && LV.profile) LV.updateProfile({ ui_lang: l }).catch(() => {}); }, boot: () => boot(), isPhone, isAdmin, want, dropData, liveAv, pname, meFrom, applyLive, liveSyncChats, loadChat, V, t, L, ic, esc, small, img, avatar, vmark, commentsBlock, loc, nf, toast, sheet, go, back, render, save, openDM, authSheet, resizeImg, txt, cur,
+window.NK = { fieldBad, errReq: () => XL('err_req'), verifySheet, canAdmin, chime, setBadge, isStandalone, isInApp, notifSheet, setLang: (l) => { if (!LANGS.some(x => x.code === l)) return; lang = l; S.lang = l; save(); if (LV && LV.user && LV.profile) LV.updateProfile({ ui_lang: l }).catch(() => {}); }, boot: () => boot(), isPhone, isAdmin, want, dropData, liveAv, pname, meFrom, applyLive, liveSyncChats, loadChat, V, t, L, ic, esc, small, img, avatar, vmark, commentsBlock, loc, nf, toast, sheet, go, back, render, save, openDM, authSheet, resizeImg, txt, cur,
   get S() { return S; }, get lang() { return lang; }, get stack() { return stack; } };
 boot();
 if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !DEMO) {

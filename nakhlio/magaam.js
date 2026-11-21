@@ -538,7 +538,7 @@ if (LV) {
       <button class="btn primary full mgbtn" id="mgsave">${t('save_l')}</button>`);
     const up = async (data, field) => { try { const url = await LV.upload(data, field); const pr = await LV.updateProfile({ [field]: url }); NK.S.me = NK.meFrom(pr); save(); toast(t('saved_ok')); render(); } catch (e) { toast(FXM('send_fail')); } };
     w.querySelector('#mgph').onclick = () => pickImg(d => up(d, 'mg_avatar'));
-    w.querySelector('#mgsave').onclick = async () => { try { const nmv = w.querySelector('#mgnm').value.trim(); if (!nmv) { w.querySelector('#mgnm').focus(); return; } const pr = await LV.updateProfile({ mg_name: nmv }); NK.S.me = NK.meFrom(pr); save(); w.remove(); render(); } catch (e) { toast(FXM('send_fail')); } }; };
+    w.querySelector('#mgsave').onclick = async () => { try { const nmv = w.querySelector('#mgnm').value.trim(); if (!nmv) { NK.fieldBad(w, w.querySelector('#mgnm'), NK.errReq()); return; } const pr = await LV.updateProfile({ mg_name: nmv }); NK.S.me = NK.meFrom(pr); save(); w.remove(); render(); } catch (e) { toast(FXM('send_fail')); } }; };
 
   /* ===== Magaam as its own app: sign-in, own profile, invites ===== */
   const MR = { step: 1, email: '', err: '', photo: null };
@@ -674,9 +674,9 @@ if (LV) {
       catch (e) { MR.err = L(window.FX.code_bad); render(); } return; }
     if (a === 'mgrphoto') { pickImg(d => { MR.photo = d; render(); }); return; }
     if (a === 'mgrsave' && window.MG_APP && !invCode()) { const raw = ((document.getElementById('mginvc') || {}).value || '').trim(); MR.nm = (document.getElementById('mgnm') || {}).value || ''; MR.bio = (document.getElementById('mgbio') || {}).value || ''; MR.inv = raw; const cv = (raw.match(/[?&]i=([a-z0-9]+)/i) || [0, raw])[1].toLowerCase().replace(/[^a-z0-9]/g, '');
-      if (!cv) { MR.err = M('inv_need'); return render(); } const inf = await LV.inviteInfo(cv).catch(() => null); if (!inf || !inf.name) { MR.err = M('inv_bad'); return render(); } S_().mgInvite = cv; save(); }
+      if (!cv) { NK.fieldBad(document, document.getElementById('mginvc'), M('inv_need')); return; } const inf = await LV.inviteInfo(cv).catch(() => null); if (!inf || !inf.name) { NK.fieldBad(document, document.getElementById('mginvc'), M('inv_bad')); return; } S_().mgInvite = cv; save(); }
     if (a === 'mgrsave') { const nm = (document.getElementById('mgnm') || {}).value; const bio = ((document.getElementById('mgbio') || {}).value || '').trim();
-      if (!nm || !nm.trim()) { MR.err = t('err_name') || '!'; return render(); } el.disabled = true;
+      if (!nm || !nm.trim()) { MR.err = ''; NK.fieldBad(document, document.getElementById('mgnm'), NK.errReq()); return; } el.disabled = true;
       try { let url = null; if (MR.photo && MR.photo.startsWith('data:')) url = await LV.upload(MR.photo, 'avatar');
         let pr; if (LV.profile) pr = await LV.updateProfile(Object.assign({ mg_on: true, mg_name: nm.trim(), mg_bio: bio }, url ? { mg_avatar: url } : {}));
         else pr = await LV.createProfile({ name: nm.trim(), mg_on: true, mg_name: nm.trim(), mg_bio: bio, origin: 'magaam', ui_lang: NK.lang, photo_url: url, mg_avatar: url });
