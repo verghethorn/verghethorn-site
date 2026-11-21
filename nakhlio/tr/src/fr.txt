@@ -1348,3 +1348,8 @@ c1085|Utilisateur débloqué
 c1086|Vous avez bloqué cet utilisateur
 c1087|Que s’est-il passé ? Décrivez-le brièvement pour l’administration.
 c1088|Écrire sur Magaam
+c1089|Assistance
+c1090|Une question, une plainte ou une idée — l’administration Nakhlio répond
+c1091|Les messages s’écrivent dans Magaam. Activez-le — cela prend une minute.
+c1092|Bonjour ! Je vous écris au sujet de votre annonce « {t} ». 
+c1093|Les messages s’écrivent dans Magaam. Indiquez votre nom et la discussion s’ouvre aussitôt.

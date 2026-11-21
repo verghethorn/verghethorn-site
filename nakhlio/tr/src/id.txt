@@ -1348,3 +1348,8 @@ c1085|Blokir dibuka
 c1086|Anda memblokir pengguna ini
 c1087|Apa yang terjadi? Jelaskan singkat untuk admin.
 c1088|Kirim pesan di Magaam
+c1089|Bantuan
+c1090|Pertanyaan, keluhan, atau ide — admin Nakhlio akan menjawab
+c1091|Pesan ditulis di Magaam. Aktifkan — cuma semenit.
+c1092|Halo! Saya menulis tentang iklan Anda “{t}”. 
+c1093|Pesan ditulis di Magaam. Masukkan nama Anda dan chat langsung terbuka.

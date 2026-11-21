@@ -1348,3 +1348,8 @@ c1085|Engel kaldırıldı
 c1086|Bu kullanıcıyı engellediniz
 c1087|Ne oldu? Yönetim için kısaca yazın.
 c1088|Magaam’da yaz
+c1089|Destek
+c1090|Soru, şikâyet veya fikir — Nakhlio yönetimi yanıtlar
+c1091|Mesajlar Magaam’da yazılır. Açın — bir dakika sürer.
+c1092|Merhaba! “{t}” ilanınız hakkında yazıyorum. 
+c1093|Mesajlar Magaam’da yazılır. Adınızı girin, sohbet hemen açılır.

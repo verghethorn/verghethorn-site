@@ -1348,3 +1348,8 @@ c1085|Sekatan dibuang
 c1086|Anda telah menyekat pengguna ini
 c1087|Apa yang berlaku? Terangkan ringkas untuk pentadbiran.
 c1088|Mesej di Magaam
+c1089|Sokongan
+c1090|Soalan, aduan atau idea — pentadbiran Nakhlio akan menjawab
+c1091|Mesej ditulis dalam Magaam. Hidupkannya — hanya seminit.
+c1092|Helo! Saya menulis tentang iklan anda “{t}”. 
+c1093|Mesej ditulis dalam Magaam. Masukkan nama anda dan chat terus dibuka.

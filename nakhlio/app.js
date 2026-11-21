@@ -289,6 +289,7 @@ V.home = () => {
     <div class="sec"><h3>${LV ? XL('fresh') : t('featured')}</h3><button data-act="go" data-v="housing">${t('see_all')}</button></div>
     ${featured.length ? `<div class="hscroll">${featured.map(x => x.section ? lstCard(x) : x.kind ? trCard(x) : houseCard(x)).join('')}</div>` : `<button class="card" data-act="lstnew" data-v="housing" style="display:flex;gap:12px;align-items:center;width:100%;text-align:start">${ic('plus')}<span><b>${XL('none_yet')}</b><small style="display:block;color:var(--ink-2)">${XL('none_yet_d')}</small></span></button>`}
     ${nextDay ? `<button class="card" data-act="go" data-v="days" style="display:flex;gap:14px;align-items:center;width:100%;text-align:start;margin-top:18px"><span class="prayer-ico" style="background:var(--palm-tint);color:var(--palm)">${ic('calendar')}</span><span style="flex:1;min-width:0"><small style="color:var(--ink-2);font-weight:600;font-size:12px">${t('s_days')}</small><b style="display:block">${esc(L(nextDay.d.name))}</b></span><b class="num" style="color:var(--palm);text-align:end">${nf(nextDay.left)}<small style="display:block;font-size:11px;color:var(--ink-2);font-weight:600">${t('days_left')}</small></b></button>` : ''}
+    ${LV ? `<button class="card supcard" data-act="support"><span class="prayer-ico" style="background:var(--date-tint);color:var(--date-2)">${ic('headset')}</span><span class="grow"><b>${XL('support_t')}</b><small>${XL('support_d')}</small></span>${ic('chev', 'flip chev')}</button>` : ''}
     <div class="mini" style="margin-top:12px">
       <div class="card"><h5>${ic('coin')}${t('rate')}</h5><div class="rate-big num">1 ${t('sar')}</div><div class="num" style="font-weight:700;color:var(--palm)">≈ ${nf(per, per < 1 ? 3 : per < 10 ? 2 : 0)} ${cc}</div><div class="rate-small">${t('rate_note')}</div></div>
       <div class="card"><h5>${ic('siren')}${t('emergency')}</h5><div class="em">
@@ -358,6 +359,9 @@ const LX = {
   geo_gps_q: X3('Ваш интернет-адрес определяется как «{c}». Мобильные операторы часто показывают другой город. Если вы в Медине, подтвердите это геолокацией телефона.', 'Your internet address shows “{c}”. Mobile operators often show another city. If you are in Medina, confirm it with your phone’s location.', 'عنوانك على الإنترنت يظهر «{c}». غالباً ما تُظهر شركات الاتصال مدينة أخرى. إن كنت في المدينة المنورة فأكّد ذلك بموقع هاتفك.'),
   geo_gps_btn: X3('Подтвердить геолокацией', 'Confirm with location', 'التأكيد بالموقع'), geo_gps_denied: X3('Разрешите доступ к геолокации в настройках телефона и попробуйте снова.', 'Allow location access in your phone settings and try again.', 'اسمح بالوصول إلى الموقع في إعدادات الهاتف وحاول مجدداً.'),
   wants: X3('Хочет разместить', 'Wants to post', 'يريد أن ينشر'),
+  support_t: X3('Служба поддержки', 'Support', 'الدعم'), support_d: X3('Вопрос, жалоба или идея — ответит администрация Nakhlio', 'A question, complaint or idea — the Nakhlio administration replies', 'سؤال أو شكوى أو فكرة — تردّ إدارة نخليو'),
+  mg_need: X3('Сообщения пишутся в Магаме. Включите его — это займёт минуту.', 'Messages are written in Magaam. Turn it on — it takes a minute.', 'تُكتب الرسائل في Magaam. فعّله — يستغرق دقيقة.'),
+  about_listing: X3('Здравствуйте! Пишу по объявлению «{t}». ', 'Hello! I’m writing about your listing “{t}”. ', 'مرحباً! أكتب بخصوص إعلانك «{t}». '),
   err_req: X3('Заполните это поле.', 'Fill in this field.', 'املأ هذا الحقل.'),
   fresh: X3('Новые объявления', 'New listings', 'أحدث الإعلانات'),
   count_n: X3('объявл.', 'listings', 'إعلانات'), loading: X3('Загружаем…', 'Loading…', 'جارٍ التحميل…'),
@@ -1240,7 +1244,7 @@ function profileHtml(n) {
     <div class="pmeta">${p.dist ? `<span>${small('pin')}${esc(loc(p.dist))}</span>` : ''}${p.langs ? `<span>${small('globe')}${esc(p.langs)}</span>` : ''}</div>
     ${p.about ? `<p class="pabout">${esc(txt(p.about))}</p>` : ''}
     ${photos.length > 1 ? `<div class="pphotos">${photos.map(u => `<span style="background-image:url(${u})"></span>`).join('')}</div>` : ''}
-    <div class="pact">${me ? `<button class="btn soft full" data-act="go" data-v="editprofile">${small('user')}${t('edit_profile')}</button>` : `<button class="btn primary" data-act="dm" data-v="${esc(n)}">${ic('chat')}${t('dm')}</button>${LV && LV.byName(n) && LV.byName(n).mg_on ? `<button class="btn soft mgw" data-act="mgwrite" data-v="${LV.byName(n).id}">${window.mgLogo ? mgLogo('sec') : ''}${MG_T && MG_T.write_mg ? L(MG_T.write_mg) : 'Magaam'}</button>` : ''}<button class="btn soft" data-act="reportuser" aria-label="${t('report_user')}">${ic('flag')}</button>`}</div>
+    <div class="pact">${me ? `<button class="btn soft full" data-act="go" data-v="editprofile">${small('user')}${t('edit_profile')}</button>` : `${LV ? (LV.byName(n) ? `<button class="btn primary mgw1" data-act="mgwrite" data-v="${LV.byName(n).id}">${window.mgLogo ? mgLogo('sec') : ''}${MG_T && MG_T.write_mg ? L(MG_T.write_mg) : 'Magaam'}</button>` : '') : `<button class="btn primary" data-act="dm" data-v="${esc(n)}">${ic('chat')}${t('dm')}</button>`}<button class="btn soft" data-act="reportuser" aria-label="${t('report_user')}">${ic('flag')}</button>`}</div>
   </div>
   ${me ? docsBlock() + accBlock() : ''}${badgesBlock(n, p, me)}
   <div class="block"><h4>${t('listings_l')}</h4>${items.length ? `<div class="list">${items.map(x => PARCELS.includes(x) ? parcelRow(x) : HELP.includes(x) ? helpRow(x) : adRow(x)).join('')}</div>` : `<p class="note">${t('no_listings')}</p>`}</div>
@@ -1328,6 +1332,7 @@ const svcThumb = (c, sz) => `<span class="thumb b-${c.c} c-${c.c}" style="displa
 const chatThumb = (li) => li.svc ? svcThumb(li.svc, 'width:56px;height:56px;border-radius:16px') : li.person ? `<span class="thumb av ill" style="width:56px;height:56px;border-radius:18px">${avatarSvg(li.person)}</span>` : `<span class="thumb"><img src="${img(li.photo)}" alt=""></span>`;
 V.chats = () => {
   if (!S.me) return guestLock(t('chats_title'), t('chats_guest'));
+  if (LV && V.mgchats) return V.mgchats();
   if (LV) liveSyncChats();
   const ids = Object.keys(S.chats).filter(k => !k.startsWith('A:') && !k.startsWith('O:')).sort((a, b) => (S.chats[b].t || 0) - (S.chats[a].t || 0));
   return { tabs: true, html: topbar(t('chats_title'), { noBack: true }) + `<div class="wrap chat-list narrow">${ids.length ? `<div class="list one">${ids.map(id => { const c = S.chats[id]; const li = listingInfo(id); const last = c.msgs[c.msgs.length - 1]; return `<button class="row-card" data-act="go" data-v="chat" data-id="${id}">${chatThumb(li)}<span class="grow"><span class="ttl" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(li.title)}</span><span class="sub" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${last ? esc(txt(last.text)) : ''}</span><span class="sub" style="display:block;color:var(--palm);font-weight:700">${li.person ? t('dm') : t('operator') + (id === 'support' ? '' : ' · ' + id)}</span></span></button>`; }).join('')}</div>` : emptyBlock(t('chats_empty'), 'chat').replace(t('nothing_d'), '')}</div>` };
@@ -1343,7 +1348,7 @@ V.chat = (p) => {
     : `<span style="width:40px;height:40px;flex:none">${logo()}</span><h1 style="font-size:16px">${t('operator')}<small style="display:block;font-size:12px;color:var(--palm);font-weight:700">● ${t('online')}</small></h1>`;
   return { composer: id.startsWith('O:') ? null : 'chat', html: `<div class="topbar"><button class="ibtn" data-act="back" aria-label="${t('back')}">${ic('back', 'flip')}</button>${head}${homeBtn()}</div>
   <div class="wrap chat-wrap">
-    ${dmChat ? '' : `<button class="listing-pin" data-act="openlisting" data-v="${id}">${li.svc ? svcThumb(li.svc, 'width:48px;height:48px;border-radius:10px') : `<img src="${img(li.photo)}" alt="">`}<span style="text-align:start;min-width:0"><b>${esc(li.title)}</b><small class="num">${esc(li.price)}${li.price ? ' · ' : ''}${id}</small></span></button>`}
+    ${id === 'support' ? `<div class="banner" style="font-size:13px">${ic('headset')}<div><b>${XL('support_t')}</b><br>${XL('support_d')}</div></div>` : dmChat ? '' : `<button class="listing-pin" data-act="openlisting" data-v="${id}">${li.svc ? svcThumb(li.svc, 'width:48px;height:48px;border-radius:10px') : `<img src="${img(li.photo)}" alt="">`}<span style="text-align:start;min-width:0"><b>${esc(li.title)}</b><small class="num">${esc(li.price)}${li.price ? ' · ' : ''}${id}</small></span></button>`}
     ${id.startsWith('O:') ? `<div class="banner" style="font-size:12.5px">${ic('shield')}<div>${FXL('watch_dm')}</div></div>` : `<div class="banner green" style="font-size:12.5px">${ic('lock')}<div>${t('privacy_note')}</div></div>`}
     ${bubbles}<div id="typing"></div>
   </div>` };
@@ -1358,6 +1363,7 @@ V.profile = () => isAdmin() && LV ? adminProfile() : ({ tabs: true, html: topbar
   <div class="plist" style="margin-top:18px">
     <button data-act="go" data-v="lang"><i class="b-palm c-palm">${ic('globe')}</i><span class="grow">${t('language')}<small>${esc((LANGS.find(l => l.code === lang) || {}).name)}</small></span>${ic('chev', 'flip chev')}</button>
     ${LV && S.me ? `<button data-act="notifset"><i class="b-sky c-sky">${ic('siren')}</i><span class="grow">${FXL('notif_t')}</span>${ic('chev', 'flip chev')}</button>` : ''}
+    ${LV ? `<button data-act="support"><i class="b-date c-date">${ic('headset')}</i><span class="grow">${XL('support_t')}<small>${XL('support_d')}</small></span>${ic('chev', 'flip chev')}</button>` : ''}
     <button data-act="sharesite"><i class="b-palm c-palm">${ic('share')}</i><span class="grow">${XL('share_site')}<small>${XL('share_site_d')}</small></span>${ic('chev', 'flip chev')}</button>
     <button data-act="go" data-v="saved"><i class="b-rose c-rose">${ic('heart')}</i><span class="grow">${t('saved_title')}<small class="num">${nf(S.saved.length)}</small></span>${ic('chev', 'flip chev')}</button>
     <button data-act="rules"><i class="b-date c-date">${ic('info')}</i><span class="grow">${t('rules')}</span>${ic('chev', 'flip chev')}</button>
@@ -1464,7 +1470,7 @@ function authSheet() {
     <button class="btn primary full" data-startreg>${ic('user')}${t('create_profile')}</button><button class="btn soft full" style="margin-top:10px" data-close>${t('later')}</button>`);
   w.querySelector('[data-startreg]').addEventListener('click', () => { w.remove(); gateReg(); });
 }
-const AUTH = ['lstnew', 'sorder', 'write', 'dm', 'reply', 'comment', 'csend', 'postad', 'postparcel', 'compose', 'going', 'helped', 'rreply', 'verify', 'report', 'reportuser', 'toastdemo'];
+const AUTH = ['support', 'lstnew', 'sorder', 'write', 'dm', 'reply', 'comment', 'csend', 'postad', 'postparcel', 'compose', 'going', 'helped', 'rreply', 'verify', 'report', 'reportuser', 'toastdemo'];
 const guestLock = (title, txt0) => ({ tabs: true, html: topbar(title, { noBack: stack.length < 2 }) + `<div class="wrap"><div class="empty">${emptyIllus('lock')}<b>${title}</b><p style="margin:6px auto 18px;max-width:34ch">${txt0}</p><button class="btn primary" data-act="startreg">${ic('user')}${t('create_profile')}</button></div></div>` });
 /* ---------- events ---------- */
 root.addEventListener('click', (e) => {
@@ -1504,6 +1510,7 @@ root.addEventListener('click', (e) => {
     case 'pk': cur().k = v; render(); break;
     case 'c': cur().c = v; render(); break;
     case 'dm': openDM(v); break;
+    case 'support': openSupport(); break;
     case 'sorder': orderSheet(v); break;
     case 'profile': if (v === '@me') tab('profile'); else go('person', { id: v }); break;
     case 'reportuser': toast(t('reported')); break;
@@ -1566,8 +1573,16 @@ root.addEventListener('keydown', (e) => {
 });
 
 function focusBox(k) { setTimeout(() => { const ta = root.querySelector(`textarea[data-ck="${k}"]`); if (ta) { ta.focus(); ta.scrollIntoView({ block: 'center', behavior: 'smooth' }); } }, 40); }
+function openSupport() {
+  if (!LV || !S.me || !LV.user) return authSheet();
+  if (!(LV.profile && LV.profile.mg_on)) { S.mgPending = { support: 1 }; save(); toast(XL('mg_need')); return go('mgchats'); }
+  LV.supportChat('').then(c => { S.chats.support = Object.assign(S.chats.support && S.chats.support.live ? S.chats.support : { msgs: [] }, { live: true, cid: c.id, kind: 'support', topic: '', t: Date.now() }); save(); go('chat', { id: 'support', draft: '' }); loadChat('support'); }).catch(e => { console.warn(e); toast(FXL('send_fail')); });
+}
 function openDM(name) {
   if (!name || name === '@me') return;
+  if (LV) { const pr0 = LV.byName(name); if (!pr0) return toast(FXL('send_fail'));
+    const it0 = cur().v === 'item' ? findItem(cur().id) : cur().v === 'lst' ? lstFind(cur().id) : null;
+    return window.MGACT('mgwrite', pr0.id, { dataset: { draft: it0 ? XL('about_listing').replace('{t}', txt(it0.title)) : '' } }); }
   if (LV) { const pr = LV.byName(name); if (!pr) return toast(MG_T ? L(MG_T.dm_lock) : t('dm'));
     const it = cur().v === 'item' ? findItem(cur().id) : cur().v === 'lst' ? lstFind(cur().id) : null; const fail = (e) => { console.warn(e); toast(FXL('send_fail')); };
     const open = (c) => { const key = 'D:' + pr.id; S.chats[key] = Object.assign(S.chats[key] || { msgs: [] }, { live: true, cid: c.id, kind: 'dm', t: Date.now() }); save(); go('chat', { id: key, draft: it ? txt(it.title) + ' — ' : '' }); };
@@ -1753,7 +1768,7 @@ if (LV) {
   wrapV('room', (pp) => liveSpace(pp.id.split(':')[0])); wrapV('event', () => { if (isOwner()) { liveSpace('men'); liveSpace('women'); } else liveSpace(S.me && S.me.gender === 'f' ? 'women' : 'men'); });
   LV.onRoom && setTimeout(() => LV.onRoom(m => { if (m.author === meU()) return; dropData('c:sp:'); if (cur().v === 'room' && cur().id === m.room) { liveSpace(m.room.split(':')[0]); } }), 0);
 }
-window.NK = { fieldBad, errReq: () => XL('err_req'), verifySheet, canAdmin, chime, setBadge, isStandalone, isInApp, notifSheet, setLang: (l) => { if (!LANGS.some(x => x.code === l)) return; lang = l; S.lang = l; save(); if (LV && LV.user && LV.profile) LV.updateProfile({ ui_lang: l }).catch(() => {}); }, boot: () => boot(), isPhone, isAdmin, want, dropData, liveAv, pname, meFrom, applyLive, liveSyncChats, loadChat, V, t, L, ic, esc, small, img, avatar, vmark, commentsBlock, loc, nf, toast, sheet, go, back, render, save, openDM, authSheet, resizeImg, txt, cur,
+window.NK = { openSupport, fieldBad, errReq: () => XL('err_req'), verifySheet, canAdmin, chime, setBadge, isStandalone, isInApp, notifSheet, setLang: (l) => { if (!LANGS.some(x => x.code === l)) return; lang = l; S.lang = l; save(); if (LV && LV.user && LV.profile) LV.updateProfile({ ui_lang: l }).catch(() => {}); }, boot: () => boot(), isPhone, isAdmin, want, dropData, liveAv, pname, meFrom, applyLive, liveSyncChats, loadChat, V, t, L, ic, esc, small, img, avatar, vmark, commentsBlock, loc, nf, toast, sheet, go, back, render, save, openDM, authSheet, resizeImg, txt, cur,
   get S() { return S; }, get lang() { return lang; }, get stack() { return stack; } };
 boot();
 if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !DEMO) {
