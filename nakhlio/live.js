@@ -110,8 +110,8 @@ L.mgSend = async (chatId, body, lang, media_url, reply_to, media_kind, media_met
 L.explore = async (n) => { const rows = ok(await sb.from('mg_posts').select(POSTSEL).in('type', ['post', 'reel']).eq('hidden', false).order('created_at', { ascending: false }).range(0, (n || 30) - 1)).map(norm); await L.prof(rows.map(r => r.author)); return rows; };
 /* verification ("blue check") requests */
 L.verifyMine = async () => { const r = await sb.from('verify_requests').select('*').eq('user_id', L.user.id).order('created_at', { ascending: false }).limit(1); return (r.data || [])[0] || null; };
-L.verifySubmit = async (blob, app) => { const path = `${L.user.id}/doc-${Date.now()}.jpg`; ok(await sb.storage.from('verify').upload(path, blob, { contentType: 'image/jpeg', upsert: false }));
-  return ok(await sb.from('verify_requests').insert({ user_id: L.user.id, doc_path: path, app: app || 'nakhlio' }).select().single()); };
+L.verifySubmit = async (blob, app, purpose) => { const path = `${L.user.id}/doc-${Date.now()}.jpg`; ok(await sb.storage.from('verify').upload(path, blob, { contentType: 'image/jpeg', upsert: false }));
+  return ok(await sb.from('verify_requests').insert({ user_id: L.user.id, doc_path: path, app: app || 'nakhlio', purpose: purpose || null }).select().single()); };
 L.verifyList = async () => { const rows = ok(await sb.from('verify_requests').select('*').eq('status', 'pending').order('created_at').limit(50)); await L.prof(rows.map(r => r.user_id)); return rows; };
 L.verifyDoc = async (path) => { const r = await sb.storage.from('verify').createSignedUrl(path, 600); return r.data ? r.data.signedUrl : null; };
 L.verifyDecide = async (req, approve, note) => {

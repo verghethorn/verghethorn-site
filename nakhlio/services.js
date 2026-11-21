@@ -173,7 +173,7 @@ window.FX = {
   vf_s1_ok: D('Фото есть. На нём должно быть хорошо видно ваше лицо', 'Photo added. Your face must be clearly visible', 'الصورة مضافة. يجب أن يظهر وجهك بوضوح'),
   vf_s1_no: D('Поставьте своё настоящее фото, где хорошо видно лицо', 'Add your real photo with your face clearly visible', 'أضف صورتك الحقيقية ويظهر فيها وجهك بوضوح'),
   vf_s2: D('Фото паспорта или икамы', 'Photo of your passport or iqama', 'صورة الجواز أو الإقامة'),
-  vf_s2_d: D('Страница с фото и именем, без бликов', 'The page with your photo and name, no glare', 'الصفحة التي فيها صورتك واسمك، بلا انعكاس'),
+  vf_s2_d: D('Сфотографируйте камерой страницу с фото и именем, без бликов', 'Take a camera photo of the page with your photo and name, no glare', 'صوّر بالكاميرا الصفحة التي فيها صورتك واسمك، بلا انعكاس'),
   vf_privacy: D('Документ видят только администраторы Nakhlio. После проверки мы его сразу удаляем.', 'Only Nakhlio administrators see the document. We delete it right after the check.', 'لا يرى الوثيقة إلا مشرفو نخليو. نحذفها فور التحقق.'),
   vf_send: D('Отправить на проверку', 'Send for review', 'إرسال للتحقق'),
   vf_need_photo: D('Сначала поставьте фото в профиль', 'Add a profile photo first', 'أضف صورة للملف أولاً'),

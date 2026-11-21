@@ -1316,3 +1316,8 @@ c1055|Şu anki Magaam kimliğiniz:
 c1056|Bağlantıyı herhangi bir uygulamayla gönderin: WhatsApp, Telegram, WeChat ve diğerleri. Bununla kaydolan kişi hemen kişilerinize eklenir.
 c1057|Magaam’da bana katıl — herkesin kendi dilinde yazdığı ve çevirinin kendiliğinden geldiği bir mesajlaşma uygulaması:
 c1058|Kendi dilinde yazış — çeviri otomatik
+c1059|Saygılı olun: hakaret, tehdit ve spam yok.
+c1060|Kimseyi kandırmayın ve yabancılardan para istemeyin.
+c1061|Kullanıcılar sizi yalnızca “Nakhlio Yönetimi” olarak görür — ad ve fotoğraf olmadan.
+c1062|İlan vermek istiyor
+c1063|Fotoğrafınızın ve adınızın olduğu sayfayı kamerayla, parlama olmadan çekin

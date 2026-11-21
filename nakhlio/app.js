@@ -350,6 +350,7 @@ const LX = {
   publish: X3('Опубликовать', 'Publish', 'نشر'), published: X3('Объявление опубликовано', 'Listing published', 'تم نشر الإعلان'),
   my_l: X3('Моё объявление', 'My listing', 'إعلاني'), del_q: X3('Удалить объявление?', 'Delete this listing?', 'حذف الإعلان؟'),
   rules_note: X3('Только честные объявления от себя. Без посредников с чужими фото. Нарушения удаляем, автора блокируем.', 'Only honest listings of your own. No middlemen using other people’s photos. Violations are removed and the author blocked.', 'إعلانات صادقة تخصك فقط. لا وسطاء بصور غيرهم. نحذف المخالفات ونحظر المعلن.'),
+  wants: X3('Хочет разместить', 'Wants to post', 'يريد أن ينشر'),
   fresh: X3('Новые объявления', 'New listings', 'أحدث الإعلانات'),
   count_n: X3('объявл.', 'listings', 'إعلانات'), loading: X3('Загружаем…', 'Loading…', 'جارٍ التحميل…'),
 };
@@ -438,13 +439,13 @@ V.lst = (p) => {
   </div>` };
 };
 /* only verified people may sell, rent out or offer services */
-async function needVerified(then) {
+async function needVerified(then, purpose) {
   if (!LV || !LV.user) return authSheet();
   const pr = LV.profile || {}; if (pr.verified || pr.is_admin || pr.is_owner) return then();
   const last = await LV.verifyMine().catch(() => null);
   if (last && last.status === 'pending') { sheet(`<h3>${small('shield')} ${XL('need_vf_t')}</h3><p style="line-height:1.55">${XL('vf_wait')}</p><button class="btn green full" data-close>${t('understood')}</button>`); return; }
   const w = sheet(`<h3>${small('shield')} ${XL('need_vf_t')}</h3><p style="line-height:1.55;margin:0 0 14px">${XL('need_vf_d')}</p><button class="btn green full" id="nvgo">${small('check')}${XL('need_vf_go')}</button><button class="btn soft full" style="margin-top:8px" data-close>${t('later')}</button>`);
-  w.querySelector('#nvgo').onclick = () => { w.remove(); verifySheet(false); };
+  w.querySelector('#nvgo').onclick = () => { w.remove(); verifySheet(false, purpose); };
 }
 function lstSheet(sec) {
   const pr = LV.profile || {}; const st = { term: sec === 'housing' ? 'daily' : 'daily', cat: sec === 'transport' ? 'cars' : sec === 'services' ? 'translate' : '', unit: sec === 'housing' ? 'night' : sec === 'transport' ? 'day' : 'hour' }; const photos = [];
@@ -955,7 +956,7 @@ function notifSheet() {
     else { await pushDisable(); S.notifOn = false; save(); toast(t('saved_ok')); } });
   p2.addEventListener('change', () => { S.sound = p2.checked; save(); unlockAudio(); if (S.sound) { lastChime = 0; chime(); } if (LV && LV.user) LV.updateProfile({ notify_sound: S.sound }).catch(() => {}); });
 }
-async function verifySheet(mg) {
+async function verifySheet(mg, purpose) {
   if (!LV || !LV.user) return;
   const pr = LV.profile || {}; if (pr.verified) { toast(FXL('vf_done')); return; }
   const last = await LV.verifyMine().catch(() => null);
@@ -967,13 +968,13 @@ async function verifySheet(mg) {
     <div class="vfstep" id="vfdocrow"><span class="vfn">2</span><div class="grow"><b>${FXL('vf_s2')}</b><small>${FXL('vf_s2_d')}</small></div><button class="btn sm soft" id="vfdoc">${small('camera')}${t('add')}</button></div>
     <p class="note" style="font-size:12px;margin:10px 0 0;line-height:1.45">${small('lock')} ${FXL('vf_privacy')}</p><p class="ferr" id="vferr" hidden></p>
     <button class="btn green full" id="vfgo" style="margin-top:12px">${FXL('vf_send')}</button>`);
-  const pick = (cb) => { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.onchange = async () => { const f = inp.files[0]; if (f) cb(await resizeImg(f, 2000, 0.9)); }; inp.click(); };
+  const pick = (cb, cam) => { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; if (cam) inp.setAttribute('capture', 'environment'); inp.onchange = async () => { const f = inp.files[0]; if (f) cb(await resizeImg(f, 2000, 0.9)); }; inp.click(); };
   const ph = w.querySelector('#vfph'); if (ph) ph.onclick = () => pick(async d => { try { const url = await LV.upload(d, 'avatar'); const np = await LV.updateProfile(mg ? { mg_avatar: url } : { photo_url: url }); S.me = meFrom(np); save(); w.remove(); verifySheet(mg); } catch (e) { toast(FXL('send_fail')); } });
-  w.querySelector('#vfdoc').onclick = () => pick(d => { if (!d) return; doc = d; const row = w.querySelector('#vfdocrow'); row.classList.add('ok'); row.querySelector('.vfn').textContent = '✓'; row.querySelector('#vfdoc').outerHTML = `<span class="av" style="background:url(${d}) center/cover;border-radius:8px"></span>`; });
+  w.querySelector('#vfdoc').onclick = () => pick(d => { if (!d) return; doc = d; const row = w.querySelector('#vfdocrow'); row.classList.add('ok'); row.querySelector('.vfn').textContent = '✓'; row.querySelector('#vfdoc').outerHTML = `<span class="av" style="background:url(${d}) center/cover;border-radius:8px"></span>`; }, true);
   w.querySelector('#vfgo').onclick = async (ev) => { const er = w.querySelector('#vferr'); const show = (k) => { er.hidden = false; er.textContent = FXL(k); };
     if (!photo) return show('vf_need_photo'); if (!doc) return show('vf_need_doc');
     const b = ev.currentTarget; b.disabled = true; b.textContent = '…';
-    try { const blob = await (await fetch(doc)).blob(); await LV.verifySubmit(blob, mg ? 'magaam' : 'nakhlio'); w.remove(); sheet(`<h3>${small('check')} ${FXL('vf_t')}</h3><p style="line-height:1.55">${FXL('vf_sent')}</p><button class="btn green full" data-close>${t('understood')}</button>`); }
+    try { const blob = await (await fetch(doc)).blob(); await LV.verifySubmit(blob, mg ? 'magaam' : 'nakhlio', purpose || null); w.remove(); sheet(`<h3>${small('check')} ${FXL('vf_t')}</h3><p style="line-height:1.55">${FXL('vf_sent')}</p><button class="btn green full" data-close>${t('understood')}</button>`); }
     catch (e) { console.warn(e); b.disabled = false; b.textContent = FXL('vf_send'); show('send_fail'); } };
 }
 function openDeep(url) {
@@ -1361,7 +1362,8 @@ function admUserSheet(uid) {
       w2.querySelector('#wgo').onclick = () => { const tx = w2.querySelector('#wtx').value.trim(); if (!tx) return; LV.warn(uid, tx, lang).then(() => { w2.remove(); toast(FXL('warn_sent')); liveSyncChats(true); }).catch(fail); }; }
   });
 }
-V.operator = (p) => {
+V.operator = (p) => { const r0 = operatorView(p); if (window.MG_APP && r0) r0.tabs = false; return r0; };
+const operatorView = (p) => {
   if (!isAdmin()) return V.home();
   if (LV) {
     liveSyncChats(); const k = p.k || 'chats';
@@ -1381,7 +1383,7 @@ V.operator = (p) => {
       body = search + chips + (res === undefined ? `<p class="note">…</p>` : !res ? `<p class="note">${FXL('send_fail')}</p>` : `<p class="note" style="margin:8px 0">${FXL('found')}: <b class="num">${nf(res.count)}</b>${res.count > res.rows.length ? ` · ${FXL('shown')} <span class="num">${nf(res.rows.length)}</span>` : ''}</p><div class="list one">${res.rows.map(uRow).join('')}</div>${res.count > res.rows.length ? `<button class="btn soft full" style="margin-top:12px" data-act="umore">${FXL('more')}</button>` : ''}`); }
     else if (k === 'verify') { const vr = want('adm:vf', () => LV.verifyList());
       body = vr === undefined ? `<p class="note">…</p>` : !vr || !vr.length ? `<p class="note">${FXL('vf_none')}</p>` : `<div class="list one">${vr.map(r => { const pr = LV.cached(r.user_id) || {}; const docU = want('adm:vfd:' + r.id, () => LV.verifyDoc(r.doc_path));
-        return `<div class="card"><div style="display:flex;gap:10px;align-items:center"><button class="pbtn" data-act="admuser" data-v="${r.user_id}">${liveAv(r.user_id, 'lg')}</button><div style="flex:1;min-width:0"><b>${esc(pr.name || '…')}${pr.mg_name && pr.mg_name !== pr.name ? ` · ${esc(pr.mg_name)}` : ''}</b><div class="sub">${r.app === 'magaam' ? 'Magaam' : 'Nakhlio'} · ${new Date(r.created_at).toLocaleString(locale())}</div></div></div>
+        return `<div class="card"><div style="display:flex;gap:10px;align-items:center"><button class="pbtn" data-act="admuser" data-v="${r.user_id}">${liveAv(r.user_id, 'lg')}</button><div style="flex:1;min-width:0"><b>${esc(pr.name || '…')}${pr.mg_name && pr.mg_name !== pr.name ? ` · ${esc(pr.mg_name)}` : ''}</b><div class="sub">${r.app === 'magaam' ? 'Magaam' : 'Nakhlio'} · ${new Date(r.created_at).toLocaleString(locale())}</div>${r.purpose ? `<div class="tag gold" style="margin-top:4px">${esc(XL('wants'))}: ${esc(r.purpose === 'services' ? XL('svc_title') : r.purpose === 'ads' ? t('s_ads') : t('s_' + r.purpose))}</div>` : ''}</div></div>
           <div class="vfcmp"><figure><span style="background-image:url(${esc(pr.photo_url || pr.mg_avatar || '')})"></span><figcaption>${FXL('vf_s1')}</figcaption></figure>${pr.mg_avatar && pr.mg_avatar !== pr.photo_url ? `<figure><span style="background-image:url(${esc(pr.mg_avatar)})"></span><figcaption>Magaam</figcaption></figure>` : ''}<figure class="doc">${docU ? `<a href="${esc(docU)}" target="_blank" rel="noopener"><span style="background-image:url(${esc(docU)})"></span></a>` : '<span></span>'}<figcaption>${FXL('vf_s2')}</figcaption></figure></div>
           <div style="display:flex;gap:8px;margin-top:10px"><button class="btn sm green" data-act="vfyes" data-v="${r.id}">${small('check')}${FXL('vf_approve')}</button><button class="btn sm soft" data-act="vfno" data-v="${r.id}">${FXL('vf_reject')}</button></div></div>`; }).join('')}</div>`; }
     else if (k === 'umg' && isOwner()) { const ds = want('adm:umg:' + p.uid, () => LV.mgUserChats(p.uid));
@@ -1458,7 +1460,7 @@ root.addEventListener('click', (e) => {
     case 'tab': tab(v); break;
     case 'term': cur().term = v; render(); break;
     case 'svcc': cur().c = v; render(); break;
-    case 'lstnew': needVerified(() => lstSheet(v)); break;
+    case 'lstnew': needVerified(() => lstSheet(v), v); break;
     case 'lstdel': { if (!confirm(XL('del_q'))) break; LV.delItem(v).then(() => { toast(FXL('act_delete') + ' ✓'); dropData('c:items'); back(); }).catch(() => toast(FXL('send_fail'))); break; }
     case 'kind': cur().kind = v; render(); break;
     case 'filter': cur().f = v; render(); break;
@@ -1508,7 +1510,7 @@ root.addEventListener('click', (e) => {
       fn(ty === 'room' || ty === 'cm' ? +id2 : id2).then(() => { toast(FXL('act_delete') + ' ✓'); dropData('c:'); if (ty === 'item' && cur().v === 'item') back(); else render(); }).catch(er => toast(FXL('send_fail'))); break; }
     case 'levent': eventSheet(v); break;
     case 'oath': S.pledge[v] = true; save(); render(true); break;
-    case 'postad': if (LV) needVerified(adSheet); else adSheet(); break;
+    case 'postad': if (LV) needVerified(adSheet, 'ads'); else adSheet(); break;
     case 'postparcel': parcelSheet(); break;
     case 'status': { const st = ['new', 'work', 'view', 'done']; S.req[v] = st[(st.indexOf(S.req[v] || 'new') + 1) % 4]; save(); render(); break; }
     case 'reset': try { localStorage.removeItem(KEY); } catch (er) {} location.reload(); break;
@@ -1587,7 +1589,7 @@ function parcelSheetLive() {
   const segs = w.querySelectorAll('.seg button'); segs.forEach(b => b.addEventListener('click', () => { kind = b.dataset.k; segs.forEach(x => x.classList.toggle('on', x === b)); }));
   const ag = w.querySelector('#pagree'), btn = w.querySelector('#pgo'); ag.addEventListener('change', () => { btn.disabled = !ag.checked; });
   btn.addEventListener('click', () => { const to = w.querySelector('#pt').value.trim(); if (!to) { w.querySelector('#pt').focus(); return; }
-    const pr0 = LV.profile || {}; if (kind === 'flying' && !(pr0.verified || pr0.is_admin || pr0.is_owner)) { w.remove(); needVerified(() => {}); return; } btn.disabled = true;
+    const pr0 = LV.profile || {}; if (kind === 'flying' && !(pr0.verified || pr0.is_admin || pr0.is_owner)) { w.remove(); needVerified(() => {}, 'parcels'); return; } btn.disabled = true;
     LV.addItem({ kind: 'parcel', cat: kind, route_from: w.querySelector('#pf').value.trim() || 'Medina', route_to: to, pdate: w.querySelector('#pr2').value || null, kg: parseFloat(w.querySelector('#pr3').value) || null, descr: w.querySelector('#pdx').value.trim(), lang })
       .then(() => { w.remove(); toast(t('published')); dropData('c:items'); if (cur().v !== 'parcels') go('parcels'); else render(); }).catch(e => { toast(FXL('send_fail')); btn.disabled = false; }); });
 }
@@ -1718,7 +1720,11 @@ window.NK = { verifySheet, canAdmin, chime, setBadge, isStandalone, isInApp, not
   get S() { return S; }, get lang() { return lang; }, get stack() { return stack; } };
 boot();
 if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !DEMO) {
-  navigator.serviceWorker.register(window.MG_APP ? '/magaam/sw.js' : '/nakhlio/sw.js', { scope: window.MG_APP ? '/magaam/' : '/nakhlio/' }).catch(() => {});
+  const hadCtl = !!navigator.serviceWorker.controller; let swReloaded = false;
+  navigator.serviceWorker.register(window.MG_APP ? '/magaam/sw.js' : '/nakhlio/sw.js', { scope: window.MG_APP ? '/magaam/' : '/nakhlio/' })
+    .then(reg => { document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') reg.update().catch(() => {}); }); }).catch(() => {});
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (!hadCtl || swReloaded) return; swReloaded = true; const busy = document.querySelector('.sheet-wrap') || (document.activeElement && /TEXTAREA|INPUT/.test(document.activeElement.tagName));
+    if (!busy) location.reload(); else document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') location.reload(); }, { once: true }); });
   navigator.serviceWorker.addEventListener('message', (e) => { if (e.data && e.data.open) openDeep(e.data.open); });
 }
 })();

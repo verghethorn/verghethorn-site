@@ -1316,3 +1316,8 @@ c1055|Magaam ID Anda saat ini:
 c1056|Kirim tautan lewat aplikasi apa saja: WhatsApp, Telegram, WeChat, dan lainnya. Siapa pun yang mendaftar lewat tautan ini langsung masuk ke kontak Anda.
 c1057|Bergabunglah denganku di Magaam — aplikasi pesan tempat semua orang menulis dalam bahasanya sendiri dan terjemahan datang otomatis:
 c1058|Mengobrol dengan bahasamu sendiri — terjemahan otomatis
+c1059|Bersikaplah sopan: tanpa hinaan, ancaman, atau spam.
+c1060|Jangan menipu dan jangan meminta uang kepada orang asing.
+c1061|Pengguna hanya melihat Anda sebagai “Administrasi Nakhlio” — tanpa nama atau foto.
+c1062|Ingin memasang
+c1063|Foto dengan kamera halaman yang berisi foto dan nama Anda, tanpa silau

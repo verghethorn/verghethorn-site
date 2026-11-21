@@ -132,6 +132,9 @@ const T = {
   r_ok: D('Принимаю правила', 'I accept the rules', 'أوافق على القواعد'),
   open: D('Открыть Magaam', 'Open Magaam', 'افتح Magaam'),
   back_n: D('Nakhlio', 'Nakhlio', 'Nakhlio'),
+  r5: D('Общайтесь уважительно: без оскорблений, угроз и спама.', 'Be respectful: no insults, threats or spam.', 'تحدّث باحترام: بلا إهانات أو تهديد أو رسائل مزعجة.'),
+  r6: D('Не обманывайте и не просите деньги у незнакомых людей.', 'Don’t deceive others or ask strangers for money.', 'لا تخدع أحداً ولا تطلب المال من الغرباء.'),
+  adm_anon: D('Пользователи видят вас только как «Администрация Nakhlio» — без имени и фото.', 'Users see you only as “Nakhlio Administration” — no name or photo.', 'يراك المستخدمون فقط كـ«إدارة نخليو» — بلا اسم أو صورة.'),
   h_change1: D('Изменить (1 раз)', 'Change (once)', 'تغيير (مرة واحدة)'),
   h_now: D('Сейчас ваш Magaam ID:', 'Your Magaam ID now:', 'معرّفك في Magaam الآن:'),
   inv_code_l: D('Код приглашения', 'Invitation code', 'رمز الدعوة'),
@@ -273,7 +276,7 @@ const _navOld = (on) => `<nav class="mgnav">${[['mg', 'home', 'feed'], window.LI
 function rulesModal() {
   const g = st(); if (g.rulesOk || document.querySelector('.tmodal')) return;
   const host = document.querySelector('.app') || document.body; const w = document.createElement('div'); w.className = 'tmodal';
-  w.innerHTML = `<div class="tbox mgrbox" role="dialog" aria-modal="true">${mgLogo('big')}<h3>${M('r_t')}</h3><p>${M('r_intro')}</p><ul>${['r1', 'r2', 'r3', 'r4'].map(k => `<li>${M(k)}</li>`).join('')}</ul><button class="btn primary full mgbtn">${M('r_ok')}</button></div>`;
+  w.innerHTML = `<div class="tbox mgrbox" role="dialog" aria-modal="true">${mgLogo('big')}<h3>${M('r_t')}</h3><p>${M('r_intro')}</p><ul>${['r5', 'r3', 'r6', 'r4'].map(k => `<li>${M(k)}</li>`).join('')}</ul><button class="btn primary full mgbtn">${M('r_ok')}</button></div>`;
   w.querySelector('button').onclick = () => { g.rulesOk = true; save(); w.remove(); };
   host.appendChild(w);
 }
@@ -1095,9 +1098,13 @@ if (LV) {
     const rows = list.map(c => { const un = Number(c.unread || 0); const mineLast = c.last_sender === meId(); const rd = c.other_read && new Date(c.other_read) >= new Date(c.last_at);
       return `<button class="m8row ${un ? 'un' : ''}" data-act="mgopen" data-v="${c.id}" data-u="${c.other}" data-nm="${esc(mname(c.other).toLowerCase())}">${ringAv(c.other, 'md')}<span class="grow"><span class="m8r1"><b>${esc(mname(c.other))}${vm(c.other)}</b><small class="num">${shortTime(c.last_at)}</small></span><span class="m8r2"><span>${mineLast ? `<i class="mgtick ${rd ? 'rd' : ''}">${rd ? '✓✓' : '✓'}</i> ` : ''}${esc(mineLast ? c.last_body || '' : trText('lb' + c.id + (c.last_body || '').length, c.last_body || '', prof(c.other).ui_lang))}</span>${un ? `<em class="num">${un > 99 ? '99+' : un}</em>` : ''}</span></span></button>`; }).join('');
     return wrapView('mgchats', `<div class="m8wrap"><h1 class="m8big">${M8('chats')}</h1>${storiesRow8()}<div class="m8search">${ic('search')}<input type="search" placeholder="${M('search')}" aria-label="${M('search')}" oninput="var q=this.value.toLowerCase();document.querySelectorAll('.m8row').forEach(function(e){e.hidden=e.dataset.nm.indexOf(q)<0})"></div>
-      <div class="m8list">${inb === undefined ? loading : rows || `<div class="m8empty">${mgLogo()}<p>${M('no_chats')}</p><button class="m8btn dark" data-act="mggo" data-v="mgcontacts">${M8('contacts')}</button></div>`}</div>
+      <div class="m8list">${teamRow()}${inb === undefined ? loading : rows || `<div class="m8empty">${mgLogo()}<p>${M('no_chats')}</p><button class="m8btn dark" data-act="mggo" data-v="mgcontacts">${M8('contacts')}</button></div>`}</div>
       <p class="m8note">${small('translate')} ${M8('tr_auto')}</p></div>`, ''); };
   V.mg = () => V.mgchats();
+  /* messages from the Nakhlio administration (warnings, verification answers) live in the team chat */
+  const teamRow = () => { if (isAdmin() || !NK.liveSyncChats) return ''; NK.liveSyncChats(); const sc = (NK.S.chats || {}).support; if (!sc || !sc.msgs || !sc.msgs.length) return '';
+    const m = sc.msgs[sc.msgs.length - 1]; const tx = m ? (NK.txt ? NK.txt(m.text) : String(m.text || '')) : '';
+    return `<button class="m8row" data-act="go" data-v="chat" data-id="support" data-nm="nakhlio ${esc(FXM('nk_admin').toLowerCase())}"><span class="mgav md m8nkav">${NKL}</span><span class="grow"><span class="m8r1"><b>${esc(FXM('nk_admin'))}</b>${small('shield')}<small class="num">${sc.t ? shortTime(sc.t) : ''}</small></span><span class="m8r2"><span>${esc(tx)}</span></span></span></button>`; };
 
   /* contacts */
   V.mgcontacts = () => { const r = ready(); if (r) return r; const rel = R(); const n = reqCount();
@@ -1156,17 +1163,26 @@ if (LV) {
     const me = uid === meId(); const pr = me ? LV.profile || {} : (LV.cached(uid) || want('mg:pf:' + uid, () => LV.fetchProfile(uid)) || {});
     const rel = R(); const fr = rel.friends.has(uid), rq = rel.out.has(uid); const by = storyMap(); const has = !!(by[uid] && by[uid].length);
     const lng = pr.ui_lang ? `<span class="m8lang">${small('globe')}${M8('speaks')}: ${esc(langName(pr.ui_lang))}${!me && pr.ui_lang !== NK.lang ? ` · <b>${M('tr_for_you')}</b>` : ''}</span>` : '';
-    const acts = me ? `<button class="m8btn dark" data-act="mgaddstory">${ic('plus')}${M9('add_story')}</button><button class="m8btn" data-act="mgedit">${M('edit_l')}</button><button class="m8btn sq" data-act="mginvite" aria-label="${M('share')}">${ic('share')}</button>`
+    const admActs = isAdmin() && !me ? `<button class="m8btn ${pr.verified ? '' : 'dark'}" data-act="mgaflag" data-v="${uid}" data-f="verified" data-x="${pr.verified ? 0 : 1}">${small('check')}${FXM(pr.verified ? 'act_unverify' : 'act_verify')}</button><button class="m8btn" data-act="mgawarn" data-v="${uid}">${FXM('act_warn')}</button><button class="m8btn" style="color:#C2352B" data-act="mgaflag" data-v="${uid}" data-f="banned" data-x="${pr.banned ? 0 : 1}">${FXM(pr.banned ? 'act_unban' : 'act_ban')}</button><button class="m8btn sq" data-act="admuser" data-v="${uid}" aria-label="${FXM('adm')}">${ic('dots')}</button>` : '';
+    const acts = admActs ? admActs : me ? `<button class="m8btn dark" data-act="mgaddstory">${ic('plus')}${M9('add_story')}</button><button class="m8btn" data-act="mgedit">${M('edit_l')}</button><button class="m8btn sq" data-act="mginvite" aria-label="${M('share')}">${ic('share')}</button>`
       : `${fr ? `<button class="m8btn dark" data-act="mgdm" data-v="${uid}">${ic('chat')}${M('write')}</button><button class="m8btn" disabled>${small('check')}${M8('in_contacts')}</button>` : `<button class="m8btn dark" data-act="mgfriend" data-v="${uid}" ${rq ? 'disabled' : ''}>${rq ? M8('req_sent2') : M8('add_contact')}</button>`}<button class="m8btn sq" data-act="mgumenu" data-v="${uid}" aria-label="${M('more_l')}">${ic('dots')}</button>`;
     return `<div class="m8prof2"><button class="m8bigav" data-act="${has ? 'mgstory' : me ? 'mgstav' : 'noop'}" data-v="${uid}">${ringAv(uid, 'xl', by)}</button>${me ? `<button class="mglink m8chph" data-act="mgstav">${M9('change_photo')}</button>` : ''}
       <h2>${esc(mname(uid))}${vm(uid)}</h2>${pr.mg_handle ? `<div class="m8handle">@${esc(pr.mg_handle)}</div>` : ''}
-      ${lng}<div class="m8acts">${acts}</div></div>`; };
+      ${lng}<div class="m8acts ${admActs ? 'adm' : ''}">${acts}</div></div>`; };
   V.mgp = (p) => { const r = ready(); if (r) return r; if (p.id === meId()) return V.mgmine(); return wrapView('mgp', prof8(p.id), ''); };
   V.mgmine = () => { const r = ready(); if (r) return r; return wrapView('mgmine', prof8(meId()), ''); };
 
   /* me */
   V.mgme = () => { const r = ready(); if (r) return r; const pr = LV.profile || {};
     const row = (act, icn, label, v, extra) => `<button class="m8row sys" data-act="${act}" ${v ? `data-v="${v}"` : ''}><span class="m8ic">${icn}</span><span class="grow"><b>${label}</b></span>${extra ? `<small class="m8val">${extra}</small>` : ''}${ic('chev', 'flip chev')}</button>`;
+    if (isAdmin()) { const st = want('adm:stats', () => LV.stats()) || {}; const n = (x) => x ? ` <em class="m8adn num">${nf(x)}</em>` : '';
+      return wrapView('mgme', `<div class="m8wrap"><h1 class="m8big">${FXM('adm_badge')}</h1>
+        <div class="m8admcard"><span class="m8admlogo">${NKL}</span><b>${FXM('nk_admin')}</b><small>${FXM(pr.is_owner ? 'owner_l' : 'adm')}</small>
+          <div class="m8admnums"><div><b class="num">${st.mg_users == null ? '…' : nf(st.mg_users)}</b><small>${FXM('st_mg_users')}</small></div><div><b class="num">${st.users == null ? '…' : nf(st.users)}</b><small>${FXM('st_users')}</small></div><div><b class="num">${st.new7 == null ? '…' : nf(st.new7)}</b><small>${FXM('st_new7')}</small></div></div></div>
+        <p class="m8note" style="margin:0 4px 12px">${small('shield')} ${M('adm_anon')}</p>
+        <div class="m8list">${row('admop', ic('flag'), FXM('tab_reports') + n(st.reports), 'reports')}${row('admop', ic('check'), FXM('tab_verify') + n(st.verify), 'verify')}${row('admop', ic('headset'), FXM('tab_chats') + n(st.support), 'chats')}${row('admop', ic('users'), FXM('tab_users'), 'users')}</div>
+        <div class="m8list">${row('mglangs', ic('globe'), t('language'), '', esc(langName(NK.lang)))}${row('notifset', ic('siren'), FXM('notif_t'))}</div>
+        <div class="m8list">${row('admmode', ic('user'), FXM('adm_mode_off'))}</div></div>`, ''); }
     return wrapView('mgme', `<div class="m8wrap"><h1 class="m8big">${M('me_t')}</h1>
       <button class="m8mecard" data-act="mggo" data-v="mgmine">${av(meId(), 'me')}<span class="grow"><b>${esc(mname(meId()))}${vm(meId())}</b><small>Magaam ID: ${pr.mg_handle ? '@' + esc(pr.mg_handle) : esc(pr.invite_code || '—')}</small></span>${ic('chev', 'flip chev')}</button>
       ${isAdmin() ? `<button class="mgadmmode" data-act="admmode">${small('shield')}<b>${FXM('adm_badge')}</b><span>${FXM('adm_mode_off')}</span></button>` : ''}

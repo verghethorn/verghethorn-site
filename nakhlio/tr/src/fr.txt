@@ -1316,3 +1316,8 @@ c1055|Votre identifiant Magaam actuel :
 c1056|Envoyez le lien par n’importe quelle appli : WhatsApp, Telegram, WeChat et d’autres. Toute personne qui s’inscrit avec apparaît aussitôt dans vos contacts.
 c1057|Rejoins-moi sur Magaam — une messagerie où chacun écrit dans sa langue et la traduction arrive toute seule :
 c1058|Discutez dans votre langue — traduction automatique
+c1059|Restez respectueux : ni insultes, ni menaces, ni spam.
+c1060|Ne trompez personne et ne demandez pas d’argent à des inconnus.
+c1061|Les utilisateurs ne vous voient que comme « Administration Nakhlio » — sans nom ni photo.
+c1062|Veut publier
+c1063|Photographiez avec l’appareil la page avec votre photo et votre nom, sans reflet
