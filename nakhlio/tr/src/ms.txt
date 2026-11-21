@@ -1306,3 +1306,13 @@ c1045|Masukkan kod jemputan.
 c1046|Kod ini tidak wujud. Semak pautan daripada rakan anda.
 c1047|Kod jemputan anda:
 c1048|Pautan disalin — tampal dalam chat WeChat.
+c1049|Tukar Magaam ID
+c1050|Magaam ID hanya boleh ditukar sekali. Pilih dengan teliti — selepas itu ia tidak boleh ditukar, dan orang akan mencari anda dengannya.
+c1051|Simpan ID
+c1052|Tukar ID anda kepada {h}? Anda tidak boleh menukarnya lagi.
+c1053|Anda sudah menukar Magaam ID, jadi ia tidak boleh ditukar lagi. Orang mencari anda dengannya.
+c1054|Tukar (sekali)
+c1055|Magaam ID anda sekarang:
+c1056|Hantar pautan melalui mana-mana aplikasi: WhatsApp, Telegram, WeChat dan lain-lain. Sesiapa yang mendaftar melaluinya terus masuk ke kenalan anda.
+c1057|Sertai saya di Magaam — aplikasi mesej di mana setiap orang menulis dalam bahasa sendiri dan terjemahan datang dengan sendirinya:
+c1058|Berbual dalam bahasa sendiri — terjemahan automatik

@@ -390,7 +390,7 @@ function liveHousing(p) {
   let items = LST.housing.filter(h => h.term === term);
   const prices = items.filter(h => h.price != null).map(h => h.price).sort((a, b) => a - b); const med = prices[Math.floor(prices.length / 2)];
   items = items.filter(h => f === 'all' || (f === 'furnished' && h.d.furnished) || (f === 'unfurnished' && !h.d.furnished) || (f === 'families' && h.d.aud !== 'singles') || (f === 'singles' && h.d.aud !== 'families') || (f === 'near' && h.d.walk && h.d.walk <= 15) || (f === 'under' && h.price != null && h.price <= med));
-  const chips = ['all', 'near', 'furnished', 'unfurnished', 'families', 'singles', 'under'].map(c => `<button class="chip ${c === f ? 'on' : ''}" data-act="filter" data-v="${c}">${t(c === 'near' ? 'near_haram' : c)}</button>`).join('');
+  const chips = ['all', 'near', 'furnished', 'unfurnished', 'families', 'singles'].map(c => `<button class="chip ${c === f ? 'on' : ''}" data-act="filter" data-v="${c}">${t(c === 'near' ? 'near_haram' : c)}</button>`).join('');
   return { tabs: true, html: topbar(t('s_housing'), { right: postBtn('housing') }) + `<div class="wrap">${resBanner()}
     <div class="seg">${['daily', 'monthly', 'yearly'].map(x => `<button class="${x === term ? 'on' : ''}" data-act="term" data-v="${x}">${XL(x)}</button>`).join('')}</div>
     <div class="chips">${chips}</div><div class="count">${nf(items.length)} ${XL('count_n')}</div>${lstList(items, 'housing')}
@@ -503,7 +503,7 @@ V.housing = (p) => {
   let items = HOUSING.filter(h => h.term === term);
   const med = items.map(h => h.price).sort((a, b) => a - b)[Math.floor(items.length / 2)];
   items = items.filter(h => f === 'all' || (f === 'furnished' && h.furnished) || (f === 'unfurnished' && !h.furnished) || (f === 'families' && (h.aud === 'families' || h.aud === 'any')) || (f === 'singles' && (h.aud === 'singles' || h.aud === 'any')) || (f === 'near' && (h.walk || h.km < 3.5)) || (f === 'under' && h.price <= med));
-  const chips = ['all', 'near', 'furnished', 'unfurnished', 'families', 'singles', 'under'].map(c => `<button class="chip ${c === f ? 'on' : ''}" data-act="filter" data-v="${c}">${t(c === 'near' ? 'near_haram' : c)}</button>`).join('');
+  const chips = ['all', 'near', 'furnished', 'unfurnished', 'families', 'singles'].map(c => `<button class="chip ${c === f ? 'on' : ''}" data-act="filter" data-v="${c}">${t(c === 'near' ? 'near_haram' : c)}</button>`).join('');
   return { tabs: true, html: topbar(t('s_housing')) + `<div class="wrap">
     <div class="seg">${['daily', 'monthly', 'yearly'].map(x => `<button class="${x === term ? 'on' : ''}" data-act="term" data-v="${x}">${t(x)}</button>`).join('')}</div>
     <div class="chips">${chips}</div>

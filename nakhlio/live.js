@@ -98,7 +98,7 @@ L.onMessage = (cb) => { L.listeners.push(cb); if (chan) return; chan = sb.channe
 /* Magaam: invites, own profile, messenger */
 L.inviteInfo = async (code) => { const r = await sb.rpc('invite_info', { code }); return r.error ? null : r.data; };
 L.acceptInvite = async (code) => ok(await sb.rpc('accept_invite', { code }));
-L.mgPeople = async (q) => { let s = sb.from('profiles').select('*').eq('mg_on', true).eq('banned', false); if (q) s = s.or(`mg_name.ilike.%${q.replace(/[%_,()@]/g, '')}%,name.ilike.%${q.replace(/[%_,()@]/g, '')}%,mg_handle.ilike.%${q.replace(/[%_,()@]/g, '')}%`); const rows = ok(await s.order('created_at', { ascending: false }).limit(60)); rows.forEach(r => PC[r.id] = r); return rows; };
+L.mgPeople = async (q) => { let s = sb.from('profiles').select('*').eq('mg_on', true).eq('banned', false); if (q) { const c = q.replace(/[%_,()@]/g, '').trim(); s = s.or(`mg_name.ilike.%${c}%,name.ilike.%${c}%,mg_handle.ilike.%${c}%` + (/^[a-z0-9]{6,12}$/i.test(c) ? `,invite_code.eq.${c.toLowerCase()}` : '')); } const rows = ok(await s.order('created_at', { ascending: false }).limit(60)); rows.forEach(r => PC[r.id] = r); return rows; };
 L.mgInbox = async () => { const rows = ok(await sb.rpc('mg_inbox')); await L.prof(rows.map(r => r.other)); return rows; };
 L.mgChat = async (other) => { const me = L.user.id;
   const rows = ok(await sb.from('mg_chats').select('*').or(`and(user1.eq.${me},user2.eq.${other}),and(user1.eq.${other},user2.eq.${me})`));

@@ -1369,5 +1369,15 @@
 "c1045": "Enter the invitation code.",
 "c1046": "This code doesn’t exist. Check the link from your friend.",
 "c1047": "Your invitation code:",
-"c1048": "Link copied — paste it into a WeChat chat."
+"c1048": "Link copied — paste it into a WeChat chat.",
+"c1049": "Change your Magaam ID",
+"c1050": "You can change your Magaam ID only once. Choose carefully — after that it can’t be changed, and people will find you by it.",
+"c1051": "Save ID",
+"c1052": "Change your ID to {h}? You won’t be able to change it again.",
+"c1053": "You have already changed your Magaam ID, so it can’t be changed again. People find you by it.",
+"c1054": "Change (once)",
+"c1055": "Your Magaam ID now:",
+"c1056": "Send the link through any app: WhatsApp, Telegram, WeChat and more. Whoever signs up with it appears in your contacts right away.",
+"c1057": "Join me on Magaam — a messenger where everyone writes in their own language and the translation comes by itself:",
+"c1058": "Chat in your own language — translated automatically"
 }

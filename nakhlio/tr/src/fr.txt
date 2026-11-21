@@ -1306,3 +1306,13 @@ c1045|Saisissez le code d’invitation.
 c1046|Ce code n’existe pas. Vérifiez le lien de votre ami.
 c1047|Votre code d’invitation :
 c1048|Lien copié — collez-le dans une discussion WeChat.
+c1049|Modifier votre identifiant Magaam
+c1050|Vous ne pouvez modifier votre identifiant Magaam qu’une seule fois. Choisissez bien — ensuite il ne pourra plus changer, et on vous trouvera grâce à lui.
+c1051|Enregistrer l’identifiant
+c1052|Remplacer votre identifiant par {h} ? Vous ne pourrez plus le modifier.
+c1053|Vous avez déjà modifié votre identifiant Magaam, il ne peut plus changer. On vous trouve grâce à lui.
+c1054|Modifier (une fois)
+c1055|Votre identifiant Magaam actuel :
+c1056|Envoyez le lien par n’importe quelle appli : WhatsApp, Telegram, WeChat et d’autres. Toute personne qui s’inscrit avec apparaît aussitôt dans vos contacts.
+c1057|Rejoins-moi sur Magaam — une messagerie où chacun écrit dans sa langue et la traduction arrive toute seule :
+c1058|Discutez dans votre langue — traduction automatique

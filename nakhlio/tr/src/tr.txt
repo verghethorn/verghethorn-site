@@ -1306,3 +1306,13 @@ c1045|Davet kodunu girin.
 c1046|Bu kod yok. Arkadaşınızın bağlantısını kontrol edin.
 c1047|Davet kodunuz:
 c1048|Bağlantı kopyalandı — WeChat sohbetine yapıştırın.
+c1049|Magaam kimliğini değiştir
+c1050|Magaam kimliğinizi yalnızca bir kez değiştirebilirsiniz. Dikkatle seçin — sonra değiştirilemez ve sizi bununla bulurlar.
+c1051|Kimliği kaydet
+c1052|Kimliğiniz {h} olarak değiştirilsin mi? Bir daha değiştiremezsiniz.
+c1053|Magaam kimliğinizi zaten değiştirdiniz, tekrar değiştirilemez. Sizi bununla bulurlar.
+c1054|Değiştir (bir kez)
+c1055|Şu anki Magaam kimliğiniz:
+c1056|Bağlantıyı herhangi bir uygulamayla gönderin: WhatsApp, Telegram, WeChat ve diğerleri. Bununla kaydolan kişi hemen kişilerinize eklenir.
+c1057|Magaam’da bana katıl — herkesin kendi dilinde yazdığı ve çevirinin kendiliğinden geldiği bir mesajlaşma uygulaması:
+c1058|Kendi dilinde yazış — çeviri otomatik

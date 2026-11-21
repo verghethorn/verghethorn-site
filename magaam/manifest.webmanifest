@@ -1,7 +1,7 @@
 {
   "name": "Magaam",
   "short_name": "Magaam",
-  "description": "Photos, reels and chats with your people.",
+  "description": "Chat in your own language — translated automatically.",
   "id": "/magaam/",
   "scope": "/magaam/",
   "display": "standalone",

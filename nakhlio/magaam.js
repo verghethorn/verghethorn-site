@@ -39,12 +39,12 @@ const T = {
   del_msg: D('Удалить', 'Delete', 'حذف'),
   photo_msg: D('Фото', 'Photo', 'صورة'),
   invite: D('Пригласить друзей', 'Invite friends', 'ادعُ أصدقاءك'),
-  invite_d: D('Отправьте свою ссылку в WhatsApp или Telegram. Кто зарегистрируется по ней, сразу станет вашим другом.', 'Send your link via WhatsApp or Telegram. Whoever signs up with it becomes your friend right away.', 'أرسل رابطك عبر واتساب أو تيليجرام. من يسجّل عبره يصبح صديقك فوراً.'),
+  invite_d: D("Отправьте ссылку в любое приложение: WhatsApp, Telegram, WeChat и другие. Кто зарегистрируется по ней, сразу появится у вас в контактах.", "Send the link through any app: WhatsApp, Telegram, WeChat and more. Whoever signs up with it appears in your contacts right away.", "أرسل الرابط عبر أي تطبيق: واتساب أو تيليجرام أو WeChat وغيرها. من يسجّل عبره يظهر في جهات اتصالك فوراً."),
   share: D('Поделиться', 'Share', 'مشاركة'),
   copy_link: D('Скопировать ссылку', 'Copy link', 'نسخ الرابط'),
-  inv_text: D('Присоединяйся ко мне в Magaam — фото, рилс и переписка с друзьями:', 'Join me on Magaam — photos, reels and chats with friends:', 'انضم إليّ في Magaam — صور وريلز ومحادثات مع الأصدقاء:'),
+  inv_text: D("Присоединяйся ко мне в Magaam — мессенджер, где каждый пишет на своём языке, а перевод приходит сам:", "Join me on Magaam — a messenger where everyone writes in their own language and the translation comes by itself:", "انضم إليّ في Magaam — تطبيق مراسلة يكتب فيه كلٌّ بلغته وتصل الترجمة تلقائياً:"),
   invites_you: D('приглашает вас в Magaam', 'invites you to Magaam', 'يدعوك إلى Magaam'),
-  tag2: D('Фото, рилс и переписка с друзьями', 'Photos, reels and chats with friends', 'صور وريلز ومحادثات مع الأصدقاء'),
+  tag2: D("Переписка на своём языке — перевод автоматически", "Chat in your own language — translated automatically", "راسل بلغتك — والترجمة تلقائية"),
   code_l: D('Код из письма', 'Code from the e-mail', 'الرمز من البريد'),
   enter: D('Войти', 'Sign in', 'دخول'),
   setup_t: D('Ваш профиль в Magaam', 'Your Magaam profile', 'ملفك في Magaam'),
@@ -132,6 +132,8 @@ const T = {
   r_ok: D('Принимаю правила', 'I accept the rules', 'أوافق على القواعد'),
   open: D('Открыть Magaam', 'Open Magaam', 'افتح Magaam'),
   back_n: D('Nakhlio', 'Nakhlio', 'Nakhlio'),
+  h_change1: D('Изменить (1 раз)', 'Change (once)', 'تغيير (مرة واحدة)'),
+  h_now: D('Сейчас ваш Magaam ID:', 'Your Magaam ID now:', 'معرّفك في Magaam الآن:'),
   inv_code_l: D('Код приглашения', 'Invitation code', 'رمز الدعوة'),
   inv_only: D('Magaam — только по приглашению. Код есть в ссылке, которую вам прислали (после «?i=»). Можно вставить всю ссылку.', 'Magaam is invitation-only. The code is in the link you were sent (after “?i=”). You can paste the whole link.', 'Magaam بالدعوة فقط. الرمز موجود في الرابط الذي أُرسل إليك (بعد «?i=»). يمكنك لصق الرابط كاملاً.'),
   inv_need: D('Введите код приглашения.', 'Enter the invitation code.', 'أدخل رمز الدعوة.'),
@@ -156,14 +158,14 @@ const T = {
   sub_other_ph: D("Например: свечи ручной работы", "For example: handmade candles", "مثلاً: شموع يدوية"),
   all_l: D("Все", "All", "الكل"),
   no_products_here: D("Здесь пока нет товаров. Попробуйте другую страну или категорию.", "No items here yet. Try another country or category.", "لا منتجات هنا بعد. جرّب دولة أو قسماً آخر."),
-  h_title: D("Ваш Magaam ID", "Your Magaam ID", "معرّف Magaam الخاص بك"),
-  h_once: D("Magaam ID задаётся один раз и потом не меняется. По нему вас найдут покупатели и друзья.", "Your Magaam ID is set once and can’t be changed later. Buyers and friends will find you by it.", "يُختار المعرّف مرة واحدة ولا يمكن تغييره لاحقاً. سيجدك به المشترون والأصدقاء."),
+  h_title: D("Изменить Magaam ID", "Change your Magaam ID", "تغيير معرّف Magaam"),
+  h_once: D("Magaam ID можно изменить только один раз. Выберите внимательно — после этого его нельзя будет поменять, и по нему вас будут находить.", "You can change your Magaam ID only once. Choose carefully — after that it can’t be changed, and people will find you by it.", "يمكنك تغيير معرّف Magaam مرة واحدة فقط. اختر بعناية — بعدها لا يمكن تغييره، وسيجدك الناس به."),
   h_rules: D("От 3 до 24 знаков: латинские буквы, цифры, _ и точка. Начинается с буквы.", "3–24 characters: Latin letters, digits, _ and dot. Starts with a letter.", "من 3 إلى 24 حرفاً: حروف لاتينية وأرقام و _ والنقطة، ويبدأ بحرف."),
   h_free: D("свободен", "available", "متاح"),
   h_taken: D("Этот ID уже занят", "This ID is already taken", "هذا المعرّف مستخدم"),
-  h_save: D("Установить ID", "Set ID", "تعيين المعرّف"),
-  h_confirm: D("Установить {h}? Изменить потом будет нельзя.", "Set {h}? You won’t be able to change it later.", "تعيين {h}؟ لن تتمكن من تغييره لاحقاً."),
-  h_locked: D("Magaam ID закреплён за вами навсегда.", "This Magaam ID is yours for good.", "هذا المعرّف لك بشكل دائم."),
+  h_save: D("Сохранить ID", "Save ID", "حفظ المعرّف"),
+  h_confirm: D("Сменить ID на {h}? Изменить его ещё раз будет нельзя.", "Change your ID to {h}? You won’t be able to change it again.", "تغيير المعرّف إلى {h}؟ لن تتمكن من تغييره مرة أخرى."),
+  h_locked: D("Вы уже меняли Magaam ID, больше изменить его нельзя. По нему вас находят.", "You have already changed your Magaam ID, so it can’t be changed again. People find you by it.", "لقد غيّرت معرّف Magaam من قبل، ولا يمكن تغييره مجدداً. يجدك الناس به."),
   h_copy: D("Скопировать ID и ссылку", "Copy ID and link", "نسخ المعرّف والرابط"),
   h_not_set: D("не задан", "not set", "غير محدد"),
   h_set: D("Указать", "Set", "تحديد"),
@@ -386,7 +388,7 @@ function createSheet(kind) {
 async function pickImage(cb) { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.onchange = async () => { const f = inp.files[0]; if (f) cb(await resizeImg(f)); }; inp.click(); }
 function editSheet() {
   const w = sheet(`<h3>${t('edit_profile')}</h3>
-    <div style="display:flex;gap:10px;margin:6px 0 14px"><button class="btn soft mgbtn2" id="mgph">${small('camera')}${M('photo')}</button><button class="btn soft mgbtn2" id="mgcv">${small('camera')}${M('cover')}</button></div>
+    <div style="display:flex;gap:10px;margin:6px 0 14px"><button class="btn soft mgbtn2" id="mgph">${small('camera')}${M('photo')}</button></div>
     <div class="field"><label for="mgbio">${t('about_l')}</label><textarea id="mgbio" rows="3">${esc(NK.S.me.about || '')}</textarea></div>
     <button class="btn primary full mgbtn" id="mgsave">${t('save_l')}</button>`);
   w.querySelector('#mgph').onclick = () => pickImage(d => { NK.S.me.photos = [d].concat((NK.S.me.photos || []).slice(1)); save(); toast(t('saved_ok')); });
@@ -530,10 +532,10 @@ if (LV) {
   const pickImg = (cb, max) => { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.onchange = async () => { const f = inp.files[0]; if (f) cb(await resizeImg(f, max || 1080, 0.88)); }; inp.click(); };
   const editLive = () => { const w = sheet(`<h3>${t('edit_profile')}</h3><div style="display:flex;gap:10px;margin:6px 0 14px"><button class="btn soft mgbtn2" id="mgph">${small('camera')}${M('photo')}</button><button class="btn soft mgbtn2" id="mgcv">${small('camera')}${M('cover')}</button></div>
       <div class="field"><label for="mgnm">${M('name_l')}</label><input id="mgnm" maxlength="40" value="${esc(mname(meId()))}"></div>
-      <div class="field"><label for="mgbio">${t('about_l')}</label><textarea id="mgbio" rows="3">${esc((LV.profile || {}).mg_bio || '')}</textarea></div><button class="btn primary full mgbtn" id="mgsave">${t('save_l')}</button>`);
+      <button class="btn primary full mgbtn" id="mgsave">${t('save_l')}</button>`);
     const up = async (data, field) => { try { const url = await LV.upload(data, field); const pr = await LV.updateProfile({ [field]: url }); NK.S.me = NK.meFrom(pr); save(); toast(t('saved_ok')); render(); } catch (e) { toast(FXM('send_fail')); } };
-    w.querySelector('#mgph').onclick = () => pickImg(d => up(d, 'mg_avatar')); w.querySelector('#mgcv').onclick = () => pickImg(d => up(d, 'cover_url'));
-    w.querySelector('#mgsave').onclick = async () => { try { const nmv = w.querySelector('#mgnm').value.trim(); const pr = await LV.updateProfile(Object.assign({ mg_bio: w.querySelector('#mgbio').value.trim() }, nmv ? { mg_name: nmv } : {})); NK.S.me = NK.meFrom(pr); save(); w.remove(); render(); } catch (e) { toast(FXM('send_fail')); } }; };
+    w.querySelector('#mgph').onclick = () => pickImg(d => up(d, 'mg_avatar'));
+    w.querySelector('#mgsave').onclick = async () => { try { const nmv = w.querySelector('#mgnm').value.trim(); if (!nmv) { w.querySelector('#mgnm').focus(); return; } const pr = await LV.updateProfile({ mg_name: nmv }); NK.S.me = NK.meFrom(pr); save(); w.remove(); render(); } catch (e) { toast(FXM('send_fail')); } }; };
 
   /* ===== Magaam as its own app: sign-in, own profile, invites ===== */
   const MR = { step: 1, email: '', err: '', photo: null };
@@ -561,7 +563,6 @@ if (LV) {
     return { html: `<div class="mg mgland"><div class="mgwrap"><div class="mglhead">${mgLogo()}<h2>${M('setup_t')}</h2><p>${M('setup_d')}</p></div>${invBox()}<div class="mgcard">
       <button class="mgsetph" data-act="mgrphoto">${ph ? `<span style="background-image:url(${esc(ph)})"></span>` : `<span>${ic('camera')}</span>`}<b>${M('photo')}</b></button>
       <div class="field"><label for="mgnm">${M('name_l')} *</label><input id="mgnm" maxlength="40" value="${esc(MR.nm != null ? MR.nm : pr.mg_name || pr.name || '')}"></div>
-      <div class="field"><label for="mgbio">${t('about_l')}</label><textarea id="mgbio" rows="2">${esc(MR.bio != null ? MR.bio : pr.mg_bio || '')}</textarea></div>
       ${window.MG_APP && !invCode() ? `<div class="field"><label for="mginvc">${M('inv_code_l')} *</label><input id="mginvc" autocapitalize="off" autocorrect="off" spellcheck="false" dir="ltr" maxlength="200" placeholder="abc12345" value="${esc(MR.inv || '')}"><small class="note">${M('inv_only')}</small></div>` : ''}${MR.err ? `<p class="mgerr">${esc(MR.err)}</p>` : ''}
       <button class="btn primary full mgbtn" data-act="mgrsave">${M('start')}</button></div></div></div>` }; };
   let accepting = false;
@@ -569,16 +570,12 @@ if (LV) {
     LV.acceptInvite(c).then(inv => { delete S_().mgInvite; save(); accepting = false; if (inv) { LV.prof([inv]).then(() => { toast(M('inv_ok') + ' ' + mname(inv)); dropData('mg:'); render(); }); } }).catch(e => { console.warn(e); accepting = false; delete S_().mgInvite; save(); }); };
   const inviteLink = () => 'https://verghethorn.com/magaam/?i=' + ((LV.profile || {}).invite_code || '');
   const inviteCard = () => `<button class="mginvcard" data-act="mginvite"><i>${ic('plus')}</i><span><b>${M('invite')}</b><small>${M('invite_d')}</small></span></button>`;
-  const inviteSheet = () => { const link = inviteLink(), text = M('inv_text') + ' ' + link;
-    const w = sheet(`<div style="text-align:center">${mgLogo()}<h3 style="margin:8px 0 4px">${M('invite')}</h3><p class="note" style="margin:0 0 12px">${M('invite_d')}</p></div>
-      <div class="mglinkbox" dir="ltr">${esc(link)}</div>
-      ${navigator.share ? `<button class="btn primary full mgbtn" data-x="share" style="margin-top:10px">${small('send')}${M('share')}</button>` : ''}
-      <div class="mgshare"><a class="btn soft mgbtn2" href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" rel="noopener">WhatsApp</a><a class="btn soft mgbtn2" href="https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(M('inv_text'))}" target="_blank" rel="noopener">Telegram</a><button class="btn soft mgbtn2" data-x="wechat">WeChat</button><button class="btn soft mgbtn2" data-x="copy">${M('copy_link')}</button></div><button class="btn soft full mgbtn2" style="margin-top:8px" data-act="mgcontacts">${small('users')}${M('from_contacts')}</button>`);
-    w.addEventListener('click', e => { const b = e.target.closest('[data-x]'); if (!b) return;
-      if (b.dataset.x === 'share') navigator.share({ title: 'Magaam', text: M('inv_text'), url: link }).catch(() => {});
-      if (b.dataset.x === 'wechat') { const go2 = () => { toast(M('wechat_hint')); setTimeout(() => { location.href = 'weixin://'; }, 700); }; (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(go2).catch(() => { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); go2(); }); }
-      if (b.dataset.x === 'copy') { (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject()).then(() => toast(M('copied'))).catch(() => { const ta = document.createElement('textarea'); ta.value = link; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast(M('copied')); }); } }); };
-
+  const inviteSheet = () => { const link = inviteLink(), text = M('inv_text');
+    const copy = () => { const done = () => toast(M('copied')); (navigator.clipboard ? navigator.clipboard.writeText(text + ' ' + link) : Promise.reject()).then(done).catch(() => { const ta = document.createElement('textarea'); ta.value = text + ' ' + link; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); done(); }); };
+    const ask = () => { const w = sheet(`<div style="text-align:center">${mgLogo()}<h3 style="margin:8px 0 4px">${M('invite')}</h3><p class="note" style="margin:0 0 12px">${M('invite_d')}</p></div><div class="mglinkbox" dir="ltr">${esc(link)}</div><button class="btn primary full mgbtn" data-x="share" style="margin-top:10px">${small('share')}${M('share')}</button>`);
+      w.querySelector('[data-x="share"]').onclick = () => { if (navigator.share) navigator.share({ title: 'Magaam', text, url: link }).then(() => w.remove()).catch(() => {}); else { copy(); w.remove(); } }; };
+    if (!navigator.share) return ask();
+    navigator.share({ title: 'Magaam', text, url: link }).catch(e => { if (e && e.name === 'NotAllowedError') ask(); }); };
   /* ===== messenger ===== */
   const MGM = {}, OTHER_READ = {}, DRAFT = {}, REPLY = {}, WATCH = {}; let openChat = null, typingCh = null, typingT = null;
   const hm = (d) => new Date(d).toLocaleTimeString(NK.lang === 'ar' ? 'ar' : NK.lang, { hour: '2-digit', minute: '2-digit' });
@@ -919,9 +916,9 @@ if (LV) {
 
   /* Magaam ID: set once, unique */
   const handleSheet = () => { const pr = LV.profile || {};
-    if (pr.mg_handle) { const link = 'https://verghethorn.com/magaam/?i=' + (pr.invite_code || '') + '&u=' + pr.mg_handle; const w = sheet(`<h3>Magaam ID</h3><div class="mghbig">@${esc(pr.mg_handle)}</div><p class="note">${M('h_locked')}</p><button class="btn primary full mgbtn" id="hcp">${M('h_copy')}</button>`);
+    if (pr.mg_handle) { const link = inviteLink() + '&u=' + pr.mg_handle; const w = sheet(`<h3>Magaam ID</h3><div class="mghbig">@${esc(pr.mg_handle)}</div><p class="note">${M('h_locked')}</p><button class="btn primary full mgbtn" id="hcp">${M('h_copy')}</button>`);
       w.querySelector('#hcp').onclick = () => { (navigator.clipboard ? navigator.clipboard.writeText('@' + pr.mg_handle + ' — ' + link) : Promise.reject()).then(() => toast(M('copied'))).catch(() => {}); }; return; }
-    const w = sheet(`<h3>${M('h_title')}</h3><p class="note" style="margin:0 0 12px">${M('h_once')}</p><div class="field"><div class="mghin"><b>@</b><input id="hin" maxlength="24" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="rashid" inputmode="latin"></div><small class="note" id="hst">${M('h_rules')}</small></div><button class="btn primary full mgbtn" id="hgo" disabled>${M('h_save')}</button>`);
+    const w = sheet(`<h3>${M('h_title')}</h3>${pr.invite_code ? `<p class="note" style="margin:0 0 6px">${M('h_now')} <b dir="ltr">${esc(pr.invite_code)}</b></p>` : ''}<div class="mghwarn">${small('info')}<span>${M('h_once')}</span></div><div class="field"><div class="mghin"><b>@</b><input id="hin" maxlength="24" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="rashid" inputmode="latin"></div><small class="note" id="hst">${M('h_rules')}</small></div><button class="btn primary full mgbtn" id="hgo" disabled>${M('h_save')}</button>`);
     const inp = w.querySelector('#hin'), st = w.querySelector('#hst'), go = w.querySelector('#hgo'); let tm = 0, okv = '';
     const valid = (v) => /^[a-z][a-z0-9_.]{2,23}$/.test(v);
     inp.oninput = () => { const v = inp.value = inp.value.toLowerCase().replace(/[^a-z0-9_.]/g, ''); okv = ''; go.disabled = true; clearTimeout(tm);
@@ -1109,7 +1106,7 @@ if (LV) {
       return h + `<button class="m8row" data-act="mgp" data-v="${u}">${av(u, 'md')}<span class="grow"><span class="m8r1"><b>${esc(mname(u))}${vm(u)}</b></span>${prof(u).mg_handle ? `<span class="m8r2"><span>@${esc(prof(u).mg_handle)}</span></span>` : ''}</span></button>`; }).join('');
     const reqs = rel.inc.map(q => `<div class="m8row"><button class="pbtn" data-act="mgp" data-v="${q.from_id}">${av(q.from_id, 'md')}</button><span class="grow"><span class="m8r1"><b>${esc(mname(q.from_id))}</b></span></span><button class="m8btn sm dark" data-act="mgacc" data-v="${q.id}">${M('accept')}</button><button class="m8btn sm" data-act="mgdec" data-v="${q.id}">${M('decline')}</button></div>`).join('');
     return wrapView('mgcontacts', `<div class="m8wrap"><h1 class="m8big">${M8('contacts')}</h1>
-      <div class="m8list">${`<button class="m8row sys" data-act="mggo" data-v="mgfind"><span class="m8ic">${ic('search')}</span><span class="grow"><b>${M8('find_add')}</b></span>${ic('chev', 'flip chev')}</button><button class="m8row sys" data-act="mgqr"><span class="m8ic">${ic('grid')}</span><span class="grow"><b>${M8('my_qr')}</b></span>${ic('chev', 'flip chev')}</button><button class="m8row sys" data-act="mginvite"><span class="m8ic">${ic('plus')}</span><span class="grow"><b>${M('invite')}</b></span>${ic('chev', 'flip chev')}</button>`}</div>
+      <div class="m8list">${`<button class="m8row sys" data-act="mggo" data-v="mgfind"><span class="m8ic">${ic('search')}</span><span class="grow"><b>${M8('find_add')}</b></span>${ic('chev', 'flip chev')}</button><button class="m8row sys" data-act="mginvite"><span class="m8ic">${ic('plus')}</span><span class="grow"><b>${M('invite')}</b></span>${ic('chev', 'flip chev')}</button>`}</div>
       ${n ? `<h4 class="m8h">${M('requests')} · <span class="num">${n}</span></h4><div class="m8list">${reqs}</div>` : ''}
       <div class="m8list">${rows || `<p class="m8note" style="padding:16px">${M('no_contacts')}</p>`}</div></div>`, ''); };
 
@@ -1159,11 +1156,10 @@ if (LV) {
     const me = uid === meId(); const pr = me ? LV.profile || {} : (LV.cached(uid) || want('mg:pf:' + uid, () => LV.fetchProfile(uid)) || {});
     const rel = R(); const fr = rel.friends.has(uid), rq = rel.out.has(uid); const by = storyMap(); const has = !!(by[uid] && by[uid].length);
     const lng = pr.ui_lang ? `<span class="m8lang">${small('globe')}${M8('speaks')}: ${esc(langName(pr.ui_lang))}${!me && pr.ui_lang !== NK.lang ? ` · <b>${M('tr_for_you')}</b>` : ''}</span>` : '';
-    const acts = me ? `<button class="m8btn dark" data-act="mgaddstory">${ic('plus')}${M9('add_story')}</button><button class="m8btn" data-act="mgedit">${M('edit_l')}</button><button class="m8btn sq" data-act="mgqr" aria-label="${M8('my_qr')}">${ic('grid')}</button>`
+    const acts = me ? `<button class="m8btn dark" data-act="mgaddstory">${ic('plus')}${M9('add_story')}</button><button class="m8btn" data-act="mgedit">${M('edit_l')}</button><button class="m8btn sq" data-act="mginvite" aria-label="${M('share')}">${ic('share')}</button>`
       : `${fr ? `<button class="m8btn dark" data-act="mgdm" data-v="${uid}">${ic('chat')}${M('write')}</button><button class="m8btn" disabled>${small('check')}${M8('in_contacts')}</button>` : `<button class="m8btn dark" data-act="mgfriend" data-v="${uid}" ${rq ? 'disabled' : ''}>${rq ? M8('req_sent2') : M8('add_contact')}</button>`}<button class="m8btn sq" data-act="mgumenu" data-v="${uid}" aria-label="${M('more_l')}">${ic('dots')}</button>`;
     return `<div class="m8prof2"><button class="m8bigav" data-act="${has ? 'mgstory' : me ? 'mgstav' : 'noop'}" data-v="${uid}">${ringAv(uid, 'xl', by)}</button>${me ? `<button class="mglink m8chph" data-act="mgstav">${M9('change_photo')}</button>` : ''}
       <h2>${esc(mname(uid))}${vm(uid)}</h2>${pr.mg_handle ? `<div class="m8handle">@${esc(pr.mg_handle)}</div>` : ''}
-      ${pr.mg_bio ? `<p class="m8bio">${esc(me ? pr.mg_bio : trText('a' + uid, pr.mg_bio, pr.ui_lang))}</p>` : me ? `<button class="mglink" data-act="mgedit">+ ${t('about_l')}</button>` : ''}
       ${lng}<div class="m8acts">${acts}</div></div>`; };
   V.mgp = (p) => { const r = ready(); if (r) return r; if (p.id === meId()) return V.mgmine(); return wrapView('mgp', prof8(p.id), ''); };
   V.mgmine = () => { const r = ready(); if (r) return r; return wrapView('mgmine', prof8(meId()), ''); };
@@ -1172,9 +1168,9 @@ if (LV) {
   V.mgme = () => { const r = ready(); if (r) return r; const pr = LV.profile || {};
     const row = (act, icn, label, v, extra) => `<button class="m8row sys" data-act="${act}" ${v ? `data-v="${v}"` : ''}><span class="m8ic">${icn}</span><span class="grow"><b>${label}</b></span>${extra ? `<small class="m8val">${extra}</small>` : ''}${ic('chev', 'flip chev')}</button>`;
     return wrapView('mgme', `<div class="m8wrap"><h1 class="m8big">${M('me_t')}</h1>
-      <button class="m8mecard" data-act="mggo" data-v="mgmine">${av(meId(), 'me')}<span class="grow"><b>${esc(mname(meId()))}${vm(meId())}</b><small>${pr.mg_handle ? '@' + esc(pr.mg_handle) : 'Magaam ID: ' + esc(pr.invite_code || '—')}</small></span>${ic('chev', 'flip chev')}</button>
+      <button class="m8mecard" data-act="mggo" data-v="mgmine">${av(meId(), 'me')}<span class="grow"><b>${esc(mname(meId()))}${vm(meId())}</b><small>Magaam ID: ${pr.mg_handle ? '@' + esc(pr.mg_handle) : esc(pr.invite_code || '—')}</small></span>${ic('chev', 'flip chev')}</button>
       ${isAdmin() ? `<button class="mgadmmode" data-act="admmode">${small('shield')}<b>${FXM('adm_badge')}</b><span>${FXM('adm_mode_off')}</span></button>` : ''}
-      <div class="m8list">${row('mgqr', ic('grid'), M8('my_qr'))}${row('mginvite', ic('users'), M('invite'))}${pr.verified ? '' : row('vfopen', ic('check'), FXM('vf_t'), 'mg')}</div>
+      <div class="m8list">${row('mghandle', ic('idcard'), 'Magaam ID', '', pr.mg_handle ? '@' + esc(pr.mg_handle) : M('h_change1'))}${row('mginvite', ic('share'), M('invite'))}${pr.verified ? '' : row('vfopen', ic('check'), FXM('vf_t'), 'mg')}</div>
       <div class="m8list">${row('mgstyle', ic('chat'), M8('msg_style'), '', M8(STYLE() === 'cards' ? 'st_cards' : 'st_bubbles'))}${row('mglangs', ic('globe'), t('language'), '', esc(langName(NK.lang)))}${row('notifset', ic('siren'), FXM('notif_t'))}</div>
       <div class="m8list">${row('mgedit', ic('user'), t('edit_profile'))}${NK.canAdmin() ? row('admmode', ic('shield'), FXM(isAdmin() ? 'adm_mode_off' : 'adm_mode_on')) : ''}${row('mgrules', ic('info'), M('rules_mg'))}</div>
       ${window.MG_APP ? '' : `<div class="m8list"><button class="m8row sys" data-act="tab" data-v="home"><span class="m8ic nk">${NKL}</span><span class="grow"><b>${M8('back_nk')}</b></span>${ic('chev', 'flip chev')}</button></div>`}
