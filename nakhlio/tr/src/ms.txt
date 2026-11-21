@@ -1094,3 +1094,20 @@ c840|baharu dalam 7 hari
 c841|Magaam hanya berfungsi sebagai aplikasi di telefon. Buka verghethorn.com/magaam di telefon dan tambah ke Skrin Utama.
 c842|Hanya anda yang melihat telefon dan e-mel anda. Log masuk dengan kod yang dihantar ke e-mel.
 c843|Foto dalam iklan percubaan kediaman dan pengangkutan: Unsplash.
+c844|Kongsi profil
+c845|Tetapan
+c846|Lagi
+c847|Menulis dalam
+c848|diterjemah untuk anda
+c849|Terjemahan
+c850|asal
+c851|Tunjuk terjemahan
+c852|Belum ada reels
+c853|Belum dibaca
+c854|Semua sudah dibaca
+c855|Semat
+c856|Nyahsemat
+c857|Komen
+c858|Tulis dalam bahasa anda — {n} membaca dalam bahasanya
+c859|Tiada halangan bahasa: semua menulis dan membaca dalam bahasa sendiri.
+c860|Sunting profil

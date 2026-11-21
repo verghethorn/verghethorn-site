@@ -55,6 +55,23 @@ const T = {
   write: D('Написать', 'Message', 'مراسلة'),
   other_email: D('Другой e-mail', 'Another e-mail', 'بريد آخر'),
   explore: D('Поиск', 'Explore', 'استكشاف'),
+  share_profile: D('Поделиться', 'Share profile', 'مشاركة الملف'),
+  settings: D('Настройки', 'Settings', 'الإعدادات'),
+  more_l: D('Ещё', 'More', 'المزيد'),
+  writes_in: D('Пишет на:', 'Writes in', 'يكتب بـ'),
+  tr_for_you: D('вам переводится', 'translated for you', 'مترجم لك'),
+  tr_from: D('Перевод', 'Translated', 'مترجم'),
+  edit_l: D('Редактировать', 'Edit profile', 'تعديل الملف'),
+  original: D('оригинал', 'original', 'الأصل'),
+  show_tr: D('Показать перевод', 'Show translation', 'عرض الترجمة'),
+  no_reels: D('Пока нет рилс', 'No reels yet', 'لا ريلز بعد'),
+  unread: D('Непрочитанные', 'Unread', 'غير المقروءة'),
+  no_unread: D('Всё прочитано', 'All caught up', 'لا رسائل غير مقروءة'),
+  pin: D('Закрепить', 'Pin', 'تثبيت'),
+  unpin: D('Открепить', 'Unpin', 'إلغاء التثبيت'),
+  all_comments: D('Комментарии', 'Comments', 'التعليقات'),
+  msg_ph_tr: D('Пишите на своём — {n} прочитает на своём', 'Write in your language — {n} reads in theirs', 'اكتب بلغتك — {n} يقرأ بلغته'),
+  no_barrier: D('Без языкового барьера: каждый пишет на своём языке и читает на своём.', 'No language barrier: everyone writes in their language and reads in theirs.', 'بلا حاجز لغوي: كلٌّ يكتب بلغته ويقرأ بلغته.'),
   people_s: D('Люди', 'People', 'أشخاص'),
   all_posts: D('Все публикации', 'All posts', 'كل المنشورات'),
   more: D('Показать ещё', 'Show more', 'عرض المزيد'),
@@ -146,8 +163,7 @@ const mgAv = (n, sz) => `<span class="mgav ${sz || ''}">${avatar(n)}</span>`;
 const pLink = (n, inner) => `<button class="pbtn" data-act="mgp" data-v="${esc(n)}">${inner}</button>`;
 const capHtml = (p) => { const tr = p.who !== '@me' && LANG_OF[p.who] && LANG_OF[p.who] !== NK.lang; return `${esc(txt(p.cap || ''))}${tr ? `<span class="mgtr">${small('translate')}${t('auto_tr')}</span>` : ''}`; };
 
-const top = (title) => `<header class="mgtop">${window.MG_APP ? '<span class="mgback"></span>' : `<button class="mgback" data-act="tab" data-v="home" aria-label="${t('back')}">${ic('back', 'flip')}<span>${M('back_n')}</span></button>`}
-  <div class="mgbrand">${title ? `${mgLogo()}<b>${title}</b>` : '<img class="mgwm" src="img/mgapp/wordmark-dark.png" alt="MAGAAM">'}</div>${window.LIVE ? `<button class="mgic" data-act="mggo" data-v="mgreels" aria-label="${M('reels')}">${ic('play')}</button>` : ''}<button class="mgic" data-act="mgnew" aria-label="${M('create')}">${ic('plus')}</button></header>`;
+const top = (title) => `<header class="mgtop">${window.MG_APP ? '' : `<button class="mgback" data-act="tab" data-v="home" aria-label="${t('back')}">${ic('back', 'flip')}<span>Nakhlio</span></button>`}<div class="mgbrand">${title ? `<b>${title}</b>` : '<img class="mgwm" src="img/mgapp/wordmark-dark.png" alt="MAGAAM">'}</div><div class="mgtopr">${window.LIVE && !title ? `<button class="mgic" data-act="mggo" data-v="mgreels" aria-label="${M('reels')}">${ic('play')}</button>` : ''}${window.LIVE && !title ? `<button class="mgic" data-act="mggo" data-v="mgchats" aria-label="${M('chats')}">${ic('chat')}${window.__mgUnread ? `<em class="mgdotn"></em>` : ''}</button>` : ''}</div></header>`;
 const nav = (on) => `<nav class="mgnav">${[['mg', 'home', 'feed'], window.LIVE ? ['mgexplore', 'search', 'explore'] : ['mgreels', 'play', 'reels'], ['mgnew', 'plus', 'create'], window.LIVE ? ['mgchats', 'chat', 'chats'] : ['mgfriends', 'users', 'friends'], ['mgme', 'user', null]].map(([v, i, k]) =>
   v === 'mgnew' ? `<button class="mgplus" data-act="mgnew" aria-label="${M('create')}">${ic('plus')}</button>`
   : `<button class="${on === v || (v === 'mgchats' && on === 'mgfriends') ? 'on' : ''}" data-act="mggo" data-v="${v}">${v === 'mgme' && NK.S.me ? (window.__mgMeAv ? window.__mgMeAv() : mgAv('@me', 'xs')) : ic(i)}${v === 'mgchats' && window.__mgUnread ? `<em class="mgbadge num">${window.__mgUnread > 99 ? '99+' : window.__mgUnread}</em>` : ''}<span>${k ? M(k) : t('profile_l')}</span></button>`).join('')}</nav>`;
@@ -316,8 +332,10 @@ if (LV) {
   const vm = (uid) => prof(uid).verified ? vmark(window.VERIFIED[0]) : '';
   const link = (uid, inner) => `<button class="pbtn" data-act="mgp" data-v="${uid}">${inner}</button>`;
   const TRC = {};
-  const trText = (key, text, from) => { if (!text || !from || from === NK.lang) return text; if (TRC[key]) return TRC[key].t; TRC[key] = { t: text }; LV.translate(text, from, NK.lang).then(r => { if (r) { TRC[key] = { t: r, tr: true }; if (cur().v === 'mgchat' && document.getElementById('mgthread')) paintThread(); else render(); } }); return text; };
-  const trBadge = (key) => TRC[key] && TRC[key].tr ? `<span class="mgtr">${small('translate')}${t('auto_tr')}</span>` : '';
+  const ORIG = {};
+  const langName = (c) => ((window.LANGS || []).find(l => l.code === c) || {}).name || c;
+  const trText = (key, text, from) => { if (!text || !from || from === NK.lang) return text; if (TRC[key]) return TRC[key].tr && ORIG[key] ? text : TRC[key].t; TRC[key] = { t: text, from }; LV.translate(text, from, NK.lang).then(r => { if (r && r !== text) { TRC[key] = { t: r, tr: true, from }; if (cur().v === 'mgchat' && document.getElementById('mgthread')) paintThread(); else render(); } }); return text; };
+  const trBadge = (key) => TRC[key] && TRC[key].tr ? `<button class="mgtrp" data-act="mgorig" data-v="${key}">${small('translate')}${ORIG[key] ? M('show_tr') : `${M('tr_from')} · ${esc(langName(TRC[key].from))}`}<em>${ORIG[key] ? '' : ' · ' + M('original')}</em></button>` : '';
   const ago = (d) => { const h = Math.max(0, Math.round((Date.now() - new Date(d)) / 36e5)); return agoTxt(h); };
   const ready = () => { if (!NK.isPhone()) return mobileOnly(); if (window.MG_APP && !NK.isStandalone()) return installGate(); if (LV.ready && LV.user && !(LV.profile && LV.profile.mg_on)) return setupView(); if (!NK.S.me || (LV.ready && !LV.user)) return landing(); acceptPending(); if (cur().v !== 'mgchat') inboxTick(); return null; };
   const loading = `<p class="note" style="text-align:center;padding:30px 0">…</p>`;
@@ -325,11 +343,12 @@ if (LV) {
   const mediaHtml = (p) => p.media_type === 'video' ? `<video src="${esc(p.media_url)}" playsinline muted loop autoplay controls></video>` : `<img src="${esc(p.media_url)}" alt="" loading="lazy">`;
   const admBtns = (p) => isAdmin() ? `<div class="mgadm"><span>${small('shield')}${FXM('adm')}</span><button data-act="mgahide" data-v="${p.id}" data-h="${p.hidden ? 0 : 1}">${FXM(p.hidden ? 'act_show' : 'act_hide')}</button><button data-act="mgadel" data-v="${p.id}">${FXM('act_delete')}</button></div>` : '';
   const card = (p) => `<article class="mgpost ${p.hidden ? 'hid' : ''}">
-    <div class="mgph">${link(p.author, av(p.author, 'sm'))}<div class="grow">${link(p.author, `<b>${esc(mname(p.author))}</b>${vm(p.author)}`)}${p.dist ? `<small>${small('pin')}${esc(loc(p.dist))}</small>` : ''}</div><small class="num">${ago(p.created_at)}</small></div>
+    <div class="mgph">${link(p.author, av(p.author, 'sm'))}<div class="grow">${link(p.author, `<b>${esc(mname(p.author))}</b>${vm(p.author)}`)}<small>${p.dist ? esc(loc(p.dist)) + ' · ' : ''}<span class="num">${ago(p.created_at)}</span></small></div><button class="mgic sm" data-act="mgpmenu" data-v="${p.id}" aria-label="${M('more_l')}">${ic('dots')}</button></div>
     <div class="mgimg" data-act="mgdbl" data-v="${p.id}">${mediaHtml(p)}<i class="mgheart">${ic('heart')}</i></div>
-    <div class="mgact"><button class="${p.liked ? 'on' : ''}" data-act="mglike" data-v="${p.id}" aria-label="like">${ic('heart')}</button><button data-act="mgpost" data-v="${p.id}" aria-label="${t('comment')}">${ic('chat')}</button>${p.author !== meId() ? `<button data-act="mgreport" data-v="${p.id}" data-t="post" aria-label="${t('report')}">${ic('flag')}</button>` : ''}<span class="num">${nf(p.likes)} ${M('likes')}</span></div>
-    ${p.caption ? `<p class="mgcap">${link(p.author, `<b>${esc(mname(p.author))}</b>`)} ${esc(trText('p' + p.id, p.caption, p.lang))}${trBadge('p' + p.id)}</p>` : ''}
-    ${p.ncm ? `<button class="mgmore" data-act="mgpost" data-v="${p.id}">${t('comments_t')} · <span class="num">${nf(p.ncm)}</span></button>` : ''}${admBtns(p)}
+    <div class="mgact"><button class="${p.liked ? 'on' : ''}" data-act="mglike" data-v="${p.id}" aria-label="like">${ic('heart')}</button><button data-act="mgpost" data-v="${p.id}" aria-label="${t('comment')}">${ic('chat')}</button><button data-act="mgshare" data-v="${p.id}" aria-label="${M('share')}">${ic('send')}</button></div>
+    <div class="mgmeta">${p.likes ? `<b class="num">${nf(p.likes)} ${M('likes')}</b>` : ''}
+    ${p.caption ? `<p class="mgcap">${link(p.author, `<b>${esc(mname(p.author))}</b>`)} ${esc(trText('p' + p.id, p.caption, p.lang))}</p>${trBadge('p' + p.id)}` : ''}
+    ${p.ncm ? `<button class="mgmore" data-act="mgpost" data-v="${p.id}">${M('all_comments')} · <span class="num">${nf(p.ncm)}</span></button>` : ''}</div>${admBtns(p)}
   </article>`;
   const ALL = {}; const keep = (list) => { (list || []).forEach(p => ALL[p.id] = p); return list; };
   const stories = () => {
@@ -351,20 +370,28 @@ if (LV) {
       <div class="ca">${c.author !== meId() ? `<button data-act="mgreport" data-v="${c.id}" data-t="comment">${small('flag')}${t('report')}</button>` : ''}${isAdmin() || c.author === meId() ? `<button data-act="mgcdel" data-v="${c.id}" data-p="${x.id}">${small('x')}${FXM('act_delete')}</button>` : ''}</div></div></div>`).join('');
     return wrapView('mg', `<div class="mgfeed">${card(ALL[x.id])}</div><div class="mgwrap"><h4 style="margin:6px 0 10px">${t('comments_t')}</h4>${cms || `<p class="note">—</p>`}
       <div class="mgcbox"><textarea id="mgcin" rows="1" placeholder="${t('comment_ph')}"></textarea><button class="btn primary mgbtn" data-act="mgcsend" data-v="${x.id}">${ic('send')}</button></div></div>`); };
+  let PTAB = 'grid';
   const profView = (uid) => {
     const me = uid === meId(); const pr = me ? LV.profile || {} : (LV.cached(uid) || want('mg:pf:' + uid, () => LV.fetchProfile(uid)) || {});
-    const cnt = want('mg:cnt:' + uid, () => LV.counts(uid)) || [0, 0, 0]; const posts = keep(want('mg:up:' + uid, () => LV.posts('grid', uid))) || []; const rel = R();
+    const cnt = want('mg:cnt:' + uid, () => LV.counts(uid)) || [0, 0, 0]; const all = keep(want('mg:up:' + uid, () => LV.posts('grid', uid))) || []; const rel = R();
     const fr = rel.friends.has(uid), rq = rel.out.has(uid), fo = rel.follow.has(uid);
-    const actions = me ? `<button class="btn soft mgbtn2" data-act="mgedit">${small('user')}${t('edit_profile')}</button><button class="btn primary mgbtn" data-act="mginvite">${small('plus')}${M('invite')}</button><button class="btn soft mgbtn2 sq" data-act="notifset" aria-label="${FXM('notif_t')}">${ic('siren')}</button>${NK.canAdmin() ? `<button class="btn soft mgbtn2 sq ${isAdmin() ? 'on' : ''}" data-act="admmode" aria-label="${FXM(isAdmin() ? 'adm_mode_off' : 'adm_mode_on')}">${ic('shield')}</button>` : ''}`
-      : `<button class="btn ${fo ? 'soft mgbtn2' : 'primary mgbtn'}" data-act="mgfollow" data-v="${uid}">${M(fo ? 'unfollow' : 'follow')}</button><button class="btn soft mgbtn2" data-act="mgfriend" data-v="${uid}" ${fr || rq ? 'disabled' : ''}>${small(fr ? 'check' : 'plus')}${M(fr ? 'is_friend' : rq ? 'req_sent' : 'add_friend')}</button><button class="btn soft mgbtn2 sq ${fr ? '' : 'dim'}" data-act="mgdm" data-v="${uid}" aria-label="${t('dm')}">${ic('send')}</button><button class="btn soft mgbtn2 sq" data-act="mgreport" data-v="${uid}" data-t="user" aria-label="${t('report')}">${ic('flag')}</button>`;
+    const posts = all.filter(x => PTAB === 'reels' ? x.type === 'reel' : true);
+    const actions = me ? `<button class="mgb1 soft" data-act="mgedit">${M('edit_l')}</button><button class="mgb1 soft" data-act="mginvite">${M('share_profile')}</button><button class="mgb1 soft sq" data-act="mgmenu" aria-label="${M('settings')}">${ic('dots')}</button>`
+      : `<button class="mgb1 ${fo ? 'soft' : 'dark'}" data-act="mgfollow" data-v="${uid}">${M(fo ? 'unfollow' : 'follow')}</button>${fr ? `<button class="mgb1 soft" data-act="mgdm" data-v="${uid}">${M('write')}</button>` : `<button class="mgb1 soft" data-act="mgfriend" data-v="${uid}" ${rq ? 'disabled' : ''}>${M(rq ? 'req_sent' : 'add_friend')}</button>`}<button class="mgb1 soft sq" data-act="mgumenu" data-v="${uid}" aria-label="${M('more_l')}">${ic('dots')}</button>`;
     const adm = isAdmin() && !me ? `<div class="mgadmbar"><b>${small('shield')}${FXM('adm')}</b><button data-act="mgaflag" data-v="${uid}" data-f="verified" data-x="${pr.verified ? 0 : 1}">${FXM(pr.verified ? 'act_unverify' : 'act_verify')}</button><button data-act="mgaflag" data-v="${uid}" data-f="banned" data-x="${pr.banned ? 0 : 1}">${FXM(pr.banned ? 'act_unban' : 'act_ban')}</button><button data-act="mgawarn" data-v="${uid}">${FXM('act_warn')}</button></div>` : '';
     const ast = me && isAdmin() ? want('adm:stats', () => LV.stats()) || {} : {};
     const admTop = me && isAdmin() ? `<button class="mgadmmode" data-act="admmode">${small('shield')}<b>${FXM('adm_badge')}</b><span>${FXM('adm_mode_off')}</span></button><div class="mgastats"><div><b class="num">${ast.mg_users == null ? '…' : nf(ast.mg_users)}</b><small>${M('mg_users_n')}</small></div><div><b class="num">${ast.mg_new7 == null ? '…' : nf(ast.mg_new7)}</b><small>${M('new7_n')}</small></div><div><b class="num">${ast.reports == null ? '…' : nf(ast.reports)}</b><small>${FXM('tab_reports')}</small></div><div><b class="num">${ast.verify == null ? '…' : nf(ast.verify)}</b><small>${FXM('tab_verify')}</small></div></div>` : '';
-    return admTop + `<div class="mgcover" style="${pr.cover_url ? `background-image:url(${esc(pr.cover_url)})` : ''}">${me ? `<button class="mgcbtn" data-act="mgcover">${small('camera')}${M('cover')}</button>` : ''}</div>
-    <div class="mgwrap mgprof"><div class="mgpav">${av(uid, 'xl')}</div><h2>${esc(mname(uid))}${vm(uid)}</h2>${pr.banned ? `<p class="tag" style="background:var(--rose-tint);color:var(--rose)">${FXM('act_ban')}</p>` : ''}${me && !pr.verified ? `<button class="mgvfbtn" data-act="vfopen" data-v="mg">${small('check')}${FXM('vf_t')}</button>` : ''}${pr.mg_bio ? `<p class="mgbio">${esc(me ? pr.mg_bio : trText('a' + uid, pr.mg_bio, pr.ui_lang))}</p>` : ''}
-    <div class="mgcounts"><div><b class="num">${nf(cnt[0])}</b><small>${M('posts')}</small></div><div><b class="num">${nf(cnt[1])}</b><small>${M('followers')}</small></div><div><b class="num">${nf(cnt[2])}</b><small>${M('following')}</small></div></div>
-    <div class="mgpact">${actions}</div>${!me && !fr ? `<p class="note" style="text-align:center;margin-top:8px">${small('lock')} ${M('dm_lock')}</p>` : ''}${adm}
-    <div class="mggrid">${posts.length ? posts.map(x => x.media_type === 'video' ? `<button class="mgvt" data-act="mgpost" data-v="${x.id}"><video src="${esc(x.media_url)}#t=0.5" muted playsinline preload="metadata"></video>${ic('play')}</button>` : `<button data-act="mgpost" data-v="${x.id}" style="background-image:url(${esc(x.media_url)})"></button>`).join('') : `<p class="note" style="grid-column:1/-1;text-align:center;padding:20px 0">${M('no_posts')}</p>`}</div></div>`;
+    const lng = pr.ui_lang ? `<span class="mglang">${small('globe')}${M('writes_in')} ${esc(langName(pr.ui_lang))}${!me && pr.ui_lang !== NK.lang ? ` · <b>${M('tr_for_you')}</b>` : ''}</span>` : '';
+    const tile = (x) => x.media_type === 'video' ? `<button class="mgvt" data-act="mgpost" data-v="${x.id}"><video src="${esc(x.media_url)}#t=0.5" muted playsinline preload="metadata"></video>${ic('play')}</button>` : `<button data-act="mgpost" data-v="${x.id}" style="background-image:url(${esc(x.media_url)})"></button>`;
+    return admTop + `<div class="mgp2">
+      <div class="mgp2-top"><div class="mgp2-av ${me ? '' : ''}">${av(uid, 'xl')}</div><div class="mgp2-st"><div><b class="num">${nf(cnt[0])}</b><small>${M('posts')}</small></div><button data-act="mgfriendsk" data-v="followers"><b class="num">${nf(cnt[1])}</b><small>${M('followers')}</small></button><button data-act="mgfriendsk" data-v="following"><b class="num">${nf(cnt[2])}</b><small>${M('following')}</small></button></div></div>
+      <h2 class="mgp2-nm">${esc(mname(uid))}${vm(uid)}</h2>${pr.banned ? `<p class="tag" style="background:var(--rose-tint);color:var(--rose)">${FXM('act_ban')}</p>` : ''}
+      ${pr.mg_bio ? `<p class="mgp2-bio">${esc(me ? pr.mg_bio : trText('a' + uid, pr.mg_bio, pr.ui_lang))}</p>${me ? '' : trBadge('a' + uid)}` : me ? `<button class="mglink" data-act="mgedit">+ ${t('about_l')}</button>` : ''}
+      <div class="mgp2-meta">${lng}${me && !pr.verified ? `<button class="mgvfchip" data-act="vfopen" data-v="mg">${small('check')}${FXM('vf_t')}</button>` : ''}</div>
+      <div class="mgp2-act">${actions}</div>${!me && !fr ? `<p class="mgp2-note">${small('lock')} ${M('dm_lock')}</p>` : ''}${adm}
+    </div>
+    <div class="mgtabs"><button class="${PTAB === 'grid' ? 'on' : ''}" data-act="mgptab" data-v="grid" aria-label="${M('posts')}">${ic('grid')}</button><button class="${PTAB === 'reels' ? 'on' : ''}" data-act="mgptab" data-v="reels" aria-label="${M('reels')}">${ic('play')}</button></div>
+    <div class="mggrid">${posts.length ? posts.map(tile).join('') : `<div class="mgempty" style="grid-column:1/-1">${me ? `<p>${M(PTAB === 'reels' ? 'no_reels' : 'no_posts')}</p><button class="mgb1 dark" data-act="mgnew" data-v="${PTAB === 'reels' ? 'reel' : 'post'}">${M('create')}</button>` : `<p>${M(PTAB === 'reels' ? 'no_reels' : 'no_posts')}</p>`}</div>`}</div>`;
   };
   V.mgme = () => { const r = ready(); if (r) return r; return wrapView('mgme', profView(meId()), t('profile_l')); };
   V.mgp = (p) => { const r = ready(); if (r) return r; if (p.id === meId()) return V.mgme(); return wrapView('', profView(p.id), esc(mname(p.id))); };
@@ -462,20 +489,26 @@ if (LV) {
     if (m.deleted) return `<div class="mgb ${mine ? 'me' : ''} del" data-mid="${m.id}"><span>${M('deleted')}</span><small>${hm(m.created_at)}</small></div>`;
     const rq = m.reply_to ? list.find(x => x.id === m.reply_to) : null;
     const txtv = mine ? m.body : trText('mg' + m.id, m.body, m.lang);
-    return `<div class="mgb ${mine ? 'me' : ''} ${m.media_url && !m.body && m.media_kind !== 'audio' ? 'media' : ''}" data-act="${W_ ? 'noop' : 'mgbtap'}" data-v="${m.id}" data-mid="${m.id}">${W_ ? `<b class="mgwho">${esc(mname(m.sender))}</b>` : ''}${rq ? `<span class="mgq"><b>${esc(mname(rq.sender))}</b>${esc(rq.deleted ? M('deleted') : rq.body || kindTxt(rq))}</span>` : ''}${mediaInBubble(m)}${m.body ? `<span class="mgtx">${esc(txtv)}</span>` : ''}${!mine && TRC['mg' + m.id] && TRC['mg' + m.id].tr ? `<em class="mgtrs">${small('translate')}${t('auto_tr')}</em>` : ''}<small>${hm(m.created_at)}${mine && !W_ ? ticks(m, chatId) : ''}</small></div>`; };
+    return `<div class="mgb ${mine ? 'me' : ''} ${m.media_url && !m.body && m.media_kind !== 'audio' ? 'media' : ''}" data-act="${W_ ? 'noop' : 'mgbtap'}" data-v="${m.id}" data-mid="${m.id}">${W_ ? `<b class="mgwho">${esc(mname(m.sender))}</b>` : ''}${rq ? `<span class="mgq"><b>${esc(mname(rq.sender))}</b>${esc(rq.deleted ? M('deleted') : rq.body || kindTxt(rq))}</span>` : ''}${mediaInBubble(m)}${m.body ? `<span class="mgtx">${esc(txtv)}</span>` : ''}${!mine ? trBadge('mg' + m.id) : ''}<small>${hm(m.created_at)}${mine && !W_ ? ticks(m, chatId) : ''}</small></div>`; };
   const threadHtml = (chatId) => { const list = MGM[chatId] || []; let last = ''; return list.map(m => { const d = new Date(m.created_at).toDateString(); const sep = d !== last ? `<div class="mgday"><span>${dayLabel(m.created_at)}</span></div>` : ''; last = d; return sep + bubble(m, chatId); }).join(''); };
   const paintThread = () => { if (!openChat) return; const th = document.getElementById('mgthread'); if (!th) return; const atEnd = window.innerHeight + window.scrollY >= document.body.scrollHeight - 120; th.innerHTML = threadHtml(openChat.id); if (atEnd) scrollEnd(); };
   const scrollEnd = () => setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 20);
   const markRead = (chatId) => { LV.mgRead(chatId).catch(() => {}); };
 
+  let CF = 'all';
+  const pins = () => NK.S.mgPins || (NK.S.mgPins = []);
   V.mgchats = (p) => { const r = ready(); if (r) return r; const k = (p && p.k) || 'chats';
-    const seg = `<div class="seg mgseg" style="margin:10px 14px">${['chats', 'friends'].map(x => `<button class="${x === k ? 'on' : ''}" data-act="mggo" data-v="${x === 'chats' ? 'mgchats' : 'mgfriends'}">${M(x)}${x === 'friends' && R().inc.length ? ` <em class="mgbadge num" style="position:static">${R().inc.length}</em>` : ''}</button>`).join('')}</div>`;
-    if (k === 'friends') return wrapView('mgfriends', seg + friendsBody(), M('chats'));
-    const inb = want('mg:inbox', () => LV.mgInbox());
-    const rows = (inb || []).map(c => { const un = Number(c.unread || 0); const mineLast = c.last_sender === meId(); const rd = c.other_read && new Date(c.other_read) >= new Date(c.last_at);
-      return `<button class="mgchatrow" data-act="mgopen" data-v="${c.id}" data-u="${c.other}" data-nm="${esc(mname(c.other).toLowerCase())}">${av(c.other, 'md')}<span class="grow"><span class="mgcr1"><b>${esc(mname(c.other))}</b><small class="num">${shortTime(c.last_at)}</small></span><span class="mgcr2"><span class="mgprev">${mineLast ? `<i class="mgtick ${rd ? 'rd' : ''}">${rd ? '✓✓' : '✓'}</i> ` : ''}${esc(c.last_body || '')}</span>${un ? `<em class="mgunread num">${un > 99 ? '99+' : un}</em>` : ''}</span></span></button>`; }).join('');
-    return wrapView('mgchats', seg + `<div class="mgwrap" style="padding-top:0"><div class="mgsearch">${ic('search')}<input type="search" placeholder="${M('search')}" aria-label="${M('search')}" oninput="var q=this.value.toLowerCase();document.querySelectorAll('.mgchatrow').forEach(function(e){e.hidden=e.dataset.nm.indexOf(q)<0})"></div>
-      ${inb === undefined ? loading : rows || `<div class="mgempty">${mgLogo()}<p>${M('no_chats')}</p></div>`}${inviteCard()}</div>`, M('chats')); };
+    const inb = want('mg:inbox', () => LV.mgInbox()); const nUn = (inb || []).filter(c => Number(c.unread) > 0).length; const nReq = R().inc.length;
+    const chip = (v, label, n, act) => `<button class="mgchip ${(k === 'friends' ? 'friends' : CF) === v ? 'on' : ''}" data-act="${act || 'mgcf'}" data-v="${v}">${label}${n ? ` <em class="num">${n}</em>` : ''}</button>`;
+    const chips = `<div class="mgchips">${chip('all', t('all'), 0)}${chip('unread', M('unread'), nUn)}${chip('friends', M('friends'), nReq, 'mgcf')}</div>`;
+    if (k === 'friends') return wrapView('mgfriends', chips + friendsBody(), M('chats'));
+    const P = pins(); let list = (inb || []).slice();
+    if (CF === 'unread') list = list.filter(c => Number(c.unread) > 0);
+    list.sort((a, b) => (P.includes(b.id) - P.includes(a.id)) || (new Date(b.last_at) - new Date(a.last_at)));
+    const rows = list.map(c => { const un = Number(c.unread || 0); const mineLast = c.last_sender === meId(); const rd = c.other_read && new Date(c.other_read) >= new Date(c.last_at); const pin = P.includes(c.id);
+      return `<button class="mgchatrow ${un ? 'un' : ''}" data-act="mgopen" data-v="${c.id}" data-u="${c.other}" data-nm="${esc(mname(c.other).toLowerCase())}">${av(c.other, 'md')}<span class="grow"><span class="mgcr1"><b>${esc(mname(c.other))}${vm(c.other)}</b><small class="num">${shortTime(c.last_at)}</small></span><span class="mgcr2"><span class="mgprev">${mineLast ? `<i class="mgtick ${rd ? 'rd' : ''}">${rd ? '✓✓' : '✓'}</i> ` : ''}${esc(c.last_body || '')}</span>${un ? `<em class="mgunread num">${un > 99 ? '99+' : un}</em>` : pin ? `<i class="mgpinic">${small('pin')}</i>` : ''}</span></span></button>`; }).join('');
+    return wrapView('mgchats', `<div class="mgwrap" style="padding-top:4px"><div class="mgsearch">${ic('search')}<input type="search" placeholder="${M('search')}" aria-label="${M('search')}" oninput="var q=this.value.toLowerCase();document.querySelectorAll('.mgchatrow').forEach(function(e){e.hidden=e.dataset.nm.indexOf(q)<0})"></div>${chips}
+      <div class="mgchatlist">${inb === undefined ? loading : rows || `<div class="mgempty">${mgLogo()}<p>${M(CF === 'unread' ? 'no_unread' : 'no_chats')}</p></div>`}</div><p class="mgnobar">${small('translate')} ${M('no_barrier')}</p>${inviteCard()}</div>`, M('chats')); };
 
   V.mgchat = (p) => { const r = ready(); if (r) return r; const id = p.id, other = p.u;
     if (p.w) { WATCH[id] = { a: p.u, b: p.w };
@@ -484,10 +517,10 @@ if (LV) {
         <div class="mgwatch">${small('shield')} ${FXM('watch_dm')}</div><div class="mgthread" id="mgthread" style="padding-bottom:30px">${MGM[id] ? threadHtml(id) : loading}</div></div>` }; }
     if (!MGM[id] && !p._l) { p._l = 1; Promise.all([LV.mgMessages(id), LV.mgOtherRead(id), LV.prof([other])]).then(([ms, rd]) => { MGM[id] = ms; OTHER_READ[id] = rd; if (cur().v === 'mgchat' && cur().id === id) { if (document.getElementById('mgthread')) paintThread(); else render(); scrollEnd(); } markRead(id); }).catch(e => { console.warn(e); toast(FXM('send_fail')); }); }
     const rq = REPLY[id] ? (MGM[id] || []).find(x => x.id === REPLY[id]) : null;
-    return { html: `<div class="mg mgchatv"><header class="mgctop"><button class="mgic" data-act="mgchatback" aria-label="${t('back')}">${ic('back', 'flip')}</button>${link(other, av(other, 'sm'))}<div class="grow">${link(other, `<b>${esc(mname(other))}</b>${vm(other)}`)}<small id="mgsub"></small></div></header>
+    return { html: `<div class="mg mgchatv"><header class="mgctop"><button class="mgic" data-act="mgchatback" aria-label="${t('back')}">${ic('back', 'flip')}</button>${link(other, av(other, 'sm'))}<div class="grow">${link(other, `<b>${esc(mname(other))}</b>${vm(other)}`)}<small id="mgsub">${(prof(other).ui_lang && prof(other).ui_lang !== NK.lang) ? small('translate') + ' ' + esc(langName(prof(other).ui_lang)) : ''}</small></div><button class="mgic" data-act="mgcmenu" data-v="${id}" data-u="${other}" aria-label="${M('more_l')}">${ic('dots')}</button></header>
       <div class="mgthread" id="mgthread">${MGM[id] ? threadHtml(id) : loading}</div>
       <div class="mgcomp">${rq ? `<div class="mgrq"><span><b>${esc(mname(rq.sender))}</b>${esc(rq.body || M('photo_msg'))}</span><button data-act="mgrqx" aria-label="${t('close')}">${small('x')}</button></div>` : ''}
-        <div id="mgrecbar" class="mgrecbar" hidden><i class="mgdot"></i><b id="mgrect" class="num">0:00</b><span>${M('rec_hint')}</span><button class="mgic" data-act="mgrecx" aria-label="${t('close')}">${ic('x')}</button><button class="mgsend" data-act="mgrecsend" aria-label="${M('send_l')}">${ic('send', 'flip')}</button></div><div class="mgcrow"><button class="mgic" data-act="mgattach" aria-label="${M('attach_media')}">${ic('plus')}</button><textarea id="mgmsg" rows="1" placeholder="${M('msg_ph')}" aria-label="${M('msg_ph')}"></textarea><button class="mgsend mgmic" data-act="mgrec" aria-label="${M('voice')}"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><button class="mgsend mgsnd" data-act="mgsendm" aria-label="${M('send_l')}">${ic('send', 'flip')}</button></div></div></div>` }; };
+        <div id="mgrecbar" class="mgrecbar" hidden><i class="mgdot"></i><b id="mgrect" class="num">0:00</b><span>${M('rec_hint')}</span><button class="mgic" data-act="mgrecx" aria-label="${t('close')}">${ic('x')}</button><button class="mgsend" data-act="mgrecsend" aria-label="${M('send_l')}">${ic('send', 'flip')}</button></div><div class="mgcrow"><button class="mgic" data-act="mgattach" aria-label="${M('attach_media')}">${ic('plus')}</button><textarea id="mgmsg" rows="1" placeholder="${prof(other).ui_lang && prof(other).ui_lang !== NK.lang ? M('msg_ph_tr').replace('{n}', mname(other).split(' ')[0]) : M('msg_ph')}" aria-label="${M('msg_ph')}"></textarea><button class="mgsend mgmic" data-act="mgrec" aria-label="${M('voice')}"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><button class="mgsend mgsnd" data-act="mgsendm" aria-label="${M('send_l')}">${ic('send', 'flip')}</button></div></div></div>` }; };
 
   const sendText = async () => { if (!openChat) return; const ta = document.getElementById('mgmsg'); const tx = ta ? ta.value.trim() : ''; if (!tx) return; const id = openChat.id;
     ta.value = ''; DRAFT[id] = ''; ta.style.height = 'auto'; const rw = ta.closest('.mgcrow'); if (rw) rw.classList.remove('has'); const rp = REPLY[id]; delete REPLY[id]; const rqb = document.querySelector('.mgrq'); if (rqb) rqb.remove();
@@ -526,6 +559,7 @@ if (LV) {
       if (x === 'adel') LV.mgDelete(m.id).then(() => { m.deleted = true; paintThread(); }).catch(fail0);
       if (x === 'rep') LV.report('message', m.id, '', { snapshot: String(m.body || '').slice(0, 500), target_author: m.sender, place: 'mg:' + c.id }).then(() => toast(t('reported'))).catch(fail0); }); };
   const fail0 = (e) => { console.warn(e); toast(FXM('send_fail')); };
+  const sharePost = (id) => { const link = inviteLink(); const text = M('inv_text') + ' ' + link; if (navigator.share) navigator.share({ title: 'Magaam', text: M('inv_text'), url: link }).catch(() => {}); else (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(() => toast(M('copied'))).catch(() => {}); };
   const sendPhoto = () => { if (!openChat) return; const id = openChat.id; pickImg(async d => { try { toast('…'); const url = await LV.upload(d, 'chat'); const m = await LV.mgSend(id, '', NK.lang, url, REPLY[id]); delete REPLY[id]; const l = MGM[id] = MGM[id] || []; if (!l.some(x => x.id === m.id)) l.push(m); paintThread(); scrollEnd(); } catch (e) { fail0(e); } }); };
   const regAct = async (a, el) => {
     if (a === 'mgrsend') { const em = document.getElementById('mgem'); if (em) MR.email = em.value.trim().toLowerCase(); const ls = document.getElementById('mglang'); if (ls && ls.value !== NK.lang && NK.setLang) NK.setLang(ls.value);
@@ -623,6 +657,18 @@ if (LV) {
       case 'mgsendm': sendText(); return true;
       case 'mgphoto': sendPhoto(); return true;
       case 'mgattach': attachSheet(); return true;
+      case 'mgorig': ORIG[v] = !ORIG[v]; if (cur().v === 'mgchat' && document.getElementById('mgthread')) paintThread(); else render(); return true;
+      case 'mgptab': PTAB = v; render(); return true;
+      case 'mgcf': if (v === 'friends') { NK.stack[NK.stack.length - 1] = { v: 'mgfriends' }; } else { CF = v; NK.stack[NK.stack.length - 1] = { v: 'mgchats' }; } render(); return true;
+      case 'mgfriendsk': if (cur().v === 'mgme') go('mgfriends'); return true;
+      case 'mgmenu': { const pr = LV.profile || {}; const w = sheet(`<div class="mgmsheet"><button data-x="notif">${ic('siren')}${FXM('notif_t')}</button><button data-x="invite">${ic('users')}${M('invite')}</button>${pr.verified ? '' : `<button data-x="vf">${ic('check')}${FXM('vf_t')}</button>`}<button data-x="cover">${ic('camera')}${M('cover')}</button>${NK.canAdmin() ? `<button data-x="adm">${ic('shield')}${FXM(isAdmin() ? 'adm_mode_off' : 'adm_mode_on')}</button>` : ''}</div>`);
+        w.addEventListener('click', e => { const b = e.target.closest('[data-x]'); if (!b) return; w.remove(); const x = b.dataset.x; if (x === 'notif') NK.notifSheet(); if (x === 'invite') inviteSheet(); if (x === 'vf') NK.verifySheet(true); if (x === 'adm') { NK.S.adminMode = !NK.S.adminMode; save(); render(); } if (x === 'cover') pickImg(async d => { try { const url = await LV.upload(d, 'cover'); const np = await LV.updateProfile({ cover_url: url }); NK.S.me = NK.meFrom(np); save(); render(); } catch (er) { fail(er); } }, 1600); }); return true; }
+      case 'mgumenu': { const w = sheet(`<div class="mgmsheet"><button data-x="rep" class="bad">${ic('flag')}${t('report')}</button></div>`); w.addEventListener('click', e => { const b = e.target.closest('[data-x]'); if (!b) return; w.remove(); LV.report('user', v).then(() => toast(t('reported'))).catch(fail); }); return true; }
+      case 'mgpmenu': { const p = ALL[v] || {}; const mine = p.author === meId(); const w = sheet(`<div class="mgmsheet"><button data-x="open">${ic('chat')}${M('all_comments')}</button><button data-x="share">${ic('send')}${M('share')}</button>${mine ? `<button data-x="del" class="bad">${ic('x')}${M('del_msg')}</button>` : `<button data-x="rep" class="bad">${ic('flag')}${t('report')}</button>`}</div>`);
+        w.addEventListener('click', e => { const b = e.target.closest('[data-x]'); if (!b) return; w.remove(); const x = b.dataset.x; if (x === 'open') go('mgpost', { id: v }); if (x === 'share') sharePost(v); if (x === 'rep') LV.report('post', v).then(() => toast(t('reported'))).catch(fail); if (x === 'del' && confirm(M('del_msg') + '?')) LV.deletePost(v).then(() => { dropData('mg:'); render(); }).catch(fail); }); return true; }
+      case 'mgshare': sharePost(v); return true;
+      case 'mgcmenu': { const P = pins(); const on = P.includes(v); const w = sheet(`<div class="mgmsheet"><button data-x="pin">${small('pin')}${M(on ? 'unpin' : 'pin')}</button><button data-x="prof">${ic('user')}${t('profile_l')}</button><button data-x="rep" class="bad">${ic('flag')}${t('report')}</button></div>`);
+        w.addEventListener('click', e => { const b = e.target.closest('[data-x]'); if (!b) return; w.remove(); const x = b.dataset.x; if (x === 'pin') { if (on) P.splice(P.indexOf(v), 1); else P.unshift(v); save(); toast(M(on ? 'unpin' : 'pin') + ' ✓'); } if (x === 'prof') go('mgp', { id: el.dataset.u }); if (x === 'rep') LV.report('user', el.dataset.u).then(() => toast(t('reported'))).catch(fail); }); return true; }
       case 'mgrec': recStart(); return true;
       case 'mgrecx': recStop(false); return true;
       case 'mgrecsend': recStop(true); return true;

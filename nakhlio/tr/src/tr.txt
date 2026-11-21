@@ -1094,3 +1094,20 @@ c840|son 7 günde yeni
 c841|Magaam yalnızca telefonda uygulama olarak çalışır. verghethorn.com/magaam adresini telefonunuzda açın ve Ana Ekrana ekleyin.
 c842|Telefonunuzu ve e-postanızı yalnızca siz görürsünüz. Girişi e-postanıza gelen kodla yaparsınız.
 c843|Test konut ve ulaşım ilanlarındaki fotoğraflar: Unsplash.
+c844|Profili paylaş
+c845|Ayarlar
+c846|Daha fazla
+c847|Yazdığı dil:
+c848|size çevriliyor
+c849|Çeviri
+c850|orijinal
+c851|Çeviriyi göster
+c852|Henüz reels yok
+c853|Okunmamış
+c854|Hepsi okundu
+c855|Sabitle
+c856|Sabitlemeyi kaldır
+c857|Yorumlar
+c858|Kendi dilinizde yazın — {n} kendi dilinde okur
+c859|Dil engeli yok: herkes kendi dilinde yazar, kendi dilinde okur.
+c860|Düzenle

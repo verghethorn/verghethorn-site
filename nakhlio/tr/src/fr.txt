@@ -1094,3 +1094,20 @@ c840|nouveaux sur 7 jours
 c841|Magaam fonctionne uniquement comme application sur téléphone. Ouvrez verghethorn.com/magaam sur votre téléphone et ajoutez-le à l’écran d’accueil.
 c842|Vous seul voyez votre téléphone et votre e-mail. La connexion se fait avec un code envoyé par e-mail.
 c843|Photos des annonces test de logement et de transport : Unsplash.
+c844|Partager le profil
+c845|Réglages
+c846|Plus
+c847|Écrit en
+c848|traduit pour vous
+c849|Traduction
+c850|original
+c851|Afficher la traduction
+c852|Pas encore de reels
+c853|Non lus
+c854|Tout est lu
+c855|Épingler
+c856|Désépingler
+c857|Commentaires
+c858|Écrivez dans votre langue — {n} lit dans la sienne
+c859|Sans barrière de langue : chacun écrit et lit dans sa langue.
+c860|Modifier
