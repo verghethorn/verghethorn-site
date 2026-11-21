@@ -209,6 +209,8 @@ const TC = (() => { try { return JSON.parse(localStorage.getItem('nakhlio_tr') |
 L.translate = async (text, from, to) => {
   if (!text || !from || !to || from === to) return null;
   const k = from + '|' + to + '|' + text; if (TC[k]) return TC[k];
+  try { const r = await fetch(URL_ + '/functions/v1/translate', { method: 'POST', headers: { 'content-type': 'application/json', apikey: KEY }, body: JSON.stringify({ text, from, to }) });
+    const j = await r.json(); if (j && j.text) { TC[k] = j.text; try { localStorage.setItem('nakhlio_tr', JSON.stringify(TC)); } catch (e) {} return j.text; } } catch (e) {}
   try {
     const r = await fetch('https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text.slice(0, 480)) + '&langpair=' + from + '|' + to);
     const j = await r.json(); const out = j && j.responseData && j.responseData.translatedText;
