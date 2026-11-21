@@ -268,12 +268,14 @@ V.home = () => {
   const prow = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].map(k => `<div class="${k === np.nx ? 'on' : ''}">${t(k)}<b class="num">${hm(np.pt[k])}</b></div>`).join('');
   const nextDay = DAYS.map(d => ({ d, left: Math.ceil((new Date(d.date + 'T00:00:00+03:00') - Date.now()) / 864e5) })).filter(x => x.left >= 0)[0];
   return { tabs: true, raw: true, html: `
-  <div class="hero hero2">${skyline()}
+  <div class="hero hero3">${skyline()}<div class="hero3-pat" aria-hidden="true"></div>
     <button class="lang-pill hero2-lang" data-act="go" data-v="lang">${ic('globe')}${esc((LANGS.find(l => l.code === lang) || {}).name)}</button>
-    <div class="hero2-c"><span class="hero2-logo">${logo('rgba(255,255,255,.14)')}</span>
-      <small class="hero2-eye">${lang === 'ar' ? '' : XL('h_eye') + ' · '}<span lang="ar" dir="rtl">المدينة المنورة</span></small>
-      <h2>${XL('h_title')}</h2><p>${XL('h_sub')}</p>
-      <div class="hero2-chips"><button data-act="go" data-v="housing">${ic('home')}${t('s_housing')}</button><button data-act="go" data-v="services">${ic('hand')}${XL('h_help')}</button><button data-act="tab" data-v="chats">${ic('chat')}${XL('h_talk')}</button></div></div>
+    <div class="hero3-c"><span class="hero3-logo">${logo('rgba(255,255,255,.14)')}</span>
+      <small class="hero3-eye">${lang === 'ar' ? '' : XL('h_eye') + ' · '}<span lang="ar" dir="rtl">المدينة المنورة</span></small>
+      <h2 class="hero3-t">${XL('h3_title')}</h2><p class="hero3-s">${XL('h3_sub')}</p>
+      <div class="hero3-orn" aria-hidden="true"><i></i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5l2.6 4.2 4.8-1.2-1.2 4.8 4.3 2.7-4.3 2.7 1.2 4.8-4.8-1.2L12 22.5l-2.6-4.2-4.8 1.2 1.2-4.8L1.5 12l4.3-2.7-1.2-4.8 4.8 1.2z" fill="currentColor"/></svg><i></i></div>
+      <figure class="hero3-ayah"><blockquote lang="ar" dir="rtl">﴿ وَتَعَاوَنُوا عَلَى الْبِرِّ وَالتَّقْوَىٰ ﴾</blockquote>${lang === 'ar' ? '' : `<figcaption>«${XL('h3_ayah')}»</figcaption>`}<cite>${XL('h3_ref')}</cite></figure>
+      <span class="hero3-only">${ic('pin')}${XL('h3_only')}</span></div>
   </div>
   <div class="prayer" id="prayerCard">
     <div class="prayer-head"><span class="prayer-ico">${ic('moon')}</span><div><small>${t('next_prayer')}</small><b>${t(np.nx)} · <span class="num">${hm(np.pt[np.nx])}</span></b></div>
@@ -366,6 +368,11 @@ const LX = {
   h_eye: X3('Медина', 'Medina', 'المدينة'), h_title: X3('Ваша жизнь в Медине', 'Your life in Medina', 'حياتك في المدينة'),
   h_sub: X3('Жильё, помощь и общение с теми, кто живёт рядом — на вашем языке', 'Homes, help and friends who live nearby — in your own language', 'سكن ومساعدة وتواصل مع من يعيشون قربك — بلغتك'),
   h_help: X3('Помощь', 'Help', 'مساعدة'), h_talk: X3('Общение', 'Chat', 'تواصل'),
+  h3_title: X3('Мусафиры Медины', 'Musafirs of Medina', 'مسافرو المدينة'),
+  h3_sub: X3('Мы далеко от дома, но здесь мы вместе', 'Far from home, yet together here', 'بعيدون عن الديار، لكننا هنا معاً'),
+  h3_ayah: X3('Помогайте друг другу в благочестии и богобоязненности', 'Help one another in righteousness and piety', 'وتعاونوا على البر والتقوى'),
+  h3_ref: X3('Коран · 5:2', 'Quran · 5:2', 'القرآن · ٥:٢'),
+  h3_only: X3('Только для тех, кто сейчас в Медине', 'Only for those who are in Medina now', 'فقط لمن هم في المدينة الآن'),
   err_req: X3('Заполните это поле.', 'Fill in this field.', 'املأ هذا الحقل.'),
   fresh: X3('Новые объявления', 'New listings', 'أحدث الإعلانات'),
   count_n: X3('объявл.', 'listings', 'إعلانات'), loading: X3('Загружаем…', 'Loading…', 'جارٍ التحميل…'),

@@ -1371,3 +1371,8 @@ c1107|Medine’deki hayatınız
 c1108|Konut, yardım ve yakınında yaşayanlarla sohbet — kendi dilinde
 c1109|Yardım
 c227|Sohbet
+c1110|Medine’nin Misafirleri
+c1111|Evden uzağız ama burada birlikteyiz
+c1112|İyilik ve takva üzerinde yardımlaşın
+c1113|Kur’an · 5:2
+c1114|Yalnızca şu an Medine’de olanlar için

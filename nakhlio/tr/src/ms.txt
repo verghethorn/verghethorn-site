@@ -1371,3 +1371,8 @@ c1107|Kehidupan anda di Madinah
 c1108|Kediaman, bantuan dan rakan yang tinggal berdekatan — dalam bahasa anda sendiri
 c1109|Bantuan
 c227|Berbual
+c1110|Musafir Madinah
+c1111|Jauh dari rumah, namun di sini kita bersama
+c1112|Bertolong-tolonganlah kamu dalam kebajikan dan takwa
+c1113|Al-Quran · 5:2
+c1114|Hanya untuk mereka yang sedang berada di Madinah

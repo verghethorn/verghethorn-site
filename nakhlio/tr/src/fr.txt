@@ -1371,3 +1371,8 @@ c1107|Votre vie à Médine
 c1108|Logement, entraide et voisins à qui parler — dans votre langue
 c1109|Entraide
 c227|Discuter
+c1110|Les musafirs de Médine
+c1111|Loin de chez nous, mais ensemble ici
+c1112|Entraidez-vous dans la bonté et la piété
+c1113|Coran · 5:2
+c1114|Réservé à ceux qui sont à Médine
