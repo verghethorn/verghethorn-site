@@ -1111,3 +1111,11 @@ c857|Yorumlar
 c858|Kendi dilinizde yazın — {n} kendi dilinde okur
 c859|Dil engeli yok: herkes kendi dilinde yazar, kendi dilinde okur.
 c860|Düzenle
+c861|Şehir
+c862|An
+c863|Anlar
+c864|Davet et
+c865|Kişileri bul
+c866|İnsanlarınız burada olacak. Arkadaşlarınızı davet edin — bağlantınızla hemen arkadaş olurlar.
+c867|Şimdilik sakin. İlk anı paylaşın.
+c868|Kendi dilinizde yazın — {n} anlayacak

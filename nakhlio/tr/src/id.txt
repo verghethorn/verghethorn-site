@@ -1111,3 +1111,11 @@ c857|Komentar
 c858|Tulis dalam bahasa Anda — {n} membaca dalam bahasanya
 c859|Tanpa hambatan bahasa: semua menulis dan membaca dalam bahasanya sendiri.
 c860|Edit profil
+c861|Kota
+c862|Momen
+c863|Momen
+c864|Undang
+c865|Cari orang
+c866|Orang-orang Anda akan ada di sini. Undang teman — lewat tautan Anda mereka langsung jadi teman.
+c867|Masih sepi. Bagikan momen pertama.
+c868|Tulis dalam bahasa Anda — {n} akan mengerti

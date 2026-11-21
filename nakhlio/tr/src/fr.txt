@@ -1111,3 +1111,11 @@ c857|Commentaires
 c858|Écrivez dans votre langue — {n} lit dans la sienne
 c859|Sans barrière de langue : chacun écrit et lit dans sa langue.
 c860|Modifier
+c861|Ville
+c862|Moment
+c863|Moments
+c864|Inviter
+c865|Trouver des gens
+c866|Vos proches seront ici. Invitez des amis — avec votre lien ils deviennent amis tout de suite.
+c867|Calme pour l’instant. Partagez le premier moment.
+c868|Écrivez dans votre langue — {n} comprendra

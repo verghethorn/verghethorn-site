@@ -1111,3 +1111,11 @@ c857|Komen
 c858|Tulis dalam bahasa anda — {n} membaca dalam bahasanya
 c859|Tiada halangan bahasa: semua menulis dan membaca dalam bahasa sendiri.
 c860|Sunting profil
+c861|Bandar
+c862|Detik
+c863|Detik
+c864|Jemput
+c865|Cari orang
+c866|Orang anda akan berada di sini. Jemput rakan — melalui pautan anda mereka terus menjadi rakan.
+c867|Masih sunyi. Kongsi detik pertama.
+c868|Tulis dalam bahasa anda — {n} akan faham
