@@ -132,6 +132,17 @@ const T = {
   r_ok: D('Принимаю правила', 'I accept the rules', 'أوافق على القواعد'),
   open: D('Открыть Magaam', 'Open Magaam', 'افتح Magaam'),
   back_n: D('Nakhlio', 'Nakhlio', 'Nakhlio'),
+  ph_add_t: D('Добавить по номеру', 'Add by phone number', 'إضافة برقم الهاتف'),
+  ph_add_d: D('Введите номер телефона человека. Если он указал этот номер в Магаме, вы его найдёте.', 'Enter the person’s phone number. If they added this number in Magaam, you’ll find them.', 'أدخل رقم هاتف الشخص. إن كان قد أضاف هذا الرقم في Magaam فستجده.'),
+  ph_find: D('Найти', 'Find', 'بحث'),
+  ph_bad: D('Проверьте номер: код страны и цифры.', 'Check the number: country code and digits.', 'تحقق من الرقم: رمز الدولة والأرقام.'),
+  ph_none: D('Этого номера нет в Магаме', 'This number isn’t on Magaam', 'هذا الرقم ليس في Magaam'),
+  ph_none_d: D('Пригласите человека — после регистрации он сразу появится у вас в контактах.', 'Invite them — after signing up they appear in your contacts right away.', 'ادعه — بعد التسجيل سيظهر في جهات اتصالك فوراً.'),
+  ph_many: D('Слишком много поисков. Попробуйте через час.', 'Too many searches. Try again in an hour.', 'عمليات بحث كثيرة. حاول بعد ساعة.'),
+  ph_my_t: D('Мой номер телефона', 'My phone number', 'رقم هاتفي'),
+  ph_my_d: D('Номер никто не видит. Он нужен только для того, чтобы знакомые могли найти вас и добавить в контакты.', 'Nobody can see your number. It only lets people who know it find you and add you to their contacts.', 'لا يرى أحد رقمك. يُستخدم فقط ليجدك من يعرفه ويضيفك إلى جهات اتصاله.'),
+  ph_saved: D('Номер сохранён', 'Number saved', 'تم حفظ الرقم'), ph_remove: D('Удалить номер', 'Remove number', 'حذف الرقم'), ph_removed: D('Номер удалён', 'Number removed', 'تم حذف الرقم'),
+  ph_taken: D('Этот номер уже указан у другого пользователя. Если это ваш номер — напишите в поддержку.', 'This number is already used by another account. If it’s yours, contact support.', 'هذا الرقم مستخدم في حساب آخر. إن كان رقمك فراسل الدعم.'),
   pend_d: D('Сообщения пишутся в Магаме. Укажите имя — и сразу откроется чат.', 'Messages are written in Magaam. Enter your name and the chat opens right away.', 'تُكتب الرسائل في Magaam. أدخل اسمك وستُفتح المحادثة فوراً.'),
   support_t: D('Служба поддержки', 'Support', 'الدعم'),
   req_new: D('{n} нет в ваших контактах', '{n} isn’t in your contacts', '{n} ليس في جهات اتصالك'),
@@ -1143,7 +1154,7 @@ if (LV) {
       return h + `<button class="m8row" data-act="mgp" data-v="${u}">${av(u, 'md')}<span class="grow"><span class="m8r1"><b>${esc(mname(u))}${vm(u)}</b></span>${prof(u).mg_handle ? `<span class="m8r2"><span>@${esc(prof(u).mg_handle)}</span></span>` : ''}</span></button>`; }).join('');
     const reqs = rel.inc.map(q => `<div class="m8row"><button class="pbtn" data-act="mgp" data-v="${q.from_id}">${av(q.from_id, 'md')}</button><span class="grow"><span class="m8r1"><b>${esc(mname(q.from_id))}</b></span></span><button class="m8btn sm dark" data-act="mgacc" data-v="${q.id}">${M('accept')}</button><button class="m8btn sm" data-act="mgdec" data-v="${q.id}">${M('decline')}</button></div>`).join('');
     return wrapView('mgcontacts', `<div class="m8wrap"><h1 class="m8big">${M8('contacts')}</h1>
-      <div class="m8list">${`<button class="m8row sys" data-act="mggo" data-v="mgfind"><span class="m8ic">${ic('search')}</span><span class="grow"><b>${M8('find_add')}</b></span>${ic('chev', 'flip chev')}</button><button class="m8row sys" data-act="mginvite"><span class="m8ic">${ic('plus')}</span><span class="grow"><b>${M('invite')}</b></span>${ic('chev', 'flip chev')}</button>`}</div>
+      <div class="m8list">${`<button class="m8row sys" data-act="mgphadd"><span class="m8ic">${ic('phone')}</span><span class="grow"><b>${M('ph_add_t')}</b></span>${ic('chev', 'flip chev')}</button><button class="m8row sys" data-act="mggo" data-v="mgfind"><span class="m8ic">${ic('search')}</span><span class="grow"><b>${M8('find_add')}</b></span>${ic('chev', 'flip chev')}</button><button class="m8row sys" data-act="mginvite"><span class="m8ic">${ic('plus')}</span><span class="grow"><b>${M('invite')}</b></span>${ic('chev', 'flip chev')}</button>`}</div>
       ${n ? `<h4 class="m8h">${M('requests')} · <span class="num">${n}</span></h4><div class="m8list">${reqs}</div>` : ''}
       <div class="m8list">${rows || `<p class="m8note" style="padding:16px">${M('no_contacts')}</p>`}</div></div>`, ''); };
 
@@ -1216,11 +1227,36 @@ if (LV) {
     return wrapView('mgme', `<div class="m8wrap"><h1 class="m8big">${M('me_t')}</h1>
       <button class="m8mecard" data-act="mggo" data-v="mgmine">${av(meId(), 'me')}<span class="grow"><b>${esc(mname(meId()))}${vm(meId())}</b><small>Magaam ID: ${pr.mg_handle ? '@' + esc(pr.mg_handle) : esc(pr.invite_code || '—')}</small></span>${ic('chev', 'flip chev')}</button>
       ${isAdmin() ? `<button class="mgadmmode" data-act="admmode">${small('shield')}<b>${FXM('adm_badge')}</b><span>${FXM('adm_mode_off')}</span></button>` : ''}
-      <div class="m8list">${row('mghandle', ic('idcard'), 'Magaam ID', '', pr.mg_handle ? '@' + esc(pr.mg_handle) : M('h_change1'))}${row('mginvite', ic('share'), M('invite'))}${row('support', ic('headset'), M('support_t'))}${pr.verified ? '' : row('vfopen', ic('check'), FXM('vf_t'), 'mg')}</div>
+      <div class="m8list">${row('mghandle', ic('idcard'), 'Magaam ID', '', pr.mg_handle ? '@' + esc(pr.mg_handle) : M('h_change1'))}${row('mgphmy', ic('phone'), M('ph_my_t'), '', (() => { const ph = want('mg:myphone', () => LV.myPhone().catch(() => '')); return ph ? esc(ph) : M('h_set'); })())}${row('mginvite', ic('share'), M('invite'))}${row('support', ic('headset'), M('support_t'))}${pr.verified ? '' : row('vfopen', ic('check'), FXM('vf_t'), 'mg')}</div>
       <div class="m8list">${row('mgstyle', ic('chat'), M8('msg_style'), '', M8(STYLE() === 'cards' ? 'st_cards' : 'st_bubbles'))}${row('mglangs', ic('globe'), t('language'), '', esc(langName(NK.lang)))}${row('notifset', ic('siren'), FXM('notif_t'))}</div>
       <div class="m8list">${row('mgedit', ic('user'), t('edit_profile'))}${NK.canAdmin() ? row('admmode', ic('shield'), FXM(isAdmin() ? 'adm_mode_off' : 'adm_mode_on')) : ''}${row('mgrules', ic('info'), M('rules_mg'))}</div>
       ${window.MG_APP ? '' : `<div class="m8list"><button class="m8row sys" data-act="tab" data-v="home"><span class="m8ic nk">${NKL}</span><span class="grow"><b>${M8('back_nk')}</b></span>${ic('chev', 'flip chev')}</button></div>`}
       <p class="m8note">${small('translate')} ${M8('tr_auto')}</p></div>`, ''); };
+
+  /* phone numbers: add someone by number, like WhatsApp; your own number is private and only used to find you */
+  const CC = [['+966', 'SA'], ['+971', 'AE'], ['+974', 'QA'], ['+965', 'KW'], ['+973', 'BH'], ['+968', 'OM'], ['+20', 'EG'], ['+962', 'JO'], ['+90', 'TR'], ['+7', 'RU'], ['+998', 'UZ'], ['+992', 'TJ'], ['+996', 'KG'], ['+994', 'AZ'], ['+92', 'PK'], ['+91', 'IN'], ['+880', 'BD'], ['+62', 'ID'], ['+60', 'MY'], ['+98', 'IR'], ['+93', 'AF'], ['+212', 'MA'], ['+213', 'DZ'], ['+216', 'TN'], ['+249', 'SD'], ['+234', 'NG'], ['+44', 'GB'], ['+49', 'DE'], ['+33', 'FR'], ['+1', 'US']];
+  const flag = (c) => c.replace(/./g, ch => String.fromCodePoint(127397 + ch.charCodeAt(0)));
+  const normPhone = (code, num) => { let d = String(num || '').replace(/[^\d+]/g, ''); if (d.startsWith('00')) d = '+' + d.slice(2); if (d.startsWith('+')) return /^\+[1-9]\d{7,14}$/.test(d) ? d : ''; d = d.replace(/^0+/, ''); const r = code + d; return /^\+[1-9]\d{7,14}$/.test(r) ? r : ''; };
+  const phoneField = (id, val) => { const m = (val || '').match(/^(\+\d{1,3})(\d+)$/); const code0 = m && CC.find(c => val.startsWith(c[0])) ? CC.filter(c => val.startsWith(c[0])).sort((a, b) => b[0].length - a[0].length)[0][0] : '+966';
+    return `<div class="field"><div class="mgphin"><select id="${id}c" aria-label="code">${CC.map(([c, k]) => `<option value="${c}" ${c === code0 ? 'selected' : ''}>${flag(k)} ${c}</option>`).join('')}</select><input id="${id}" type="tel" inputmode="tel" autocomplete="tel-national" dir="ltr" placeholder="5X XXX XXXX" value="${esc(val ? val.slice(code0.length) : '')}"></div></div>`; };
+  const addByPhone = () => { const w = sheet(`<h3>${M('ph_add_t')}</h3><p class="note" style="margin:0 0 10px">${M('ph_add_d')}</p>${phoneField('phq', '')}<div id="phres"></div><button class="btn primary full mgbtn" id="phgo">${ic('search')}${M('ph_find')}</button>`);
+    const res = w.querySelector('#phres');
+    w.querySelector('#phgo').onclick = async (ev) => { const p = normPhone(w.querySelector('#phqc').value, w.querySelector('#phq').value); if (!p) { res.innerHTML = ''; NK.fieldBad(w, w.querySelector('#phq'), M('ph_bad')); return; }
+      const b = ev.currentTarget; b.disabled = true; res.innerHTML = '<p class="note">…</p>';
+      try { const f = await LV.findPhone(p); b.disabled = false;
+        if (!f) { res.innerHTML = `<div class="mgphnone"><b>${M('ph_none')}</b><small>${M('ph_none_d')}</small><button class="m8btn dark" data-x="inv">${ic('share')}${M('invite')}</button></div>`; res.querySelector('[data-x=inv]').onclick = () => { w.remove(); inviteSheet(); }; return; }
+        const rel = R(); const has = rel.friends.has(f.id);
+        res.innerHTML = `<div class="mgphfound">${f.avatar ? `<span class="av" style="background:url(${esc(f.avatar)}) center/cover"></span>` : `<span class="av ill">${NK.avatar ? NK.avatar(f.name || '?') : ''}</span>`}<b>${esc(f.name || '—')}</b><div class="mgreqa">${has ? `<button class="m8btn" disabled>${small('check')}${M8('in_contacts')}</button>` : `<button class="m8btn dark" data-x="add">${ic('plus')}${M('to_contacts')}</button>`}<button class="m8btn" data-x="msg">${ic('chat')}${M('write')}</button></div></div>`;
+        const ad = res.querySelector('[data-x=add]'); if (ad) ad.onclick = () => LV.addContact(f.id).then(() => { toast(M('added_contact')); dropData('mg:rel'); w.remove(); render(); }).catch(fail0);
+        res.querySelector('[data-x=msg]').onclick = () => { w.remove(); window.MGACT('mgwrite', f.id, { dataset: {} }); };
+      } catch (e) { b.disabled = false; res.innerHTML = `<p class="ferr-in">${/too_many/.test(String(e && (e.message || e))) ? M('ph_many') : FXM('send_fail')}</p>`; } }; };
+  const myPhoneSheet = async () => { let cur0 = ''; try { cur0 = await LV.myPhone(); } catch (e) {}
+    const w = sheet(`<h3>${M('ph_my_t')}</h3><p class="note" style="margin:0 0 10px">${M('ph_my_d')}</p>${phoneField('phm', cur0)}<button class="btn primary full mgbtn" id="phsave">${t('save_l')}</button>${cur0 ? `<button class="btn soft full" style="margin-top:8px" id="phdel">${M('ph_remove')}</button>` : ''}`);
+    w.querySelector('#phsave').onclick = async () => { const p = normPhone(w.querySelector('#phmc').value, w.querySelector('#phm').value); if (!p) { NK.fieldBad(w, w.querySelector('#phm'), M('ph_bad')); return; }
+      try { await LV.setPhone(p); dropData('mg:myphone'); toast(M('ph_saved')); w.remove(); render(); } catch (e) { NK.fieldBad(w, w.querySelector('#phm'), /duplicate|23505|unique/i.test(String(e && (e.message || e.code))) ? M('ph_taken') : FXM('send_fail')); } };
+    const d = w.querySelector('#phdel'); if (d) d.onclick = () => LV.setPhone('').then(() => { dropData('mg:myphone'); toast(M('ph_removed')); w.remove(); render(); }).catch(fail0); };
+  const addMenu = () => { const w = sheet(`<div class="mgmsheet"><button data-x="ph">${ic('phone')}${M('ph_add_t')}</button><button data-x="find">${ic('search')}${M8('find_add')}</button><button data-x="inv">${ic('share')}${M('invite')}</button></div>`);
+    w.addEventListener('click', e => { const b = e.target.closest('[data-x]'); if (!b) return; w.remove(); const x = b.dataset.x; if (x === 'ph') addByPhone(); if (x === 'find') go('mgfind'); if (x === 'inv') inviteSheet(); }); };
 
   /* the old social and shop screens lead back to the messenger */
   ['mgexplore', 'mgmoments', 'mgcats', 'mgcat', 'mgsearch', 'mgfavs', 'mgshop', 'mgreels', 'mgfriends'].forEach(k => { V[k] = k === 'mgshop' ? (p) => V.mgp(p) : () => V.mgchats(); });
@@ -1243,7 +1279,9 @@ if (LV) {
       case 'mgstav': changePhoto(); return true;
       case 'mgnew': addStory(); return true;
       case 'mgback': if (NK.stack.length > 1) NK.back(); else { NK.stack.length = 1; NK.stack[0] = { v: 'mgchats' }; render(true); } return true;
-      case 'mgplusmenu': go('mgcontacts'); return true;
+      case 'mgplusmenu': addMenu(); return true;
+      case 'mgphadd': addByPhone(); return true;
+      case 'mgphmy': myPhoneSheet(); return true;
       case 'mgsell': go('mgcontacts'); return true;
       case 'mgdec': LV.answerRequest(v, false).then(() => { dropData('mg:rel'); render(); }).catch(fail0); return true;
     }

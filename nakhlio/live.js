@@ -164,6 +164,9 @@ L.rel = async () => {
   return L.R;
 };
 L.follow = async (id, on) => { if (on) ok(await sb.from('follows').insert({ follower: L.user.id, followee: id })); else ok(await sb.from('follows').delete().eq('follower', L.user.id).eq('followee', id)); };
+L.myPhone = async () => { const r = await sb.from('mg_phones').select('phone').eq('user_id', L.user.id).maybeSingle(); return r.data ? r.data.phone : ''; };
+L.setPhone = async (p) => p ? ok(await sb.from('mg_phones').upsert({ user_id: L.user.id, phone: p })) : ok(await sb.from('mg_phones').delete().eq('user_id', L.user.id));
+L.findPhone = async (p) => { const r = await sb.rpc('mg_find_phone', { p }); if (r.error) throw r.error; const row = (r.data || [])[0] || null; if (row) PC[row.id] = Object.assign(PC[row.id] || {}, { id: row.id, mg_name: row.name, name: row.name, mg_avatar: row.avatar, mg_on: true }); return row; };
 L.addContact = async (id) => ok(await sb.from('mg_contacts').upsert({ owner: L.user.id, contact: id }));
 L.removeContact = async (id) => ok(await sb.from('mg_contacts').delete().eq('owner', L.user.id).eq('contact', id));
 L.block = async (id, on) => on ? ok(await sb.from('mg_blocks').upsert({ blocker: L.user.id, blocked: id })) : ok(await sb.from('mg_blocks').delete().eq('blocker', L.user.id).eq('blocked', id));

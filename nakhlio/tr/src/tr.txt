@@ -1353,3 +1353,16 @@ c1090|Soru, şikâyet veya fikir — Nakhlio yönetimi yanıtlar
 c1091|Mesajlar Magaam’da yazılır. Açın — bir dakika sürer.
 c1092|Merhaba! “{t}” ilanınız hakkında yazıyorum. 
 c1093|Mesajlar Magaam’da yazılır. Adınızı girin, sohbet hemen açılır.
+c1094|Telefon numarasıyla ekle
+c1095|Kişinin telefon numarasını girin. Bu numarayı Magaam’a eklediyse onu bulursunuz.
+c749|Bul
+c1096|Numarayı kontrol edin: ülke kodu ve rakamlar.
+c1097|Bu numara Magaam’da yok
+c1098|Davet edin — kaydolunca hemen kişilerinizde görünür.
+c1099|Çok fazla arama. Bir saat sonra deneyin.
+c1100|Telefon numaram
+c1101|Numaranızı kimse göremez. Yalnızca onu bilenlerin sizi bulup kişilerine eklemesini sağlar.
+c1102|Numara kaydedildi
+c1103|Numarayı kaldır
+c1104|Numara kaldırıldı
+c1105|Bu numara başka bir hesapta kullanılıyor. Sizinse destekle iletişime geçin.

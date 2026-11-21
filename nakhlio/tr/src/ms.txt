@@ -1353,3 +1353,16 @@ c1090|Soalan, aduan atau idea — pentadbiran Nakhlio akan menjawab
 c1091|Mesej ditulis dalam Magaam. Hidupkannya — hanya seminit.
 c1092|Helo! Saya menulis tentang iklan anda “{t}”. 
 c1093|Mesej ditulis dalam Magaam. Masukkan nama anda dan chat terus dibuka.
+c1094|Tambah melalui nombor telefon
+c1095|Masukkan nombor telefon orang itu. Jika dia menambah nombor ini dalam Magaam, anda akan menemuinya.
+c749|Cari
+c1096|Semak nombor: kod negara dan digit.
+c1097|Nombor ini tiada dalam Magaam
+c1098|Jemput dia — selepas mendaftar dia terus muncul dalam kenalan anda.
+c1099|Terlalu banyak carian. Cuba lagi sejam kemudian.
+c1100|Nombor telefon saya
+c1101|Tiada sesiapa boleh melihat nombor anda. Ia hanya membolehkan orang yang tahu mencari dan menambah anda.
+c1102|Nombor disimpan
+c1103|Padam nombor
+c1104|Nombor dipadam
+c1105|Nombor ini sudah digunakan akaun lain. Jika ia milik anda, hubungi sokongan.

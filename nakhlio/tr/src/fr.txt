@@ -1353,3 +1353,16 @@ c1090|Une question, une plainte ou une idée — l’administration Nakhlio rép
 c1091|Les messages s’écrivent dans Magaam. Activez-le — cela prend une minute.
 c1092|Bonjour ! Je vous écris au sujet de votre annonce « {t} ». 
 c1093|Les messages s’écrivent dans Magaam. Indiquez votre nom et la discussion s’ouvre aussitôt.
+c1094|Ajouter par numéro
+c1095|Saisissez le numéro de la personne. Si elle l’a ajouté dans Magaam, vous la trouverez.
+c749|Rechercher
+c1096|Vérifiez le numéro : indicatif et chiffres.
+c1097|Ce numéro n’est pas sur Magaam
+c1098|Invitez-la — après l’inscription elle apparaît aussitôt dans vos contacts.
+c1099|Trop de recherches. Réessayez dans une heure.
+c1100|Mon numéro
+c1101|Personne ne voit votre numéro. Il permet seulement à ceux qui le connaissent de vous trouver et de vous ajouter.
+c1102|Numéro enregistré
+c1103|Supprimer le numéro
+c1104|Numéro supprimé
+c1105|Ce numéro est déjà utilisé par un autre compte. Si c’est le vôtre, contactez l’assistance.
