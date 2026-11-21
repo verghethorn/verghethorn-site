@@ -1376,3 +1376,73 @@ c1111|Jauh dari rumah, tapi di sini kita bersama
 c1112|Tolong-menolonglah kamu dalam kebajikan dan takwa
 c1113|Al-Qur’an · 5:2
 c1114|Hanya untuk yang sedang berada di Madinah
+c1115|Di kontak
+c1116|foto
+c1117|kontak
+c1118|Tambah foto
+c1119|Kode QR saya
+c1120|Tunjukkan kode ini ke orang di dekat Anda. Ia arahkan kamera, pasang Magaam, masuk dengan email — dan kalian langsung saling jadi kontak.
+c1121|Tampilan pesan
+c1122|Kartu
+c1123|Gelembung
+c1124|Tulis dalam bahasa Anda — lawan bicara menerimanya dalam bahasanya, seperti ditulis penutur asli.
+c1125|Belum ada foto
+c1126|Cari dengan nama atau Magaam ID
+c1127|Kembali ke Nakhlio
+c1128|Obrolan baru
+c1129|Tambah cerita
+c1130|Balas…
+c1131|Terkirim ke chat
+c1132|Cerita diunggah
+c1133|Keterangan (opsional)
+u:gate_phone_title|Nakhlio ada di ponsel Anda
+u:gate_phone_text|Arahkan kamera ponsel ke kode untuk membuka Nakhlio.
+u:gate_demo|Lihat demo di komputer ini
+u:experience_from|Pengalaman dari
+u:women_lock|Khusus perempuan terverifikasi
+u:women_lock_text|Agar ruang ini aman, moderator perempuan mengonfirmasi setiap anggota lewat panggilan suara singkat. Hanya 2 menit.
+u:verify_btn|Minta verifikasi
+u:verify_sent|Permintaan terkirim. Demo: akses dibuka.
+u:welcome_demo|Mode demo: aplikasi terbuka tanpa dipasang.
+c1134|Amina · berbahasa Rusia, Arab
+c1135|Sofa sudut, seperti baru, pindahan
+c1136|Ibrahim · Al Aziziyah
+c1137|Usman · berbahasa Urdu, Inggris
+c1138|Pindahan: kuli dan truk
+c1139|Timur · seluruh Madinah
+c1140|Ustaz Khalid · lulusan Universitas Islam
+c1141|Boks bayi dan kereta dorong
+c1142|Maryam · As Salam
+c1143|Moskwa
+c1144|Jakarta
+c1145|Kazan
+c1146|Lahore
+c1147|Saya jemput di bandara dan antar ke rumah
+c1148|Abdullah · RU, AR
+c1149|Penerjemah untuk rumah sakit, bank, kantor
+c1150|Zarina · RU, AR, EN
+c1151|Muhammad · UR, AR, EN
+c1152|Ahmad · ID, AR
+c1153|Di aplikasi Absher: “Layanan saya” → “Paspor” → “Perpanjang iqama”. Status saya diperbarui setelah 2 hari.
+c1154|Pengalaman saya: saya daftar Absher di kantor Jawazat dekat stasiun. Bawa paspor dan iqama, antre 40 menit, selesai hari itu juga.
+c1155|Saya membukanya online lewat aplikasi bank dalam 20 menit, kartu diantar 3 hari kemudian. Perlu Absher yang aktif.
+c1156|Saya beli kartu SIM langsung di bandara Madinah, cukup paspor. Lalu saya daftarkan ulang ke iqama di toko dalam 5 menit.
+c1157|Siapa yang pernah daftar ke Universitas Islam? Berapa lama menunggu jawaban?
+c1158|Saya daftar di musim semi dan dapat jawaban di bulan Juli. Kuncinya, terjemahkan dan legalisasi ijazah lebih awal.
+c1159|Dokter anak yang bagus dan berbahasa Inggris di klinik swasta di Al Aziziyah. Daftar lewat aplikasi klinik, menunggu 15 menit.
+c1160|Bisa rekomendasikan TK berbahasa Inggris dekat As Salam?
+c1161|Kami ke TK swasta di distrik sebelah: kelompok 12 anak, guru berbahasa Inggris, ada bus antar-jemput.
+c1162|Kami daftarkan anak kami ke kelas renang anak, dua kali seminggu, pelatihnya berbahasa Inggris.
+c1163|Siapa ikut main bola hari Sabtu?
+c1164|Akhir pekan ke AlUla, sisa 2 kursi
+c1165|Di mana ganti oli yang murah?
+c1166|Di mana teh karak terenak di kota?
+c1167|Lapangan dekat Al Aziziyah
+c1168|Kumpul di Masjid Quba
+c1169|Vaksin apa saja yang diberikan di usia 1 tahun?
+c1170|Diskon kain di pasar lama
+c1171|Taman Raja Fahd
+c1172|Rustam
+c1173|Siti
+c1174|Adel
+c1175|Bilal

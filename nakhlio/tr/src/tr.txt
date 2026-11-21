@@ -1376,3 +1376,73 @@ c1111|Evden uzağız ama burada birlikteyiz
 c1112|İyilik ve takva üzerinde yardımlaşın
 c1113|Kur’an · 5:2
 c1114|Yalnızca şu an Medine’de olanlar için
+c1115|Kişilerde
+c1116|fotoğraf
+c1117|kişi
+c1118|Fotoğraf ekle
+c1119|QR kodum
+c1120|Bu kodu yanınızdaki kişiye gösterin. Kamerayı tutsun, Magaam’ı kursun, e-postayla girsin — hemen birbirinizin kişilerinde olursunuz.
+c1121|Mesaj görünümü
+c1122|Kartlar
+c1123|Baloncuklar
+c1124|Kendi dilinizde yazın — karşı taraf kendi dilinde, sanki ana dili gibi okur.
+c1125|Henüz fotoğraf yok
+c1126|Ad veya Magaam kimliğiyle bul
+c1127|Nakhlio’ya dön
+c1128|Yeni sohbet
+c1129|Hikaye ekle
+c1130|Yanıtla…
+c1131|Sohbete gönderildi
+c1132|Hikaye paylaşıldı
+c1133|Açıklama (isteğe bağlı)
+u:gate_phone_title|Nakhlio telefonunuzda
+u:gate_phone_text|Nakhlio’yu açmak için telefon kamerasını koda tutun.
+u:gate_demo|Demoyu bu bilgisayarda gör
+u:experience_from|Deneyim:
+u:women_lock|Yalnızca doğrulanmış kadınlar için
+u:women_lock_text|Bu alanı güvende tutmak için bir kadın moderatör her üyeyi kısa bir sesli aramayla doğrular. 2 dakika sürer.
+u:verify_btn|Doğrulama iste
+u:verify_sent|Talep gönderildi. Demo: erişim açıldı.
+u:welcome_demo|Demo modu: uygulama kurulmadan açıldı.
+c1134|Amina · Rusça ve Arapça konuşur
+c1135|Köşe koltuk, yeni gibi, taşınıyoruz
+c1136|İbrahim · Al Aziziyah
+c1137|Usman · Urduca ve İngilizce konuşur
+c1138|Nakliyat: hamal ve kamyon
+c1139|Timur · Medine’nin her yerinde
+c1140|Üstaz Halid · İslam Üniversitesi mezunu
+c1141|Bebek beşiği ve puset
+c1142|Meryem · As Salam
+c1143|Moskova
+c1144|Cakarta
+c1145|Kazan
+c1146|Lahor
+c1147|Sizi havalimanında karşılayıp eve bırakırım
+c1148|Abdullah · RU, AR
+c1149|Hastane, banka ve resmî daireler için tercüman
+c1150|Zarina · RU, AR, EN
+c1151|Muhammed · UR, AR, EN
+c1152|Ahmet · ID, AR
+c1153|Absher uygulamasında: “Hizmetlerim” → “Pasaportlar” → “İkamet yenileme”. Durumum 2 gün sonra güncellendi.
+c1154|Deneyimim: Absher kaydını istasyon yakınındaki Cevazat ofisinde yaptım. Pasaport ve ikametle gittim, 40 dakika sıra, aynı gün bitti.
+c1155|Bankanın uygulamasından 20 dakikada çevrim içi açtım, kart 3 günde geldi. Aktif bir Absher gerekir.
+c1156|SIM kartı doğrudan Medine havalimanında aldım, sadece pasaport yeterliydi. Sonra mağazada 5 dakikada ikametime geçirdim.
+c1157|İslam Üniversitesi’ne kim başvurdu? Cevabı ne kadar beklediniz?
+c1158|Baharda başvurdum, cevabı temmuzda aldım. Önemli olan diplomayı önceden tercüme ettirip onaylatmak.
+c1159|Al Aziziyah’taki özel bir klinikte İngilizce konuşan iyi bir çocuk doktoru. Kliniğin uygulamasından randevu aldım, 15 dakika bekledim.
+c1160|As Salam yakınında İngilizce konuşulan bir anaokulu önerebilir misiniz?
+c1161|Yan semtteki özel bir anaokuluna gidiyoruz: 12 kişilik gruplar, İngilizce konuşan öğretmenler ve servis var.
+c1162|Oğlumuzu çocuk yüzme kursuna yazdırdık, haftada iki kez, hoca İngilizce konuşuyor.
+c1163|Cumartesi futbola kim var?
+c1164|Hafta sonu AlUla’ya gidiyoruz, 2 yer kaldı
+c1165|Yağ değişimi nerede ucuz?
+c1166|Şehirdeki en iyi karak çayı nerede?
+c1167|Al Aziziyah yakınındaki saha
+c1168|Kuba Mescidi’nde buluşma
+c1169|1 yaşında hangi aşılar yapılıyor?
+c1170|Eski çarşıda kumaş indirimi
+c1171|Kral Fahd Parkı
+c1172|Rüstem
+c1173|Siti
+c1174|Adil
+c1175|Bilal

@@ -1376,3 +1376,73 @@ c1111|Loin de chez nous, mais ensemble ici
 c1112|Entraidez-vous dans la bonté et la piété
 c1113|Coran · 5:2
 c1114|Réservé à ceux qui sont à Médine
+c1115|Dans vos contacts
+c1116|photos
+c1117|contacts
+c1118|Ajouter une photo
+c1119|Mon code QR
+c1120|Montrez ce code à la personne à côté de vous. Elle vise avec l’appareil photo, installe Magaam, se connecte par e-mail — et vous êtes aussitôt dans vos contacts.
+c1121|Style des messages
+c1122|Cartes
+c1123|Bulles
+c1124|Écrivez dans votre langue — l’autre le reçoit dans la sienne, comme écrit par un natif.
+c1125|Pas encore de photos
+c1126|Chercher par nom ou identifiant Magaam
+c1127|Retour à Nakhlio
+c1128|Nouvelle discussion
+c1129|Ajouter une story
+c1130|Répondre…
+c1131|Envoyé dans la discussion
+c1132|Story publiée
+c1133|Légende (facultatif)
+u:gate_phone_title|Nakhlio vit sur votre téléphone
+u:gate_phone_text|Visez le code avec l’appareil photo du téléphone pour ouvrir Nakhlio.
+u:gate_demo|Voir la démo sur cet ordinateur
+u:experience_from|Expérience de
+u:women_lock|Réservé aux femmes vérifiées
+u:women_lock_text|Pour que cet espace reste sûr, une modératrice confirme chaque membre par un court appel vocal. Cela prend 2 minutes.
+u:verify_btn|Demander la vérification
+u:verify_sent|Demande envoyée. Démo : accès ouvert.
+u:welcome_demo|Mode démo : l’appli s’est ouverte sans installation.
+c1134|Amina · parle russe et arabe
+c1135|Canapé d’angle, comme neuf, déménagement
+c1136|Ibrahim · Al Aziziyah
+c1137|Usman · parle ourdou et anglais
+c1138|Déménagement : déménageurs et camion
+c1139|Timour · dans tout Médine
+c1140|Oustaz Khalid · diplômé de l’Université islamique
+c1141|Lit bébé et poussette
+c1142|Maryam · As Salam
+c1143|Moscou
+c1144|Jakarta
+c1145|Kazan
+c1146|Lahore
+c1147|Je vous accueille à l’aéroport et vous dépose chez vous
+c1148|Abdallah · RU, AR
+c1149|Interprète pour hôpital, banque, administrations
+c1150|Zarina · RU, AR, EN
+c1151|Muhammad · UR, AR, EN
+c1152|Ahmad · ID, AR
+c1153|Dans l’appli Absher : « Mes services » → « Passeports » → « Renouvellement de l’iqama ». Mon statut a changé au bout de 2 jours.
+c1154|Mon expérience : je me suis inscrit à Absher au bureau des Jawazat près de la gare. Passeport et iqama, 40 minutes d’attente, réglé le jour même.
+c1155|Je l’ai ouvert en ligne dans l’appli de la banque en 20 minutes, la carte est arrivée en 3 jours. Il faut un Absher actif.
+c1156|J’ai acheté une carte SIM directement à l’aéroport de Médine, seul le passeport était demandé. Ensuite je l’ai réenregistrée sur mon iqama en magasin en 5 minutes.
+c1157|Qui a postulé à l’Université islamique ? Combien de temps avez-vous attendu la réponse ?
+c1158|J’ai postulé au printemps et reçu la réponse en juillet. L’essentiel : faire traduire et légaliser son diplôme à l’avance.
+c1159|Un bon pédiatre anglophone dans une clinique privée d’Al Aziziyah. Rendez-vous pris dans l’appli de la clinique, 15 minutes d’attente.
+c1160|Pouvez-vous conseiller une maternelle anglophone près d’As Salam ?
+c1161|Nous allons dans une maternelle privée du quartier voisin : groupes de 12, enseignants anglophones et un bus.
+c1162|Nous avons inscrit notre fils à la natation pour enfants, deux fois par semaine, l’entraîneur parle anglais.
+c1163|Qui vient au foot samedi ?
+c1164|On part à AlUla le week-end, il reste 2 places
+c1165|Où faire la vidange pas cher ?
+c1166|Où trouver le meilleur thé karak en ville ?
+c1167|Terrain près d’Al Aziziyah
+c1168|Rendez-vous à la mosquée de Quba
+c1169|Quels vaccins à 1 an ?
+c1170|Soldes sur les tissus au vieux marché
+c1171|Parc du Roi Fahd
+c1172|Roustam
+c1173|Siti
+c1174|Adel
+c1175|Bilal
