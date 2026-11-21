@@ -954,6 +954,40 @@ body:not(.dsk) .gallery .float .ibtn,body:not(.dsk) .item-head .float .ibtn{box-
 .mgpicklist .mgpick,.mgpick{justify-content:flex-start!important;text-align:start!important;margin:0!important;min-height:0!important;height:auto!important;border-radius:0!important;box-shadow:none!important}
 .mgpick.any{padding:12px 8px!important}
 .mgcl.sys .mgrowv{max-width:48%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:none}.mgcl.sys .mgcl1 b{white-space:nowrap}
+/* ===== Magaam 7 — messenger: stories, search, profile ===== */
+.mgstrip{display:flex;gap:14px;overflow-x:auto;scrollbar-width:none;padding:4px 14px 12px;background:var(--mg-bg)}.mgstrip::-webkit-scrollbar{display:none}
+.mgsti{flex:none;width:64px;display:flex;flex-direction:column;align-items:center;gap:5px;border:0;background:none;padding:0;font:inherit;color:var(--mg-ink);position:relative}
+.mgsti>.mgav{padding:2.5px;border-radius:50%;background:#D8D3CA}.mgsti.ring>.mgav{background:conic-gradient(from 200deg,#E2613A,#F2A541,#E2613A)}.mgsti.seen>.mgav{background:#D8D3CA}
+.mgsti>.mgav>.av,.mgsti>.mgav>*{border:2.5px solid var(--mg-bg);border-radius:50%!important}
+.mgav.st{width:60px;height:60px;border-radius:50%}.mgav.st .av{border-radius:50%}
+.mgsti.add i{position:absolute;top:42px;inset-inline-end:2px;width:22px;height:22px;border-radius:50%;background:var(--mg-acc);color:#fff;display:flex;align-items:center;justify-content:center;border:2px solid var(--mg-bg)}.mgsti.add i svg{width:13px;height:13px;stroke-width:2.6}
+.mgsti span{font-size:11.5px;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mgstview .bars{position:absolute;top:calc(10px + env(safe-area-inset-top));left:10px;right:10px;display:flex;gap:4px;z-index:3}
+.mgstview .bars i{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.3);overflow:hidden}.mgstview .bars i b{display:block;height:100%;width:0;background:#fff}
+.mgstview .bars i.done b{width:100%}.mgstview .bars i.run b{animation:stb linear forwards}
+.mgstview .who small{color:rgba(255,255,255,.7);font-size:12px;margin-inline-end:auto}.mgstview .who b{flex:none}
+.mgstview video{max-width:100%;max-height:100%}
+.mgstview .streply{position:absolute;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));display:flex;gap:8px;z-index:4}
+.mgstview .streply input{flex:1;border:1px solid rgba(255,255,255,.5);background:rgba(0,0,0,.25);color:#fff;border-radius:22px;padding:11px 16px;font:inherit;outline:none}.mgstview .streply input::placeholder{color:rgba(255,255,255,.7)}
+.mgstview .streply button{width:44px;height:44px;border-radius:50%;border:0;background:#fff;color:#1C1A17;display:flex;align-items:center;justify-content:center}.mgstview .streply svg{width:20px;height:20px}
+.mgstview .stcap{bottom:calc(76px + env(safe-area-inset-bottom))}
+.mgstadd{display:flex;align-items:center;gap:12px;width:100%;border:0;background:#fff;border-radius:16px;padding:12px;font:inherit;color:var(--mg-ink);text-align:start;margin:0 0 16px}
+.mgstadd b{display:block}.mgstadd small{font-size:12.5px;color:var(--mg-ink2)}.mgstadd .mgav.md{border-radius:50%}.mgstadd i{width:42px;height:42px;border-radius:50%;background:var(--mg-acc);color:#fff;display:flex;align-items:center;justify-content:center;flex:none}.mgstadd i svg{width:22px;height:22px}
+.mgstgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.mgstt{position:relative;aspect-ratio:9/14;border:0;padding:0;border-radius:14px;overflow:hidden;background:#222}.mgstt img,.mgstt video{width:100%;height:100%;object-fit:cover;display:block}
+.mgstt.new{outline:2.5px solid var(--mg-acc);outline-offset:-2.5px}
+.mgstt .who{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:5px;padding:18px 6px 6px;background:linear-gradient(transparent,rgba(0,0,0,.65));color:#fff;font-size:11.5px}.mgstt .who b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mgstt .mgav.xs{border-radius:50%;flex:none}
+.mgstt em{position:absolute;top:6px;inset-inline-end:6px;background:rgba(0,0,0,.55);color:#fff;font-style:normal;font-size:11px;font-weight:700;border-radius:8px;padding:1px 6px}
+.mgpv{display:flex;flex-direction:column;align-items:center;text-align:center;padding:22px 18px 20px;background:#fff;border-bottom:1px solid var(--mg-line)}
+.mgpv-av{border:0;background:none;padding:3px;border-radius:50%}.mgpv-av.ring{background:conic-gradient(from 200deg,#E2613A,#F2A541,#E2613A)}.mgpv-av>.mgav{border:3px solid #fff;border-radius:50%}
+.mgav.pv{width:104px;height:104px;border-radius:50%}.mgav.pv .av{border-radius:50%}
+.mgpv h2{font-size:22px;margin:12px 0 2px;display:flex;align-items:center;gap:4px}
+.mgpinfos{display:flex;flex-direction:column;gap:6px;margin:10px 0 4px;align-items:center}.mgpinfo{display:flex;align-items:center;gap:6px;font-size:13.5px;color:var(--mg-ink)}.mgpinfo svg{color:var(--mg-acc)}
+.mgpv .mgp2-act{width:100%;margin-top:14px}.mgpv .mgp2-act .mgb1{height:44px;flex:1;margin:0}.mgpv .mgp2-act .mgb1.sq{flex:none;width:44px}
+.mgcl2{justify-content:space-between}.mgcl2t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;display:flex;gap:4px;align-items:center}
+.mgunb{flex:none;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--mg-acc);color:#fff;font-size:11.5px;font-style:normal;font-weight:800;display:flex;align-items:center;justify-content:center}
+.mgcl.un .mgcl1 b{font-weight:800}.mgcl.un .mgcl2t{color:var(--mg-ink)}
+.mgppl:empty{display:none}.mgppl{margin-top:10px}.mgppl .mgcl .mgrowv{flex:none;font-size:12px;color:var(--mg-acc);font-weight:700;padding-inline-end:14px}
 </style>
 </head>
 <body>
@@ -985,15 +1019,15 @@ body:not(.dsk) .gallery .float .ibtn,body:not(.dsk) .item-head .float .ibtn{box-
 <div id="root"></div>
 <div class="toast-box" id="toasts"></div>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script>window.NAKHLIO_V = 42;</script>
-<script defer src="i18n.js?v=42"></script>
-<script defer src="data.js?v=42"></script>
-<script defer src="community.js?v=42"></script>
-<script defer src="services.js?v=42"></script>
+<script>window.NAKHLIO_V = 43;</script>
+<script defer src="i18n.js?v=43"></script>
+<script defer src="data.js?v=43"></script>
+<script defer src="community.js?v=43"></script>
+<script defer src="services.js?v=43"></script>
 <script defer src="vendor/supabase-2.118.0.js"></script>
-<script defer src="live.js?v=42"></script>
-<script defer src="app.js?v=42"></script>
-<script defer src="mgdata.js?v=42"></script>
-<script defer src="magaam.js?v=42"></script>
+<script defer src="live.js?v=43"></script>
+<script defer src="app.js?v=43"></script>
+<script defer src="mgdata.js?v=43"></script>
+<script defer src="magaam.js?v=43"></script>
 </body>
 </html>

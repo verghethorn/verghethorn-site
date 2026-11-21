@@ -1217,3 +1217,17 @@ c956|Cet identifiant Magaam vous appartient pour toujours.
 c957|Copier l’identifiant et le lien
 c958|non défini
 c959|Définir
+
+c961|Stories
+c962|Nouvelle story
+c963|Ajouter une story
+c964|La photo ou la vidéo reste 24 heures, puis disparaît.
+c965|Publier la story
+c966|Story publiée
+c967|Pas encore de stories. Soyez le premier !
+c968|Toutes les stories
+c969|Répondre…
+c970|À propos de votre story
+c829|Personnes
+c971|Rechercher : nom ou @ID
+c972|Mon profil

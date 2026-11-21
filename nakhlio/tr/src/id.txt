@@ -1217,3 +1217,17 @@ c956|Magaam ID ini milik Anda selamanya.
 c957|Salin ID dan tautan
 c958|belum diatur
 c959|Atur
+
+c961|Cerita
+c962|Cerita baru
+c963|Tambah cerita
+c964|Foto atau video tampil 24 jam, lalu hilang.
+c965|Unggah cerita
+c966|Cerita diunggah
+c967|Belum ada cerita. Jadilah yang pertama!
+c968|Semua cerita
+c969|Balas…
+c970|Untuk cerita Anda
+c829|Orang
+c971|Cari: nama atau @ID
+c972|Profil saya

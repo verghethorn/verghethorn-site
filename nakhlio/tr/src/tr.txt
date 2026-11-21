@@ -1217,3 +1217,17 @@ c956|Bu Magaam kimliği kalıcı olarak sizin.
 c957|Kimliği ve bağlantıyı kopyala
 c958|belirlenmedi
 c959|Belirle
+
+c961|Hikayeler
+c962|Yeni hikaye
+c963|Hikaye ekle
+c964|Fotoğraf veya video 24 saat görünür, sonra kaybolur.
+c965|Hikayeyi paylaş
+c966|Hikaye paylaşıldı
+c967|Henüz hikaye yok. İlk siz olun!
+c968|Tüm hikayeler
+c969|Yanıtla…
+c970|Hikayenize
+c829|Kişiler
+c971|Ara: ad veya @ID
+c972|Profilim
