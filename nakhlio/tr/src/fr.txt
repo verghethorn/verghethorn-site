@@ -1126,3 +1126,64 @@ c872|Mes moments
 c873|Vos amis n’ont pas encore de moments. Regardez « Ville ».
 c688|Règles de Magaam
 c874|Pas encore d’amis. Invitez-les avec votre lien — ils apparaîtront ici tout de suite.
+c875|Vitrine
+c925|Catalogue
+c876|Vendre
+c877|Prix sur demande
+c878|Vendu
+c879|Aucun article pour l’instant
+c880|Article, service ou boutique
+c881|Boutiques
+c882|Ouvrir une boutique
+c883|Gratuit. Publiez vos articles et services, les acheteurs vous écriront.
+c926|Nouveautés
+c884|Articles et services
+c885|Voir la boutique
+c886|Mettez-vous d’accord dans le chat. N’envoyez pas d’acompte à des inconnus.
+c887|Plus dans cette boutique
+c888|Modifier
+c889|Remettre en vente
+c890|Marquer comme vendu
+c891|Écrire au vendeur
+c892|Ajouter un article
+c893|Modifier la boutique
+c894|articles
+c895|Ajoutez votre premier article, tout le monde le verra.
+c896|Favoris
+c897|Touchez ♡ sur un article, il apparaîtra ici.
+c898|Ma boutique
+c899|Photo ou logo
+c900|Nom de la boutique
+c901|Par exemple : Les douceurs d’Amina
+c927|Catégorie
+c902|À propos
+c903|Ce que vous vendez, quartier, livraison, horaires
+c928|Enregistrer
+c904|Indiquez un nom et choisissez une catégorie.
+c905|Votre boutique est ouverte !
+c929|Titre
+c906|Par exemple : Abaya noire, taille M
+c930|Prix
+c907|Laissez vide pour « Prix sur demande ».
+c931|Description
+c908|Taille, couleur, état, livraison…
+c932|Publier
+c909|Indiquez le titre de l’article.
+c910|Ajoutez au moins une photo.
+c933|Enregistré
+c911|Article publié
+c912|Découvrez la boutique « {n} » sur Magaam :
+c913|Vêtements femme
+c914|Vêtements homme
+c915|Enfants : vêtements et jouets
+c916|Chaussures
+c917|Accessoires et bijoux
+c918|Beauté et soins
+c919|Linge de maison
+c920|Meubles et cuisines
+c921|Électronique
+c922|Alimentation et pâtisserie
+c291|Cuisine maison
+c923|Cadeaux et fleurs
+c282|Services
+c924|Autre

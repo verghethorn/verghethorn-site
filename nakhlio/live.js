@@ -106,7 +106,7 @@ L.mgChat = async (other) => { const me = L.user.id;
 L.mgUserChats = async (uid) => { const rows = ok(await sb.from('mg_chats').select('*').or(`user1.eq.${uid},user2.eq.${uid}`).order('last_at', { ascending: false }).limit(100)); await L.prof(rows.flatMap(c => [c.user1, c.user2])); return rows; };
 L.mgChatById = async (id) => ok(await sb.from('mg_chats').select('*').eq('id', id).maybeSingle());
 L.mgMessages = async (chatId) => { const rows = ok(await sb.from('mg_messages').select('*').eq('chat_id', chatId).order('created_at', { ascending: false }).limit(300)); return rows.reverse(); };
-L.mgSend = async (chatId, body, lang, media_url, reply_to, media_kind, media_meta) => ok(await sb.from('mg_messages').insert({ chat_id: chatId, sender: L.user.id, body: body || '', lang: lang || '', media_url: media_url || null, reply_to: reply_to || null, media_kind: media_kind || (media_url ? 'image' : null), media_meta: media_meta || null }).select().single());
+L.mgSend = async (chatId, body, lang, media_url, reply_to, media_kind, media_meta, product_id) => ok(await sb.from('mg_messages').insert({ chat_id: chatId, sender: L.user.id, body: body || '', lang: lang || '', media_url: media_url || null, reply_to: reply_to || null, media_kind: media_kind || (media_url ? 'image' : null), media_meta: media_meta || null, product_id: product_id || null }).select().single());
 L.explore = async (n) => { const rows = ok(await sb.from('mg_posts').select(POSTSEL).in('type', ['post', 'reel']).eq('hidden', false).order('created_at', { ascending: false }).range(0, (n || 30) - 1)).map(norm); await L.prof(rows.map(r => r.author)); return rows; };
 /* verification ("blue check") requests */
 L.verifyMine = async () => { const r = await sb.from('verify_requests').select('*').eq('user_id', L.user.id).order('created_at', { ascending: false }).limit(1); return (r.data || [])[0] || null; };
@@ -127,6 +127,24 @@ L.onMg = (cb) => { L.mgListeners.push(cb); if (mgchan) return; mgchan = sb.chann
   .on('postgres_changes', { event: '*', schema: 'public', table: 'mg_reads' }, (p) => L.mgListeners.forEach(f => { try { f('read', p.new, p.eventType); } catch (e) {} })).subscribe(); };
 L.mgTyping = (chatId, onTyping) => { const ch = sb.channel('mgt:' + chatId, { config: { broadcast: { self: false } } }); ch.on('broadcast', { event: 't' }, (p) => { if (p.payload && p.payload.u !== L.user.id) onTyping(); }).subscribe();
   let last = 0; return { send: () => { if (Date.now() - last < 2500) return; last = Date.now(); ch.send({ type: 'broadcast', event: 't', payload: { u: L.user.id } }); }, leave: () => sb.removeChannel(ch) }; };
+
+/* Magaam marketplace: shops and products */
+const clean = (q) => String(q || '').replace(/[%_,()]/g, '').trim();
+L.products = async (o) => { o = o || {}; let s = sb.from('mg_products').select('*');
+  if (o.seller) s = s.eq('seller', o.seller).neq('status', 'hidden'); else s = s.eq('status', 'active');
+  if (o.cat) s = s.eq('cat', o.cat); if (o.q) s = s.ilike('title', '%' + clean(o.q) + '%');
+  const rows = ok(await s.order('created_at', { ascending: false }).limit(o.n || 40)); await L.prof(rows.map(r => r.seller)); return rows; };
+L.product = async (id) => { const p = ok(await sb.from('mg_products').select('*').eq('id', id).maybeSingle()); if (p) await L.prof([p.seller]); return p; };
+L.addProduct = async (f) => ok(await sb.from('mg_products').insert(Object.assign({ seller: L.user.id }, f)).select().single());
+L.updProduct = async (id, f) => ok(await sb.from('mg_products').update(Object.assign({ updated_at: new Date().toISOString() }, f)).eq('id', id).select().single());
+L.delProduct = async (id) => ok(await sb.from('mg_products').delete().eq('id', id));
+L.shops = async (o) => { o = o || {}; let s = sb.from('profiles').select('*').eq('shop_on', true).eq('banned', false);
+  if (o.cat) s = s.eq('shop_cat', o.cat); if (o.q) s = s.ilike('shop_name', '%' + clean(o.q) + '%');
+  const rows = ok(await s.order('created_at', { ascending: false }).limit(o.n || 30)); rows.forEach(r => PC[r.id] = r); return rows; };
+L.favIds = async () => { const r = await sb.from('mg_favs').select('product_id'); return new Set((r.data || []).map(x => x.product_id)); };
+L.favs = async () => { const ids = [...await L.favIds()]; if (!ids.length) return []; const rows = ok(await sb.from('mg_products').select('*').in('id', ids)); await L.prof(rows.map(r => r.seller)); return rows; };
+L.fav = async (id, on) => on ? sb.from('mg_favs').upsert({ user_id: L.user.id, product_id: id }) : sb.from('mg_favs').delete().eq('user_id', L.user.id).eq('product_id', id);
+L.openShop = async (f) => L.updateProfile(Object.assign({ shop_on: true, mg_on: true }, f));
 
 /* friends & follows */
 L.rel = async () => {

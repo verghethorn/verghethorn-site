@@ -1126,3 +1126,64 @@ c872|Momen saya
 c873|Teman Anda belum punya momen. Lihat “Kota”.
 c688|Aturan Magaam
 c874|Belum ada teman. Undang lewat tautan Anda — mereka langsung muncul di sini.
+c875|Etalase
+c925|Katalog
+c876|Jual
+c877|Harga nego
+c878|Terjual
+c879|Belum ada barang
+c880|Barang, jasa, atau toko
+c881|Toko
+c882|Buka toko
+c883|Gratis. Pasang barang dan jasa Anda — pembeli akan menghubungi Anda.
+c926|Terbaru
+c884|Barang & jasa
+c885|Kunjungi toko
+c886|Sepakati lewat chat. Jangan kirim uang muka ke orang asing.
+c887|Lainnya dari toko ini
+c888|Ubah
+c889|Jual lagi
+c890|Tandai terjual
+c891|Chat penjual
+c892|Tambah barang
+c893|Ubah toko
+c894|barang
+c895|Tambahkan barang pertama — semua orang akan melihatnya.
+c896|Favorit
+c897|Ketuk ♡ pada barang, nanti muncul di sini.
+c898|Toko saya
+c899|Foto atau logo
+c900|Nama toko
+c901|Misalnya: Kue Aminah
+c927|Kategori
+c902|Tentang toko
+c903|Apa yang dijual, area, pengiriman, jam buka
+c928|Simpan
+c904|Isi nama dan pilih kategori.
+c905|Toko Anda sudah buka!
+c929|Judul
+c906|Misalnya: Abaya hitam, ukuran M
+c930|Harga
+c907|Kosongkan untuk “Harga nego”.
+c931|Deskripsi
+c908|Ukuran, warna, kondisi, pengiriman…
+c932|Terbitkan
+c909|Tulis judul barang.
+c910|Tambahkan minimal satu foto.
+c933|Tersimpan
+c911|Barang diterbitkan
+c912|Lihat toko “{n}” di Magaam:
+c913|Pakaian wanita
+c914|Pakaian pria
+c915|Pakaian & mainan anak
+c916|Sepatu
+c917|Aksesori & perhiasan
+c918|Kecantikan & perawatan
+c919|Tekstil rumah
+c920|Furnitur & dapur
+c921|Elektronik
+c922|Makanan & kue
+c291|Masakan rumahan
+c923|Hadiah & bunga
+c282|Jasa
+c924|Lainnya

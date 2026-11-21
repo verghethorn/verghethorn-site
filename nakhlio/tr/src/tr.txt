@@ -1126,3 +1126,64 @@ c872|Anlarım
 c873|Arkadaşlarınızın henüz anı yok. “Şehir”e bakın.
 c688|Magaam kuralları
 c874|Henüz arkadaş yok. Bağlantınızla davet edin — hemen burada görünürler.
+c875|Vitrin
+c925|Katalog
+c876|Sat
+c877|Fiyat sorunuz
+c878|Satıldı
+c879|Henüz ürün yok
+c880|Ürün, hizmet veya mağaza
+c881|Mağazalar
+c882|Mağaza aç
+c883|Ücretsiz. Ürün ve hizmetlerinizi paylaşın, alıcılar size yazsın.
+c926|Yeni
+c884|Ürün ve hizmetler
+c885|Mağazaya git
+c886|Sohbette anlaşın. Tanımadığınız kişilere ön ödeme göndermeyin.
+c887|Bu mağazadan daha fazlası
+c888|Düzenle
+c889|Tekrar satışta
+c890|Satıldı olarak işaretle
+c891|Satıcıya yaz
+c892|Ürün ekle
+c893|Mağazayı düzenle
+c894|ürün
+c895|İlk ürününüzü ekleyin, herkes görsün.
+c896|Favoriler
+c897|Bir üründe ♡ simgesine dokunun, burada görünür.
+c898|Mağazam
+c899|Fotoğraf veya logo
+c900|Mağaza adı
+c901|Örneğin: Amine’nin tatlıları
+c927|Kategori
+c902|Mağaza hakkında
+c903|Ne satıyorsunuz, semt, teslimat, çalışma saatleri
+c928|Kaydet
+c904|Bir ad girin ve kategori seçin.
+c905|Mağazanız açıldı!
+c929|Başlık
+c906|Örneğin: Siyah abaya, M beden
+c930|Fiyat
+c907|Boş bırakırsanız “Fiyat sorunuz” yazar.
+c931|Açıklama
+c908|Beden, renk, durum, teslimat…
+c932|Yayınla
+c909|Ürün adını yazın.
+c910|En az bir fotoğraf ekleyin.
+c933|Kaydedildi
+c911|Ürün yayınlandı
+c912|Magaam’da “{n}” mağazasına göz atın:
+c913|Kadın giyim
+c914|Erkek giyim
+c915|Çocuk giyim ve oyuncak
+c916|Ayakkabı
+c917|Aksesuar ve takı
+c918|Güzellik ve kozmetoloji
+c919|Ev tekstili
+c920|Mobilya ve mutfak
+c921|Elektronik
+c922|Gıda ve unlu mamul
+c291|Ev yemekleri
+c923|Hediye ve çiçek
+c282|Hizmetler
+c924|Diğer
