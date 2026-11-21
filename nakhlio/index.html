@@ -1060,21 +1060,56 @@ body:not(.dsk) .gallery .float .ibtn,body:not(.dsk) .item-head .float .ibtn{box-
 .mg .mgcomp{background:rgba(249,249,249,.94);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-top:.5px solid rgba(60,60,67,.18)}
 .mg .mgcomp textarea{border-radius:20px;background:#fff;border:.5px solid #C7C7CC}
 .mg .mgsend{background:var(--mg-acc);color:#fff}
+/* ===== Magaam 9: stories + photo-only profile ===== */
+.m8stories{display:flex;gap:14px;overflow-x:auto;padding:2px 4px 14px;margin:0 -16px 2px;padding-inline:16px;scrollbar-width:none}.m8stories::-webkit-scrollbar{display:none}
+.m8st{flex:none;width:68px;border:0;background:none;padding:0;font:inherit;color:var(--mg-ink);display:flex;flex-direction:column;align-items:center;gap:5px}
+.m8st small{font-size:12px;max-width:68px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--mg-ink)}
+.m8stav{position:relative;display:block}.m8stav>i{position:absolute;inset-inline-end:-1px;bottom:-1px;width:22px;height:22px;border-radius:50%;background:#0A84FF;color:#fff;border:2.5px solid var(--mg-bg);display:flex;align-items:center;justify-content:center}.m8stav>i svg{width:12px;height:12px;stroke-width:3}
+.m8ring{display:inline-block;border-radius:50%;padding:2.5px;background:transparent;line-height:0}
+.m8ring.new{background:conic-gradient(from 210deg,#0A84FF,#5E5CE6,#BF5AF2,#FF9F0A,#0A84FF)}
+.m8ring.seen{background:#D1D1D6}
+.m8ring>.mgav{display:block;border:2.5px solid var(--mg-bg);border-radius:50%}
+.m8list .m8ring>.mgav,.m8row .m8ring>.mgav{border-color:#fff}
+.m8ring>.mgav.st{width:62px;height:62px}
+.m8row .m8ring{flex:none}.m8row .m8ring>.mgav.md{width:46px;height:46px}
+.m8row .m8ring:not(.new):not(.seen){padding:0}.m8row .m8ring:not(.new):not(.seen)>.mgav{border:0}
+/* profile: only the photo */
+.m8prof2{display:flex;flex-direction:column;align-items:center;text-align:center;padding:28px 24px 40px}
+.m8bigav{border:0;background:none;padding:0;line-height:0}.m8bigav .m8ring{padding:4px}.m8bigav .mgav.xl{width:148px;height:148px;border-width:4px}
+.m8bigav .m8ring:not(.new):not(.seen){padding:0}.m8bigav .m8ring:not(.new):not(.seen)>.mgav{border:0;box-shadow:0 10px 30px rgba(0,0,0,.12)}
+.m8chph{margin-top:10px;font-size:14px}
+.m8prof2 h2{margin:16px 0 0;font-size:28px;font-weight:700;letter-spacing:-.02em}
+.m8prof2 .m8bio{max-width:30ch;font-size:16px;color:#3A3A3C}
+.m8prof2 .m8acts{width:100%;max-width:380px;margin-top:22px}.m8acts .m8btn{white-space:nowrap;font-size:14.5px;padding:0 14px}.m8acts .m8btn:not(.sq){flex:1 1 auto;max-width:none}
+/* story viewer */
+.m8sv{position:fixed;inset:0;z-index:90;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;animation:fade .2s}
+.m8sv-media{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}.m8sv-media img,.m8sv-media video{width:100%;height:100%;object-fit:contain}
+.m8sv-top{position:absolute;top:0;left:0;right:0;padding:calc(10px + env(safe-area-inset-top)) 12px 30px;background:linear-gradient(rgba(0,0,0,.45),transparent);z-index:3}
+.m8sv-bars{display:flex;gap:4px}.m8sv-bars i{flex:1;height:2.5px;border-radius:2px;background:rgba(255,255,255,.35);overflow:hidden}.m8sv-bars i.done b{width:100%}.m8sv-bars b{display:block;height:100%;width:0;background:#fff}
+.m8sv-bars b.run{animation:m8bar linear forwards}@keyframes m8bar{to{width:100%}}
+.m8sv-who{display:flex;align-items:center;justify-content:space-between;margin-top:10px}.m8sv-who button{border:0;background:none;color:#fff;font:inherit;display:flex;align-items:center;gap:8px;padding:0}.m8sv-who b{font-size:15px}.m8sv-who small{font-size:13px;opacity:.7}.m8sv-who svg{width:26px;height:26px}
+.m8sv-who .mgav.sm{width:34px;height:34px}
+.m8sv-nav{position:absolute;top:90px;bottom:90px;width:35%;border:0;background:transparent;z-index:2}.m8sv-nav.l{left:0}.m8sv-nav.r{right:0;width:65%}
+.m8sv-cap{position:absolute;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));margin:0;text-align:center;font-size:17px;line-height:1.4;text-shadow:0 1px 6px rgba(0,0,0,.6);z-index:3}
+.m8sv-reply{position:absolute;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));display:flex;gap:8px;z-index:4}
+.m8sv-reply input{flex:1;min-width:0;height:46px;border-radius:23px;border:1px solid rgba(255,255,255,.45);background:rgba(0,0,0,.25);color:#fff;padding:0 18px;font:inherit;font-size:16px;outline:0;backdrop-filter:blur(10px)}.m8sv-reply input::placeholder{color:rgba(255,255,255,.7)}
+.m8sv-reply button{width:46px;height:46px;border-radius:50%;border:0;background:#fff;color:#000;display:flex;align-items:center;justify-content:center}.m8sv-reply svg{width:20px;height:20px}
+.m8stprev{border-radius:18px;overflow:hidden;background:#000;margin:6px 0 4px}.m8stprev img,.m8stprev video{display:block;width:100%;max-height:52vh;object-fit:contain}
 </style>
 <script>if(window.MG_APP){var sp=document.getElementById('splash');sp.style.background='#000016';sp.querySelector('.sp-in').innerHTML='<img class="sp-wm" src="img/mgapp/wordmark.png" alt="MAGAAM">'}</script>
 <script>(function(){var t0=Date.now(),done=false;window.__hideSplash=function(){if(done)return;done=true;var s=document.getElementById('splash');if(!s)return;var w=Math.max(0,1600-(Date.now()-t0));if(sessionStorage.getItem('nk_sp'))w=0;try{sessionStorage.setItem('nk_sp','1')}catch(e){}setTimeout(function(){s.classList.add('out');setTimeout(function(){s.remove()},400)},w)};setTimeout(window.__hideSplash,8000);document.addEventListener('DOMContentLoaded',function(){var r=document.getElementById('root');if(!r)return;if(r.firstElementChild)return window.__hideSplash();new MutationObserver(function(m,ob){if(r.firstElementChild){ob.disconnect();window.__hideSplash()}}).observe(r,{childList:true})})})();</script>
 <div id="root"></div>
 <div class="toast-box" id="toasts"></div>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script>window.NAKHLIO_V = 43;</script>
-<script defer src="i18n.js?v=43"></script>
-<script defer src="data.js?v=43"></script>
-<script defer src="community.js?v=43"></script>
-<script defer src="services.js?v=43"></script>
+<script>window.NAKHLIO_V = 44;</script>
+<script defer src="i18n.js?v=44"></script>
+<script defer src="data.js?v=44"></script>
+<script defer src="community.js?v=44"></script>
+<script defer src="services.js?v=44"></script>
 <script defer src="vendor/supabase-2.118.0.js"></script>
-<script defer src="live.js?v=43"></script>
-<script defer src="app.js?v=43"></script>
-<script defer src="mgdata.js?v=43"></script>
-<script defer src="magaam.js?v=43"></script>
+<script defer src="live.js?v=44"></script>
+<script defer src="app.js?v=44"></script>
+<script defer src="mgdata.js?v=44"></script>
+<script defer src="magaam.js?v=44"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 const CACHE = 'nakhlio-v42';
-const V = 'v=43';
+const V = 'v=44';
 const B = '/nakhlio/';
 const HOME = new URL('./', self.registration.scope).href;
 const CORE = [HOME, B + 'index.html', B + 'app.js?' + V, B + 'data.js?' + V, B + 'community.js?' + V, B + 'services.js?' + V, B + 'mgdata.js?' + V, B + 'magaam.js?' + V, B + 'live.js?' + V, B + 'vendor/supabase-2.118.0.js', B + 'i18n.js?' + V, B + 'icon-192.png', B + 'img/mgapp/icon-192.png'];

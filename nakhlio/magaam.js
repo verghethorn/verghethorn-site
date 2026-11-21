@@ -1086,8 +1086,8 @@ if (LV) {
     const inb = want('mg:inbox', () => LV.mgInbox()); INBOX = inb || []; const P = pins();
     const list = (inb || []).slice().sort((a, b) => (P.includes(b.id) - P.includes(a.id)) || (new Date(b.last_at) - new Date(a.last_at)));
     const rows = list.map(c => { const un = Number(c.unread || 0); const mineLast = c.last_sender === meId(); const rd = c.other_read && new Date(c.other_read) >= new Date(c.last_at);
-      return `<button class="m8row ${un ? 'un' : ''}" data-act="mgopen" data-v="${c.id}" data-u="${c.other}" data-nm="${esc(mname(c.other).toLowerCase())}">${av(c.other, 'md')}<span class="grow"><span class="m8r1"><b>${esc(mname(c.other))}${vm(c.other)}</b><small class="num">${shortTime(c.last_at)}</small></span><span class="m8r2"><span>${mineLast ? `<i class="mgtick ${rd ? 'rd' : ''}">${rd ? '✓✓' : '✓'}</i> ` : ''}${esc(mineLast ? c.last_body || '' : trText('lb' + c.id + (c.last_body || '').length, c.last_body || '', prof(c.other).ui_lang))}</span>${un ? `<em class="num">${un > 99 ? '99+' : un}</em>` : ''}</span></span></button>`; }).join('');
-    return wrapView('mgchats', `<div class="m8wrap"><h1 class="m8big">${M8('chats')}</h1><div class="m8search">${ic('search')}<input type="search" placeholder="${M('search')}" aria-label="${M('search')}" oninput="var q=this.value.toLowerCase();document.querySelectorAll('.m8row').forEach(function(e){e.hidden=e.dataset.nm.indexOf(q)<0})"></div>
+      return `<button class="m8row ${un ? 'un' : ''}" data-act="mgopen" data-v="${c.id}" data-u="${c.other}" data-nm="${esc(mname(c.other).toLowerCase())}">${ringAv(c.other, 'md')}<span class="grow"><span class="m8r1"><b>${esc(mname(c.other))}${vm(c.other)}</b><small class="num">${shortTime(c.last_at)}</small></span><span class="m8r2"><span>${mineLast ? `<i class="mgtick ${rd ? 'rd' : ''}">${rd ? '✓✓' : '✓'}</i> ` : ''}${esc(mineLast ? c.last_body || '' : trText('lb' + c.id + (c.last_body || '').length, c.last_body || '', prof(c.other).ui_lang))}</span>${un ? `<em class="num">${un > 99 ? '99+' : un}</em>` : ''}</span></span></button>`; }).join('');
+    return wrapView('mgchats', `<div class="m8wrap"><h1 class="m8big">${M8('chats')}</h1>${storiesRow8()}<div class="m8search">${ic('search')}<input type="search" placeholder="${M('search')}" aria-label="${M('search')}" oninput="var q=this.value.toLowerCase();document.querySelectorAll('.m8row').forEach(function(e){e.hidden=e.dataset.nm.indexOf(q)<0})"></div>
       <div class="m8list">${inb === undefined ? loading : rows || `<div class="m8empty">${mgLogo()}<p>${M('no_chats')}</p><button class="m8btn dark" data-act="mggo" data-v="mgcontacts">${M8('contacts')}</button></div>`}</div>
       <p class="m8note">${small('translate')} ${M8('tr_auto')}</p></div>`, ''); };
   V.mg = () => V.mgchats();
@@ -1103,20 +1103,58 @@ if (LV) {
       ${n ? `<h4 class="m8h">${M('requests')} · <span class="num">${n}</span></h4><div class="m8list">${reqs}</div>` : ''}
       <div class="m8list">${rows || `<p class="m8note" style="padding:16px">${M('no_contacts')}</p>`}</div></div>`, ''); };
 
-  /* profile: cover, photo, name, about, photos */
+  /* stories: only you and your contacts, 24 hours */
+  const S8 = () => NK.S.mgSeen8 || (NK.S.mgSeen8 = {});
+  const T9 = { your_story: D('Ваша история', 'Your story', 'قصتك'), add_story: D('Добавить историю', 'Add a story', 'إضافة قصة'), reply_story: D('Ответить…', 'Reply…', 'رد…'), story_sent: D('Отправлено в чат', 'Sent to the chat', 'أُرسل إلى الدردشة'), change_photo: D('Сменить фото', 'Change photo', 'تغيير الصورة'), story_pub: D('История опубликована', 'Story posted', 'تم نشر القصة'), story_cap: D('Подпись (необязательно)', 'Caption (optional)', 'تعليق (اختياري)') };
+  const M9 = (k) => L(T9[k]);
+  const storyMap = () => { const rel = R(); const list = want('mg:stories8', () => LV.posts('story')) || []; const by = {};
+    list.slice().reverse().forEach(s => { if (s.author === meId() || rel.friends.has(s.author)) (by[s.author] = by[s.author] || []).push(s); }); return by; };
+  const unseen = (uid, by) => { const l = (by || storyMap())[uid]; if (!l || !l.length) return false; const last = l[l.length - 1].created_at; return !S8()[uid] || new Date(last) > new Date(S8()[uid]); };
+  const ringAv = (uid, sz, by) => { by = by || storyMap(); const has = !!(by[uid] && by[uid].length); return `<span class="m8ring ${has ? (unseen(uid, by) ? 'new' : 'seen') : ''}">${av(uid, sz)}</span>`; };
+  const storiesRow8 = () => { const by = storyMap(); const others = Object.keys(by).filter(u => u !== meId()).sort((a, b) => (unseen(b, by) - unseen(a, by)) || (new Date(by[b][by[b].length - 1].created_at) - new Date(by[a][by[a].length - 1].created_at)));
+    const mine = by[meId()];
+    return `<div class="m8stories"><button class="m8st" data-act="${mine ? 'mgstory' : 'mgaddstory'}" data-v="${meId()}"><span class="m8stav">${ringAv(meId(), 'st', by)}${mine ? '' : `<i>${ic('plus')}</i>`}</span><small>${M9('your_story')}</small></button>${others.map(u => `<button class="m8st" data-act="mgstory" data-v="${u}"><span class="m8stav">${ringAv(u, 'st', by)}</span><small>${esc(mname(u).split(' ')[0])}</small></button>`).join('')}</div>`; };
+  const storyViewer = (uid) => { const by = storyMap(); const order = [uid].concat(Object.keys(by).filter(u => u !== uid && u !== meId() && unseen(u, by)));
+    let ui = 0, k = 0, tm = null; const host = document.body; const w = document.createElement('div'); w.className = 'm8sv'; host.appendChild(w);
+    const close = () => { clearTimeout(tm); w.remove(); render(); };
+    const show = () => { if (!document.body.contains(w)) return; clearTimeout(tm); const a = order[ui]; const items = by[a] || []; if (!a || !items.length) return close(); if (k >= items.length) { ui++; k = 0; return show(); } if (k < 0) { if (ui === 0) { k = 0; } else { ui--; k = (by[order[ui]] || []).length - 1; } }
+      const s = items[k]; const seen = S8(); if (!seen[a] || new Date(s.created_at) > new Date(seen[a])) { seen[a] = s.created_at; save(); }
+      const isV = s.media_type === 'video';
+      w.innerHTML = `<div class="m8sv-media">${isV ? `<video src="${esc(s.media_url)}" autoplay playsinline></video>` : `<img src="${esc(s.media_url)}" alt="">`}</div>
+        <div class="m8sv-top"><div class="m8sv-bars">${items.map((x, i) => `<i class="${i < k ? 'done' : ''}"><b style="${i === k ? `animation-duration:${isV ? 15 : 5}s` : ''}" class="${i === k ? 'run' : ''}"></b></i>`).join('')}</div>
+        <div class="m8sv-who"><button data-x="prof">${av(a, 'sm')}<b>${esc(mname(a))}</b><small class="num">${ago(s.created_at)}</small></button><button data-x="close" aria-label="${t('close')}">${ic('x')}</button></div></div>
+        ${s.caption ? `<p class="m8sv-cap">${esc(s.caption)}</p>` : ''}
+        <button class="m8sv-nav l" data-x="prev" aria-label="‹"></button><button class="m8sv-nav r" data-x="next" aria-label="›"></button>
+        ${a !== meId() ? `<form class="m8sv-reply" data-x="noop"><input id="m8svr" placeholder="${M9('reply_story')}" autocomplete="off" enterkeyhint="send"><button type="submit" aria-label="${M('send_l')}">${ic('send')}</button></form>` : ''}`;
+      if (s.caption && a !== meId() && s.lang && s.lang !== NK.lang) LV.translate(s.caption, s.lang, NK.lang).then(r => { const el = w.querySelector('.m8sv-cap'); if (r && el) el.textContent = r; }).catch(() => {});
+      const v = w.querySelector('video'); const dur = isV ? 15000 : 5000;
+      const next = () => { k++; show(); }; tm = setTimeout(next, dur); if (v) v.onended = () => { clearTimeout(tm); next(); };
+      w.querySelector('[data-x="close"]').onclick = close; w.querySelector('[data-x="prev"]').onclick = () => { k--; show(); }; w.querySelector('[data-x="next"]').onclick = next;
+      w.querySelector('[data-x="prof"]').onclick = () => { clearTimeout(tm); w.remove(); go('mgp', { id: a }); };
+      const f = w.querySelector('.m8sv-reply'); if (f) { const inp = f.querySelector('input'); inp.onfocus = () => { clearTimeout(tm); const b = w.querySelector('.m8sv-bars b.run'); if (b) b.style.animationPlayState = 'paused'; if (v) v.pause(); };
+        f.onsubmit = async (e) => { e.preventDefault(); const tx = inp.value.trim(); if (!tx) return; try { const c = await LV.mgChat(a); await LV.mgSend(c.id, '↩︎ ' + tx, NK.lang); inp.value = ''; inp.blur(); toast(M9('story_sent')); dropData('mg:inbox'); next(); } catch (er) { fail0(er); } }; } };
+    show(); };
+  const addStory = () => { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*,video/*';
+    inp.onchange = async () => { const f = inp.files[0]; if (!f) return; if (f.size > 50 * 1048576) { toast(FXM('too_big')); return; }
+      const isV = f.type.startsWith('video'); const data = isV ? null : await resizeImg(f, 2048, 0.9);
+      const w = sheet(`<h3>${M9('add_story')}</h3><div class="m8stprev">${isV ? `<video src="${URL.createObjectURL(f)}" muted autoplay loop playsinline></video>` : `<img src="${data}" alt="">`}</div><div class="field"><input id="m8stc" maxlength="200" placeholder="${M9('story_cap')}"></div><button class="btn primary full mgbtn" id="m8stgo">${t('publish')}</button>`);
+      w.querySelector('#m8stgo').onclick = async (ev) => { const b = ev.currentTarget; b.disabled = true; b.textContent = '…';
+        try { const url = await LV.upload(isV ? f : data, 'story'); await LV.createPost({ type: 'story', media_url: url, media_type: isV ? 'video' : 'image', caption: w.querySelector('#m8stc').value.trim(), lang: NK.lang, dist: '' });
+          w.remove(); toast(M9('story_pub')); dropData('mg:stories8'); dropData('mg:'); render(); } catch (e) { console.warn(e); b.disabled = false; b.textContent = t('publish'); toast(FXM('send_fail')); } }; };
+    inp.click(); };
+  const changePhoto = () => pickImg(async d => { try { const url = await LV.upload(d, 'mg_avatar'); const pr = await LV.updateProfile({ mg_avatar: url }); NK.S.me = NK.meFrom(pr); save(); toast(t('saved_ok')); render(); } catch (e) { fail0(e); } });
+
+  /* profile: just the photo, name, about and the way to talk */
   const prof8 = (uid) => {
     const me = uid === meId(); const pr = me ? LV.profile || {} : (LV.cached(uid) || want('mg:pf:' + uid, () => LV.fetchProfile(uid)) || {});
-    const all = keep(want('mg:up:' + uid, () => LV.posts('grid', uid))) || []; const rel = R(); const fr = rel.friends.has(uid), rq = rel.out.has(uid);
+    const rel = R(); const fr = rel.friends.has(uid), rq = rel.out.has(uid); const by = storyMap(); const has = !!(by[uid] && by[uid].length);
     const lng = pr.ui_lang ? `<span class="m8lang">${small('globe')}${M8('speaks')}: ${esc(langName(pr.ui_lang))}${!me && pr.ui_lang !== NK.lang ? ` · <b>${M('tr_for_you')}</b>` : ''}</span>` : '';
-    const acts = me ? `<button class="m8btn" data-act="mgedit">${M('edit_l')}</button><button class="m8btn" data-act="mgqr">${M8('my_qr')}</button>`
+    const acts = me ? `<button class="m8btn dark" data-act="mgaddstory">${ic('plus')}${M9('add_story')}</button><button class="m8btn" data-act="mgedit">${M('edit_l')}</button><button class="m8btn sq" data-act="mgqr" aria-label="${M8('my_qr')}">${ic('grid')}</button>`
       : `${fr ? `<button class="m8btn dark" data-act="mgdm" data-v="${uid}">${ic('chat')}${M('write')}</button><button class="m8btn" disabled>${small('check')}${M8('in_contacts')}</button>` : `<button class="m8btn dark" data-act="mgfriend" data-v="${uid}" ${rq ? 'disabled' : ''}>${rq ? M8('req_sent2') : M8('add_contact')}</button>`}<button class="m8btn sq" data-act="mgumenu" data-v="${uid}" aria-label="${M('more_l')}">${ic('dots')}</button>`;
-    const tile = (x) => x.media_type === 'video' ? `<button class="vid" data-act="mgpost" data-v="${x.id}"><video src="${esc(x.media_url)}#t=0.5" muted playsinline preload="metadata"></video>${ic('play')}</button>` : `<button data-act="mgpost" data-v="${x.id}" style="background-image:url(${esc(x.media_url)})"></button>`;
-    return `<div class="m8prof"><div class="m8cover" style="${pr.cover_url ? `background-image:url(${esc(pr.cover_url)})` : ''}">${me ? `<button class="m8covbtn" data-act="mgcover">${small('camera')}${M8('edit_cover')}</button>` : ''}</div>
-      <div class="m8head"><div class="m8av">${av(uid, 'xl')}</div><h2>${esc(mname(uid))}${vm(uid)}</h2>${pr.mg_handle ? `<div class="m8handle">@${esc(pr.mg_handle)}</div>` : ''}
-        ${pr.mg_bio ? `<p class="m8bio">${esc(me ? pr.mg_bio : trText('a' + uid, pr.mg_bio, pr.ui_lang))}</p>${me ? '' : trBadge('a' + uid)}` : me ? `<button class="mglink" data-act="mgedit">+ ${t('about_l')}</button>` : ''}
-        <div class="m8stats"><div><b class="num">${nf(all.length)}</b><small>${M8('photos_n')}</small></div>${me ? `<button data-act="mggo" data-v="mgcontacts"><b class="num">${nf(rel.friends.size)}</b><small>${M8('contacts_n')}</small></button>` : ''}</div>
-        ${lng}<div class="m8acts">${acts}</div></div>
-      <div class="m8grid">${me ? `<button class="add" data-act="mgnew">${ic('plus')}<small>${M8('add_photo')}</small></button>` : ''}${all.map(tile).join('')}${!me && !all.length ? `<p class="m8note" style="grid-column:1/-1;text-align:center;padding:24px 0">${M8('no_photos')}</p>` : ''}</div></div>`; };
+    return `<div class="m8prof2"><button class="m8bigav" data-act="${has ? 'mgstory' : me ? 'mgstav' : 'noop'}" data-v="${uid}">${ringAv(uid, 'xl', by)}</button>${me ? `<button class="mglink m8chph" data-act="mgstav">${M9('change_photo')}</button>` : ''}
+      <h2>${esc(mname(uid))}${vm(uid)}</h2>${pr.mg_handle ? `<div class="m8handle">@${esc(pr.mg_handle)}</div>` : ''}
+      ${pr.mg_bio ? `<p class="m8bio">${esc(me ? pr.mg_bio : trText('a' + uid, pr.mg_bio, pr.ui_lang))}</p>` : me ? `<button class="mglink" data-act="mgedit">+ ${t('about_l')}</button>` : ''}
+      ${lng}<div class="m8acts">${acts}</div></div>`; };
   V.mgp = (p) => { const r = ready(); if (r) return r; if (p.id === meId()) return V.mgmine(); return wrapView('mgp', prof8(p.id), ''); };
   V.mgmine = () => { const r = ready(); if (r) return r; return wrapView('mgmine', prof8(meId()), ''); };
 
@@ -1148,6 +1186,10 @@ if (LV) {
     switch (a) {
       case 'mgqr': if (!(LV.profile || {}).invite_code) LV.fetchProfile(meId()).then(pr => { LV.profile = pr; qrSheet(); }); else qrSheet(); return true;
       case 'mgstyle': styleSheet(); return true;
+      case 'mgstory': storyViewer(v); return true;
+      case 'mgaddstory': addStory(); return true;
+      case 'mgstav': changePhoto(); return true;
+      case 'mgnew': addStory(); return true;
       case 'mgback': if (NK.stack.length > 1) NK.back(); else { NK.stack.length = 1; NK.stack[0] = { v: 'mgchats' }; render(true); } return true;
       case 'mgplusmenu': go('mgcontacts'); return true;
       case 'mgsell': go('mgcontacts'); return true;
