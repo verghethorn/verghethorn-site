@@ -132,6 +132,35 @@ const T = {
   r_ok: D('Принимаю правила', 'I accept the rules', 'أوافق على القواعد'),
   open: D('Открыть Magaam', 'Open Magaam', 'افتح Magaam'),
   back_n: D('Nakhlio', 'Nakhlio', 'Nakhlio'),
+  goods_h: D("Товары", "Goods", "المنتجات"),
+  services_h: D("Услуги", "Services", "الخدمات"),
+  everywhere: D("Все страны", "All countries", "كل الدول"),
+  choose_country: D("Выберите страну", "Choose a country", "اختر الدولة"),
+  choose_city: D("Выберите город", "Choose a city", "اختر المدينة"),
+  search_country: D("Поиск страны", "Search for a country", "ابحث عن دولة"),
+  all_country: D("Вся страна", "Whole country", "كل الدولة"),
+  other_city: D("Другой город", "Another city", "مدينة أخرى"),
+  city_l: D("Город", "City", "المدينة"),
+  city_ph: D("Напишите название города", "Type the city name", "اكتب اسم المدينة"),
+  location: D("Где вы находитесь", "Where you are", "موقعك"),
+  my_place: D("Страна и город", "Country & city", "الدولة والمدينة"),
+  loc_need: D("Укажите страну и город.", "Choose your country and city.", "اختر الدولة والمدينة."),
+  sub_l: D("Направление", "Speciality", "التخصص"),
+  sub_other: D("Своё направление", "My own speciality", "تخصص آخر"),
+  sub_other_ph: D("Например: свечи ручной работы", "For example: handmade candles", "مثلاً: شموع يدوية"),
+  all_l: D("Все", "All", "الكل"),
+  no_products_here: D("Здесь пока нет товаров. Попробуйте другую страну или категорию.", "No items here yet. Try another country or category.", "لا منتجات هنا بعد. جرّب دولة أو قسماً آخر."),
+  h_title: D("Ваш Magaam ID", "Your Magaam ID", "معرّف Magaam الخاص بك"),
+  h_once: D("Magaam ID задаётся один раз и потом не меняется. По нему вас найдут покупатели и друзья.", "Your Magaam ID is set once and can’t be changed later. Buyers and friends will find you by it.", "يُختار المعرّف مرة واحدة ولا يمكن تغييره لاحقاً. سيجدك به المشترون والأصدقاء."),
+  h_rules: D("От 3 до 24 знаков: латинские буквы, цифры, _ и точка. Начинается с буквы.", "3–24 characters: Latin letters, digits, _ and dot. Starts with a letter.", "من 3 إلى 24 حرفاً: حروف لاتينية وأرقام و _ والنقطة، ويبدأ بحرف."),
+  h_free: D("свободен", "available", "متاح"),
+  h_taken: D("Этот ID уже занят", "This ID is already taken", "هذا المعرّف مستخدم"),
+  h_save: D("Установить ID", "Set ID", "تعيين المعرّف"),
+  h_confirm: D("Установить {h}? Изменить потом будет нельзя.", "Set {h}? You won’t be able to change it later.", "تعيين {h}؟ لن تتمكن من تغييره لاحقاً."),
+  h_locked: D("Magaam ID закреплён за вами навсегда.", "This Magaam ID is yours for good.", "هذا المعرّف لك بشكل دائم."),
+  h_copy: D("Скопировать ID и ссылку", "Copy ID and link", "نسخ المعرّف والرابط"),
+  h_not_set: D("не задан", "not set", "غير محدد"),
+  h_set: D("Указать", "Set", "تحديد"),
   showcase: D("Витрина", "Showcase", "المعرض"),
   catalog: D("Каталог", "Catalog", "الأقسام"),
   sell: D("Продать", "Sell", "بيع"),
@@ -768,53 +797,68 @@ if (LV) {
     w.addEventListener('click', e => { const b = e.target.closest('[data-x]'); if (!b) return; w.remove(); NK.setLang(b.dataset.x); NK.boot(); }); };
   const plusMenu = () => { const w = sheet(`<div class="mgmsheet"><button data-x="new">${ic('camera')}${M('moment_new')}</button><button data-x="find">${ic('search')}${M('find_people')}</button><button data-x="inv">${ic('users')}${M('invite')}</button></div>`);
     w.addEventListener('click', e => { const b = e.target.closest('[data-x]'); if (!b) return; w.remove(); const x = b.dataset.x; if (x === 'new') createLive(); if (x === 'find') go('mgfind'); if (x === 'inv') inviteSheet(); }); };
-  /* ===== Magaam 5: a social network of shops ===== */
-  const CATS = [
-    ['women', '👗', D('Женская одежда', 'Women’s clothing', 'ملابس نسائية')], ['men', '👔', D('Мужская одежда', 'Men’s clothing', 'ملابس رجالية')],
-    ['kids', '🧸', D('Детская одежда и игрушки', 'Kids’ clothing & toys', 'ملابس وألعاب أطفال')], ['shoes', '👟', D('Обувь', 'Shoes', 'أحذية')],
-    ['acc', '💍', D('Аксессуары и украшения', 'Accessories & jewellery', 'إكسسوارات ومجوهرات')], ['beauty', '💄', D('Красота и косметолог', 'Beauty & cosmetology', 'تجميل وعناية')],
-    ['textile', '🛏', D('Домашний текстиль', 'Home textiles', 'مفروشات منزلية')], ['furniture', '🛋', D('Мебель и кухни', 'Furniture & kitchens', 'أثاث ومطابخ')],
-    ['tech', '📱', D('Электроника', 'Electronics', 'إلكترونيات')], ['food', '🧁', D('Продукты и выпечка', 'Food & baking', 'أطعمة ومخبوزات')],
-    ['home_food', '🍲', D('Домашняя еда', 'Home cooking', 'أكل بيتي')], ['gifts', '🎁', D('Подарки и цветы', 'Gifts & flowers', 'هدايا وزهور')],
-    ['services', '🛠', D('Услуги', 'Services', 'خدمات')], ['other', '✨', D('Другое', 'Other', 'أخرى')]];
-  const catName = (k) => { const c = CATS.find(x => x[0] === k); return c ? L(c[2]) : L(CATS[13][2]); };
-  const catEmoji = (k) => (CATS.find(x => x[0] === k) || CATS[13])[1];
-  const shopName = (uid) => { const p = prof(uid); return p.shop_name || mname(uid); };
+  /* ===== Magaam 6: a social network of shops — directions, places, Magaam ID ===== */
+  const MD = window.MGDATA || { groups: [], cities: {}, pri: [], all: [] };
+  const ALLC = MD.groups.flatMap(g => g.cats.map(c => Object.assign({ g: g.g }, c)));
+  const CATS = ALLC.map(c => [c.k, c.e, c.n]);
+  const catObj = (k) => ALLC.find(c => c.k === k) || ALLC.find(c => c.k === 'other') || { k: 'other', e: '✨', n: {}, subs: [] };
+  const catName = (k) => L(catObj(k).n);
+  const catEmoji = (k) => catObj(k).e;
+  const subObj = (c, s) => (catObj(c).subs || []).find(x => x.k === s);
+  const subName = (c, s, note) => s === 'x' ? (note || '') : subObj(c, s) ? L(subObj(c, s).n) : '';
+  const subEmoji = (c, s) => (subObj(c, s) || catObj(c)).e;
+  /* places: country names come from the browser in the viewer's language; city names in ru/en/ar from our list */
+  const ARABC = ['SA', 'AE', 'QA', 'KW', 'BH', 'OM', 'EG', 'JO', 'IQ', 'SY', 'LB', 'PS', 'YE', 'SD', 'MA', 'DZ', 'TN'];
+  let DN = null, DNL = '';
+  const ctryName = (cc) => { if (!cc) return ''; try { if (DNL !== NK.lang) { DN = new Intl.DisplayNames([NK.lang], { type: 'region' }); DNL = NK.lang; } return DN.of(cc) || cc; } catch (e) { return cc; } };
+  const cityName = (cc, en) => { if (!en) return ''; const r = (MD.cities[cc] || []).find(x => x[0] === en); if (!r) return en; const lg = NK.lang; return lg === 'ru' ? r[1] : lg === 'ar' || ((lg === 'fa' || lg === 'ur') && ARABC.includes(cc)) ? r[2] : r[0]; };
+  const locTxt = (cc, city) => cc ? (city ? cityName(cc, city) + ', ' : '') + ctryName(cc) : '';
+  const myLoc = () => NK.S.mgLoc || {};
+  const shopName = (uid) => { const p = prof(uid); const n = p.shop_name || mname(uid); return uid === meId() || !p.shop_name ? n : trText('sn' + uid, n, p.ui_lang); };
   const priceTxt = (p) => p.price != null && p.price !== '' ? `${nf(Number(p.price))} SAR` : (p.price_note || M('price_ask'));
   const PRODS = {}; const keepP = (l) => { (l || []).forEach(p => { PRODS[p.id] = p; }); return l; };
   const FAV = () => want('mg:favids', () => LV.favIds()) || new Set();
   const myShop = () => !!(LV.profile && LV.profile.shop_on);
-  const pcard = (p) => `<button class="mgpc" data-act="mgprod" data-v="${p.id}"><span class="mgpc-img">${p.photos && p.photos[0] ? `<img src="${esc(p.photos[0])}" alt="" loading="lazy">` : `<i>${catEmoji(p.cat)}</i>`}${p.status === 'sold' ? `<em>${M('sold')}</em>` : ''}${FAV().has(p.id) ? `<u>${ic('heart')}</u>` : ''}</span><span class="mgpc-b"><b class="num">${esc(priceTxt(p))}</b><span>${esc(trText('pt' + p.id, p.title, p.lang))}</span><small>${esc(shopName(p.seller))}</small></span></button>`;
+  const lk = () => { const l = myLoc(); return (l.country || '') + '|' + (l.city || ''); };
+  const pcard = (p) => `<button class="mgpc" data-act="mgprod" data-v="${p.id}"><span class="mgpc-img">${p.photos && p.photos[0] ? `<img src="${esc(p.photos[0])}" alt="" loading="lazy">` : `<i>${catEmoji(p.cat)}</i>`}${p.status === 'sold' ? `<em>${M('sold')}</em>` : ''}${FAV().has(p.id) ? `<u>${ic('heart')}</u>` : ''}</span><span class="mgpc-b"><b class="num">${esc(priceTxt(p))}</b><span>${esc(trText('pt' + p.id, p.title, p.lang))}</span><small>${esc(shopName(p.seller))}${p.city ? ` · ${esc(cityName(p.country, p.city))}` : ''}</small></span></button>`;
   const pgrid = (list, empty) => list === undefined ? loading : list.length ? `<div class="mgpgrid2">${list.map(pcard).join('')}</div>` : `<div class="mgempty">${empty || `<p>${M('no_products')}</p>`}</div>`;
   const catChips = (on) => `<div class="mgcatrow">${CATS.map(([k, e, n]) => `<button class="${k === on ? 'on' : ''}" data-act="mgcat" data-v="${k}"><i>${e}</i><span>${esc(L(n))}</span></button>`).join('')}</div>`;
   const searchBox = (val) => `<form class="mgsearch mgbig" onsubmit="event.preventDefault();document.getElementById('mgsq-go').click()">${ic('search')}<input id="mgsq" type="search" value="${esc(val || '')}" placeholder="${M('search_market')}" aria-label="${M('search_market')}" enterkeyhint="search"><button type="button" id="mgsq-go" data-act="mgsearchgo" hidden></button></form>`;
+  const locChip = () => { const l = myLoc(); return `<button class="mglocchip ${l.country ? 'on' : ''}" data-act="mgloc">${small('pin')}<span>${esc(l.country ? locTxt(l.country, l.city) : M('everywhere'))}</span>${ic('chev', 'chev dn')}</button>`; };
+  const shopTile = (s) => `<button data-act="mgshop" data-v="${s.id}">${av(s.id, 'sh')}<b>${esc(shopName(s.id))}</b><small>${esc(s.shop_sub ? subName(s.shop_cat, s.shop_sub, s.shop_sub_note) : catName(s.shop_cat))}</small></button>`;
+  const shopRow = (shops) => shops && shops.length ? `<h4 class="mgh4">${M('shops')}</h4><div class="mgshoprow">${shops.map(shopTile).join('')}</div>` : '';
+  const Q = (o) => Object.assign({ country: myLoc().country, city: myLoc().city }, o);
 
-  V.mg = () => { const r = ready(); if (r) return r; const list = keepP(want('mg:pnew', () => LV.products({ n: 40 })));
-    const shops = want('mg:shops', () => LV.shops({ n: 12 })) || [];
-    const shopRow = shops.length ? `<h4 class="mgh4">${M('shops')}</h4><div class="mgshoprow">${shops.map(s => `<button data-act="mgshop" data-v="${s.id}">${av(s.id, 'sh')}<b>${esc(s.shop_name || mname(s.id))}</b><small>${esc(catName(s.shop_cat))}</small></button>`).join('')}</div>` : '';
+  V.mg = () => { const r = ready(); if (r) return r; const list = keepP(want('mg:pnew:' + lk(), () => LV.products(Q({ n: 40 }))));
+    const shops = want('mg:shops:' + lk(), () => LV.shops(Q({ n: 12 }))) || [];
     const promo = myShop() ? '' : `<button class="mgpromo" data-act="mgopenshop"><span>🛍</span><span class="grow"><b>${M('open_shop')}</b><small>${M('open_shop_d')}</small></span>${ic('chev', 'flip chev')}</button>`;
-    return wrapView('mg', `<div class="mgwrap mgmarket">${searchBox()}${catChips()}${promo}${shopRow}<h4 class="mgh4">${M('new_items')}</h4>${pgrid(list, `<p>${M('no_products')}</p>${myShop() ? '' : `<button class="mgb1 dark" style="flex:none;padding:0 20px" data-act="mgopenshop">${M('open_shop')}</button>`}`)}</div>`); };
+    return wrapView('mg', `<div class="mgwrap mgmarket">${searchBox()}${locChip()}${catChips()}${promo}${shopRow(shops)}<h4 class="mgh4">${M('new_items')}</h4>${pgrid(list, `<p>${M(myLoc().country ? 'no_products_here' : 'no_products')}</p>${myShop() ? '' : `<button class="mgb1 dark" style="flex:none;padding:0 20px" data-act="mgopenshop">${M('open_shop')}</button>`}`)}</div>`); };
   V.mgcats = () => { const r = ready(); if (r) return r;
-    return wrapView('mgcats', `<div class="mgwrap"><div class="mgcatgrid">${CATS.map(([k, e, n]) => `<button data-act="mgcat" data-v="${k}"><i>${e}</i><b>${esc(L(n))}</b></button>`).join('')}</div></div>`, M('catalog')); };
-  V.mgcat = (p) => { const r = ready(); if (r) return r; const k = p.id; const list = keepP(want('mg:pcat:' + k, () => LV.products({ cat: k, n: 60 }))); const shops = want('mg:scat:' + k, () => LV.shops({ cat: k })) || [];
-    return wrapView('mgcat', `<div class="mgwrap mgmarket">${catChips(k)}${shops.length ? `<h4 class="mgh4">${M('shops')}</h4><div class="mgshoprow">${shops.map(s => `<button data-act="mgshop" data-v="${s.id}">${av(s.id, 'sh')}<b>${esc(s.shop_name || mname(s.id))}</b></button>`).join('')}</div>` : ''}<h4 class="mgh4">${M('items')}</h4>${pgrid(list)}</div>`, `${catEmoji(k)} ${catName(k)}`); };
+    const grp = (g, title) => `<h4 class="mgh4">${title}</h4><div class="mgcatgrid">${ALLC.filter(c => c.g === g).map(c => `<button data-act="mgcat" data-v="${c.k}"><i>${c.e}</i><b>${esc(L(c.n))}</b></button>`).join('')}</div>`;
+    return wrapView('mgcats', `<div class="mgwrap">${locChip()}${grp('goods', M('goods_h'))}<div style="height:10px"></div>${grp('services', M('services_h'))}</div>`, M('catalog')); };
+  V.mgcat = (p) => { const r = ready(); if (r) return r; const k = p.id, s = p.sub || ''; const c = catObj(k); const key = k + ':' + s + ':' + lk();
+    const list = keepP(want('mg:pcat:' + key, () => LV.products(Q({ cat: k, sub: s || undefined, n: 60 })))); const shops = want('mg:scat:' + key, () => LV.shops(Q({ cat: k, sub: s || undefined }))) || [];
+    const subs = (c.subs || []).length ? `<div class="mgsubrow"><button class="${s ? '' : 'on'}" data-act="mgsub" data-v="${k}" data-s="">${M('all_l')}</button>${c.subs.map(x => `<button class="${x.k === s ? 'on' : ''}" data-act="mgsub" data-v="${k}" data-s="${x.k}">${x.e} ${esc(L(x.n))}</button>`).join('')}</div>` : '';
+    return wrapView('mgcat', `<div class="mgwrap mgmarket">${locChip()}${subs}${shopRow(shops)}<h4 class="mgh4">${M('items')}</h4>${pgrid(list, `<p>${M('no_products_here')}</p>`)}</div>`, `${c.e} ${esc(L(c.n))}`); };
   let SQ = '';
-  V.mgsearch = () => { const r = ready(); if (r) return r; const q = SQ.trim();
-    const list = q ? keepP(want('mg:psq:' + q, () => LV.products({ q, n: 60 }))) : [];
-    const shops = q ? want('mg:ssq:' + q, () => LV.shops({ q })) || [] : [];
-    return wrapView('mgsearch', `<div class="mgwrap mgmarket">${searchBox(q)}${q ? `${shops.length ? `<h4 class="mgh4">${M('shops')}</h4><div class="mgshoprow">${shops.map(s => `<button data-act="mgshop" data-v="${s.id}">${av(s.id, 'sh')}<b>${esc(s.shop_name || mname(s.id))}</b></button>`).join('')}</div>` : ''}<h4 class="mgh4">${M('items')}</h4>${pgrid(list, `<p>${M('nobody')}</p>`)}` : catChips()}</div>`, M('search')); };
+  V.mgsearch = () => { const r = ready(); if (r) return r; const q = SQ.trim(); const key = q + ':' + lk();
+    const list = q ? keepP(want('mg:psq:' + key, () => LV.products(Q({ q, n: 60 })))) : [];
+    const shops = q ? want('mg:ssq:' + key, () => LV.shops(Q({ q }))) || [] : [];
+    const subHits = q.length > 1 ? ALLC.flatMap(c => (c.subs || []).filter(x => Object.values(x.n).some(v => v.toLowerCase().includes(q.toLowerCase()))).map(x => `<button data-act="mgsub" data-v="${c.k}" data-s="${x.k}">${x.e} ${esc(L(x.n))}</button>`)).slice(0, 12).join('') : '';
+    return wrapView('mgsearch', `<div class="mgwrap mgmarket">${searchBox(q)}${locChip()}${q ? `${subHits ? `<div class="mgsubrow wrap">${subHits}</div>` : ''}${shopRow(shops)}<h4 class="mgh4">${M('items')}</h4>${pgrid(list, `<p>${M('nobody')}</p>`)}` : catChips()}</div>`, M('search')); };
   V.mgprod = (p) => { const r = ready(); if (r) return r; const x = PRODS[p.id] || want('mg:prod:' + p.id, () => LV.product(p.id).then(v => { if (v) PRODS[v.id] = v; return v; }));
     if (x === undefined) return wrapView('mgprod', loading, ''); if (!x) return V.mg(); const mine = x.seller === meId(); const fav = FAV().has(x.id);
     const ph = x.photos && x.photos.length ? x.photos : [];
-    const gal = ph.length ? `<div class="mggal" onscroll="var i=Math.round(this.scrollLeft/this.clientWidth);this.nextElementSibling&&this.nextElementSibling.querySelectorAll('i').forEach(function(d,j){d.classList.toggle('on',i===j)})">${ph.map(u => `<img src="${esc(u)}" alt="" data-act="mgzoom" data-v="${esc(u)}">`).join('')}</div>${ph.length > 1 ? `<div class="mggaldots">${ph.map((u, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div>` : ''}` : `<div class="mggal empty"><i>${catEmoji(x.cat)}</i></div>`;
+    const gal = ph.length ? `<div class="mggal" onscroll="var i=Math.round(Math.abs(this.scrollLeft)/this.clientWidth);this.nextElementSibling&&this.nextElementSibling.querySelectorAll('i').forEach(function(d,j){d.classList.toggle('on',i===j)})">${ph.map(u => `<img src="${esc(u)}" alt="" data-act="mgzoom" data-v="${esc(u)}">`).join('')}</div>${ph.length > 1 ? `<div class="mggaldots">${ph.map((u, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div>` : ''}` : `<div class="mggal empty"><i>${catEmoji(x.cat)}</i></div>`;
     const more = keepP(want('mg:pseller:' + x.seller, () => LV.products({ seller: x.seller, n: 12 })) || []).filter(o => o.id !== x.id && o.status !== 'hidden');
     const bar = mine ? `<div class="mgbuybar"><button class="mgb1 soft" data-act="mgpedit" data-v="${x.id}">${M('edit_item')}</button><button class="mgb1 dark" data-act="mgpsold" data-v="${x.id}">${M(x.status === 'sold' ? 'back_on_sale' : 'mark_sold')}</button></div>`
       : `<div class="mgbuybar"><button class="mgb1 soft sq ${fav ? 'on' : ''}" data-act="mgfav" data-v="${x.id}" aria-label="♡">${ic('heart')}</button><button class="mgb1 dark" data-act="mgask" data-v="${x.id}">${ic('chat')}${M('ask_seller')}</button></div>`;
+    const sp = prof(x.seller);
     return { html: `<div class="mg mgprodv">${top('', 'mgprod')}${gal}<div class="mgwrap">
       <div class="mgprice num">${esc(priceTxt(x))}${x.status === 'sold' ? ` <em>${M('sold')}</em>` : ''}</div><h1 class="mgptitle">${esc(trText('pt' + x.id, x.title, x.lang))}</h1>${trBadge('pt' + x.id)}
-      <button class="mgchipcat" data-act="mgcat" data-v="${x.cat}">${catEmoji(x.cat)} ${esc(catName(x.cat))}</button>
+      <div class="mgchips"><button class="mgchipcat" data-act="mgcat" data-v="${x.cat}">${catEmoji(x.cat)} ${esc(catName(x.cat))}</button>${x.sub && x.sub !== 'x' ? `<button class="mgchipcat" data-act="mgsub" data-v="${x.cat}" data-s="${x.sub}">${subEmoji(x.cat, x.sub)} ${esc(subName(x.cat, x.sub))}</button>` : ''}${x.country ? `<span class="mgchipcat">${small('pin')} ${esc(locTxt(x.country, x.city))}</span>` : ''}</div>
       ${x.descr ? `<p class="mgpdesc">${esc(trText('pd' + x.id, x.descr, x.lang))}</p>${trBadge('pd' + x.id)}` : ''}
-      <button class="mgshopcard" data-act="mgshop" data-v="${x.seller}">${av(x.seller, 'md')}<span class="grow"><b>${esc(shopName(x.seller))}${vm(x.seller)}</b><small>${esc(catName(prof(x.seller).shop_cat))}</small></span><span class="mglink">${M('to_shop')}</span></button>
+      <button class="mgshopcard" data-act="mgshop" data-v="${x.seller}">${av(x.seller, 'md')}<span class="grow"><b>${esc(shopName(x.seller))}${vm(x.seller)}</b><small>${sp.mg_handle ? '@' + esc(sp.mg_handle) + ' · ' : ''}${esc(locTxt(sp.country, sp.city) || catName(sp.shop_cat))}</small></span><span class="mglink">${M('to_shop')}</span></button>
       <p class="mgnobar">${small('lock')} ${M('safe_deal')}</p>
       ${more.length ? `<h4 class="mgh4">${M('more_from_shop')}</h4><div class="mgpgrid2">${more.slice(0, 6).map(pcard).join('')}</div>` : ''}
       ${!mine ? `<button class="mglink" style="display:block;margin:18px auto 0" data-act="mgprep" data-v="${x.id}">${small('flag')} ${t('report')}</button>` : ''}</div>${bar}</div>` }; };
@@ -822,65 +866,114 @@ if (LV) {
     const list = keepP(want('mg:pseller:' + uid, () => LV.products({ seller: uid, n: 60 })));
     const acts = mine ? `<button class="mgb1 dark" data-act="mgnewprod">${ic('plus')}${M('add_item')}</button><button class="mgb1 soft" data-act="mgopenshop">${M('edit_shop')}</button><button class="mgb1 soft sq" data-act="mgshareshop" data-v="${uid}" aria-label="${M('share')}">${ic('share')}</button>`
       : `<button class="mgb1 dark" data-act="mgaskshop" data-v="${uid}">${ic('chat')}${M('write')}</button><button class="mgb1 soft sq" data-act="mgshareshop" data-v="${uid}" aria-label="${M('share')}">${ic('share')}</button><button class="mgb1 soft sq" data-act="mgumenu" data-v="${uid}" aria-label="${M('more_l')}">${ic('dots')}</button>`;
-    return wrapView('mgshop', `<div class="mgshopv"><div class="mgshophead">${av(uid, 'shx')}<h2>${esc(pr.shop_name || mname(uid))}${vm(uid)}</h2><button class="mgchipcat" data-act="mgcat" data-v="${pr.shop_cat || 'other'}">${catEmoji(pr.shop_cat)} ${esc(catName(pr.shop_cat))}</button>
+    const subTx = pr.shop_sub ? subName(pr.shop_cat, pr.shop_sub, pr.shop_sub_note && !mine ? trText('ss' + uid, pr.shop_sub_note, pr.ui_lang) : pr.shop_sub_note) : '';
+    return wrapView('mgshop', `<div class="mgshopv">${pr.cover_url ? `<div class="mgshopcov" style="background-image:url(${esc(pr.cover_url)})"></div>` : ''}<div class="mgshophead ${pr.cover_url ? 'hascov' : ''}">${av(uid, 'shx')}<h2>${esc(shopName(uid))}${vm(uid)}</h2>${mine ? '' : trBadge('sn' + uid)}${pr.mg_handle ? `<div class="mghandle">@${esc(pr.mg_handle)}</div>` : ''}
+      <div class="mgchips c"><button class="mgchipcat" data-act="mgcat" data-v="${pr.shop_cat || 'other'}">${catEmoji(pr.shop_cat)} ${esc(catName(pr.shop_cat))}</button>${subTx ? `<button class="mgchipcat" ${pr.shop_sub !== 'x' ? `data-act="mgsub" data-v="${pr.shop_cat}" data-s="${pr.shop_sub}"` : ''}>${subEmoji(pr.shop_cat, pr.shop_sub)} ${esc(subTx)}</button>` : ''}</div>
+      ${pr.country ? `<div class="mgshoploc">${small('pin')} ${esc(locTxt(pr.country, pr.city))}</div>` : ''}
       ${pr.shop_about ? `<p class="mgp2-bio">${esc(mine ? pr.shop_about : trText('sa' + uid, pr.shop_about, pr.ui_lang))}</p>${mine ? '' : trBadge('sa' + uid)}` : ''}
-      <div class="mgshopn"><b class="num">${list ? nf(list.length) : '…'}</b> ${M('items_n')}${pr.ui_lang ? ` · ${small('globe')} ${esc(langName(pr.ui_lang))}` : ''}</div><div class="mgp2-act">${acts}</div></div>
+      <div class="mgshopn"><b class="num">${list ? nf(list.length) : '…'}</b> ${M('items_n')}${pr.ui_lang ? ` · ${small('globe')} ${esc(langName(pr.ui_lang))}${!mine && pr.ui_lang !== NK.lang ? ` · ${M('tr_for_you')}` : ''}` : ''}</div><div class="mgp2-act">${acts}</div></div>
       <div class="mgwrap">${pgrid(list, mine ? `<p>${M('first_item')}</p><button class="mgb1 dark" style="flex:none;padding:0 20px" data-act="mgnewprod">${M('add_item')}</button>` : '')}</div></div>`, ''); };
   V.mgfavs = () => { const r = ready(); if (r) return r; const list = keepP(want('mg:favs', () => LV.favs()));
     return wrapView('mgfavs', `<div class="mgwrap mgmarket">${pgrid(list, `<p>${M('no_favs')}</p>`)}</div>`, M('favs')); };
   V.mgme = () => { const r = ready(); if (r) return r; const pr = LV.profile || {};
     const row = (act, icn, label, v, extra) => `<button class="mgcl sys" data-act="${act}" ${v ? `data-v="${v}"` : ''}><span class="mgsysic">${ic(icn)}</span><span class="grow"><span class="mgcl1"><b>${label}</b></span></span>${extra || ''}${ic('chev', 'flip chev')}</button>`;
-    const shopBox = pr.shop_on ? `<button class="mgmyshop" data-act="mgshop" data-v="${meId()}">${av(meId(), 'md')}<span class="grow"><small>${M('my_shop')}</small><b>${esc(pr.shop_name || mname(meId()))}</b><small>${catEmoji(pr.shop_cat)} ${esc(catName(pr.shop_cat))}</small></span>${ic('chev', 'flip chev')}</button><div class="mgp2-act" style="padding:0 14px 14px;margin:0;background:#fff"><button class="mgb1 dark" data-act="mgnewprod">${ic('plus')}${M('add_item')}</button><button class="mgb1 soft" data-act="mgshareshop" data-v="${meId()}">${M('share')}</button></div>`
+    const shopBox = pr.shop_on ? `<button class="mgmyshop" data-act="mgshop" data-v="${meId()}">${av(meId(), 'md')}<span class="grow"><small>${M('my_shop')}</small><b>${esc(pr.shop_name || mname(meId()))}</b><small>${catEmoji(pr.shop_cat)} ${esc(pr.shop_sub ? subName(pr.shop_cat, pr.shop_sub, pr.shop_sub_note) : catName(pr.shop_cat))}</small></span>${ic('chev', 'flip chev')}</button><div class="mgp2-act" style="padding:0 14px 14px;margin:0;background:#fff"><button class="mgb1 dark" data-act="mgnewprod">${ic('plus')}${M('add_item')}</button><button class="mgb1 soft" data-act="mgshareshop" data-v="${meId()}">${M('share')}</button></div>`
       : `<button class="mgpromo" style="margin:0 14px" data-act="mgopenshop"><span>🛍</span><span class="grow"><b>${M('open_shop')}</b><small>${M('open_shop_d')}</small></span>${ic('chev', 'flip chev')}</button>`;
-    return wrapView('mgme', `<button class="mgmecard" data-act="mgedit">${av(meId(), 'me')}<span class="grow"><b>${esc(mname(meId()))}${vm(meId())}</b><small>Magaam ID: ${esc(pr.invite_code || '—')}</small></span>${ic('chev', 'flip chev')}</button>
+    return wrapView('mgme', `<button class="mgmecard" data-act="mgedit">${av(meId(), 'me')}<span class="grow"><b>${esc(mname(meId()))}${vm(meId())}</b><small>${pr.mg_handle ? '@' + esc(pr.mg_handle) : 'Magaam ID: ' + M('h_not_set')}</small>${pr.country ? `<small>${small('pin')} ${esc(locTxt(pr.country, pr.city))}</small>` : ''}</span>${ic('chev', 'flip chev')}</button>
       ${isAdmin() ? `<button class="mgadmmode" data-act="admmode">${small('shield')}<b>${FXM('adm_badge')}</b><span>${FXM('adm_mode_off')}</span></button>` : ''}
       <div class="mglist" style="margin-bottom:10px">${shopBox}</div>
+      <div class="mglist">${row('mghandle', 'idcard', 'Magaam ID', '', `<small class="mgrowv">${pr.mg_handle ? '@' + esc(pr.mg_handle) : M('h_set')}</small>`)}${row('mgmyloc', 'pin', M('my_place'), '', `<small class="mgrowv">${esc(pr.country ? (pr.city ? cityName(pr.country, pr.city) : ctryName(pr.country)) : M('h_set'))}</small>`)}</div>
       <div class="mglist">${row('mggo', 'heart', M('favs'), 'mgfavs')}${row('mginvite', 'users', M('invite'))}${pr.verified ? '' : row('vfopen', 'check', FXM('vf_t'), 'mg')}</div>
       <div class="mglist">${row('notifset', 'siren', FXM('notif_t'))}${row('mglangs', 'globe', t('language'), '', `<small class="mgrowv">${esc(langName(NK.lang))}</small>`)}</div>
       <div class="mglist">${NK.canAdmin() ? row('admmode', 'shield', FXM(isAdmin() ? 'adm_mode_off' : 'adm_mode_on')) : ''}${row('mgrules', 'info', M('rules_mg'))}</div>`, M('me_t')); };
   const _mgp = V.mgp; V.mgp = (p) => p && prof(p.id).shop_on ? V.mgshop(p) : _mgp(p);
   V.mgexplore = () => V.mg(); V.mgmoments = () => V.mg(); V.mgcontacts = () => V.mgchats();
 
+  /* place picker: country (searchable, in the viewer's language) → city */
+  const locSheet = (curL, opts, cb) => { opts = opts || {}; let cc = curL.country || '';
+    const allCodes = () => { const pri = MD.pri.filter(c => MD.all.includes(c)); const rest = MD.all.filter(c => !pri.includes(c)).sort((a, b) => ctryName(a).localeCompare(ctryName(b), NK.lang)); return pri.concat(rest); };
+    const w = sheet(`<div id="lsb"></div>`); const box = w.querySelector('#lsb');
+    const stepC = () => { box.innerHTML = `<h3>${M('choose_country')}</h3><div class="mgsearch">${ic('search')}<input id="lsq" type="search" placeholder="${M('search_country')}" autocomplete="off"></div>${opts.any ? `<button class="mgpick any" data-c="">${small('globe')} ${M('everywhere')}</button>` : ''}<div class="mgpicklist" id="lsl"></div>`;
+      const draw = (q) => { q = (q || '').toLowerCase(); box.querySelector('#lsl').innerHTML = allCodes().filter(c => !q || ctryName(c).toLowerCase().includes(q) || c.toLowerCase() === q).map(c => `<button class="mgpick ${c === cc ? 'on' : ''}" data-c="${c}"><span class="flag">${c.replace(/./g, ch => String.fromCodePoint(127397 + ch.charCodeAt(0)))}</span>${esc(ctryName(c))}</button>`).join(''); };
+      draw(''); box.querySelector('#lsq').oninput = (e) => draw(e.target.value);
+      box.onclick = (e) => { const b = e.target.closest('[data-c]'); if (!b) return; if (!b.dataset.c) { w.remove(); cb({ country: null, city: null }); return; } cc = b.dataset.c; stepCity(); }; };
+    const stepCity = () => { const list = MD.cities[cc] || [];
+      box.innerHTML = `<button class="mglink" id="lsback">‹ ${esc(ctryName(cc))}</button><h3>${M('choose_city')}</h3>${opts.any ? `<button class="mgpick any" data-y="">${small('globe')} ${M('all_country')}</button>` : ''}<div class="mgpicklist">${list.map(x => `<button class="mgpick ${x[0] === curL.city ? 'on' : ''}" data-y="${esc(x[0])}">${esc(cityName(cc, x[0]))}</button>`).join('')}</div>
+        <div class="field" style="margin-top:12px"><label for="lsc">${M(list.length ? 'other_city' : 'city_l')}</label><div class="mgpricein"><input id="lsc" maxlength="60" placeholder="${M('city_ph')}" value="${list.some(x => x[0] === curL.city) || cc !== curL.country ? '' : esc(curL.city || '')}"><button class="btn primary mgbtn" id="lsok" style="flex:none;padding:0 16px">OK</button></div></div>`;
+      box.querySelector('#lsback').onclick = stepC;
+      box.querySelector('#lsok').onclick = () => { const v = box.querySelector('#lsc').value.trim(); if (!v && !opts.any) return; w.remove(); cb({ country: cc, city: v || null }); };
+      box.onclick = (e) => { const b = e.target.closest('[data-y]'); if (!b) return; w.remove(); cb({ country: cc, city: b.dataset.y || null }); }; };
+    if (cc && !opts.any) stepCity(); else stepC(); };
+  const pickFilterLoc = () => locSheet(myLoc(), { any: true }, (l) => { NK.S.mgLoc = l.country ? l : null; save(); render(); });
+  const pickMyLoc = (done) => locSheet(LV.profile || {}, {}, async (l) => { try { const np = await LV.updateProfile({ country: l.country, city: l.city }); NK.S.me = NK.meFrom(np); save(); dropData('mg:'); toast(M('saved')); if (done) done(l); else render(); } catch (e) { fail0(e); } });
+
+  /* Magaam ID: set once, unique */
+  const handleSheet = () => { const pr = LV.profile || {};
+    if (pr.mg_handle) { const link = 'https://verghethorn.com/magaam/?i=' + (pr.invite_code || '') + '&u=' + pr.mg_handle; const w = sheet(`<h3>Magaam ID</h3><div class="mghbig">@${esc(pr.mg_handle)}</div><p class="note">${M('h_locked')}</p><button class="btn primary full mgbtn" id="hcp">${M('h_copy')}</button>`);
+      w.querySelector('#hcp').onclick = () => { (navigator.clipboard ? navigator.clipboard.writeText('@' + pr.mg_handle + ' — ' + link) : Promise.reject()).then(() => toast(M('copied'))).catch(() => {}); }; return; }
+    const w = sheet(`<h3>${M('h_title')}</h3><p class="note" style="margin:0 0 12px">${M('h_once')}</p><div class="field"><div class="mghin"><b>@</b><input id="hin" maxlength="24" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="rashid" inputmode="latin"></div><small class="note" id="hst">${M('h_rules')}</small></div><button class="btn primary full mgbtn" id="hgo" disabled>${M('h_save')}</button>`);
+    const inp = w.querySelector('#hin'), st = w.querySelector('#hst'), go = w.querySelector('#hgo'); let tm = 0, okv = '';
+    const valid = (v) => /^[a-z][a-z0-9_.]{2,23}$/.test(v);
+    inp.oninput = () => { const v = inp.value = inp.value.toLowerCase().replace(/[^a-z0-9_.]/g, ''); okv = ''; go.disabled = true; clearTimeout(tm);
+      if (!valid(v)) { st.className = 'note'; st.textContent = M('h_rules'); return; } st.className = 'note'; st.textContent = '…';
+      tm = setTimeout(async () => { try { const free = await LV.handleFree(v); if (inp.value !== v) return; st.className = free ? 'note okc' : 'note badc'; st.textContent = free ? '✓ @' + v + ' — ' + M('h_free') : '✕ ' + M('h_taken'); if (free) { okv = v; go.disabled = false; } } catch (e) { st.textContent = FXM('send_fail'); } }, 350); };
+    go.onclick = async () => { if (!okv || !confirm(M('h_confirm').replace('{h}', '@' + okv))) return; go.disabled = true;
+      try { const np = await LV.updateProfile({ mg_handle: okv }); NK.S.me = NK.meFrom(np); save(); w.remove(); toast('✓ @' + okv); render(); }
+      catch (e) { const m = String(e && (e.message || e.code) || ''); st.className = 'note badc'; st.textContent = /duplicate|23505|unique/i.test(m) ? '✕ ' + M('h_taken') : FXM('send_fail'); go.disabled = false; } }; };
+
   /* open a shop / add and edit products */
-  const catPicker = (sel) => `<div class="mgcatpick">${CATS.map(([k, e, n]) => `<button type="button" data-k="${k}" class="${k === sel ? 'on' : ''}">${e} ${esc(L(n))}</button>`).join('')}</div>`;
-  const shopSheet = () => { const pr = LV.profile || {}; let cat = pr.shop_cat || ''; let photo = null;
+  const catPicker = (sel) => `<div class="mgcatpick" data-pick="cat">${CATS.map(([k, e, n]) => `<button type="button" data-k="${k}" class="${k === sel ? 'on' : ''}">${e} ${esc(L(n))}</button>`).join('')}</div>`;
+  const subPicker = (cat, sel, note, other) => { const c = catObj(cat); return `<div class="mgcatpick" data-pick="sub">${(c.subs || []).map(x => `<button type="button" data-k="${x.k}" class="${x.k === sel ? 'on' : ''}">${x.e} ${esc(L(x.n))}</button>`).join('')}${other ? `<button type="button" data-k="x" class="${sel === 'x' ? 'on' : ''}">✍️ ${M('sub_other')}</button>` : ''}</div>${other ? `<input id="subn" class="mgsubn" ${sel === 'x' ? '' : 'hidden'} maxlength="60" placeholder="${M('sub_other_ph')}" value="${esc(note || '')}">` : ''}`; };
+  const bindPick = (w, st, other) => { const wire = () => {
+      w.querySelectorAll('[data-pick="cat"] button').forEach(b => b.onclick = () => { st.cat = b.dataset.k; st.sub = ''; w.querySelectorAll('[data-pick="cat"] button').forEach(x => x.classList.toggle('on', x === b)); w.querySelector('#subbox').innerHTML = subPicker(st.cat, '', st.note, other); w.querySelector('#subf').hidden = false; wire(); });
+      w.querySelectorAll('[data-pick="sub"] button').forEach(b => b.onclick = () => { st.sub = b.dataset.k; w.querySelectorAll('[data-pick="sub"] button').forEach(x => x.classList.toggle('on', x === b)); const n = w.querySelector('#subn'); if (n) { n.hidden = st.sub !== 'x'; if (!n.hidden) n.focus(); } }); };
+    wire(); };
+  const shopSheet = () => { const pr = LV.profile || {}; const st = { cat: pr.shop_cat || '', sub: pr.shop_sub || '', note: pr.shop_sub_note || '' }; let photo = null, cover = null; let loc = { country: pr.country, city: pr.city };
     const w = sheet(`<h3>${M(pr.shop_on ? 'edit_shop' : 'open_shop')}</h3><p class="note" style="margin:0 0 12px">${M('open_shop_d')}</p>
-      <button class="mgsetph" type="button" id="shph">${(pr.mg_avatar || pr.photo_url) ? `<span style="background-image:url(${esc(pr.mg_avatar || pr.photo_url)})"></span>` : `<span>${ic('camera')}</span>`}<b>${M('shop_photo')}</b></button>
+      <div class="mgsetrow"><button class="mgsetph" type="button" id="shph">${(pr.mg_avatar || pr.photo_url) ? `<span style="background-image:url(${esc(pr.mg_avatar || pr.photo_url)})"></span>` : `<span>${ic('camera')}</span>`}<b>${M('shop_photo')}</b></button><button class="mgsetcv" type="button" id="shcv" style="${pr.cover_url ? `background-image:url(${esc(pr.cover_url)})` : ''}"><span>${ic('camera')}${M('cover')}</span></button></div>
       <div class="field"><label for="shn">${M('shop_name')} *</label><input id="shn" maxlength="60" value="${esc(pr.shop_name || '')}" placeholder="${M('shop_name_ph')}"></div>
-      <div class="field"><label>${M('shop_cat')} *</label>${catPicker(cat)}</div>
+      <div class="field"><label>${M('shop_cat')} *</label>${catPicker(st.cat)}</div>
+      <div class="field" id="subf" ${st.cat ? '' : 'hidden'}><label>${M('sub_l')}</label><div id="subbox">${st.cat ? subPicker(st.cat, st.sub, st.note, true) : ''}</div></div>
+      <div class="field"><label>${M('location')} *</label><button type="button" class="mglocbtn" id="shloc">${small('pin')}<span>${esc(loc.country ? locTxt(loc.country, loc.city) : M('choose_country'))}</span>${ic('chev', 'flip chev')}</button></div>
       <div class="field"><label for="sha">${M('shop_about')}</label><textarea id="sha" rows="3" placeholder="${M('shop_about_ph')}">${esc(pr.shop_about || '')}</textarea></div>
       <p class="ferr" id="sherr" hidden></p><button class="btn primary full mgbtn" id="shgo">${M(pr.shop_on ? 'save_l' : 'open_shop')}</button>`);
-    w.querySelectorAll('.mgcatpick button').forEach(b => b.onclick = () => { cat = b.dataset.k; w.querySelectorAll('.mgcatpick button').forEach(x => x.classList.toggle('on', x === b)); });
+    bindPick(w, st, true);
     w.querySelector('#shph').onclick = () => pickImg(d => { photo = d; w.querySelector('#shph span').outerHTML = `<span style="background-image:url(${d})"></span>`; }, 1080);
-    w.querySelector('#shgo').onclick = async (ev) => { const nm = w.querySelector('#shn').value.trim(); const er = w.querySelector('#sherr');
-      if (!nm || !cat) { er.hidden = false; er.textContent = M('shop_need'); return; } const b = ev.currentTarget; b.disabled = true; b.textContent = '…';
-      try { const f = { shop_name: nm, shop_cat: cat, shop_about: w.querySelector('#sha').value.trim() }; if (photo) f.mg_avatar = await LV.upload(photo, 'avatar');
-        const np = await LV.openShop(f); NK.S.me = NK.meFrom(np); save(); w.remove(); dropData('mg:'); toast(M('shop_ready')); go('mgshop', { id: meId() }); }
-      catch (e) { console.warn(e); b.disabled = false; b.textContent = M('open_shop'); er.hidden = false; er.textContent = FXM('send_fail'); } }; };
-  const prodSheet = (edit) => { if (!myShop()) return shopSheet(); const x = edit || {}; let cat = x.cat || (LV.profile || {}).shop_cat || 'other'; const photos = (x.photos || []).slice(); const fresh = [];
+    w.querySelector('#shcv').onclick = () => pickImg(d => { cover = d; w.querySelector('#shcv').style.backgroundImage = `url(${d})`; }, 1600);
+    w.querySelector('#shloc').onclick = () => locSheet(loc, {}, (l) => { loc = l; w.querySelector('#shloc span').textContent = locTxt(l.country, l.city); });
+    w.querySelector('#shgo').onclick = async (ev) => { const nm = w.querySelector('#shn').value.trim(); const er = w.querySelector('#sherr'); const note = (w.querySelector('#subn') || {}).value || '';
+      if (!nm || !st.cat) { er.hidden = false; er.textContent = M('shop_need'); return; } if (!loc.country || !loc.city) { er.hidden = false; er.textContent = M('loc_need'); return; }
+      const b = ev.currentTarget; b.disabled = true; b.textContent = '…';
+      try { const f = { shop_name: nm, shop_cat: st.cat, shop_sub: st.sub || null, shop_sub_note: st.sub === 'x' ? note.trim() : null, shop_about: w.querySelector('#sha').value.trim(), country: loc.country, city: loc.city };
+        if (photo) f.mg_avatar = await LV.upload(photo, 'avatar'); if (cover) f.cover_url = await LV.upload(cover, 'cover');
+        const np = await LV.openShop(f); NK.S.me = NK.meFrom(np); save(); w.remove(); dropData('mg:'); toast(M(pr.shop_on ? 'saved' : 'shop_ready')); go('mgshop', { id: meId() }); }
+      catch (e) { console.warn(e); b.disabled = false; b.textContent = M(pr.shop_on ? 'save_l' : 'open_shop'); er.hidden = false; er.textContent = FXM('send_fail'); } }; };
+  const prodSheet = (edit) => { if (!myShop()) return shopSheet(); const pr = LV.profile || {}; const x = edit || {}; const st = { cat: x.cat || pr.shop_cat || 'other', sub: x.sub || (edit ? '' : pr.shop_sub && pr.shop_sub !== 'x' ? pr.shop_sub : '') }; const photos = (x.photos || []).slice(); const fresh = [];
     const thumbs = () => photos.concat(fresh).map((u, i) => `<span class="mgth" style="background-image:url(${u})"><button type="button" data-rm="${i}" aria-label="x">${small('x')}</button></span>`).join('') + (photos.length + fresh.length < 6 ? `<button type="button" class="mgth add" id="pradd">${ic('camera')}<small>${photos.length + fresh.length}/6</small></button>` : '');
     const w = sheet(`<h3>${M(edit ? 'edit_item' : 'add_item')}</h3><div class="mgths" id="prth">${thumbs()}</div>
       <div class="field"><label for="prt">${M('item_title')} *</label><input id="prt" maxlength="120" value="${esc(x.title || '')}" placeholder="${M('item_title_ph')}"></div>
       <div class="field"><label for="prp">${M('item_price')}</label><div class="mgpricein"><input id="prp" inputmode="decimal" value="${x.price != null ? esc(String(x.price)) : ''}" placeholder="0"><b>SAR</b></div><small class="note">${M('price_hint')}</small></div>
-      <div class="field"><label>${M('shop_cat')}</label>${catPicker(cat)}</div>
-      <div class="field"><label for="prd">${M('item_desc')}</label><textarea id="prd" rows="4" placeholder="${M('item_desc_ph')}">${esc(x.descr || '')}</textarea></div>
+      <div class="field"><label>${M('shop_cat')}</label>${catPicker(st.cat)}</div>
+      <div class="field" id="subf"><label>${M('sub_l')}</label><div id="subbox">${subPicker(st.cat, st.sub, '', false)}</div></div>
+      <div class="field"><label for="prd">${M('item_desc')}</label><textarea id="prd" rows="4" maxlength="3000" placeholder="${M('item_desc_ph')}">${esc(x.descr || '')}</textarea></div>
       <p class="ferr" id="prerr" hidden></p><button class="btn primary full mgbtn" id="prgo">${M(edit ? 'save_l' : 'publish_item')}</button>${edit ? `<button class="btn soft full" style="margin-top:8px;color:#C2352B" id="prdel">${M('del_msg')}</button>` : ''}`);
+    bindPick(w, st, false);
     const redraw = () => { w.querySelector('#prth').innerHTML = thumbs(); bind(); };
     const bind = () => { const a = w.querySelector('#pradd'); if (a) a.onclick = () => { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.multiple = true; inp.onchange = async () => { for (const f of [...inp.files].slice(0, 6 - photos.length - fresh.length)) { const d = await resizeImg(f, 1600, 0.88); if (d) fresh.push(d); } redraw(); }; inp.click(); };
       w.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { const i = +b.dataset.rm; if (i < photos.length) photos.splice(i, 1); else fresh.splice(i - photos.length, 1); redraw(); }); };
-    bind(); w.querySelectorAll('.mgcatpick button').forEach(b => b.onclick = () => { cat = b.dataset.k; w.querySelectorAll('.mgcatpick button').forEach(y => y.classList.toggle('on', y === b)); });
+    bind();
     w.querySelector('#prgo').onclick = async (ev) => { const title = w.querySelector('#prt').value.trim(); const er = w.querySelector('#prerr'); const pv = w.querySelector('#prp').value.replace(',', '.').trim();
       if (title.length < 2) { er.hidden = false; er.textContent = M('item_need'); return; } if (!photos.length && !fresh.length) { er.hidden = false; er.textContent = M('photo_need'); return; }
       const b = ev.currentTarget; b.disabled = true; b.textContent = '…';
       try { const up = []; for (const d of fresh) up.push(await LV.upload(d, 'item'));
-        const f = { title, price: pv === '' || isNaN(+pv) ? null : +pv, cat, descr: w.querySelector('#prd').value.trim(), photos: photos.concat(up), lang: NK.lang };
+        const f = { title, price: pv === '' || isNaN(+pv) ? null : +pv, cat: st.cat, sub: st.sub || null, descr: w.querySelector('#prd').value.trim(), photos: photos.concat(up), lang: NK.lang };
         const saved = edit ? await LV.updProduct(edit.id, f) : await LV.addProduct(f); PRODS[saved.id] = saved; w.remove(); dropData('mg:'); toast(M(edit ? 'saved' : 'published_item')); go('mgprod', { id: saved.id }); }
-      catch (e) { console.warn(e); b.disabled = false; b.textContent = M('publish_item'); er.hidden = false; er.textContent = FXM('send_fail'); } };
+      catch (e) { console.warn(e); b.disabled = false; b.textContent = M(edit ? 'save_l' : 'publish_item'); er.hidden = false; er.textContent = FXM('send_fail'); } };
     const del = w.querySelector('#prdel'); if (del) del.onclick = () => { if (!confirm(M('del_msg') + '?')) return; LV.delProduct(edit.id).then(() => { w.remove(); dropData('mg:'); NK.back(); }).catch(fail0); }; };
   const askSeller = async (prodId, sellerId) => { try { const x = prodId ? (PRODS[prodId] || await LV.product(prodId)) : null; const seller = x ? x.seller : sellerId; if (seller === meId()) return;
-      const c = await LV.mgChat(seller); if (x) { const m = await LV.mgSend(c.id, '🛍 ' + x.title, NK.lang, null, null, null, null, x.id); MGM[c.id] = (MGM[c.id] || []).concat(m); }
+      const c = await LV.mgChat(seller); if (x) { const m = await LV.mgSend(c.id, '🛍 ' + x.title, x.lang || NK.lang, null, null, null, null, x.id); MGM[c.id] = (MGM[c.id] || []).concat(m); }
       dropData('mg:inbox'); go('mgchat', { id: c.id, u: seller }); } catch (e) { fail0(e); } };
-  const shareShop = (uid) => { const link = inviteLink() + '&shop=' + uid; const text = M('share_shop_t').replace('{n}', shopName(uid)) + ' ' + link; if (navigator.share) navigator.share({ title: 'Magaam', text, url: link }).catch(() => {}); else (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(() => toast(M('copied'))).catch(() => {}); };
+  const shareShop = (uid) => { const p = prof(uid); const link = inviteLink() + '&shop=' + uid; const text = M('share_shop_t').replace('{n}', shopName(uid)) + (p.mg_handle ? ' @' + p.mg_handle : '') + ' ' + link; if (navigator.share) navigator.share({ title: 'Magaam', text, url: link }).catch(() => {}); else (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(() => toast(M('copied'))).catch(() => {}); };
   const prodCardMsg = (m) => { const x = PRODS[m.product_id]; if (!x && !m._pl) { m._pl = 1; LV.product(m.product_id).then(v => { if (v) { PRODS[v.id] = v; paintThread(); } }).catch(() => {}); }
     return x ? `<button class="mgmsgprod" data-act="mgprod" data-v="${x.id}">${x.photos && x.photos[0] ? `<img src="${esc(x.photos[0])}" alt="">` : `<i>${catEmoji(x.cat)}</i>`}<span><b>${esc(trText('pt' + x.id, x.title, x.lang))}</b><small class="num">${esc(priceTxt(x))}</small></span></button>` : ''; };
 
@@ -907,6 +1000,10 @@ if (LV) {
       case 'mgskipinst': NK.S.mgSkipInst = true; save(); render(); return true;
       case 'mginvite': if (!(LV.profile || {}).invite_code) LV.fetchProfile(meId()).then(pr => { LV.profile = pr; inviteSheet(); }); else inviteSheet(); return true;
       case 'mgcat': go('mgcat', { id: v }); return true;
+      case 'mgloc': pickFilterLoc(); return true;
+      case 'mgsub': { const nv = { v: 'mgcat', id: v, sub: el.dataset.s || '' }; if (cur().v === 'mgcat' && cur().id === v) { NK.stack[NK.stack.length - 1] = nv; render(); } else go('mgcat', { id: v, sub: nv.sub }); return true; }
+      case 'mghandle': if (!(LV.profile || {}).invite_code) LV.fetchProfile(meId()).then(pr => { LV.profile = pr; handleSheet(); }); else handleSheet(); return true;
+      case 'mgmyloc': pickMyLoc(); return true;
       case 'mgprod': go('mgprod', { id: v }); return true;
       case 'mgshop': go('mgshop', { id: v }); return true;
       case 'mgsearchgo': { const i = document.getElementById('mgsq'); SQ = i ? i.value : ''; if (cur().v === 'mgsearch') render(); else go('mgsearch'); return true; }

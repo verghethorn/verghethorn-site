@@ -795,6 +795,8 @@ function openDeep(url) {
   let u; try { u = new URL(url, location.href); } catch (e) { return; }
   const g = u.searchParams.get('go'), ch = u.searchParams.get('chat'), uu = u.searchParams.get('u');
   if (ch && uu) { stack = [{ v: 'mgchats' }, { v: 'mgchat', id: ch, u: uu }]; return render(true); }
+  const sh = u.searchParams.get('shop'); if (sh && /^[0-9a-f-]{36}$/i.test(sh)) { stack = [{ v: 'mg' }, { v: 'mgshop', id: sh }]; return render(true); }
+  if (uu && !ch && window.LIVE && LIVE.byHandle) { LIVE.byHandle(uu).then(p => { if (p) { stack = [{ v: 'mg' }, { v: p.shop_on ? 'mgshop' : 'mgp', id: p.id }]; render(true); } }).catch(() => {}); return; }
   if (g === 'friends') { stack = [{ v: 'mgfriends' }]; return render(true); }
   if ((g === 'operator' || g === 'reports' || g === 'verify') && canAdmin()) { S.adminMode = true; save(); stack = [{ v: 'profile' }, { v: 'operator', k: g === 'operator' ? 'chats' : g }]; return render(true); }
   if (g === 'chats') { stack = [{ v: 'chats' }]; return render(true); }
@@ -1490,7 +1492,7 @@ function render(scrollTop) {
 const TR_LANGS = ['ur', 'id', 'ms', 'tr', 'bn', 'hi', 'fa', 'fr'];
 const trTried = {};
 function boot() {
-  if (!boot.dl) { boot.dl = true; if (/[?&](go|chat)=/.test(location.search)) setTimeout(() => openDeep(location.href), 0); if (!window.MG_APP) setBadge(0); }
+  if (!boot.dl) { boot.dl = true; if (/[?&](go|chat|shop|u)=/.test(location.search)) setTimeout(() => openDeep(location.href), 0); if (!window.MG_APP) setBadge(0); }
   if (window.MG_APP && !boot.inv) { boot.inv = true; const m = location.search.match(/[?&]i=([a-z0-9]+)/i); if (m) { S.mgInvite = m[1].toLowerCase(); save(); } }
   if (LV && !LV.ready && !boot.bg) {
     // signed-in before: show the app from the saved state at once, refresh the session in the background

@@ -929,6 +929,31 @@ body:not(.dsk) .gallery .float .ibtn,body:not(.dsk) .item-head .float .ibtn{box-
 .mgmsgprod{display:flex;align-items:center;gap:10px;border:0;background:rgba(255,255,255,.7);border-radius:12px;padding:6px;margin:0 0 6px;font:inherit;color:inherit;text-align:start;width:230px;max-width:100%}
 .mgmsgprod img,.mgmsgprod i{width:52px;height:52px;border-radius:9px;object-fit:cover;flex:none;font-style:normal;display:flex;align-items:center;justify-content:center;font-size:26px;background:#EFECE6}
 .mgmsgprod b{display:block;font-size:13.5px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.mgmsgprod small{font-size:12.5px;font-weight:700;color:#E2613A}
+/* ===== Magaam 6 — places, directions, Magaam ID ===== */
+.mglocchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--mg-line);background:#fff;border-radius:20px;padding:7px 12px;font:inherit;font-size:13.5px;color:var(--mg-ink);margin:0 0 12px;max-width:100%}
+.mglocchip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mglocchip svg{width:15px;height:15px;flex:none}.mglocchip .chev.dn{transform:rotate(90deg);width:14px;height:14px;color:var(--mg-ink2)}
+.mglocchip.on{border-color:var(--mg-acc);color:var(--mg-acc);background:#FDEDE5}
+.mgsubrow{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -14px 14px;padding:0 14px}.mgsubrow::-webkit-scrollbar{display:none}.mgsubrow.wrap{flex-wrap:wrap;overflow:visible;margin:0 0 14px;padding:0}
+.mgsubrow button{flex:none;border:1px solid var(--mg-line);background:#fff;border-radius:18px;padding:7px 12px;font:inherit;font-size:13px;color:var(--mg-ink);white-space:nowrap}.mgsubrow button.on{background:var(--mg-ink);color:#fff;border-color:var(--mg-ink)}
+.mgchips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}.mgchips.c{justify-content:center;margin:6px 0 2px}.mgchips .mgchipcat{margin:0;display:inline-flex;align-items:center;gap:4px}.mgchips .mgchipcat svg{width:13px;height:13px}
+.mgshopcov{height:150px;background:#ddd center/cover;margin:-1px 0 0}
+.mgshophead.hascov{padding-top:0}.mgshophead.hascov>.mgav.shx{margin-top:-46px;position:relative}
+.mghandle{font-size:14px;color:var(--mg-ink2);margin:1px 0 2px;direction:ltr}
+.mgshoploc{display:flex;align-items:center;gap:5px;font-size:13.5px;color:var(--mg-ink);margin:6px 0 2px}.mgshoploc svg{width:14px;height:14px;color:var(--mg-acc)}
+.mgpicklist{display:flex;flex-direction:column;max-height:52vh;overflow-y:auto;margin:6px -4px 0}
+.mgpick{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;text-align:start;font:inherit;font-size:15px;padding:12px 8px;border-bottom:1px solid #EFECE6;color:inherit}.mgpick.on{color:#E2613A;font-weight:700}.mgpick.any{color:#E2613A;font-weight:600;border-bottom:0}.mgpick .flag{font-size:20px;width:26px;text-align:center}.mgpick svg{width:16px;height:16px}
+.mglocbtn{display:flex;align-items:center;gap:8px;width:100%;border:1px solid var(--line,#e4e0d8);background:#fff;border-radius:12px;padding:12px;font:inherit;text-align:start;color:inherit}.mglocbtn span{flex:1}.mglocbtn svg{width:16px;height:16px}.mglocbtn .chev{color:#8A847A}
+.mgsetrow{display:flex;gap:10px;align-items:stretch;margin:0 0 12px}.mgsetrow .mgsetph{flex:none;margin:0}
+.mgsetcv{flex:1;border:1.5px dashed #C9C2B6;border-radius:14px;background:#EFECE6 center/cover;min-height:96px;display:flex;align-items:flex-end;justify-content:center;padding:8px;font:inherit;color:#1C1A17}
+.mgsetcv span{display:inline-flex;gap:6px;align-items:center;background:rgba(255,255,255,.88);border-radius:10px;padding:5px 10px;font-size:13px;font-weight:600}.mgsetcv svg{width:16px;height:16px}
+.mgsubn{margin-top:8px;width:100%}
+.mghin{display:flex;align-items:center;gap:4px;border:1px solid var(--line,#e4e0d8);border-radius:12px;padding:0 12px;background:#fff;direction:ltr}.mghin b{font-size:18px;color:#8A847A}.mghin input{flex:1;border:0!important;outline:none;padding:12px 0!important;font-size:17px;background:none;box-shadow:none!important}
+.note.okc{color:#1F8A4C;font-weight:600}.note.badc{color:#C2352B;font-weight:600}
+.mghbig{font-size:26px;font-weight:800;text-align:center;padding:14px 0 6px;direction:ltr}
+.mgmecard small svg{width:12px;height:12px;vertical-align:-1px}
+.mgpicklist .mgpick,.mgpick{justify-content:flex-start!important;text-align:start!important;margin:0!important;min-height:0!important;height:auto!important;border-radius:0!important;box-shadow:none!important}
+.mgpick.any{padding:12px 8px!important}
+.mgcl.sys .mgrowv{max-width:48%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:none}.mgcl.sys .mgcl1 b{white-space:nowrap}
 </style>
 </head>
 <body>
@@ -960,14 +985,15 @@ body:not(.dsk) .gallery .float .ibtn,body:not(.dsk) .item-head .float .ibtn{box-
 <div id="root"></div>
 <div class="toast-box" id="toasts"></div>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script>window.NAKHLIO_V = 41;</script>
-<script defer src="i18n.js?v=41"></script>
-<script defer src="data.js?v=41"></script>
-<script defer src="community.js?v=41"></script>
-<script defer src="services.js?v=41"></script>
+<script>window.NAKHLIO_V = 42;</script>
+<script defer src="i18n.js?v=42"></script>
+<script defer src="data.js?v=42"></script>
+<script defer src="community.js?v=42"></script>
+<script defer src="services.js?v=42"></script>
 <script defer src="vendor/supabase-2.118.0.js"></script>
-<script defer src="live.js?v=41"></script>
-<script defer src="app.js?v=41"></script>
-<script defer src="magaam.js?v=41"></script>
+<script defer src="live.js?v=42"></script>
+<script defer src="app.js?v=42"></script>
+<script defer src="mgdata.js?v=42"></script>
+<script defer src="magaam.js?v=42"></script>
 </body>
 </html>

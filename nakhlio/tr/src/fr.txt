@@ -1187,3 +1187,33 @@ c291|Cuisine maison
 c923|Cadeaux et fleurs
 c282|Services
 c924|Autre
+
+c934|Produits
+c282|Services
+c935|Tous les pays
+c936|Choisissez un pays
+c937|Choisissez une ville
+c938|Rechercher un pays
+c939|Tout le pays
+c940|Autre ville
+c861|Ville
+c941|Saisissez le nom de la ville
+c942|Votre emplacement
+c943|Pays et ville
+c944|Choisissez le pays et la ville.
+c945|Spécialité
+c946|Autre spécialité
+c947|Par exemple : bougies artisanales
+c960|Tout
+c948|Aucun article ici. Essayez un autre pays ou une autre catégorie.
+c949|Votre identifiant Magaam
+c950|L’identifiant Magaam se choisit une seule fois et ne peut plus être modifié. Acheteurs et amis vous trouveront grâce à lui.
+c951|3 à 24 caractères : lettres latines, chiffres, _ et point. Commence par une lettre.
+c952|disponible
+c953|Cet identifiant est déjà pris
+c954|Choisir l’identifiant
+c955|Choisir {h} ? Vous ne pourrez plus le modifier.
+c956|Cet identifiant Magaam vous appartient pour toujours.
+c957|Copier l’identifiant et le lien
+c958|non défini
+c959|Définir

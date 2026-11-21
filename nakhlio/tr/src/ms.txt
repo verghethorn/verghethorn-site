@@ -1187,3 +1187,33 @@ c291|Masakan rumah
 c923|Hadiah & bunga
 c282|Servis
 c924|Lain-lain
+
+c934|Barangan
+c282|Servis
+c935|Semua negara
+c936|Pilih negara
+c937|Pilih bandar
+c938|Cari negara
+c939|Seluruh negara
+c940|Bandar lain
+c861|Bandar
+c941|Tulis nama bandar
+c942|Lokasi anda
+c943|Negara & bandar
+c944|Pilih negara dan bandar.
+c945|Bidang
+c946|Bidang lain
+c947|Contoh: lilin buatan tangan
+c960|Semua
+c948|Belum ada barangan di sini. Cuba negara atau kategori lain.
+c949|Magaam ID anda
+c950|Magaam ID hanya ditetapkan sekali dan tidak boleh ditukar. Pembeli dan rakan akan mencari anda dengannya.
+c951|3–24 aksara: huruf Latin, nombor, _ dan titik. Bermula dengan huruf.
+c952|tersedia
+c953|ID ini sudah digunakan
+c954|Tetapkan ID
+c955|Tetapkan {h}? Anda tidak boleh menukarnya kemudian.
+c956|Magaam ID ini milik anda selamanya.
+c957|Salin ID dan pautan
+c958|belum ditetapkan
+c959|Tetapkan

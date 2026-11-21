@@ -1187,3 +1187,33 @@ c291|Ev yemekleri
 c923|Hediye ve çiçek
 c282|Hizmetler
 c924|Diğer
+
+c934|Ürünler
+c282|Hizmetler
+c935|Tüm ülkeler
+c936|Ülke seçin
+c937|Şehir seçin
+c938|Ülke ara
+c939|Tüm ülke
+c940|Başka bir şehir
+c861|Şehir
+c941|Şehir adını yazın
+c942|Bulunduğunuz yer
+c943|Ülke ve şehir
+c944|Ülke ve şehir seçin.
+c945|Alan
+c946|Kendi alanım
+c947|Örneğin: el yapımı mumlar
+c960|Tümü
+c948|Burada henüz ürün yok. Başka bir ülke veya kategori deneyin.
+c949|Magaam kimliğiniz
+c950|Magaam kimliği bir kez belirlenir ve sonra değiştirilemez. Alıcılar ve arkadaşlar sizi bununla bulur.
+c951|3–24 karakter: Latin harfleri, rakam, _ ve nokta. Harfle başlar.
+c952|uygun
+c953|Bu kimlik alınmış
+c954|Kimliği belirle
+c955|{h} belirlensin mi? Sonra değiştiremezsiniz.
+c956|Bu Magaam kimliği kalıcı olarak sizin.
+c957|Kimliği ve bağlantıyı kopyala
+c958|belirlenmedi
+c959|Belirle

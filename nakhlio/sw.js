@@ -1,8 +1,8 @@
-const CACHE = 'nakhlio-v41';
-const V = 'v=41';
+const CACHE = 'nakhlio-v42';
+const V = 'v=42';
 const B = '/nakhlio/';
 const HOME = new URL('./', self.registration.scope).href;
-const CORE = [HOME, B + 'index.html', B + 'app.js?' + V, B + 'data.js?' + V, B + 'community.js?' + V, B + 'services.js?' + V, B + 'magaam.js?' + V, B + 'live.js?' + V, B + 'vendor/supabase-2.118.0.js', B + 'i18n.js?' + V, B + 'icon-192.png', B + 'img/mgapp/icon-192.png'];
+const CORE = [HOME, B + 'index.html', B + 'app.js?' + V, B + 'data.js?' + V, B + 'community.js?' + V, B + 'services.js?' + V, B + 'mgdata.js?' + V, B + 'magaam.js?' + V, B + 'live.js?' + V, B + 'vendor/supabase-2.118.0.js', B + 'i18n.js?' + V, B + 'icon-192.png', B + 'img/mgapp/icon-192.png'];
 self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting())));
 self.addEventListener('activate', e => e.waitUntil(caches.keys().then(k => Promise.all(k.filter(x => x !== CACHE).map(x => caches.delete(x)))).then(() => self.clients.claim())));
 self.addEventListener('fetch', e => {

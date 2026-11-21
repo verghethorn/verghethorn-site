@@ -98,7 +98,7 @@ L.onMessage = (cb) => { L.listeners.push(cb); if (chan) return; chan = sb.channe
 /* Magaam: invites, own profile, messenger */
 L.inviteInfo = async (code) => { const r = await sb.rpc('invite_info', { code }); return r.error ? null : r.data; };
 L.acceptInvite = async (code) => ok(await sb.rpc('accept_invite', { code }));
-L.mgPeople = async (q) => { let s = sb.from('profiles').select('*').eq('mg_on', true).eq('banned', false); if (q) s = s.or(`mg_name.ilike.%${q.replace(/[%_,()]/g, '')}%,name.ilike.%${q.replace(/[%_,()]/g, '')}%`); const rows = ok(await s.order('created_at', { ascending: false }).limit(60)); rows.forEach(r => PC[r.id] = r); return rows; };
+L.mgPeople = async (q) => { let s = sb.from('profiles').select('*').eq('mg_on', true).eq('banned', false); if (q) s = s.or(`mg_name.ilike.%${q.replace(/[%_,()@]/g, '')}%,name.ilike.%${q.replace(/[%_,()@]/g, '')}%,mg_handle.ilike.%${q.replace(/[%_,()@]/g, '')}%`); const rows = ok(await s.order('created_at', { ascending: false }).limit(60)); rows.forEach(r => PC[r.id] = r); return rows; };
 L.mgInbox = async () => { const rows = ok(await sb.rpc('mg_inbox')); await L.prof(rows.map(r => r.other)); return rows; };
 L.mgChat = async (other) => { const me = L.user.id;
   const rows = ok(await sb.from('mg_chats').select('*').or(`and(user1.eq.${me},user2.eq.${other}),and(user1.eq.${other},user2.eq.${me})`));
@@ -132,15 +132,19 @@ L.mgTyping = (chatId, onTyping) => { const ch = sb.channel('mgt:' + chatId, { co
 const clean = (q) => String(q || '').replace(/[%_,()]/g, '').trim();
 L.products = async (o) => { o = o || {}; let s = sb.from('mg_products').select('*');
   if (o.seller) s = s.eq('seller', o.seller).neq('status', 'hidden'); else s = s.eq('status', 'active');
-  if (o.cat) s = s.eq('cat', o.cat); if (o.q) s = s.ilike('title', '%' + clean(o.q) + '%');
+  if (o.cat) s = s.eq('cat', o.cat); if (o.sub) s = s.eq('sub', o.sub); if (o.country) s = s.eq('country', o.country); if (o.city) s = s.eq('city', o.city);
+  if (o.q) { const q = clean(o.q); s = s.or(`title.ilike.%${q}%,descr.ilike.%${q}%`); }
   const rows = ok(await s.order('created_at', { ascending: false }).limit(o.n || 40)); await L.prof(rows.map(r => r.seller)); return rows; };
 L.product = async (id) => { const p = ok(await sb.from('mg_products').select('*').eq('id', id).maybeSingle()); if (p) await L.prof([p.seller]); return p; };
 L.addProduct = async (f) => ok(await sb.from('mg_products').insert(Object.assign({ seller: L.user.id }, f)).select().single());
 L.updProduct = async (id, f) => ok(await sb.from('mg_products').update(Object.assign({ updated_at: new Date().toISOString() }, f)).eq('id', id).select().single());
 L.delProduct = async (id) => ok(await sb.from('mg_products').delete().eq('id', id));
 L.shops = async (o) => { o = o || {}; let s = sb.from('profiles').select('*').eq('shop_on', true).eq('banned', false);
-  if (o.cat) s = s.eq('shop_cat', o.cat); if (o.q) s = s.ilike('shop_name', '%' + clean(o.q) + '%');
+  if (o.cat) s = s.eq('shop_cat', o.cat); if (o.sub) s = s.eq('shop_sub', o.sub); if (o.country) s = s.eq('country', o.country); if (o.city) s = s.eq('city', o.city);
+  if (o.q) { const q = clean(o.q).replace(/^@/, ''); s = s.or(`shop_name.ilike.%${q}%,mg_handle.ilike.%${q}%,shop_about.ilike.%${q}%`); }
   const rows = ok(await s.order('created_at', { ascending: false }).limit(o.n || 30)); rows.forEach(r => PC[r.id] = r); return rows; };
+L.handleFree = async (h) => { const r = await sb.rpc('handle_free', { h }); if (r.error) throw r.error; return !!r.data; };
+L.byHandle = async (h) => { const r = await sb.from('profiles').select('*').eq('mg_handle', String(h).toLowerCase().replace(/^@/, '')).maybeSingle(); if (r.data) PC[r.data.id] = r.data; return r.data; };
 L.favIds = async () => { const r = await sb.from('mg_favs').select('product_id'); return new Set((r.data || []).map(x => x.product_id)); };
 L.favs = async () => { const ids = [...await L.favIds()]; if (!ids.length) return []; const rows = ok(await sb.from('mg_products').select('*').in('id', ids)); await L.prof(rows.map(r => r.seller)); return rows; };
 L.fav = async (id, on) => on ? sb.from('mg_favs').upsert({ user_id: L.user.id, product_id: id }) : sb.from('mg_favs').delete().eq('user_id', L.user.id).eq('product_id', id);
