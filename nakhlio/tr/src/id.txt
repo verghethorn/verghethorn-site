@@ -1321,3 +1321,15 @@ c1060|Jangan menipu dan jangan meminta uang kepada orang asing.
 c1061|Pengguna hanya melihat Anda sebagai “Administrasi Nakhlio” — tanpa nama atau foto.
 c1062|Ingin memasang
 c1063|Foto dengan kamera halaman yang berisi foto dan nama Anda, tanpa silau
+c1064|Iklan hanya bisa dipasang oleh orang yang berada di Madinah. Untuk memasang iklan atau menawarkan jasa, konfirmasi identitas Anda: foto profil yang menampilkan wajah dan foto paspor atau iqama. Kami periksa dalam 48 jam. Membaca, mencari, dan berkirim pesan bisa tanpa verifikasi.
+c1065|Bagikan situs
+c1066|Kirim Nakhlio ke teman lewat aplikasi apa saja
+c1067|Nakhlio — segala kebutuhan hidup di Madinah: hunian, transportasi, jasa, dan obrolan dalam bahasamu sendiri.
+c1068|Tautan disalin
+c1069|Khusus Madinah
+c1070|Memeriksa lokasi Anda…
+c1071|Maaf, memasang iklan dan verifikasi hanya untuk orang yang sedang berada di Madinah. Situs bisa dipakai untuk membaca dan mengobrol dari negara mana pun.
+c1072|Alamat internet Anda menunjukkan:
+c1073|Alamat internet Anda menunjukkan “{c}”. Operator seluler sering menampilkan kota lain. Jika Anda di Madinah, konfirmasikan dengan lokasi ponsel.
+c1074|Konfirmasi dengan lokasi
+c1075|Izinkan akses lokasi di pengaturan ponsel lalu coba lagi.

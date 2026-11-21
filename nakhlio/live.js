@@ -109,6 +109,7 @@ L.mgMessages = async (chatId) => { const rows = ok(await sb.from('mg_messages').
 L.mgSend = async (chatId, body, lang, media_url, reply_to, media_kind, media_meta, product_id) => ok(await sb.from('mg_messages').insert({ chat_id: chatId, sender: L.user.id, body: body || '', lang: lang || '', media_url: media_url || null, reply_to: reply_to || null, media_kind: media_kind || (media_url ? 'image' : null), media_meta: media_meta || null, product_id: product_id || null }).select().single());
 L.explore = async (n) => { const rows = ok(await sb.from('mg_posts').select(POSTSEL).in('type', ['post', 'reel']).eq('hidden', false).order('created_at', { ascending: false }).range(0, (n || 30) - 1)).map(norm); await L.prof(rows.map(r => r.author)); return rows; };
 /* verification ("blue check") requests */
+L.geoCheck = async (pos) => { const r = await sb.functions.invoke('geo-check', { body: pos || {} }); if (r.error) throw r.error; return r.data; };
 L.verifyMine = async () => { const r = await sb.from('verify_requests').select('*').eq('user_id', L.user.id).order('created_at', { ascending: false }).limit(1); return (r.data || [])[0] || null; };
 L.verifySubmit = async (blob, app, purpose) => { const path = `${L.user.id}/doc-${Date.now()}.jpg`; ok(await sb.storage.from('verify').upload(path, blob, { contentType: 'image/jpeg', upsert: false }));
   return ok(await sb.from('verify_requests').insert({ user_id: L.user.id, doc_path: path, app: app || 'nakhlio', purpose: purpose || null }).select().single()); };

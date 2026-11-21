@@ -1321,3 +1321,15 @@ c1060|Ne trompez personne et ne demandez pas d’argent à des inconnus.
 c1061|Les utilisateurs ne vous voient que comme « Administration Nakhlio » — sans nom ni photo.
 c1062|Veut publier
 c1063|Photographiez avec l’appareil la page avec votre photo et votre nom, sans reflet
+c1064|Seules les personnes à Médine peuvent publier des annonces. Pour publier ou proposer des services, confirmez votre identité : une photo de profil où l’on voit votre visage et une photo de votre passeport ou iqama. Nous vérifions sous 48 heures. Lire, chercher et écrire restent possibles sans cela.
+c1065|Partager le site
+c1066|Envoyez Nakhlio à vos amis via n’importe quelle appli
+c1067|Nakhlio — tout pour vivre à Médine : logements, transport, services et discussions dans votre langue.
+c1068|Lien copié
+c1069|Médine uniquement
+c1070|Vérification de votre emplacement…
+c1071|Désolé, seules les personnes actuellement à Médine peuvent publier des annonces et être vérifiées. Vous pouvez utiliser le site, lire et discuter depuis n’importe quel pays.
+c1072|Votre adresse internet indique :
+c1073|Votre adresse internet indique « {c} ». Les opérateurs mobiles affichent souvent une autre ville. Si vous êtes à Médine, confirmez-le avec la localisation de votre téléphone.
+c1074|Confirmer avec la localisation
+c1075|Autorisez la localisation dans les réglages du téléphone et réessayez.

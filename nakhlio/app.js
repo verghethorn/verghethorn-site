@@ -324,7 +324,7 @@ const LX = {
   v_owner: X3('Проверенный автор', 'Verified author', 'معلن موثّق'),
   none_yet: X3('Пока нет объявлений', 'No listings yet', 'لا إعلانات بعد'), none_yet_d: X3('Разместите первое — это бесплатно.', 'Post the first one — it’s free.', 'انشر أول إعلان — مجاناً.'),
   need_vf_t: X3('Нужна верификация', 'Verification needed', 'التحقق مطلوب'),
-  need_vf_d: X3('Чтобы размещать объявления и предлагать услуги, подтвердите личность: фото профиля, где видно ваше лицо, и фото паспорта или икамы. Мы проверим в течение 48 часов. Читать, искать и писать можно и без проверки.', 'To post listings or offer services, confirm your identity: a profile photo showing your face and a photo of your passport or iqama. We check within 48 hours. Reading, searching and messaging work without it.', 'لنشر الإعلانات أو تقديم الخدمات، أكّد هويتك: صورة شخصية يظهر فيها وجهك وصورة الجواز أو الإقامة. نتحقق خلال 48 ساعة. التصفح والبحث والمراسلة متاحة دون تحقق.'),
+  need_vf_d: X3('Размещать объявления могут только жители Медины. Чтобы размещать объявления и предлагать услуги, подтвердите личность: фото профиля, где видно ваше лицо, и фото паспорта или икамы. Мы проверим в течение 48 часов. Читать, искать и писать можно и без проверки.', 'Only people in Medina can post listings. To post listings or offer services, confirm your identity: a profile photo showing your face and a photo of your passport or iqama. We check within 48 hours. Reading, searching and messaging work without it.', 'نشر الإعلانات متاح لسكان المدينة المنورة فقط. لنشر الإعلانات أو تقديم الخدمات، أكّد هويتك: صورة شخصية يظهر فيها وجهك وصورة الجواز أو الإقامة. نتحقق خلال 48 ساعة. التصفح والبحث والمراسلة متاحة دون تحقق.'),
   need_vf_go: X3('Пройти верификацию', 'Get verified', 'ابدأ التحقق'),
   vf_wait: X3('Ваша заявка на проверке — обычно до 48 часов. Как только подтвердим, вы сможете размещать объявления.', 'Your request is being reviewed — usually within 48 hours. Once confirmed, you can post listings.', 'طلبك قيد المراجعة — عادة خلال 48 ساعة. بعد التأكيد يمكنك نشر الإعلانات.'),
   term_l: X3('Срок', 'Term', 'المدة'), daily: X3('Посуточно', 'Daily', 'يومي'), monthly: X3('Помесячно', 'Monthly', 'شهري'), yearly: X3('Контракт на год', 'Yearly contract', 'عقد سنوي'),
@@ -350,6 +350,13 @@ const LX = {
   publish: X3('Опубликовать', 'Publish', 'نشر'), published: X3('Объявление опубликовано', 'Listing published', 'تم نشر الإعلان'),
   my_l: X3('Моё объявление', 'My listing', 'إعلاني'), del_q: X3('Удалить объявление?', 'Delete this listing?', 'حذف الإعلان؟'),
   rules_note: X3('Только честные объявления от себя. Без посредников с чужими фото. Нарушения удаляем, автора блокируем.', 'Only honest listings of your own. No middlemen using other people’s photos. Violations are removed and the author blocked.', 'إعلانات صادقة تخصك فقط. لا وسطاء بصور غيرهم. نحذف المخالفات ونحظر المعلن.'),
+  share_site: X3('Поделиться сайтом', 'Share the site', 'شارك الموقع'), share_site_d: X3('Отправьте Nakhlio друзьям в любое приложение', 'Send Nakhlio to friends through any app', 'أرسل نخليو لأصدقائك عبر أي تطبيق'),
+  share_site_text: X3('Nakhlio — всё для жизни в Медине: жильё, транспорт, услуги, общение на своём языке.', 'Nakhlio — everything for life in Medina: homes, transport, services and chat in your own language.', 'نخليو — كل ما تحتاجه للحياة في المدينة: سكن ومواصلات وخدمات وتواصل بلغتك.'), copied: X3('Ссылка скопирована', 'Link copied', 'تم نسخ الرابط'),
+  geo_t: X3('Только для Медины', 'Medina only', 'للمدينة فقط'), geo_checking: X3('Проверяем, где вы находитесь…', 'Checking where you are…', 'نتحقق من موقعك…'),
+  geo_no: X3('Извините, размещать объявления и проходить верификацию могут только те, кто сейчас находится в Медине. Пользоваться сайтом, читать и общаться можно из любой страны.', 'Sorry, only people who are in Medina right now can post listings and get verified. You can use the site, read and chat from any country.', 'عذراً، نشر الإعلانات والتحقق متاحان فقط لمن هم في المدينة المنورة الآن. يمكنك استخدام الموقع والقراءة والتواصل من أي بلد.'),
+  geo_seen: X3('Ваш интернет-адрес определяется как:', 'Your internet address shows:', 'عنوانك على الإنترنت يظهر:'),
+  geo_gps_q: X3('Ваш интернет-адрес определяется как «{c}». Мобильные операторы часто показывают другой город. Если вы в Медине, подтвердите это геолокацией телефона.', 'Your internet address shows “{c}”. Mobile operators often show another city. If you are in Medina, confirm it with your phone’s location.', 'عنوانك على الإنترنت يظهر «{c}». غالباً ما تُظهر شركات الاتصال مدينة أخرى. إن كنت في المدينة المنورة فأكّد ذلك بموقع هاتفك.'),
+  geo_gps_btn: X3('Подтвердить геолокацией', 'Confirm with location', 'التأكيد بالموقع'), geo_gps_denied: X3('Разрешите доступ к геолокации в настройках телефона и попробуйте снова.', 'Allow location access in your phone settings and try again.', 'اسمح بالوصول إلى الموقع في إعدادات الهاتف وحاول مجدداً.'),
   wants: X3('Хочет разместить', 'Wants to post', 'يريد أن ينشر'),
   fresh: X3('Новые объявления', 'New listings', 'أحدث الإعلانات'),
   count_n: X3('объявл.', 'listings', 'إعلانات'), loading: X3('Загружаем…', 'Loading…', 'جارٍ التحميل…'),
@@ -956,11 +963,12 @@ function notifSheet() {
     else { await pushDisable(); S.notifOn = false; save(); toast(t('saved_ok')); } });
   p2.addEventListener('change', () => { S.sound = p2.checked; save(); unlockAudio(); if (S.sound) { lastChime = 0; chime(); } if (LV && LV.user) LV.updateProfile({ notify_sound: S.sound }).catch(() => {}); });
 }
-async function verifySheet(mg, purpose) {
+async function verifySheet(mg, purpose, geoOk) {
   if (!LV || !LV.user) return;
   const pr = LV.profile || {}; if (pr.verified) { toast(FXL('vf_done')); return; }
   const last = await LV.verifyMine().catch(() => null);
   if (last && last.status === 'pending') { sheet(`<h3>${small('check')} ${FXL('vf_t')}</h3><p style="line-height:1.55">${FXL('vf_pending')}</p><button class="btn green full" data-close>${t('understood')}</button>`); return; }
+  if (!geoOk && !pr.is_admin && !pr.is_owner) return geoGate(() => verifySheet(mg, purpose, true));
   const photo = mg ? (pr.mg_avatar || pr.photo_url) : pr.photo_url; let doc = null;
   const w = sheet(`<h3>${small('check')} ${FXL('vf_t')}</h3><p class="note" style="margin:0 0 12px;line-height:1.5">${FXL('vf_d')}</p>
     ${last && last.status === 'rejected' ? `<div class="banner" style="font-size:13px;margin-bottom:10px">${ic('info')}<div>${FXL('vf_rejected')}${last.note ? ': ' + esc(last.note) : ''}</div></div>` : ''}
@@ -975,7 +983,25 @@ async function verifySheet(mg, purpose) {
     if (!photo) return show('vf_need_photo'); if (!doc) return show('vf_need_doc');
     const b = ev.currentTarget; b.disabled = true; b.textContent = '…';
     try { const blob = await (await fetch(doc)).blob(); await LV.verifySubmit(blob, mg ? 'magaam' : 'nakhlio', purpose || null); w.remove(); sheet(`<h3>${small('check')} ${FXL('vf_t')}</h3><p style="line-height:1.55">${FXL('vf_sent')}</p><button class="btn green full" data-close>${t('understood')}</button>`); }
-    catch (e) { console.warn(e); b.disabled = false; b.textContent = FXL('vf_send'); show('send_fail'); } };
+    catch (e) { console.warn(e); b.disabled = false; b.textContent = FXL('vf_send'); if (/not_medina/.test(String(e && (e.message || e)))) { w.remove(); geoSorry(); return; } show('send_fail'); } };
+}
+/* posting needs the person to be in Medina: the server checks the IP address, and the phone's location when a Saudi IP points elsewhere */
+function geoSorry(extra) { sheet(`<h3>${small('pin')} ${XL('geo_t')}</h3><p style="line-height:1.55">${XL('geo_no')}${extra ? `<br><small class="note">${esc(extra)}</small>` : ''}</p><button class="btn green full" data-close>${t('understood')}</button>`); }
+async function geoGate(then) {
+  const w = sheet(`<div id="geob"><h3>${small('pin')} ${XL('geo_t')}</h3><p class="note">${XL('geo_checking')}</p></div>`); const box = w.querySelector('#geob');
+  let r = null; try { r = await LV.geoCheck(); } catch (e) { console.warn(e); }
+  if (!document.body.contains(w)) return;
+  if (r && r.ok) { w.remove(); return then(); }
+  if (!r) { box.innerHTML = `<h3>${small('pin')} ${XL('geo_t')}</h3><p style="line-height:1.55">${FXL('send_fail')}</p><button class="btn green full" data-close>${t('understood')}</button>`; return; }
+  const where = [r.city, r.region].filter(Boolean).join(', ');
+  if (r.canGps && navigator.geolocation) {
+    box.innerHTML = `<h3>${small('pin')} ${XL('geo_t')}</h3><p style="line-height:1.55">${XL('geo_gps_q').replace('{c}', esc(where || 'Saudi Arabia'))}</p><p class="ferr" id="geoerr" hidden></p><button class="btn green full" id="geogps">${small('pin')}${XL('geo_gps_btn')}</button><button class="btn soft full" style="margin-top:8px" data-close>${t('later')}</button>`;
+    box.querySelector('#geogps').onclick = (ev) => { const b = ev.currentTarget; b.disabled = true; b.textContent = '…';
+      navigator.geolocation.getCurrentPosition(async (pos) => { let r2 = null; try { r2 = await LV.geoCheck({ lat: pos.coords.latitude, lng: pos.coords.longitude }); } catch (e) {}
+        if (r2 && r2.ok) { w.remove(); then(); } else { w.remove(); geoSorry(); } },
+        () => { b.disabled = false; b.textContent = XL('geo_gps_btn'); const er = box.querySelector('#geoerr'); er.hidden = false; er.textContent = XL('geo_gps_denied'); }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }); };
+    return; }
+  w.remove(); geoSorry(where ? XL('geo_seen') + ' ' + where : '');
 }
 function openDeep(url) {
   let u; try { u = new URL(url, location.href); } catch (e) { return; }
@@ -1324,6 +1350,7 @@ V.profile = () => isAdmin() && LV ? adminProfile() : ({ tabs: true, html: topbar
   <div class="plist" style="margin-top:18px">
     <button data-act="go" data-v="lang"><i class="b-palm c-palm">${ic('globe')}</i><span class="grow">${t('language')}<small>${esc((LANGS.find(l => l.code === lang) || {}).name)}</small></span>${ic('chev', 'flip chev')}</button>
     ${LV && S.me ? `<button data-act="notifset"><i class="b-sky c-sky">${ic('siren')}</i><span class="grow">${FXL('notif_t')}</span>${ic('chev', 'flip chev')}</button>` : ''}
+    <button data-act="sharesite"><i class="b-palm c-palm">${ic('share')}</i><span class="grow">${XL('share_site')}<small>${XL('share_site_d')}</small></span>${ic('chev', 'flip chev')}</button>
     <button data-act="go" data-v="saved"><i class="b-rose c-rose">${ic('heart')}</i><span class="grow">${t('saved_title')}<small class="num">${nf(S.saved.length)}</small></span>${ic('chev', 'flip chev')}</button>
     <button data-act="rules"><i class="b-date c-date">${ic('info')}</i><span class="grow">${t('rules')}</span>${ic('chev', 'flip chev')}</button>
     <button data-act="go" data-v="about"><i class="b-sky c-sky">${ic('home')}</i><span class="grow">${t('about')}</span>${ic('chev', 'flip chev')}</button>
@@ -1460,6 +1487,8 @@ root.addEventListener('click', (e) => {
     case 'tab': tab(v); break;
     case 'term': cur().term = v; render(); break;
     case 'svcc': cur().c = v; render(); break;
+    case 'sharesite': { const url = 'https://verghethorn.com/nakhlio/', text = XL('share_site_text'); const copy = () => (navigator.clipboard ? navigator.clipboard.writeText(text + ' ' + url) : Promise.reject()).then(() => toast(XL('copied'))).catch(() => {});
+      if (navigator.share) navigator.share({ title: 'Nakhlio', text, url }).catch(e => { if (e && e.name === 'NotAllowedError') copy(); }); else copy(); break; }
     case 'lstnew': needVerified(() => lstSheet(v), v); break;
     case 'lstdel': { if (!confirm(XL('del_q'))) break; LV.delItem(v).then(() => { toast(FXL('act_delete') + ' ✓'); dropData('c:items'); back(); }).catch(() => toast(FXL('send_fail'))); break; }
     case 'kind': cur().kind = v; render(); break;

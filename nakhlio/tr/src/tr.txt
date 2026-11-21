@@ -1321,3 +1321,15 @@ c1060|Kimseyi kandırmayın ve yabancılardan para istemeyin.
 c1061|Kullanıcılar sizi yalnızca “Nakhlio Yönetimi” olarak görür — ad ve fotoğraf olmadan.
 c1062|İlan vermek istiyor
 c1063|Fotoğrafınızın ve adınızın olduğu sayfayı kamerayla, parlama olmadan çekin
+c1064|İlanları yalnızca Medine’dekiler verebilir. İlan vermek veya hizmet sunmak için kimliğinizi doğrulayın: yüzünüzün göründüğü bir profil fotoğrafı ve pasaport ya da ikamet fotoğrafı. 48 saat içinde kontrol ederiz. Okumak, aramak ve mesajlaşmak için gerekmez.
+c1065|Siteyi paylaş
+c1066|Nakhlio’yu herhangi bir uygulamayla arkadaşlarınıza gönderin
+c1067|Nakhlio — Medine’de yaşam için her şey: konut, ulaşım, hizmetler ve kendi dilinde sohbet.
+c1068|Bağlantı kopyalandı
+c1069|Yalnızca Medine
+c1070|Nerede olduğunuz kontrol ediliyor…
+c1071|Üzgünüz, ilan vermek ve doğrulanmak yalnızca şu anda Medine’de bulunanlar içindir. Siteyi kullanmak, okumak ve sohbet etmek her ülkeden mümkündür.
+c1072|İnternet adresiniz şunu gösteriyor:
+c1073|İnternet adresiniz “{c}” gösteriyor. Mobil operatörler çoğu zaman başka bir şehir gösterir. Medine’deyseniz telefonunuzun konumuyla doğrulayın.
+c1074|Konumla doğrula
+c1075|Telefon ayarlarından konum erişimine izin verip tekrar deneyin.
