@@ -1217,3 +1217,92 @@ c956|Bu Magaam kimliği kalıcı olarak sizin.
 c957|Kimliği ve bağlantıyı kopyala
 c958|belirlenmedi
 c959|Belirle
+
+c961|Ev ilanı ver
+c962|Araç ilanı ver
+c963|Hizmet sun
+c964|Yeni ilan: konut
+c965|Yeni ilan: araç
+c966|Yeni ilan: hizmet
+c967|İlanları sakinler kendileri verir. Her ilan sahibi kimlik doğrulamasından geçmiştir ✓
+c968|Doğrulanmış sakinlerden: tercümanlar, refakat, ev yapımı unlu mamuller ve çok daha fazlası.
+c969|Sakinlerden: tercüman, refakat, unlu mamul
+c970|Doğrulanmış ilan sahibi
+c971|İlk ilanı siz verin — ücretsiz.
+c972|Doğrulama gerekli
+c973|İlan vermek veya hizmet sunmak için kimliğinizi doğrulayın: yüzünüzün göründüğü bir profil fotoğrafı ve pasaport ya da ikamet fotoğrafı. 48 saat içinde kontrol ederiz. Okumak, aramak ve mesajlaşmak için gerekmez.
+c974|Talebiniz inceleniyor — genellikle 48 saat içinde. Onaylandığında ilan verebilirsiniz.
+c975|Süre
+c976|Yıllık sözleşme
+c977|Konut türü
+c978|Daire
+c979|Stüdyo
+c980|Oda
+c981|Ortak odada yatak
+c982|Villa veya ev
+c983|Kimin için
+c984|Harem’e yürüme, dk
+c985|Araç türü
+c986|Otomobil
+c987|Scooter
+c988|Elektrikli scooter
+c989|Bisiklet
+c990|Marka ve model
+c991|Örneğin: Toyota Camry
+c992|Manuel
+c993|Hizmet türü
+c994|Konuştuğunuz diller
+c995|Örneğin: Harem’e yakın 2+1 daire
+c996|Örneğin: Toyota Camry 2022, otomatik
+c997|Örneğin: Hastane ziyaretleri için Arapça tercüman
+c998|Nerede (semt, yakın yer), kat, Harem’e uzaklık, içinde neler var, kime uygun, giriş ve ev kuralları.
+c999|Durum, kilometre, neler dahil (sigorta, teslimat), gerekli belgeler, depozito, teslim alma yeri.
+c1000|Tam olarak ne yaptığınız, deneyiminiz, saatler, nerede (eve gelerek, sizde, çevrim içi), müşteriden ne gerektiği.
+c1001|Birim
+c1002|gecelik
+c1003|günlük
+c1004|aylık
+c1005|yıllık
+c1006|saatlik
+c1007|hizmet başı
+c1008|kg başı
+c1009|Pazarlıklı
+c1010|En fazla 8 fotoğraf. İlki kapak olur.
+c1011|Bir başlık yazın.
+c1012|Daha ayrıntılı anlatın — en az birkaç cümle.
+c1013|Fiyat girin veya “Pazarlıklı”yı seçin.
+c1014|İlan yayınlandı
+c1015|İlanım
+c1016|Bu ilan silinsin mi?
+c1017|Yalnızca size ait dürüst ilanlar. Başkasının fotoğraflarını kullanan aracılar olmaz. İhlaller kaldırılır, ilan sahibi engellenir.
+c1018|Yeni ilanlar
+c1019|Yükleniyor…
+c1020|Refakat ve yardım
+c1021|Tercüman
+c1022|Rehber ve ziyaret
+c1023|Şoför ve transfer
+c1024|Unlu mamul ve ev yemeği
+c1025|Güzellik
+c1026|Tamir ve ustalar
+c1027|Bakıcı ve çocuklar
+c1028|Özel ders ve Kuran
+c1029|Evrak işlerinde yardım
+c1030|Fotoğraf ve video
+c1031|Teslimat ve alışveriş
+c1032|Adınızın yanındaki ✓ yöneticilerin kimliğinizi doğruladığını gösterir. İlan vermek ve hizmet sunmak için gereklidir. İki adım — kontrol 48 saate kadar sürer:
+c1033|Yüzünüzün net göründüğü gerçek fotoğrafınızı ekleyin
+c1034|Fotoğraf eklendi. Yüzünüz net görünmeli
+c1035|Talep gönderildi. 48 saat içinde inceleyip Nakhlio ekibi sohbetinden size yazacağız.
+c1036|Talebiniz inceleniyor — genellikle 48 saat içinde. Kontrol edilir edilmez size yazacağız.
+c1037|Henüz ilan yok
+c1038|Günlük
+c1039|Herkes
+c1040|Eşyalı
+c1041|Fotoğraflar
+c1042|ilan
+c1043|Davet kodu
+c1044|Magaam yalnızca davetle. Kod size gönderilen bağlantıda (“?i=” sonrasında). Bağlantının tamamını yapıştırabilirsiniz.
+c1045|Davet kodunu girin.
+c1046|Bu kod yok. Arkadaşınızın bağlantısını kontrol edin.
+c1047|Davet kodunuz:
+c1048|Bağlantı kopyalandı — WeChat sohbetine yapıştırın.

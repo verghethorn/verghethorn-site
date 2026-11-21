@@ -264,7 +264,7 @@ V.home = () => {
   const np = nextPrayer();
   const [cc, rate] = CUR[lang] || CUR.en;
   const per = rate / 3.75;
-  const featured = HOUSING.filter(h => h.featured).concat(TRANSPORT.filter(x => x.featured).slice(0, 2));
+  const featured = LV ? lstAll().sort((a, b) => new Date(b.at) - new Date(a.at)).slice(0, 8) : HOUSING.filter(h => h.featured).concat(TRANSPORT.filter(x => x.featured).slice(0, 2));
   const prow = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].map(k => `<div class="${k === np.nx ? 'on' : ''}">${t(k)}<b class="num">${hm(np.pt[k])}</b></div>`).join('');
   const nextDay = DAYS.map(d => ({ d, left: Math.ceil((new Date(d.date + 'T00:00:00+03:00') - Date.now()) / 864e5) })).filter(x => x.left >= 0)[0];
   return { tabs: true, raw: true, html: `
@@ -283,11 +283,11 @@ V.home = () => {
     <div class="bigcats">
       <button class="bigcat" data-act="go" data-v="housing"><img src="${img('liv1')}" alt=""><span><b>${t('s_housing')}</b><small>${t('s_housing_d')}</small></span></button>
       <button class="bigcat" data-act="go" data-v="transport"><img src="${img('car2')}" alt=""><span><b>${t('s_transport')}</b><small>${t('s_transport_d')}</small></span></button>
-      <button class="bigcat svc" data-act="go" data-v="services"><span class="svc-icons">${['bank', 'box', 'palette', 'car', 'user'].map(i => `<i>${ic(i)}</i>`).join('')}</span><span><b>${t('s_services')}</b><small>${t('s_services_d')}</small></span></button>
+      <button class="bigcat svc" data-act="go" data-v="services"><span class="svc-icons">${['bank', 'box', 'palette', 'car', 'user'].map(i => `<i>${ic(i)}</i>`).join('')}</span><span><b>${LV ? XL('svc_title') : t('s_services')}</b><small>${LV ? XL('svc_home_d') : t('s_services_d')}</small></span></button>
     </div>
     <div class="cats" style="margin-top:18px">${SECTIONS.filter(s => !['housing', 'transport', 'services'].includes(s.k)).map(s => `<button class="cat" data-act="go" data-v="${s.k}"><i class="b-${s.c} c-${s.c}">${s.k === 'mg' && window.mgLogo ? mgLogo('sec') : ic(s.ic)}</i>${t('s_' + s.k)}</button>`).join('')}</div>
-    <div class="sec"><h3>${t('featured')}</h3><button data-act="go" data-v="housing">${t('see_all')}</button></div>
-    <div class="hscroll">${featured.map(x => x.kind ? trCard(x) : houseCard(x)).join('')}</div>
+    <div class="sec"><h3>${LV ? XL('fresh') : t('featured')}</h3><button data-act="go" data-v="housing">${t('see_all')}</button></div>
+    ${featured.length ? `<div class="hscroll">${featured.map(x => x.section ? lstCard(x) : x.kind ? trCard(x) : houseCard(x)).join('')}</div>` : `<button class="card" data-act="lstnew" data-v="housing" style="display:flex;gap:12px;align-items:center;width:100%;text-align:start">${ic('plus')}<span><b>${XL('none_yet')}</b><small style="display:block;color:var(--ink-2)">${XL('none_yet_d')}</small></span></button>`}
     ${nextDay ? `<button class="card" data-act="go" data-v="days" style="display:flex;gap:14px;align-items:center;width:100%;text-align:start;margin-top:18px"><span class="prayer-ico" style="background:var(--palm-tint);color:var(--palm)">${ic('calendar')}</span><span style="flex:1;min-width:0"><small style="color:var(--ink-2);font-weight:600;font-size:12px">${t('s_days')}</small><b style="display:block">${esc(L(nextDay.d.name))}</b></span><b class="num" style="color:var(--palm);text-align:end">${nf(nextDay.left)}<small style="display:block;font-size:11px;color:var(--ink-2);font-weight:600">${t('days_left')}</small></b></button>` : ''}
     <div class="mini" style="margin-top:12px">
       <div class="card"><h5>${ic('coin')}${t('rate')}</h5><div class="rate-big num">1 ${t('sar')}</div><div class="num" style="font-weight:700;color:var(--palm)">≈ ${nf(per, per < 1 ? 3 : per < 10 ? 2 : 0)} ${cc}</div><div class="rate-small">${t('rate_note')}</div></div>
@@ -313,7 +313,191 @@ function docSheet(k) {
 }
 const cdTxt = (left) => { const h = Math.floor(left / 60), m = Math.floor(left % 60); return (h ? nf(h) + ':' : '') + (h ? String(m).padStart(2, '0').replace(/\d/g, x => nf(+x)) : nf(m) + ' ' + t('min')); };
 
+/* ---------- listings by residents: housing, transport, services (live) ---------- */
+const X3 = (ru, en, ar) => ({ ru, en, ar });
+const LX = {
+  post_h: X3('Сдать жильё', 'List a home', 'اعرض سكناً'), post_t: X3('Сдать транспорт', 'List a vehicle', 'اعرض مركبة'), post_s: X3('Предложить услугу', 'Offer a service', 'اعرض خدمة'),
+  new_h: X3('Новое объявление: жильё', 'New listing: home', 'إعلان جديد: سكن'), new_t: X3('Новое объявление: транспорт', 'New listing: vehicle', 'إعلان جديد: مركبة'), new_s: X3('Новое объявление: услуга', 'New listing: service', 'إعلان جديد: خدمة'),
+  res_banner: X3('Объявления размещают сами жители. Каждый автор прошёл проверку личности ✓', 'Listings are posted by residents themselves. Every author has passed an identity check ✓', 'ينشر الإعلانات السكان أنفسهم. كل معلن اجتاز التحقق من الهوية ✓'),
+  svc_title: X3('Услуги', 'Services', 'الخدمات'), svc_sub: X3('Предлагают проверенные жители: переводчики, сопровождение, выпечка и многое другое.', 'Offered by verified residents: translators, escorts, home baking and much more.', 'يقدّمها سكان موثّقون: مترجمون ومرافقة ومخبوزات منزلية وغير ذلك.'),
+  svc_home_d: X3('От жителей: переводчики, сопровождение, выпечка', 'From residents: translators, escorts, baking', 'من السكان: ترجمة ومرافقة ومخبوزات'),
+  v_owner: X3('Проверенный автор', 'Verified author', 'معلن موثّق'),
+  none_yet: X3('Пока нет объявлений', 'No listings yet', 'لا إعلانات بعد'), none_yet_d: X3('Разместите первое — это бесплатно.', 'Post the first one — it’s free.', 'انشر أول إعلان — مجاناً.'),
+  need_vf_t: X3('Нужна верификация', 'Verification needed', 'التحقق مطلوب'),
+  need_vf_d: X3('Чтобы размещать объявления и предлагать услуги, подтвердите личность: фото профиля, где видно ваше лицо, и фото паспорта или икамы. Мы проверим в течение 48 часов. Читать, искать и писать можно и без проверки.', 'To post listings or offer services, confirm your identity: a profile photo showing your face and a photo of your passport or iqama. We check within 48 hours. Reading, searching and messaging work without it.', 'لنشر الإعلانات أو تقديم الخدمات، أكّد هويتك: صورة شخصية يظهر فيها وجهك وصورة الجواز أو الإقامة. نتحقق خلال 48 ساعة. التصفح والبحث والمراسلة متاحة دون تحقق.'),
+  need_vf_go: X3('Пройти верификацию', 'Get verified', 'ابدأ التحقق'),
+  vf_wait: X3('Ваша заявка на проверке — обычно до 48 часов. Как только подтвердим, вы сможете размещать объявления.', 'Your request is being reviewed — usually within 48 hours. Once confirmed, you can post listings.', 'طلبك قيد المراجعة — عادة خلال 48 ساعة. بعد التأكيد يمكنك نشر الإعلانات.'),
+  term_l: X3('Срок', 'Term', 'المدة'), daily: X3('Посуточно', 'Daily', 'يومي'), monthly: X3('Помесячно', 'Monthly', 'شهري'), yearly: X3('Контракт на год', 'Yearly contract', 'عقد سنوي'),
+  htype: X3('Тип жилья', 'Type of home', 'نوع السكن'), h_apt: X3('Квартира', 'Apartment', 'شقة'), h_studio: X3('Студия', 'Studio', 'استوديو'), h_room: X3('Комната', 'Room', 'غرفة'), h_bed: X3('Место в комнате', 'Bed in a shared room', 'سرير في غرفة مشتركة'), h_villa: X3('Вилла или дом', 'Villa or house', 'فيلا أو بيت'),
+  aud_l: X3('Для кого', 'For whom', 'لمن'), any: X3('Для всех', 'Anyone', 'للجميع'), walk_l: X3('Пешком до Харама, мин', 'Walk to the Haram, min', 'مشياً إلى الحرم، دقيقة'),
+  furn_yes: X3('С мебелью', 'Furnished', 'مفروشة'),
+  vkind: X3('Вид транспорта', 'Vehicle type', 'نوع المركبة'), v_car: X3('Автомобиль', 'Car', 'سيارة'), v_sco: X3('Скутер', 'Scooter', 'دباب'), v_esc: X3('Электросамокат', 'E-scooter', 'سكوتر كهربائي'), v_bike: X3('Велосипед', 'Bicycle', 'دراجة هوائية'),
+  model_l: X3('Марка и модель', 'Make and model', 'الشركة والطراز'), model_ph: X3('Например: Toyota Camry', 'For example: Toyota Camry', 'مثلاً: تويوتا كامري'), manual: X3('Механика', 'Manual', 'عادي'),
+  scat: X3('Вид услуги', 'Type of service', 'نوع الخدمة'), langs_l: X3('Языки, на которых вы говорите', 'Languages you speak', 'اللغات التي تتحدثها'),
+  title_l: X3('Заголовок', 'Title', 'العنوان'),
+  title_ph_h: X3('Например: 2-комнатная квартира у Харама', 'For example: 2-bedroom flat near the Haram', 'مثلاً: شقة غرفتين قرب الحرم'),
+  title_ph_t: X3('Например: Toyota Camry 2022, автомат', 'For example: Toyota Camry 2022, automatic', 'مثلاً: تويوتا كامري 2022 أوتوماتيك'),
+  title_ph_s: X3('Например: Переводчик с арабского в больнице', 'For example: Arabic interpreter for hospital visits', 'مثلاً: مترجم عربي لمراجعات المستشفى'),
+  desc_l: X3('Описание', 'Description', 'الوصف'),
+  desc_ph_h: X3('Где находится (район, ориентир), этаж, сколько до Харама, что есть в квартире, для кого, как заселиться, правила.', 'Where it is (district, landmark), floor, distance to the Haram, what’s inside, who it suits, check-in and house rules.', 'الموقع (الحي، معلم قريب)، الدور، المسافة إلى الحرم، ما يتوفر في الشقة، لمن تناسب، طريقة الدخول والقواعد.'),
+  desc_ph_t: X3('Состояние, пробег, что входит (страховка, доставка), документы для аренды, залог, где забрать.', 'Condition, mileage, what’s included (insurance, delivery), documents needed, deposit, pick-up place.', 'الحالة، الممشى، ما يشمله الإيجار (تأمين، توصيل)، المستندات المطلوبة، التأمين المالي، مكان الاستلام.'),
+  desc_ph_s: X3('Что именно вы делаете, опыт, в какие часы, где (выезд, на дому, онлайн), что нужно от клиента.', 'What exactly you do, your experience, hours, where (home visits, at your place, online), what you need from the client.', 'ما الذي تقدّمه بالضبط، خبرتك، الأوقات، المكان (زيارة، عندك، عن بعد)، ما تحتاجه من العميل.'),
+  price_l: X3('Цена', 'Price', 'السعر'), unit_l: X3('За что', 'Per', 'لكل'),
+  u_night: X3('за ночь', 'per night', 'لليلة'), u_day: X3('за день', 'per day', 'لليوم'), u_month: X3('в месяц', 'per month', 'شهرياً'), u_year: X3('в год', 'per year', 'سنوياً'), u_hour: X3('за час', 'per hour', 'للساعة'), u_job: X3('за услугу', 'per service', 'للخدمة'), u_kg: X3('за кг', 'per kg', 'للكيلو'), u_neg: X3('Договорная', 'Negotiable', 'بالاتفاق'),
+  photos_l: X3('Фото', 'Photos', 'الصور'), photos_h: X3('До 8 фото. Первое будет на обложке.', 'Up to 8 photos. The first one is the cover.', 'حتى 8 صور. الأولى تظهر كغلاف.'),
+  err_title: X3('Напишите заголовок.', 'Add a title.', 'أضف عنواناً.'), err_desc: X3('Опишите подробнее — хотя бы пару предложений.', 'Describe it in more detail — at least a couple of sentences.', 'اكتب وصفاً أوفى — جملتان على الأقل.'),
+  err_photo: X3('Добавьте хотя бы одно фото.', 'Add at least one photo.', 'أضف صورة واحدة على الأقل.'), err_price: X3('Укажите цену или выберите «Договорная».', 'Enter a price or choose “Negotiable”.', 'أدخل السعر أو اختر «بالاتفاق».'),
+  publish: X3('Опубликовать', 'Publish', 'نشر'), published: X3('Объявление опубликовано', 'Listing published', 'تم نشر الإعلان'),
+  my_l: X3('Моё объявление', 'My listing', 'إعلاني'), del_q: X3('Удалить объявление?', 'Delete this listing?', 'حذف الإعلان؟'),
+  rules_note: X3('Только честные объявления от себя. Без посредников с чужими фото. Нарушения удаляем, автора блокируем.', 'Only honest listings of your own. No middlemen using other people’s photos. Violations are removed and the author blocked.', 'إعلانات صادقة تخصك فقط. لا وسطاء بصور غيرهم. نحذف المخالفات ونحظر المعلن.'),
+  fresh: X3('Новые объявления', 'New listings', 'أحدث الإعلانات'),
+  count_n: X3('объявл.', 'listings', 'إعلانات'), loading: X3('Загружаем…', 'Loading…', 'جارٍ التحميل…'),
+};
+const XL = (k) => L(LX[k]);
+const SVCK = [['escort', 'hand', X3('Сопровождение', 'Escort & assistance', 'مرافقة ومساعدة')], ['translate', 'translate', X3('Переводчик', 'Translator', 'مترجم')], ['guide', 'pin', X3('Гид и зиярат', 'Guide & ziyarah', 'مرشد وزيارات')],
+  ['driver', 'car', X3('Водитель и трансфер', 'Driver & transfer', 'سائق وتوصيل')], ['airport', 'plane', X3('Встреча в аэропорту', 'Airport pick-up', 'استقبال من المطار')], ['food', 'cake', X3('Выпечка и домашняя еда', 'Baking & home food', 'مخبوزات وأكل بيتي')],
+  ['beauty', 'palette', X3('Красота', 'Beauty', 'تجميل')], ['repair', 'gear', X3('Ремонт и мастера', 'Repairs & handymen', 'صيانة وحرفيون')], ['cleaning', 'cleaning', X3('Уборка', 'Cleaning', 'تنظيف')],
+  ['kids', 'family', X3('Няня и дети', 'Nanny & kids', 'مربية وأطفال')], ['teach', 'grad', X3('Репетитор и Коран', 'Tutoring & Quran', 'دروس وقرآن')], ['docs', 'contract', X3('Помощь с документами', 'Help with paperwork', 'مساعدة في المعاملات')],
+  ['photo', 'camera', X3('Фото и видео', 'Photo & video', 'تصوير')], ['delivery', 'box', X3('Доставка и покупки', 'Delivery & shopping', 'توصيل ومشتريات')], ['other', 'dots', X3('Другое', 'Other', 'أخرى')]];
+const svcK = (k) => SVCK.find(x => x[0] === k) || SVCK[SVCK.length - 1];
+const VK = [['cars', 'car', 'v_car'], ['scooters', 'scooter', 'v_sco'], ['escooters', 'kick', 'v_esc'], ['bikes', 'walk', 'v_bike']];
+const HT = ['apt', 'studio', 'room', 'bed', 'villa'];
+const LST = { housing: [], transport: [], services: [] };
+const lstAll = () => LST.housing.concat(LST.transport, LST.services);
+const lstFind = (id) => lstAll().find(x => x.id === id);
+const lstFromRow = (r, seller, comments, mine) => ({ id: r.id, live: 1, section: r.section, term: r.term || '', cat: r.cat || '', photos: (r.photos || []).filter(Boolean), title: lt(r.title, r.lang), desc: r.descr ? lt(r.descr, r.lang) : '', dist: r.dist || 'central', price: r.price_num, unit: r.unit || 'neg', d: r.details || {}, seller, comments, mine, hidden: r.hidden, at: r.created_at });
+const unitTxt = (u) => u === 'neg' ? '' : XL('u_' + u);
+const lstPrice = (x) => x.unit === 'neg' || x.price == null ? XL('u_neg') : money(x.price);
+const sellerVer = (x) => { const p = LV && LV.cached(x.seller.uid); return !!(p && p.verified); };
+const lstLoading = () => LV && !(DATA['c:items'] && DATA['c:items'].v);
+function lstCard(x) {
+  const ph = x.photos[0]; const s = x.section;
+  const meta = s === 'housing' ? `<span>${ic('pin')}${esc(loc(x.dist))}</span>${x.d.walk ? `<span>${ic('walk')}${nf(x.d.walk)} ${t('min')}</span>` : ''}${x.d.rooms ? `<span>${ic('bed')}${nf(x.d.rooms)}</span>` : `<span>${ic('home')}${esc(XL('h_' + (x.d.htype || 'apt')))}</span>`}`
+    : s === 'transport' ? `${x.d.year ? `<span>${ic('calendar')}${nfy(x.d.year)}</span>` : ''}${x.d.seats ? `<span>${ic('seat')}${nf(x.d.seats)}</span>` : ''}<span>${ic('pin')}${esc(loc(x.dist))}</span>`
+    : `<span>${ic(svcK(x.cat)[1])}${esc(L(svcK(x.cat)[2]))}</span><span>${ic('pin')}${esc(loc(x.dist))}</span>`;
+  const face = ph ? `<img src="${img(ph)}" alt="" loading="lazy">` : `<span class="lph b-date c-date">${ic(s === 'services' ? svcK(x.cat)[1] : s === 'transport' ? 'car' : 'home').replace('<svg', '<svg style="width:44px;height:44px"')}</span>`;
+  return `<div class="lcard"><button data-act="go" data-v="lst" data-id="${x.id}" style="display:block;width:100%;text-align:start">
+    <div class="ph">${face}${sellerVer(x) ? `<span class="chip-on-photo">${ic('shield')}${XL('v_owner')}</span>` : ''}</div>
+    <div class="body"><div class="ttl">${esc(txt(x.title))}</div><div class="meta">${meta}</div>
+    <div class="price num">${esc(lstPrice(x))} <small>${esc(unitTxt(x.unit))}</small></div></div></button>${heart(x.id)}</div>`;
+}
+const lstList = (items, sec) => lstLoading() ? `<p class="note" style="text-align:center;padding:30px 0">${XL('loading')}</p>` : items.length ? `<div class="list">${items.map(lstCard).join('')}</div>`
+  : `<div class="empty">${emptyIllus(sec === 'services' ? 'chat' : 'home')}<b>${XL('none_yet')}</b>${XL('none_yet_d')}<div style="margin-top:14px"><button class="btn primary" data-act="lstnew" data-v="${sec}">${ic('plus')}${XL(sec === 'housing' ? 'post_h' : sec === 'transport' ? 'post_t' : 'post_s')}</button></div></div>`;
+const postBtn = (sec) => `<button class="ibtn" data-act="lstnew" data-v="${sec}" aria-label="${XL(sec === 'housing' ? 'post_h' : sec === 'transport' ? 'post_t' : 'post_s')}">${ic('plus')}</button>`;
+const resBanner = () => `<div class="banner green" style="margin-bottom:12px">${ic('shield')}<div>${XL('res_banner')}</div></div>`;
+function liveHousing(p) {
+  const term = p.term || 'daily'; const f = p.f || 'all';
+  let items = LST.housing.filter(h => h.term === term);
+  const prices = items.filter(h => h.price != null).map(h => h.price).sort((a, b) => a - b); const med = prices[Math.floor(prices.length / 2)];
+  items = items.filter(h => f === 'all' || (f === 'furnished' && h.d.furnished) || (f === 'unfurnished' && !h.d.furnished) || (f === 'families' && h.d.aud !== 'singles') || (f === 'singles' && h.d.aud !== 'families') || (f === 'near' && h.d.walk && h.d.walk <= 15) || (f === 'under' && h.price != null && h.price <= med));
+  const chips = ['all', 'near', 'furnished', 'unfurnished', 'families', 'singles', 'under'].map(c => `<button class="chip ${c === f ? 'on' : ''}" data-act="filter" data-v="${c}">${t(c === 'near' ? 'near_haram' : c)}</button>`).join('');
+  return { tabs: true, html: topbar(t('s_housing'), { right: postBtn('housing') }) + `<div class="wrap">${resBanner()}
+    <div class="seg">${['daily', 'monthly', 'yearly'].map(x => `<button class="${x === term ? 'on' : ''}" data-act="term" data-v="${x}">${XL(x)}</button>`).join('')}</div>
+    <div class="chips">${chips}</div><div class="count">${nf(items.length)} ${XL('count_n')}</div>${lstList(items, 'housing')}
+    <button class="btn soft full" style="margin-top:16px" data-act="lstnew" data-v="housing">${ic('plus')}${XL('post_h')}</button></div>` };
+}
+function liveTransport(p) {
+  const kind = p.kind || 'all', term = p.term || 'all';
+  const items = LST.transport.filter(x => (kind === 'all' || x.cat === kind) && (term === 'all' || x.term === term));
+  return { tabs: true, html: topbar(t('s_transport'), { right: postBtn('transport') }) + `<div class="wrap">${resBanner()}
+    <div class="chips" style="padding-top:2px"><button class="chip ${kind === 'all' ? 'on' : ''}" data-act="kind" data-v="all">${t('all')}</button>${VK.map(([k, i, lb]) => `<button class="chip ${k === kind ? 'on' : ''}" data-act="kind" data-v="${k}">${ic(i)}${XL(lb)}</button>`).join('')}</div>
+    <div class="seg" style="margin-top:10px">${['all', 'daily', 'monthly', 'yearly'].map(x => `<button class="${x === term ? 'on' : ''}" data-act="term" data-v="${x}">${x === 'all' ? t('all') : t(x)}</button>`).join('')}</div>
+    <div class="count">${nf(items.length)} ${XL('count_n')}</div>${lstList(items, 'transport')}
+    <button class="btn soft full" style="margin-top:16px" data-act="lstnew" data-v="transport">${ic('plus')}${XL('post_t')}</button></div>` };
+}
+function liveServices(p) {
+  const c = p.c || 'all'; const items = LST.services.filter(x => c === 'all' || x.cat === c);
+  return { tabs: true, html: topbar(XL('svc_title'), { right: postBtn('services') }) + `<div class="wrap">
+    <div class="banner green" style="margin-bottom:12px">${ic('shield')}<div>${XL('svc_sub')}</div></div>
+    <div class="chips"><button class="chip ${c === 'all' ? 'on' : ''}" data-act="svcc" data-v="all">${t('all')}</button>${SVCK.map(([k, i, n]) => `<button class="chip ${k === c ? 'on' : ''}" data-act="svcc" data-v="${k}">${ic(i)}${esc(L(n))}</button>`).join('')}</div>
+    <div class="count">${nf(items.length)} ${XL('count_n')}</div>${lstList(items, 'services')}
+    <button class="btn soft full" style="margin-top:16px" data-act="lstnew" data-v="services">${ic('plus')}${XL('post_s')}</button></div>` };
+}
+V.lst = (p) => {
+  const x = lstFind(p.id); if (!x) return lstLoading() ? { tabs: true, html: topbar('') + `<p class="note" style="text-align:center;padding:40px">${XL('loading')}</p>` } : V.home();
+  const s = x.section, d = x.d;
+  const facts = s === 'housing' ? [['home', esc(XL('h_' + (d.htype || 'apt'))), XL('htype')], ['bed', d.rooms ? nf(d.rooms) : '—', t('rooms')], ['bath', d.baths ? nf(d.baths) : '—', t('baths')], ['users', d.guests ? nf(d.guests) : '—', t('guests')]]
+    : s === 'transport' ? [['car', esc(XL(((VK.find(v => v[0] === x.cat) || VK[0])[2]))), XL('vkind')], ['calendar', d.year ? nfy(d.year) : '—', t('year')], ['seat', d.seats ? nf(d.seats) : '—', t('seats')], ['gear', x.cat === 'cars' ? (d.gear === 'manual' ? XL('manual') : t('auto')) : '—', t('gearbox')]]
+    : null;
+  const head = x.photos.length ? gallery(x.photos, x.id) : `<div class="item-head"><div class="float"><button class="ibtn" data-act="back" aria-label="${t('back')}">${ic('back', 'flip')}</button><span class="fr">${homeBtn()}${heart(x.id).replace('class="heart', 'class="ibtn heart')}</span></div><span class="big-ic">${ic(s === 'services' ? svcK(x.cat)[1] : s === 'transport' ? 'car' : 'home')}</span></div>`;
+  const kv = s === 'housing' ? `<div class="block"><h4>${t('terms')}</h4><div class="kv"><div><span>${XL('term_l')}</span><b>${XL(x.term || 'daily')}</b></div><div><span>${XL('aud_l')}</span><b>${d.aud === 'families' ? t('families') : d.aud === 'singles' ? t('singles') : XL('any')} · ${d.furnished ? t('furnished') : t('unfurnished')}</b></div>${d.walk ? `<div><span>${t('near_haram')}</span><b>${nf(d.walk)} ${t('min_walk')}</b></div>` : ''}</div></div>`
+    : s === 'transport' && x.term ? `<div class="block"><h4>${t('terms')}</h4><div class="kv"><div><span>${XL('term_l')}</span><b>${XL(x.term)}</b></div></div></div>`
+    : s === 'services' && d.langs ? `<div class="block"><h4>${XL('langs_l')}</h4><p>${esc(d.langs)}</p></div>` : '';
+  return { raw: true, cta: x.mine ? null : `<div class="p"><b class="num">${esc(lstPrice(x))}</b><small>${esc(unitTxt(x.unit))}</small></div><button class="btn primary" data-act="dm" data-v="${esc(who(x.seller.name))}">${ic('chat')}${t('write')}</button>`, html: head + `
+  <div class="sheetbody wrap">
+    <span class="tag green">${s === 'services' ? esc(L(svcK(x.cat)[2])) : s === 'transport' ? t('s_transport') : t('s_housing')}</span>${x.mine ? ` <span class="tag gold">${XL('my_l')}</span>` : ''}
+    <h2 class="d-title" style="margin-top:8px">${esc(txt(x.title))}</h2>
+    <div class="d-sub"><span>${ic('pin')}${esc(loc(x.dist))}</span>${sellerVer(x) ? `<span style="color:var(--palm)">${ic('shield')}${XL('v_owner')}</span>` : ''}</div>
+    ${facts ? `<div class="facts">${facts.map(([i, v, l]) => `<div class="fact">${ic(i)}<b class="num" style="font-size:13.5px">${v}</b><small>${esc(l)}</small></div>`).join('')}</div>` : ''}
+    ${x.desc ? `<div class="block"><h4>${t('description')}</h4><p style="white-space:pre-wrap">${esc(txt(x.desc))}</p></div>` : ''}${kv}
+    <div class="block"><h4>${t('location')}</h4>${mapBlock(x.dist, `<b>${esc(loc(x.dist))}</b><br>${t('location_note')}`)}</div>
+    <div class="block"><h4>${t('seller')}</h4>${sellerCard(x.seller)}</div>
+    ${x.mine || isAdmin() ? `<button class="btn soft full" style="margin-top:14px;color:var(--rose)" data-act="lstdel" data-v="${x.id}">${small('x')}${FXL('act_delete')}</button>` : ''}
+    ${!x.mine ? `<button class="btn soft full" style="margin-top:10px" data-act="lrep" data-v="item:${x.id}">${small('flag')}${t('report')}</button>` : ''}
+    <p class="note" style="margin-top:18px">${t('listing_no')} <b class="num">${x.id.slice(0, 8).toUpperCase()}</b></p>
+  </div>` };
+};
+/* only verified people may sell, rent out or offer services */
+async function needVerified(then) {
+  if (!LV || !LV.user) return authSheet();
+  const pr = LV.profile || {}; if (pr.verified || pr.is_admin || pr.is_owner) return then();
+  const last = await LV.verifyMine().catch(() => null);
+  if (last && last.status === 'pending') { sheet(`<h3>${small('shield')} ${XL('need_vf_t')}</h3><p style="line-height:1.55">${XL('vf_wait')}</p><button class="btn green full" data-close>${t('understood')}</button>`); return; }
+  const w = sheet(`<h3>${small('shield')} ${XL('need_vf_t')}</h3><p style="line-height:1.55;margin:0 0 14px">${XL('need_vf_d')}</p><button class="btn green full" id="nvgo">${small('check')}${XL('need_vf_go')}</button><button class="btn soft full" style="margin-top:8px" data-close>${t('later')}</button>`);
+  w.querySelector('#nvgo').onclick = () => { w.remove(); verifySheet(false); };
+}
+function lstSheet(sec) {
+  const pr = LV.profile || {}; const st = { term: sec === 'housing' ? 'daily' : 'daily', cat: sec === 'transport' ? 'cars' : sec === 'services' ? 'translate' : '', unit: sec === 'housing' ? 'night' : sec === 'transport' ? 'day' : 'hour' }; const photos = [];
+  const segH = (id, opts, on) => `<div class="seg" id="${id}">${opts.map(([v, lb]) => `<button type="button" class="${v === on ? 'on' : ''}" data-v="${v}">${lb}</button>`).join('')}</div>`;
+  const units = sec === 'housing' ? ['night', 'month', 'year', 'neg'] : sec === 'transport' ? ['day', 'month', 'year', 'neg'] : ['hour', 'job', 'day', 'kg', 'neg'];
+  const distSel = `<select id="lsd">${Object.keys(DIST).map(k => `<option value="${k}" ${k === ((S.me && S.me.dist) || 'central') ? 'selected' : ''}>${esc(loc(k))}</option>`).join('')}</select>`;
+  const num = (id, label, ph) => `<div class="field"><label for="${id}">${label}</label><input id="${id}" inputmode="numeric" maxlength="4" placeholder="${ph || ''}"></div>`;
+  const extra = sec === 'housing' ? `<div class="field"><label>${XL('term_l')}</label>${segH('lsterm', [['daily', XL('daily')], ['monthly', XL('monthly')], ['yearly', XL('yearly')]], 'daily')}</div>
+      <div class="field"><label for="lsht">${XL('htype')}</label><select id="lsht">${HT.map(k => `<option value="${k}">${esc(XL('h_' + k))}</option>`).join('')}</select></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">${num('lsr', t('rooms'), '2')}${num('lsb', t('baths'), '1')}${num('lsg', t('guests'), '4')}</div>
+      <div class="field"><label for="lsa">${XL('aud_l')}</label><select id="lsa"><option value="any">${XL('any')}</option><option value="families">${t('families')}</option><option value="singles">${t('singles')}</option></select></div>
+      ${num('lsw', XL('walk_l'), '10')}<label class="check"><input type="checkbox" id="lsf" checked><span>${XL('furn_yes')}</span></label>`
+    : sec === 'transport' ? `<div class="field"><label>${XL('vkind')}</label>${segH('lscat', VK.map(([k, , lb]) => [k, XL(lb)]), 'cars')}</div>
+      <div class="field"><label>${XL('term_l')}</label>${segH('lsterm', [['daily', XL('daily')], ['monthly', XL('monthly')], ['yearly', XL('yearly')]], 'daily')}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${num('lsy', t('year'), '2022')}${num('lss', t('seats'), '5')}</div>
+      <div class="field" id="lsgearf"><label>${t('gearbox')}</label>${segH('lsgear', [['auto', t('auto')], ['manual', XL('manual')]], 'auto')}</div>`
+    : `<div class="field"><label for="lscs">${XL('scat')}</label><select id="lscs">${SVCK.map(([k, , n]) => `<option value="${k}" ${k === 'translate' ? 'selected' : ''}>${esc(L(n))}</option>`).join('')}</select></div>
+      <div class="field"><label for="lsl">${XL('langs_l')}</label><input id="lsl" maxlength="80" value="${esc((S.me && S.me.langs) || '')}"></div>`;
+  const w = sheet(`<h3>${XL(sec === 'housing' ? 'new_h' : sec === 'transport' ? 'new_t' : 'new_s')}</h3>
+    <div class="field"><label>${XL('photos_l')}${sec === 'services' ? ` <span class="opt-l">${t('optional')}</span>` : ' *'}</label><div class="lsths" id="lsth"></div><small class="hint">${XL('photos_h')}</small></div>
+    ${extra}
+    <div class="field"><label for="lst">${XL('title_l')} *</label><input id="lst" maxlength="120" placeholder="${XL('title_ph_' + sec[0])}"></div>
+    <div class="field"><label for="lsx">${XL('desc_l')} *</label><textarea id="lsx" rows="5" maxlength="3000" placeholder="${XL('desc_ph_' + sec[0])}"></textarea></div>
+    <div class="field"><label for="lsd">${t('district_l')}</label>${distSel}</div>
+    <div class="field"><label for="lsp">${XL('price_l')}, ${t('sar')}</label><div style="display:flex;gap:8px"><input id="lsp" inputmode="decimal" maxlength="9" placeholder="0" style="flex:1"><select id="lsu" style="flex:1">${units.map(u => `<option value="${u}" ${u === st.unit ? 'selected' : ''}>${esc(u === 'neg' ? XL('u_neg') : XL('u_' + u))}</option>`).join('')}</select></div></div>
+    <div class="banner" style="font-size:12.5px;margin-top:6px">${ic('info')}<div>${XL('rules_note')}</div></div>
+    <p class="ferr" id="lserr" hidden></p><button class="btn green full" style="margin-top:14px" id="lsgo">${XL('publish')}</button>`);
+  const thumbs = () => { w.querySelector('#lsth').innerHTML = photos.map((u, i) => `<span class="lsth" style="background-image:url(${u})"><button type="button" data-rm="${i}" aria-label="x">${small('x')}</button></span>`).join('') + (photos.length < 8 ? `<button type="button" class="lsth add" id="lsadd">${ic('camera')}<small class="num">${photos.length}/8</small></button>` : '');
+    const a = w.querySelector('#lsadd'); if (a) a.onclick = () => { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.multiple = true; inp.onchange = async () => { for (const f of [...inp.files].slice(0, 8 - photos.length)) { const d = await resizeImg(f, 1600, 0.86); if (d) photos.push(d); } thumbs(); }; inp.click(); };
+    w.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { photos.splice(+b.dataset.rm, 1); thumbs(); }); };
+  thumbs();
+  const wireSeg = (id, key, after) => { const box = w.querySelector('#' + id); if (!box) return; box.querySelectorAll('button').forEach(b => b.onclick = () => { st[key] = b.dataset.v; box.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); if (after) after(); }); };
+  const unitFor = { daily: sec === 'housing' ? 'night' : 'day', monthly: 'month', yearly: 'year' };
+  wireSeg('lsterm', 'term', () => { const u = w.querySelector('#lsu'); if (u && u.value !== 'neg') u.value = unitFor[st.term]; });
+  wireSeg('lscat', 'cat', () => { const g = w.querySelector('#lsgearf'); if (g) g.hidden = st.cat !== 'cars'; });
+  st.gear = 'auto'; wireSeg('lsgear', 'gear');
+  const val = (id) => ((w.querySelector('#' + id) || {}).value || '').trim(); const int = (id) => { const n = parseInt(val(id).replace(/\D/g, ''), 10); return isNaN(n) ? null : n; };
+  w.querySelector('#lsgo').onclick = async (ev) => { const er = w.querySelector('#lserr'); const fail = (k) => { er.hidden = false; er.textContent = XL(k); er.scrollIntoView({ block: 'center' }); };
+    const title = val('lst'), desc = val('lsx'), unit = val('lsu'), pv = val('lsp').replace(',', '.'); const price = pv === '' ? null : +pv;
+    if (sec !== 'services' && !photos.length) return fail('err_photo'); if (title.length < 3) return fail('err_title'); if (desc.length < 20) return fail('err_desc');
+    if (unit !== 'neg' && (price == null || isNaN(price) || price <= 0)) return fail('err_price');
+    const details = sec === 'housing' ? { htype: val('lsht'), rooms: int('lsr'), baths: int('lsb'), guests: int('lsg'), aud: val('lsa'), walk: int('lsw'), furnished: !!(w.querySelector('#lsf') || {}).checked }
+      : sec === 'transport' ? { year: int('lsy'), seats: int('lss'), gear: st.cat === 'cars' ? st.gear : null } : { langs: val('lsl') };
+    const cat = sec === 'services' ? val('lscs') : sec === 'transport' ? st.cat : (details.htype || 'apt');
+    const b = ev.currentTarget; b.disabled = true; b.textContent = '…';
+    try { const urls = []; for (const d of photos) urls.push(await LV.upload(d, 'item'));
+      const row = await LV.addItem({ kind: 'ad', section: sec, cat, term: sec === 'services' ? null : st.term, title, descr: desc, photos: urls, dist: val('lsd') || 'central', price_num: unit === 'neg' ? null : price, unit, price: unit === 'neg' ? '' : price + ' SAR', details, lang });
+      w.remove(); toast(XL('published')); dropData('c:items'); go('lst', { id: row.id });
+    } catch (e) { console.warn(e); b.disabled = false; b.textContent = XL('publish'); er.hidden = false; er.textContent = /verify_required/.test(String(e && (e.message || e))) ? XL('need_vf_d') : FXL('send_fail'); } };
+}
+
 V.housing = (p) => {
+  if (LV) return liveHousing(p);
   setTimeout(() => testNotice('housing'), 60);
   const term = p.term || 'daily'; const f = p.f || 'all';
   let items = HOUSING.filter(h => h.term === term);
@@ -327,6 +511,7 @@ V.housing = (p) => {
     <div class="list">${items.map(houseCard).join('') || emptyBlock()}</div></div>` };
 };
 V.transport = (p) => {
+  if (LV) return liveTransport(p);
   setTimeout(() => testNotice('transport'), 60);
   const kind = p.kind || 'cars', term = p.term || 'daily';
   const items = TRANSPORT.filter(x => x.kind === kind && x.term === term);
@@ -891,10 +1076,11 @@ function liveCommunity() {
     return true; });
   want('c:items', async () => {
     const [rows, cms] = await Promise.all([LV.items(), LV.comments('item:')]); const byT = cmMap(cms);
-    ADS.length = 0; PARCELS.length = 0;
+    ADS.length = 0; PARCELS.length = 0; LST.housing.length = 0; LST.transport.length = 0; LST.services.length = 0;
     rows.forEach(r => { const pr = LV.cached(r.author) || {}; const mine = r.author === meU();
       const seller = { name: mine ? '@me' : (pr.name || '…'), uid: r.author, langs: (LANGS.find(l => l.code === pr.ui_lang) || {}).latin || '', since: (pr.created_at || '').slice(0, 4), rating: null, dist: r.dist || pr.dist || 'central' };
       const comments = byT['item:' + r.id] || [];
+      if (r.section && LST[r.section]) { LST[r.section].push(lstFromRow(r, seller, comments, mine)); return; }
       if (r.kind === 'ad') ADS.push({ id: r.id, live: 1, cat: r.cat, photos: r.photos && r.photos.length ? r.photos : null, seller, title: lt(r.title, r.lang), price: r.price || '—', desc: r.descr ? lt(r.descr, r.lang) : '', comments, mine, hidden: r.hidden });
       else PARCELS.push({ id: r.id, live: 1, kind: r.cat, from: r.route_from, to: r.route_to, date: r.pdate || r.created_at, kg: +r.kg || 0, desc: r.descr ? lt(r.descr, r.lang) : '', seller, comments, mine }); });
     return true; });
@@ -1047,7 +1233,7 @@ const svcRow = (c, it) => `<button class="row-card" data-act="go" data-v="svc" d
   <span class="sub" style="display:flex;gap:6px;align-items:center;margin:0 0 3px;flex-wrap:wrap">${esc(L(c.name))}<span class="tag green">${small('shield')}${ST(c.vetted ? 'vetted' : 'licensed')}</span></span>
   <span class="ttl" style="display:block">${esc(L(it.title))}</span>
   <span style="display:flex;justify-content:space-between;gap:8px;margin-top:5px"><span class="price">${esc(L(it.price))}</span><span class="sub" style="display:inline-flex;gap:4px;align-items:center;margin:0">${small('clock')}${esc(L(it.time))}</span></span></span></button>`;
-V.services = () => ({ tabs: true, html: topbar(ST('title')) + `<div class="wrap">
+V.services = (p) => LV ? liveServices(p || {}) : ({ tabs: true, html: topbar(ST('title')) + `<div class="wrap">
   <div class="card svc-hero"><span class="svc-badge">${logo('rgba(255,255,255,.14)')}</span><div><b>${ST('title')}</b><p>${ST('intro')}</p></div></div>
   <div class="banner green" style="margin-top:12px">${ic('shield')}<div>${ST('only')}</div></div>
   <div class="topics" style="margin-top:14px">${SVC_CATS.map(svcTile).join('')}</div>
@@ -1128,8 +1314,8 @@ V.chat = (p) => {
   </div>` };
 };
 V.saved = () => {
-  const items = S.saved.map(id => HOUSING.find(h => h.id === id) || TRANSPORT.find(x => x.id === id)).filter(Boolean);
-  return { tabs: true, html: topbar(t('saved_title'), { noBack: true }) + `<div class="wrap">${items.length ? `<div class="list">${items.map(x => x.kind ? trCard(x) : houseCard(x)).join('')}</div>` : emptyBlock(t('saved_empty'))}</div>` };
+  const items = S.saved.map(id => (LV ? lstFind(id) : null) || (LV ? null : HOUSING.find(h => h.id === id) || TRANSPORT.find(x => x.id === id))).filter(Boolean);
+  return { tabs: true, html: topbar(t('saved_title'), { noBack: true }) + `<div class="wrap">${items.length ? `<div class="list">${items.map(x => x.section ? lstCard(x) : x.kind ? trCard(x) : houseCard(x)).join('')}</div>` : emptyBlock(t('saved_empty'))}</div>` };
 };
 const admSwitch = () => canAdmin() && LV ? `<button class="admswitch ${isAdmin() ? 'on' : ''}" data-act="admmode"><span class="admsw-ic">${isAdmin() ? ic('user') : logo()}</span><span class="grow"><b>${FXL(isAdmin() ? 'adm_mode_off' : 'adm_mode_on')}</b><small>${isAdmin() ? esc(S.me.name || '') : FXL('adm_mode_d')}</small></span>${ic('chev', 'flip chev')}</button>` : '';
 V.profile = () => isAdmin() && LV ? adminProfile() : ({ tabs: true, html: topbar(t('profile_title'), { noBack: true }) + `<div class="wrap narrow">${admSwitch()}
@@ -1241,7 +1427,7 @@ function authSheet() {
     <button class="btn primary full" data-startreg>${ic('user')}${t('create_profile')}</button><button class="btn soft full" style="margin-top:10px" data-close>${t('later')}</button>`);
   w.querySelector('[data-startreg]').addEventListener('click', () => { w.remove(); gateReg(); });
 }
-const AUTH = ['sorder', 'write', 'dm', 'reply', 'comment', 'csend', 'postad', 'postparcel', 'compose', 'going', 'helped', 'rreply', 'verify', 'report', 'reportuser', 'toastdemo'];
+const AUTH = ['lstnew', 'sorder', 'write', 'dm', 'reply', 'comment', 'csend', 'postad', 'postparcel', 'compose', 'going', 'helped', 'rreply', 'verify', 'report', 'reportuser', 'toastdemo'];
 const guestLock = (title, txt0) => ({ tabs: true, html: topbar(title, { noBack: stack.length < 2 }) + `<div class="wrap"><div class="empty">${emptyIllus('lock')}<b>${title}</b><p style="margin:6px auto 18px;max-width:34ch">${txt0}</p><button class="btn primary" data-act="startreg">${ic('user')}${t('create_profile')}</button></div></div>` });
 /* ---------- events ---------- */
 root.addEventListener('click', (e) => {
@@ -1271,6 +1457,9 @@ root.addEventListener('click', (e) => {
     case 'back': back(); break;
     case 'tab': tab(v); break;
     case 'term': cur().term = v; render(); break;
+    case 'svcc': cur().c = v; render(); break;
+    case 'lstnew': needVerified(() => lstSheet(v)); break;
+    case 'lstdel': { if (!confirm(XL('del_q'))) break; LV.delItem(v).then(() => { toast(FXL('act_delete') + ' ✓'); dropData('c:items'); back(); }).catch(() => toast(FXL('send_fail'))); break; }
     case 'kind': cur().kind = v; render(); break;
     case 'filter': cur().f = v; render(); break;
     case 'pk': cur().k = v; render(); break;
@@ -1319,7 +1508,7 @@ root.addEventListener('click', (e) => {
       fn(ty === 'room' || ty === 'cm' ? +id2 : id2).then(() => { toast(FXL('act_delete') + ' ✓'); dropData('c:'); if (ty === 'item' && cur().v === 'item') back(); else render(); }).catch(er => toast(FXL('send_fail'))); break; }
     case 'levent': eventSheet(v); break;
     case 'oath': S.pledge[v] = true; save(); render(true); break;
-    case 'postad': adSheet(); break;
+    case 'postad': if (LV) needVerified(adSheet); else adSheet(); break;
     case 'postparcel': parcelSheet(); break;
     case 'status': { const st = ['new', 'work', 'view', 'done']; S.req[v] = st[(st.indexOf(S.req[v] || 'new') + 1) % 4]; save(); render(); break; }
     case 'reset': try { localStorage.removeItem(KEY); } catch (er) {} location.reload(); break;
@@ -1341,7 +1530,7 @@ function focusBox(k) { setTimeout(() => { const ta = root.querySelector(`textare
 function openDM(name) {
   if (!name || name === '@me') return;
   if (LV) { const pr = LV.byName(name); if (!pr) return toast(MG_T ? L(MG_T.dm_lock) : t('dm'));
-    const it = cur().v === 'item' ? findItem(cur().id) : null; const fail = (e) => { console.warn(e); toast(FXL('send_fail')); };
+    const it = cur().v === 'item' ? findItem(cur().id) : cur().v === 'lst' ? lstFind(cur().id) : null; const fail = (e) => { console.warn(e); toast(FXL('send_fail')); };
     const open = (c) => { const key = 'D:' + pr.id; S.chats[key] = Object.assign(S.chats[key] || { msgs: [] }, { live: true, cid: c.id, kind: 'dm', t: Date.now() }); save(); go('chat', { id: key, draft: it ? txt(it.title) + ' — ' : '' }); };
     if (it && it.live && it.seller.uid === pr.id) { LV.itemChat(it.id, pr.id).then(open).catch(fail); return; }
     LV.rel().then(rel => { if (!rel.friends.has(pr.id)) { toast(L(MG_T.dm_lock)); return; } return LV.dmChat(pr.id).then(open); }).catch(fail); return; }
@@ -1397,7 +1586,8 @@ function parcelSheetLive() {
     <button class="btn green full" style="margin-top:14px" id="pgo" disabled>${t('publish')}</button>`);
   const segs = w.querySelectorAll('.seg button'); segs.forEach(b => b.addEventListener('click', () => { kind = b.dataset.k; segs.forEach(x => x.classList.toggle('on', x === b)); }));
   const ag = w.querySelector('#pagree'), btn = w.querySelector('#pgo'); ag.addEventListener('change', () => { btn.disabled = !ag.checked; });
-  btn.addEventListener('click', () => { const to = w.querySelector('#pt').value.trim(); if (!to) { w.querySelector('#pt').focus(); return; } btn.disabled = true;
+  btn.addEventListener('click', () => { const to = w.querySelector('#pt').value.trim(); if (!to) { w.querySelector('#pt').focus(); return; }
+    const pr0 = LV.profile || {}; if (kind === 'flying' && !(pr0.verified || pr0.is_admin || pr0.is_owner)) { w.remove(); needVerified(() => {}); return; } btn.disabled = true;
     LV.addItem({ kind: 'parcel', cat: kind, route_from: w.querySelector('#pf').value.trim() || 'Medina', route_to: to, pdate: w.querySelector('#pr2').value || null, kg: parseFloat(w.querySelector('#pr3').value) || null, descr: w.querySelector('#pdx').value.trim(), lang })
       .then(() => { w.remove(); toast(t('published')); dropData('c:items'); if (cur().v !== 'parcels') go('parcels'); else render(); }).catch(e => { toast(FXL('send_fail')); btn.disabled = false; }); });
 }
@@ -1519,7 +1709,7 @@ if (LV) {
   ADS.length = 0; PARCELS.length = 0; Object.keys(POSTS).forEach(k => { POSTS[k] = []; }); FAMILY.length = 0;
   MEN_ROOMS.concat(WOMEN_ROOMS).forEach(r => { r.msgs = []; r.n = 0; }); MEN_EVENTS.length = 0; WOMEN_EVENTS.length = 0;
   const wrapV = (name, pre) => { const f = V[name]; V[name] = (pp) => { try { pre(pp); } catch (e) { console.warn(e); } return f(pp); }; };
-  ['ads', 'parcels', 'item', 'majlis', 'topic', 'family', 'explore', 'person'].forEach(n => wrapV(n, () => liveCommunity()));
+  ['ads', 'parcels', 'item', 'majlis', 'topic', 'family', 'explore', 'person', 'housing', 'transport', 'services', 'lst', 'home', 'saved'].forEach(n => wrapV(n, () => liveCommunity()));
   wrapV('men', () => liveSpace('men')); wrapV('women', () => liveSpace('women'));
   wrapV('room', (pp) => liveSpace(pp.id.split(':')[0])); wrapV('event', () => { if (isOwner()) { liveSpace('men'); liveSpace('women'); } else liveSpace(S.me && S.me.gender === 'f' ? 'women' : 'men'); });
   LV.onRoom && setTimeout(() => LV.onRoom(m => { if (m.author === meU()) return; dropData('c:sp:'); if (cur().v === 'room' && cur().id === m.room) { liveSpace(m.room.split(':')[0]); } }), 0);

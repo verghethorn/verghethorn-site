@@ -1217,3 +1217,92 @@ c956|Cet identifiant Magaam vous appartient pour toujours.
 c957|Copier l’identifiant et le lien
 c958|non défini
 c959|Définir
+
+c961|Louer un logement
+c962|Louer un véhicule
+c963|Proposer un service
+c964|Nouvelle annonce : logement
+c965|Nouvelle annonce : véhicule
+c966|Nouvelle annonce : service
+c967|Les annonces sont publiées par les résidents eux-mêmes. Chaque auteur a passé une vérification d’identité ✓
+c968|Proposés par des résidents vérifiés : traducteurs, accompagnement, pâtisserie maison et bien plus.
+c969|Par les résidents : traducteurs, accompagnement, pâtisserie
+c970|Auteur vérifié
+c971|Publiez la première — c’est gratuit.
+c972|Vérification nécessaire
+c973|Pour publier des annonces ou proposer des services, confirmez votre identité : une photo de profil où l’on voit votre visage et une photo de votre passeport ou iqama. Nous vérifions sous 48 heures. Lire, chercher et écrire restent possibles sans cela.
+c974|Votre demande est en cours d’examen — en général sous 48 heures. Une fois confirmée, vous pourrez publier.
+c975|Durée
+c976|Contrat annuel
+c977|Type de logement
+c978|Appartement
+c979|Studio
+c980|Chambre
+c981|Lit en chambre partagée
+c982|Villa ou maison
+c983|Pour qui
+c984|À pied du Haram, min
+c985|Type de véhicule
+c986|Voiture
+c987|Scooter
+c988|Trottinette électrique
+c989|Vélo
+c990|Marque et modèle
+c991|Par exemple : Toyota Camry
+c992|Manuelle
+c993|Type de service
+c994|Langues parlées
+c995|Par exemple : Appartement 2 chambres près du Haram
+c996|Par exemple : Toyota Camry 2022, automatique
+c997|Par exemple : Interprète arabe pour l’hôpital
+c998|Où c’est (quartier, repère), étage, distance du Haram, équipements, pour qui, arrivée et règles de la maison.
+c999|État, kilométrage, ce qui est inclus (assurance, livraison), documents requis, caution, lieu de retrait.
+c1000|Ce que vous faites exactement, votre expérience, vos horaires, où (à domicile, chez vous, en ligne), ce qu’il faut au client.
+c1001|Par
+c1002|la nuit
+c1003|par jour
+c1004|par mois
+c1005|par an
+c1006|de l’heure
+c1007|la prestation
+c1008|le kg
+c1009|À négocier
+c1010|Jusqu’à 8 photos. La première sert de couverture.
+c1011|Ajoutez un titre.
+c1012|Décrivez plus en détail — au moins deux phrases.
+c1013|Indiquez un prix ou choisissez « À négocier ».
+c1014|Annonce publiée
+c1015|Mon annonce
+c1016|Supprimer cette annonce ?
+c1017|Uniquement des annonces honnêtes et personnelles. Pas d’intermédiaires avec les photos des autres. Les abus sont supprimés et l’auteur bloqué.
+c1018|Nouvelles annonces
+c1019|Chargement…
+c1020|Accompagnement et aide
+c1021|Traducteur
+c1022|Guide et ziyarah
+c1023|Chauffeur et transfert
+c1024|Pâtisserie et cuisine maison
+c1025|Beauté
+c1026|Réparations et bricolage
+c1027|Nounou et enfants
+c1028|Cours et Coran
+c1029|Aide aux démarches
+c1030|Photo et vidéo
+c1031|Livraison et courses
+c1032|Le ✓ à côté de votre nom indique que les administrateurs ont vérifié votre identité. Il est nécessaire pour publier des annonces et proposer des services. Deux étapes — la vérification prend jusqu’à 48 heures :
+c1033|Ajoutez votre vraie photo où l’on voit bien votre visage
+c1034|Photo ajoutée. Votre visage doit être bien visible
+c1035|Demande envoyée. Nous l’examinerons sous 48 heures et vous écrirons dans le chat de l’équipe Nakhlio.
+c1036|Votre demande est en cours d’examen — en général sous 48 heures. Nous vous écrirons dès qu’elle sera vérifiée.
+c1037|Pas encore d’annonces
+c1038|À la journée
+c1039|Tout le monde
+c1040|Meublé
+c1041|Photos
+c1042|annonces
+c1043|Code d’invitation
+c1044|Magaam est sur invitation uniquement. Le code est dans le lien reçu (après « ?i= »). Vous pouvez coller le lien entier.
+c1045|Saisissez le code d’invitation.
+c1046|Ce code n’existe pas. Vérifiez le lien de votre ami.
+c1047|Votre code d’invitation :
+c1048|Lien copié — collez-le dans une discussion WeChat.

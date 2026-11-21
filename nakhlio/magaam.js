@@ -132,6 +132,12 @@ const T = {
   r_ok: D('Принимаю правила', 'I accept the rules', 'أوافق على القواعد'),
   open: D('Открыть Magaam', 'Open Magaam', 'افتح Magaam'),
   back_n: D('Nakhlio', 'Nakhlio', 'Nakhlio'),
+  inv_code_l: D('Код приглашения', 'Invitation code', 'رمز الدعوة'),
+  inv_only: D('Magaam — только по приглашению. Код есть в ссылке, которую вам прислали (после «?i=»). Можно вставить всю ссылку.', 'Magaam is invitation-only. The code is in the link you were sent (after “?i=”). You can paste the whole link.', 'Magaam بالدعوة فقط. الرمز موجود في الرابط الذي أُرسل إليك (بعد «?i=»). يمكنك لصق الرابط كاملاً.'),
+  inv_need: D('Введите код приглашения.', 'Enter the invitation code.', 'أدخل رمز الدعوة.'),
+  inv_bad: D('Такого кода нет. Проверьте ссылку от друга.', 'This code doesn’t exist. Check the link from your friend.', 'هذا الرمز غير موجود. تحقق من رابط صديقك.'),
+  inv_code_keep: D('Ваш код приглашения:', 'Your invitation code:', 'رمز دعوتك:'),
+  wechat_hint: D('Ссылка скопирована — вставьте её в чат WeChat.', 'Link copied — paste it into a WeChat chat.', 'تم نسخ الرابط — الصقه في محادثة WeChat.'),
   goods_h: D("Товары", "Goods", "المنتجات"),
   services_h: D("Услуги", "Services", "الخدمات"),
   everywhere: D("Все страны", "All countries", "كل الدول"),
@@ -548,14 +554,15 @@ if (LV) {
   const plusIc = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:-4px"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg>`;
   const installGate = () => { const ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
     return { html: `<div class="mg mgland"><div class="mgwrap"><div class="mglhead">${mgLogo('big')}<h1 class="mgh1"><img class="mgwm" src="img/mgapp/wordmark-dark.png" alt="MAGAAM"></h1><p>${M('tag2')}</p></div>${invBox()}<div class="mgcard">
-      <h3 style="margin:0 0 4px">${M('inst_t')}</h3><p class="note" style="margin:0 0 12px">${M('inst_d')}</p>
+      <h3 style="margin:0 0 4px">${M('inst_t')}</h3><p class="note" style="margin:0 0 12px">${M('inst_d')}</p>${invCode() ? `<div class="mginvcode">${M('inv_code_keep')} <b dir="ltr">${esc(invCode())}</b></div>` : ''}
       ${bip ? `<button class="btn primary full mgbtn" data-act="mginst">${M('inst_btn')}</button>` : `<ol class="mgsteps"><li><span>1</span>${M('inst_1')} ${shareIc}</li><li><span>2</span>${M('inst_2')} ${plusIc}</li><li><span>3</span>${M('inst_3')}</li></ol>${ios ? `<p class="note" style="font-size:12.5px;margin:10px 0 0">${M('inst_safari')}</p>` : ''}`}
       </div></div>${ios && !bip ? '<div class="mgarrow">↓</div>' : ''}</div>` }; };
   const setupView = () => { const pr = LV.profile || {}; const ph = MR.photo || pr.mg_avatar || pr.photo_url || '';
     return { html: `<div class="mg mgland"><div class="mgwrap"><div class="mglhead">${mgLogo()}<h2>${M('setup_t')}</h2><p>${M('setup_d')}</p></div>${invBox()}<div class="mgcard">
       <button class="mgsetph" data-act="mgrphoto">${ph ? `<span style="background-image:url(${esc(ph)})"></span>` : `<span>${ic('camera')}</span>`}<b>${M('photo')}</b></button>
-      <div class="field"><label for="mgnm">${M('name_l')} *</label><input id="mgnm" maxlength="40" value="${esc(pr.mg_name || pr.name || '')}"></div>
-      <div class="field"><label for="mgbio">${t('about_l')}</label><textarea id="mgbio" rows="2">${esc(pr.mg_bio || '')}</textarea></div>${MR.err ? `<p class="mgerr">${esc(MR.err)}</p>` : ''}
+      <div class="field"><label for="mgnm">${M('name_l')} *</label><input id="mgnm" maxlength="40" value="${esc(MR.nm != null ? MR.nm : pr.mg_name || pr.name || '')}"></div>
+      <div class="field"><label for="mgbio">${t('about_l')}</label><textarea id="mgbio" rows="2">${esc(MR.bio != null ? MR.bio : pr.mg_bio || '')}</textarea></div>
+      ${window.MG_APP && !invCode() ? `<div class="field"><label for="mginvc">${M('inv_code_l')} *</label><input id="mginvc" autocapitalize="off" autocorrect="off" spellcheck="false" dir="ltr" maxlength="200" placeholder="abc12345" value="${esc(MR.inv || '')}"><small class="note">${M('inv_only')}</small></div>` : ''}${MR.err ? `<p class="mgerr">${esc(MR.err)}</p>` : ''}
       <button class="btn primary full mgbtn" data-act="mgrsave">${M('start')}</button></div></div></div>` }; };
   let accepting = false;
   const acceptPending = () => { const c = invCode(); if (!c || accepting || !LV.user || !(LV.profile && LV.profile.mg_on)) return; accepting = true;
@@ -566,9 +573,10 @@ if (LV) {
     const w = sheet(`<div style="text-align:center">${mgLogo()}<h3 style="margin:8px 0 4px">${M('invite')}</h3><p class="note" style="margin:0 0 12px">${M('invite_d')}</p></div>
       <div class="mglinkbox" dir="ltr">${esc(link)}</div>
       ${navigator.share ? `<button class="btn primary full mgbtn" data-x="share" style="margin-top:10px">${small('send')}${M('share')}</button>` : ''}
-      <div class="mgshare"><a class="btn soft mgbtn2" href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" rel="noopener">WhatsApp</a><a class="btn soft mgbtn2" href="https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(M('inv_text'))}" target="_blank" rel="noopener">Telegram</a><button class="btn soft mgbtn2" data-x="copy">${M('copy_link')}</button></div><button class="btn soft full mgbtn2" style="margin-top:8px" data-act="mgcontacts">${small('users')}${M('from_contacts')}</button>`);
+      <div class="mgshare"><a class="btn soft mgbtn2" href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" rel="noopener">WhatsApp</a><a class="btn soft mgbtn2" href="https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(M('inv_text'))}" target="_blank" rel="noopener">Telegram</a><button class="btn soft mgbtn2" data-x="wechat">WeChat</button><button class="btn soft mgbtn2" data-x="copy">${M('copy_link')}</button></div><button class="btn soft full mgbtn2" style="margin-top:8px" data-act="mgcontacts">${small('users')}${M('from_contacts')}</button>`);
     w.addEventListener('click', e => { const b = e.target.closest('[data-x]'); if (!b) return;
       if (b.dataset.x === 'share') navigator.share({ title: 'Magaam', text: M('inv_text'), url: link }).catch(() => {});
+      if (b.dataset.x === 'wechat') { const go2 = () => { toast(M('wechat_hint')); setTimeout(() => { location.href = 'weixin://'; }, 700); }; (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(go2).catch(() => { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); go2(); }); }
       if (b.dataset.x === 'copy') { (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject()).then(() => toast(M('copied'))).catch(() => { const ta = document.createElement('textarea'); ta.value = link; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast(M('copied')); }); } }); };
 
   /* ===== messenger ===== */
@@ -665,6 +673,8 @@ if (LV) {
       el.disabled = true; try { const pr = await LV.verifyCode(MR.email, c.replace(/\D/g, '')); MR.err = ''; MR.step = 1; if (pr) NK.applyLive(pr); else { NK.S.me = { live: true, name: '', mgPending: true }; } save(); render(); }
       catch (e) { MR.err = L(window.FX.code_bad); render(); } return; }
     if (a === 'mgrphoto') { pickImg(d => { MR.photo = d; render(); }); return; }
+    if (a === 'mgrsave' && window.MG_APP && !invCode()) { const raw = ((document.getElementById('mginvc') || {}).value || '').trim(); MR.nm = (document.getElementById('mgnm') || {}).value || ''; MR.bio = (document.getElementById('mgbio') || {}).value || ''; MR.inv = raw; const cv = (raw.match(/[?&]i=([a-z0-9]+)/i) || [0, raw])[1].toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (!cv) { MR.err = M('inv_need'); return render(); } const inf = await LV.inviteInfo(cv).catch(() => null); if (!inf || !inf.name) { MR.err = M('inv_bad'); return render(); } S_().mgInvite = cv; save(); }
     if (a === 'mgrsave') { const nm = (document.getElementById('mgnm') || {}).value; const bio = ((document.getElementById('mgbio') || {}).value || '').trim();
       if (!nm || !nm.trim()) { MR.err = t('err_name') || '!'; return render(); } el.disabled = true;
       try { let url = null; if (MR.photo && MR.photo.startsWith('data:')) url = await LV.upload(MR.photo, 'avatar');

@@ -1217,3 +1217,92 @@ c956|Magaam ID ini milik anda selamanya.
 c957|Salin ID dan pautan
 c958|belum ditetapkan
 c959|Tetapkan
+
+c961|Sewakan kediaman
+c962|Sewakan kenderaan
+c963|Tawarkan perkhidmatan
+c964|Iklan baharu: kediaman
+c965|Iklan baharu: kenderaan
+c966|Iklan baharu: perkhidmatan
+c967|Iklan disiarkan oleh penduduk sendiri. Setiap pengiklan telah lulus semakan identiti ✓
+c968|Ditawarkan oleh penduduk disahkan: penterjemah, pengiring, kek buatan rumah dan banyak lagi.
+c969|Daripada penduduk: penterjemah, pengiring, kek
+c970|Pengiklan disahkan
+c971|Siarkan yang pertama — percuma.
+c972|Pengesahan diperlukan
+c973|Untuk menyiarkan iklan atau menawarkan perkhidmatan, sahkan identiti anda: foto profil yang menunjukkan wajah dan foto pasport atau iqama. Kami semak dalam 48 jam. Membaca, mencari dan menghantar mesej boleh tanpa pengesahan.
+c974|Permohonan anda sedang disemak — biasanya dalam 48 jam. Selepas disahkan, anda boleh menyiarkan iklan.
+c975|Tempoh
+c976|Kontrak tahunan
+c977|Jenis kediaman
+c978|Pangsapuri
+c979|Studio
+c980|Bilik
+c981|Katil dalam bilik kongsi
+c982|Vila atau rumah
+c983|Untuk siapa
+c984|Berjalan ke Haram, minit
+c985|Jenis kenderaan
+c986|Kereta
+c987|Skuter
+c988|Skuter elektrik
+c989|Basikal
+c990|Jenama dan model
+c991|Contoh: Toyota Camry
+c992|Manual
+c993|Jenis perkhidmatan
+c994|Bahasa yang anda tuturkan
+c995|Contoh: Pangsapuri 2 bilik berhampiran Haram
+c996|Contoh: Toyota Camry 2022, automatik
+c997|Contoh: Jurubahasa Arab untuk ke hospital
+c998|Lokasi (kawasan, mercu tanda), tingkat, jarak ke Haram, kemudahan, sesuai untuk siapa, cara masuk dan peraturan.
+c999|Keadaan, perbatuan, yang termasuk (insurans, penghantaran), dokumen diperlukan, deposit, tempat ambil.
+c1000|Apa yang anda buat, pengalaman, waktu, di mana (ke rumah, di tempat anda, dalam talian), apa yang diperlukan daripada pelanggan.
+c1001|Setiap
+c1002|semalam
+c1003|sehari
+c1004|sebulan
+c1005|setahun
+c1006|sejam
+c1007|setiap perkhidmatan
+c1008|sekilogram
+c1009|Boleh runding
+c1010|Sehingga 8 foto. Yang pertama menjadi kulit.
+c1011|Tulis tajuk.
+c1012|Terangkan dengan lebih terperinci — sekurang-kurangnya dua ayat.
+c1013|Masukkan harga atau pilih “Boleh runding”.
+c1014|Iklan disiarkan
+c1015|Iklan saya
+c1016|Padam iklan ini?
+c1017|Hanya iklan jujur milik sendiri. Tiada orang tengah dengan foto orang lain. Pelanggaran dipadam dan pengiklan disekat.
+c1018|Iklan terkini
+c1019|Memuatkan…
+c1020|Pengiring & bantuan
+c1021|Penterjemah
+c1022|Pemandu & ziarah
+c1023|Pemandu & pemindahan
+c1024|Bakeri & masakan rumah
+c1025|Kecantikan
+c1026|Pembaikan & tukang
+c1027|Pengasuh & kanak-kanak
+c1028|Tuisyen & Al-Quran
+c1029|Bantuan urusan dokumen
+c1030|Foto & video
+c1031|Penghantaran & membeli-belah
+c1032|Tanda ✓ di sebelah nama anda bermakna pentadbir telah menyemak identiti anda. Ia diperlukan untuk menyiarkan iklan dan menawarkan perkhidmatan. Dua langkah — semakan sehingga 48 jam:
+c1033|Letakkan foto sebenar anda dengan wajah jelas kelihatan
+c1034|Foto ditambah. Wajah anda mesti jelas kelihatan
+c1035|Permohonan dihantar. Kami akan menyemaknya dalam 48 jam dan menghubungi anda di chat pasukan Nakhlio.
+c1036|Permohonan anda sedang disemak — biasanya dalam 48 jam. Kami akan menghubungi anda sebaik sahaja selesai.
+c1037|Belum ada iklan
+c1038|Harian
+c1039|Sesiapa
+c1040|Berperabot
+c1041|Foto
+c1042|iklan
+c1043|Kod jemputan
+c1044|Magaam hanya melalui jemputan. Kod ada dalam pautan yang dihantar kepada anda (selepas “?i=”). Anda boleh tampal seluruh pautan.
+c1045|Masukkan kod jemputan.
+c1046|Kod ini tidak wujud. Semak pautan daripada rakan anda.
+c1047|Kod jemputan anda:
+c1048|Pautan disalin — tampal dalam chat WeChat.

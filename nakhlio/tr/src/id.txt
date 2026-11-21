@@ -1217,3 +1217,92 @@ c956|Magaam ID ini milik Anda selamanya.
 c957|Salin ID dan tautan
 c958|belum diatur
 c959|Atur
+
+c961|Sewakan hunian
+c962|Sewakan kendaraan
+c963|Tawarkan jasa
+c964|Iklan baru: hunian
+c965|Iklan baru: kendaraan
+c966|Iklan baru: jasa
+c967|Iklan dipasang oleh warga sendiri. Setiap pemasang sudah lolos verifikasi identitas ✓
+c968|Ditawarkan warga terverifikasi: penerjemah, pendamping, kue rumahan, dan banyak lagi.
+c969|Dari warga: penerjemah, pendamping, kue
+c970|Pemasang terverifikasi
+c971|Pasang yang pertama — gratis.
+c972|Perlu verifikasi
+c973|Untuk memasang iklan atau menawarkan jasa, konfirmasi identitas Anda: foto profil yang menampilkan wajah dan foto paspor atau iqama. Kami periksa dalam 48 jam. Membaca, mencari, dan berkirim pesan bisa tanpa verifikasi.
+c974|Permintaan Anda sedang ditinjau — biasanya dalam 48 jam. Setelah dikonfirmasi, Anda bisa memasang iklan.
+c975|Jangka waktu
+c976|Kontrak tahunan
+c977|Jenis hunian
+c978|Apartemen
+c979|Studio
+c980|Kamar
+c981|Kasur di kamar bersama
+c982|Vila atau rumah
+c983|Untuk siapa
+c984|Jalan kaki ke Haram, menit
+c985|Jenis kendaraan
+c986|Mobil
+c987|Skuter
+c988|Skuter listrik
+c989|Sepeda
+c990|Merek dan model
+c991|Misalnya: Toyota Camry
+c992|Manual
+c993|Jenis jasa
+c994|Bahasa yang Anda kuasai
+c995|Misalnya: Apartemen 2 kamar dekat Haram
+c996|Misalnya: Toyota Camry 2022, otomatis
+c997|Misalnya: Penerjemah bahasa Arab untuk ke rumah sakit
+c998|Lokasi (wilayah, patokan), lantai, jarak ke Haram, fasilitas, cocok untuk siapa, cara masuk dan aturan.
+c999|Kondisi, jarak tempuh, yang termasuk (asuransi, antar), dokumen yang diperlukan, deposit, tempat ambil.
+c1000|Apa yang Anda kerjakan, pengalaman, jam, di mana (datang ke rumah, di tempat Anda, online), apa yang dibutuhkan dari klien.
+c1001|Per
+c1002|per malam
+c1003|per hari
+c1004|per bulan
+c1005|per tahun
+c1006|per jam
+c1007|per layanan
+c1008|per kg
+c1009|Nego
+c1010|Maksimal 8 foto. Yang pertama jadi sampul.
+c1011|Tulis judul.
+c1012|Tulis lebih rinci — minimal dua kalimat.
+c1013|Isi harga atau pilih “Nego”.
+c1014|Iklan diterbitkan
+c1015|Iklan saya
+c1016|Hapus iklan ini?
+c1017|Hanya iklan jujur milik sendiri. Tanpa makelar dengan foto orang lain. Pelanggaran dihapus dan pemasang diblokir.
+c1018|Iklan terbaru
+c1019|Memuat…
+c1020|Pendampingan & bantuan
+c1021|Penerjemah
+c1022|Pemandu & ziarah
+c1023|Sopir & antar jemput
+c1024|Kue & masakan rumahan
+c1025|Kecantikan
+c1026|Perbaikan & tukang
+c1027|Pengasuh & anak
+c1028|Les privat & Al-Qur’an
+c1029|Bantuan urusan dokumen
+c1030|Foto & video
+c1031|Antar & belanja
+c1032|Tanda ✓ di samping nama Anda berarti admin telah memeriksa identitas Anda. Ini diperlukan untuk memasang iklan dan menawarkan jasa. Dua langkah — pemeriksaan hingga 48 jam:
+c1033|Pasang foto asli Anda dengan wajah terlihat jelas
+c1034|Foto sudah ada. Wajah Anda harus terlihat jelas
+c1035|Permintaan terkirim. Kami tinjau dalam 48 jam dan mengabari Anda di chat tim Nakhlio.
+c1036|Permintaan Anda sedang ditinjau — biasanya dalam 48 jam. Kami akan mengabari begitu selesai.
+c1037|Belum ada iklan
+c1038|Harian
+c1039|Siapa saja
+c1040|Berperabot
+c1041|Foto
+c1042|iklan
+c1043|Kode undangan
+c1044|Magaam hanya dengan undangan. Kodenya ada di tautan yang dikirim ke Anda (setelah “?i=”). Anda bisa menempel seluruh tautan.
+c1045|Masukkan kode undangan.
+c1046|Kode ini tidak ada. Periksa tautan dari teman Anda.
+c1047|Kode undangan Anda:
+c1048|Tautan disalin — tempel di chat WeChat.
