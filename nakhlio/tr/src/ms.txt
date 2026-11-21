@@ -1334,3 +1334,17 @@ c1073|Alamat internet anda menunjukkan “{c}”. Pengendali mudah alih sering m
 c1074|Sahkan dengan lokasi
 c1075|Benarkan akses lokasi dalam tetapan telefon dan cuba lagi.
 c1076|Isi ruangan ini.
+c1077|{n} tiada dalam kenalan anda
+c1078|Anda boleh membalas, menambah ke kenalan, menyekat atau melaporkan kepada pentadbiran.
+c1079|Tambah ke kenalan
+c1080|Buang daripada kenalan
+c1081|Ditambah ke kenalan anda. Hanya anda yang boleh melihatnya.
+c1082|Dibuang daripada kenalan
+c721|Sekat
+c722|Nyahsekat
+c1083|Sekat {n}? Dia tidak akan dapat menghantar mesej kepada anda.
+c1084|Pengguna disekat
+c1085|Sekatan dibuang
+c1086|Anda telah menyekat pengguna ini
+c1087|Apa yang berlaku? Terangkan ringkas untuk pentadbiran.
+c1088|Mesej di Magaam

@@ -1397,5 +1397,17 @@
 "c1073": "Your internet address shows “{c}”. Mobile operators often show another city. If you are in Medina, confirm it with your phone’s location.",
 "c1074": "Confirm with location",
 "c1075": "Allow location access in your phone settings and try again.",
-"c1076": "Fill in this field."
+"c1076": "Fill in this field.",
+"c1077": "{n} isn’t in your contacts",
+"c1078": "You can reply, add to contacts, block or report to the administration.",
+"c1079": "Add to contacts",
+"c1080": "Remove from contacts",
+"c1081": "Added to your contacts. Only you can see them.",
+"c1082": "Removed from contacts",
+"c1083": "Block {n}? They won’t be able to message you.",
+"c1084": "User blocked",
+"c1085": "User unblocked",
+"c1086": "You blocked this user",
+"c1087": "What happened? Describe it briefly for the administration.",
+"c1088": "Message on Magaam"
 }

@@ -1240,7 +1240,7 @@ function profileHtml(n) {
     <div class="pmeta">${p.dist ? `<span>${small('pin')}${esc(loc(p.dist))}</span>` : ''}${p.langs ? `<span>${small('globe')}${esc(p.langs)}</span>` : ''}</div>
     ${p.about ? `<p class="pabout">${esc(txt(p.about))}</p>` : ''}
     ${photos.length > 1 ? `<div class="pphotos">${photos.map(u => `<span style="background-image:url(${u})"></span>`).join('')}</div>` : ''}
-    <div class="pact">${me ? `<button class="btn soft full" data-act="go" data-v="editprofile">${small('user')}${t('edit_profile')}</button>` : `<button class="btn primary" data-act="dm" data-v="${esc(n)}">${ic('chat')}${t('dm')}</button><button class="btn soft" data-act="reportuser" aria-label="${t('report_user')}">${ic('flag')}</button>`}</div>
+    <div class="pact">${me ? `<button class="btn soft full" data-act="go" data-v="editprofile">${small('user')}${t('edit_profile')}</button>` : `<button class="btn primary" data-act="dm" data-v="${esc(n)}">${ic('chat')}${t('dm')}</button>${LV && LV.byName(n) && LV.byName(n).mg_on ? `<button class="btn soft mgw" data-act="mgwrite" data-v="${LV.byName(n).id}">${window.mgLogo ? mgLogo('sec') : ''}${MG_T && MG_T.write_mg ? L(MG_T.write_mg) : 'Magaam'}</button>` : ''}<button class="btn soft" data-act="reportuser" aria-label="${t('report_user')}">${ic('flag')}</button>`}</div>
   </div>
   ${me ? docsBlock() + accBlock() : ''}${badgesBlock(n, p, me)}
   <div class="block"><h4>${t('listings_l')}</h4>${items.length ? `<div class="list">${items.map(x => PARCELS.includes(x) ? parcelRow(x) : HELP.includes(x) ? helpRow(x) : adRow(x)).join('')}</div>` : `<p class="note">${t('no_listings')}</p>`}</div>
@@ -1572,7 +1572,7 @@ function openDM(name) {
     const it = cur().v === 'item' ? findItem(cur().id) : cur().v === 'lst' ? lstFind(cur().id) : null; const fail = (e) => { console.warn(e); toast(FXL('send_fail')); };
     const open = (c) => { const key = 'D:' + pr.id; S.chats[key] = Object.assign(S.chats[key] || { msgs: [] }, { live: true, cid: c.id, kind: 'dm', t: Date.now() }); save(); go('chat', { id: key, draft: it ? txt(it.title) + ' — ' : '' }); };
     if (it && it.live && it.seller.uid === pr.id) { LV.itemChat(it.id, pr.id).then(open).catch(fail); return; }
-    LV.rel().then(rel => { if (!rel.friends.has(pr.id)) { toast(L(MG_T.dm_lock)); return; } return LV.dmChat(pr.id).then(open); }).catch(fail); return; }
+    LV.dmChat(pr.id).then(open).catch(fail); return; }
   const id = 'U:' + name;
   if (!S.chats[id]) S.chats[id] = { msgs: [], person: name };
   S.chats[id].t = S.chats[id].t || Date.now(); save();

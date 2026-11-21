@@ -1334,3 +1334,17 @@ c1073|İnternet adresiniz “{c}” gösteriyor. Mobil operatörler çoğu zaman
 c1074|Konumla doğrula
 c1075|Telefon ayarlarından konum erişimine izin verip tekrar deneyin.
 c1076|Bu alanı doldurun.
+c1077|{n} kişilerinizde değil
+c1078|Yanıtlayabilir, kişilere ekleyebilir, engelleyebilir veya yönetime şikâyet edebilirsiniz.
+c1079|Kişilere ekle
+c1080|Kişilerden çıkar
+c1081|Kişilerinize eklendi. Onları yalnızca siz görebilirsiniz.
+c1082|Kişilerden çıkarıldı
+c721|Engelle
+c722|Engeli kaldır
+c1083|{n} engellensin mi? Size mesaj gönderemeyecek.
+c1084|Kullanıcı engellendi
+c1085|Engel kaldırıldı
+c1086|Bu kullanıcıyı engellediniz
+c1087|Ne oldu? Yönetim için kısaca yazın.
+c1088|Magaam’da yaz

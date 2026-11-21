@@ -1334,3 +1334,17 @@ c1073|Alamat internet Anda menunjukkan “{c}”. Operator seluler sering menamp
 c1074|Konfirmasi dengan lokasi
 c1075|Izinkan akses lokasi di pengaturan ponsel lalu coba lagi.
 c1076|Isi kolom ini.
+c1077|{n} tidak ada di kontak Anda
+c1078|Anda bisa membalas, menambahkan ke kontak, memblokir, atau melapor ke admin.
+c1079|Tambah ke kontak
+c1080|Hapus dari kontak
+c1081|Ditambahkan ke kontak Anda. Hanya Anda yang bisa melihatnya.
+c1082|Dihapus dari kontak
+c721|Blokir
+c722|Buka blokir
+c1083|Blokir {n}? Dia tidak akan bisa mengirimi Anda pesan.
+c1084|Pengguna diblokir
+c1085|Blokir dibuka
+c1086|Anda memblokir pengguna ini
+c1087|Apa yang terjadi? Jelaskan singkat untuk admin.
+c1088|Kirim pesan di Magaam

@@ -158,10 +158,15 @@ L.rel = async () => {
   const fo = ok(await sb.from('follows').select('*').eq('follower', me));
   const friends = new Set(), out = new Set(), inc = [];
   fr.forEach(r => { const o = r.from_id === me ? r.to_id : r.from_id; if (r.status === 'accepted') friends.add(o); else if (r.status === 'pending') { if (r.from_id === me) out.add(o); else inc.push(r); } });
-  L.R = { friends, out, inc, follow: new Set(fo.map(x => x.followee)) };
+  const ct = await sb.from('mg_contacts').select('contact').eq('owner', me); const contacts = new Set((ct.data || []).map(x => x.contact)); contacts.forEach(c => friends.add(c));
+  const bl = await sb.from('mg_blocks').select('blocked').eq('blocker', me); const blocked = new Set((bl.data || []).map(x => x.blocked));
+  L.R = { friends, out, inc, contacts, blocked, follow: new Set(fo.map(x => x.followee)) };
   return L.R;
 };
 L.follow = async (id, on) => { if (on) ok(await sb.from('follows').insert({ follower: L.user.id, followee: id })); else ok(await sb.from('follows').delete().eq('follower', L.user.id).eq('followee', id)); };
+L.addContact = async (id) => ok(await sb.from('mg_contacts').upsert({ owner: L.user.id, contact: id }));
+L.removeContact = async (id) => ok(await sb.from('mg_contacts').delete().eq('owner', L.user.id).eq('contact', id));
+L.block = async (id, on) => on ? ok(await sb.from('mg_blocks').upsert({ blocker: L.user.id, blocked: id })) : ok(await sb.from('mg_blocks').delete().eq('blocker', L.user.id).eq('blocked', id));
 L.friendRequest = async (id) => ok(await sb.from('friend_requests').insert({ from_id: L.user.id, to_id: id }));
 L.answerRequest = async (reqId, accept) => ok(await sb.from('friend_requests').update({ status: accept ? 'accepted' : 'declined' }).eq('id', reqId));
 L.counts = async (id) => {

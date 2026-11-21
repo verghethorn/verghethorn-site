@@ -1334,3 +1334,17 @@ c1073|Votre adresse internet indique « {c} ». Les opérateurs mobiles affichen
 c1074|Confirmer avec la localisation
 c1075|Autorisez la localisation dans les réglages du téléphone et réessayez.
 c1076|Remplissez ce champ.
+c1077|{n} n’est pas dans vos contacts
+c1078|Vous pouvez répondre, l’ajouter à vos contacts, le bloquer ou le signaler à l’administration.
+c1079|Ajouter aux contacts
+c1080|Retirer des contacts
+c1081|Ajouté à vos contacts. Vous seul les voyez.
+c1082|Retiré des contacts
+c721|Bloquer
+c722|Débloquer
+c1083|Bloquer {n} ? Il ne pourra plus vous écrire.
+c1084|Utilisateur bloqué
+c1085|Utilisateur débloqué
+c1086|Vous avez bloqué cet utilisateur
+c1087|Que s’est-il passé ? Décrivez-le brièvement pour l’administration.
+c1088|Écrire sur Magaam
