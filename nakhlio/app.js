@@ -270,12 +270,9 @@ V.home = () => {
   return { tabs: true, raw: true, html: `
   <div class="hero hero3">${skyline()}<div class="hero3-pat" aria-hidden="true"></div>
     <button class="lang-pill hero2-lang" data-act="go" data-v="lang">${ic('globe')}${esc((LANGS.find(l => l.code === lang) || {}).name)}</button>
-    <div class="hero3-c"><span class="hero3-logo">${logo('rgba(255,255,255,.14)')}</span>
-      <small class="hero3-eye">${lang === 'ar' ? '' : XL('h_eye') + ' · '}<span lang="ar" dir="rtl">المدينة المنورة</span></small>
-      <h2 class="hero3-t">${XL('h3_title')}</h2><p class="hero3-s">${XL('h3_sub')}</p>
-      <div class="hero3-orn" aria-hidden="true"><i></i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5l2.6 4.2 4.8-1.2-1.2 4.8 4.3 2.7-4.3 2.7 1.2 4.8-4.8-1.2L12 22.5l-2.6-4.2-4.8 1.2 1.2-4.8L1.5 12l4.3-2.7-1.2-4.8 4.8 1.2z" fill="currentColor"/></svg><i></i></div>
-      <figure class="hero3-ayah"><blockquote lang="ar" dir="rtl">﴿ وَتَعَاوَنُوا عَلَى الْبِرِّ وَالتَّقْوَىٰ ﴾</blockquote>${lang === 'ar' ? '' : `<figcaption>«${XL('h3_ayah')}»</figcaption>`}<cite>${XL('h3_ref')}</cite></figure>
-      <span class="hero3-only">${ic('pin')}${XL('h3_only')}</span></div>
+    <div class="hero3-c hero4"><span class="hero3-logo">${logo('rgba(255,255,255,.14)')}</span>
+      <span class="hero4-line" aria-hidden="true"></span>
+      ${lang === 'ar' ? '' : `<p class="hero4-loc">${XL('h4_loc')}</p>`}<p class="hero4-ar" lang="ar" dir="rtl">المدينة المنورة — المملكة العربية السعودية</p></div>
   </div>
   <div class="prayer" id="prayerCard">
     <div class="prayer-head"><span class="prayer-ico">${ic('moon')}</span><div><small>${t('next_prayer')}</small><b>${t(np.nx)} · <span class="num">${hm(np.pt[np.nx])}</span></b></div>
@@ -373,6 +370,7 @@ const LX = {
   h3_ayah: X3('Помогайте друг другу в благочестии и богобоязненности', 'Help one another in righteousness and piety', 'وتعاونوا على البر والتقوى'),
   h3_ref: X3('Коран · 5:2', 'Quran · 5:2', 'القرآن · ٥:٢'),
   h3_only: X3('Только для тех, кто сейчас в Медине', 'Only for those who are in Medina now', 'فقط لمن هم في المدينة الآن'),
+  h4_loc: X3('Медина — Саудовская Аравия', 'Medina — Saudi Arabia', 'المدينة المنورة — المملكة العربية السعودية'),
   err_req: X3('Заполните это поле.', 'Fill in this field.', 'املأ هذا الحقل.'),
   fresh: X3('Новые объявления', 'New listings', 'أحدث الإعلانات'),
   count_n: X3('объявл.', 'listings', 'إعلانات'), loading: X3('Загружаем…', 'Loading…', 'جارٍ التحميل…'),
