@@ -201,8 +201,8 @@ L.report = async (type, id, reason, extra) => ok(await sb.from('reports').insert
 L.reports = async () => { const rows = ok(await sb.from('reports').select('*').order('status', { ascending: false }).order('created_at', { ascending: false }).limit(100)); await L.prof(rows.map(r => r.reporter).concat(rows.map(r => r.target_author), rows.filter(r => r.target_type === 'user').map(r => r.target_id))); return rows; };
 L.stats = async () => ok(await sb.rpc('admin_stats'));
 L.searchUsers = async (q, f, n) => { let s = sb.from('profiles').select('*', { count: 'exact' });
-  if (q) s = s.ilike('name', '%' + q.replace(/[%_]/g, '') + '%');
-  if (f === 'admins') s = s.eq('is_admin', true); else if (f === 'banned') s = s.eq('banned', true); else if (f === 'verified') s = s.eq('verified', true);
+  const qq = String(q || '').replace(/[%_,()*\\"]/g, '').trim(); if (qq) s = s.or(['name', 'mg_name', 'mg_handle', 'invite_code'].map(c => c + '.ilike.%' + qq + '%').join(','));
+  if (f === 'admins') s = s.eq('is_admin', true); else if (f === 'banned') s = s.eq('banned', true); else if (f === 'verified') s = s.eq('verified', true); else if (f === 'mg') s = s.eq('mg_on', true); else if (f === 'new7') s = s.gte('created_at', new Date(Date.now() - 7 * 864e5).toISOString());
   const r = await s.order('created_at', { ascending: false }).range(0, (n || 50) - 1); if (r.error) throw r.error; r.data.forEach(p => PC[p.id] = p); return { rows: r.data, count: r.count || 0 }; };
 L.userDms = async (uid) => { const rows = ok(await sb.from('chats').select('*').eq('kind', 'dm').or(`user1.eq.${uid},user2.eq.${uid}`).order('last_at', { ascending: false }).limit(100)); await L.prof(rows.flatMap(c => [c.user1, c.user2]));
   const last = await Promise.all(rows.map(c => sb.from('messages').select('*').eq('chat_id', c.id).order('created_at', { ascending: false }).limit(1).then(r => (r.data || [])[0] || null))); rows.forEach((c, i) => c.last = last[i]); return rows; };

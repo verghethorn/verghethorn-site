@@ -982,7 +982,7 @@ c732|Yönetici yap
 c733|Yönetici yetkisini kaldır
 c734|Yöneticiler
 c735|En fazla 5 yönetici olabilir. Önce birinin yetkisini kaldırın.
-c736|İsme göre ara
+c736|İsim, Magaam ID veya kod
 c737|Henüz özel yazışma yok
 c738|Baş yönetici görünümü. Burada yalnızca bakabilir ve ihlalleri silebilirsiniz, yazamazsınız.
 c739|Yalnızca görüntüleme

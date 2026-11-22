@@ -1442,7 +1442,7 @@ function adminProfile() {
   const st = want('adm:stats', () => LV.stats()) || {};
   const row = (act, v, k, icn, label, n) => `<button data-act="${act}" ${v ? `data-v="${v}"` : ''} ${k ? `data-k="${k}"` : ''}><i class="b-palm c-palm">${ic(icn)}</i><span class="grow">${label}</span>${n ? `<span class="tag green num">${nf(n)}</span>` : ''}${ic('chev', 'flip chev')}</button>`;
   return { tabs: true, html: topbar(FXL('adm_badge'), { noBack: true }) + `<div class="wrap narrow">
-    <div class="admcard"><span class="admlogo">${logo()}</span><h2>${FXL('nk_admin')}</h2><p>${isOwner() ? FXL('owner_l') : FXL('adm')}</p><div class="admnums"><div><b class="num">${st.users == null ? '…' : nf(st.users)}</b><small>${FXL('st_users')} Nakhlio</small></div><div><b class="num">${st.mg_users == null ? '…' : nf(st.mg_users)}</b><small>${FXL('st_mg_users')}</small></div><div><b class="num">${st.new7 == null ? '…' : nf(st.new7)}</b><small>${FXL('st_new7')}</small></div></div></div>
+    <div class="admcard"><span class="admlogo">${logo()}</span><h2>${FXL('nk_admin')}</h2><p>${isOwner() ? FXL('owner_l') : FXL('adm')}</p><div class="admnums"><button data-act="admusers" data-v="all"><b class="num">${st.users == null ? '…' : nf(st.users)}</b><small>${FXL('st_users')} Nakhlio</small></button><button data-act="admusers" data-v="mg"><b class="num">${st.mg_users == null ? '…' : nf(st.mg_users)}</b><small>${FXL('st_mg_users')}</small></button><button data-act="admusers" data-v="new7"><b class="num">${st.new7 == null ? '…' : nf(st.new7)}</b><small>${FXL('st_new7')}</small></button></div></div>
     <div class="plist" style="margin-top:14px">${row('admop', 'chats', '', 'headset', FXL('tab_chats'), st.support)}${row('admop', 'reports', '', 'flag', FXL('tab_reports'), st.reports)}${row('admop', 'verify', '', 'check', FXL('tab_verify'), st.verify)}${row('admop', 'users', '', 'users', FXL('tab_users'), st.users)}</div>
     <div class="plist" style="margin-top:14px"><button data-act="notifset"><i class="b-sky c-sky">${ic('siren')}</i><span class="grow">${FXL('notif_t')}</span>${ic('chev', 'flip chev')}</button><button data-act="go" data-v="lang"><i class="b-palm c-palm">${ic('globe')}</i><span class="grow">${t('language')}</span>${ic('chev', 'flip chev')}</button></div>
     <div style="margin-top:14px">${admSwitch()}</div></div>` };
@@ -1476,7 +1476,7 @@ const operatorView = (p) => {
     liveSyncChats(); const k = p.k || 'chats';
     const st = want('adm:stats', () => LV.stats());
     const stat = (n, label, act, v) => `<button class="opstat" ${act ? `data-act="${act}" data-v="${v}"` : 'data-act="noop"'}><b class="num">${n == null ? '…' : nf(n)}</b><small>${label}</small></button>`;
-    const strip = `<div class="opstats">${stat(st && st.users, FXL('st_users'), 'ufilt', 'all')}${stat(st && st.mg_users, FXL('st_mg_users'), 'ufilt', 'all')}${stat(st && st.verify, FXL('tab_verify'), 'opk', 'verify')}${stat(st && st.new7, FXL('st_new7'), 'ufilt', 'all')}${stat(st && st.reports, FXL('tab_reports'), 'opk', 'reports')}${stat(st && st.support, FXL('st_support'), 'opk', 'chats')}${stat(st && st.banned, FXL('st_banned'), 'ufilt', 'banned')}${stat(st && st.verified, FXL('st_verified'), 'ufilt', 'verified')}${stat(st && st.admins, FXL('st_admins') + ' / 5', 'ufilt', 'admins')}</div>`;
+    const strip = `<div class="opstats">${stat(st && st.users, FXL('st_users') + ' Nakhlio', 'ufilt', 'all')}${stat(st && st.mg_users, FXL('st_mg_users'), 'ufilt', 'mg')}${stat(st && st.verify, FXL('tab_verify'), 'opk', 'verify')}${stat(st && st.new7, FXL('st_new7'), 'ufilt', 'new7')}${stat(st && st.reports, FXL('tab_reports'), 'opk', 'reports')}${stat(st && st.support, FXL('st_support'), 'opk', 'chats')}${stat(st && st.banned, FXL('st_banned'), 'ufilt', 'banned')}${stat(st && st.verified, FXL('st_verified'), 'ufilt', 'verified')}${stat(st && st.admins, FXL('st_admins') + ' / 5', 'ufilt', 'admins')}</div>`;
     const seg = `<div class="seg" style="margin:4px 0 14px">${['chats', 'reports', 'verify', 'users'].map(x => `<button class="${x === k || ((k === 'udms' || k === 'umg') && x === 'users') ? 'on' : ''}" data-act="opk" data-v="${x}">${FXL('tab_' + x)}${x === 'verify' && st && st.verify ? ` <span class="num">${st.verify}</span>` : ''}</button>`).join('')}</div>`;
     const uRow = (u) => `<button class="row-card" data-act="admuser" data-v="${u.id}">${liveAv(u.id)}<span class="grow"><span class="ttl" style="display:block">${esc(u.name || '…')}${u.verified ? ' ✓' : ''}</span><span class="sub" style="display:block">${u.is_owner ? FXL('owner_l') + ' · ' : u.is_admin ? FXL('adm') + ' · ' : ''}${u.banned ? `<b style="color:var(--rose)">${FXL('banned_l')}</b> · ` : ''}${u.gender === 'f' ? t('female') : t('male')} · ${new Date(u.created_at).toLocaleDateString(locale())}</span></span></button>`;
     let body = '';
@@ -1485,7 +1485,7 @@ const operatorView = (p) => {
         return `<button class="row-card" data-act="go" data-v="chat" data-id="${id}">${liveAv(c.user1)}<span class="grow"><span class="ttl" style="display:block">${esc(li.title)}</span><span class="sub" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${last ? esc(String(last.text).slice(0, 80)) : ''}</span></span><small class="num">${new Date(c.t).toLocaleDateString(locale())}</small></button>`; }).join('')}</div>` : emptyBlock(t('chats_empty'), 'chat').replace(t('nothing_d'), ''); }
     else if (k === 'users') { const f = p.f || 'all', q = p.q || '', n = p.n || 50;
       const res = want('adm:u:' + f + ':' + q + ':' + n, () => LV.searchUsers(q, f, n));
-      const chips = `<div class="chips" style="margin-top:0">${['all', 'admins', 'banned', 'verified'].map(x => `<button class="chip ${x === f ? 'on' : ''}" data-act="ufilt" data-v="${x}">${x === 'all' ? t('all') : x === 'admins' ? FXL('st_admins') : x === 'banned' ? FXL('st_banned') : FXL('st_verified')}</button>`).join('')}</div>`;
+      const chips = `<div class="chips" style="margin-top:0">${['all', 'mg', 'new7', 'verified', 'admins', 'banned'].map(x => `<button class="chip ${x === f ? 'on' : ''}" data-act="ufilt" data-v="${x}">${x === 'all' ? 'Nakhlio' : x === 'mg' ? 'Magaam' : x === 'new7' ? FXL('st_new7') : x === 'admins' ? FXL('st_admins') : x === 'banned' ? FXL('st_banned') : FXL('st_verified')}</button>`).join('')}</div>`;
       const search = `<div class="crow" style="margin:6px 0 10px"><input id="usq" type="search" value="${esc(q)}" placeholder="${FXL('user_search')}" aria-label="${FXL('user_search')}" style="flex:1;min-width:0;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font:inherit;background:var(--card)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.nextElementSibling.click()}"><button class="btn sm primary" data-act="usearch">${FXL('find')}</button></div>`;
       body = search + chips + (res === undefined ? `<p class="note">…</p>` : !res ? `<p class="note">${FXL('send_fail')}</p>` : `<p class="note" style="margin:8px 0">${FXL('found')}: <b class="num">${nf(res.count)}</b>${res.count > res.rows.length ? ` · ${FXL('shown')} <span class="num">${nf(res.rows.length)}</span>` : ''}</p><div class="list one">${res.rows.map(uRow).join('')}</div>${res.count > res.rows.length ? `<button class="btn soft full" style="margin-top:12px" data-act="umore">${FXL('more')}</button>` : ''}`); }
     else if (k === 'verify') { const vr = want('adm:vf', () => LV.verifyList());
@@ -1539,6 +1539,8 @@ function authSheet() {
 const AUTH = ['support', 'lstnew', 'sorder', 'write', 'dm', 'reply', 'comment', 'csend', 'postad', 'postparcel', 'compose', 'going', 'helped', 'rreply', 'verify', 'report', 'reportuser', 'toastdemo'];
 const guestLock = (title, txt0) => ({ tabs: true, html: topbar(title, { noBack: stack.length < 2 }) + `<div class="wrap"><div class="empty">${emptyIllus('lock')}<b>${title}</b><p style="margin:6px auto 18px;max-width:34ch">${txt0}</p><button class="btn primary" data-act="startreg">${ic('user')}${t('create_profile')}</button></div></div>` });
 /* ---------- events ---------- */
+let usqT = 0;
+root.addEventListener('input', (e) => { if (e.target.id !== 'usq') return; clearTimeout(usqT); const v = e.target.value; usqT = setTimeout(() => { const c = cur(); if (c.v !== 'operator') return; c.q = v.trim(); c.n = 50; render(); const el = document.getElementById('usq'); if (el) { el.focus(); try { el.setSelectionRange(el.value.length, el.value.length); } catch (x) {} } }, 350); });
 root.addEventListener('click', (e) => {
   window.__lastTarget = e.target;
   const el = e.target.closest('[data-act]'); if (!el) return;
@@ -1552,6 +1554,7 @@ root.addEventListener('click', (e) => {
     case 'opk': cur().k = v; render(); break;
     case 'admuser': admUserSheet(v); break;
     case 'admop': go('operator', { k: v }); break;
+    case 'admusers': go('operator', { k: 'users', f: v || 'all' }); break;
     case 'notifset': notifSheet(); break;
     case 'vfopen': verifySheet(v === 'mg'); break;
     case 'vfyes': case 'vfno': { const reqs = (DATA['adm:vf'] || {}).v || []; const rq = reqs.find(x => String(x.id) === v); if (!rq) break; const yes = a === 'vfyes';
@@ -1761,6 +1764,7 @@ function parcelSheet() {
 
 /* ---------- render ---------- */
 let prayerTimer = null;
+let lastNavKey = '';
 function render(scrollTop) {
   setDoc();
   const c = cur(); const fn = V[c.v] || V.home; const r = fn(c);
@@ -1774,9 +1778,12 @@ function render(scrollTop) {
   const dsk = document.body.classList.contains('dsk');
   const html = r.raw && r.html.trim().startsWith('<div class="gallery') || r.html.trim().startsWith('<div class="item-head') ? `<div class="detail">${r.html}</div>` : r.html;
   const dnav = dsk ? `<header class="dnav"><div class="dnav-in"><button class="brand" data-act="tab" data-v="home" style="color:var(--palm)">${logo()}Nakhlio</button><nav>${[['home', 'home'], ['explore', 'grid'], ['chats', 'chat'], ['saved', 'heart'], ['profile', 'user']].map(([v, i]) => { const n = v === 'chats' ? Object.keys(S.chats).length : 0; return `<button class="${stack[0].v === v ? 'on' : ''}" data-act="tab" data-v="${v}">${ic(i)}${t('tab_' + v)}${n ? `<span class="dot num">${nf(n)}</span>` : ''}</button>`; }).join('')}</nav><button class="lang-pill dark" data-act="go" data-v="lang">${ic('globe')}${esc((LANGS.find(l => l.code === lang) || {}).name)}</button></div></header>` : '';
-  root.innerHTML = `<div class="app">${dnav}<div class="scroller"><div class="view ${r.tabs ? '' : 'no-tabs'}">${html}</div></div>${dsk ? '' : tabsHtml}${cta}${comp}</div>`;
+  const ae = document.activeElement; const keepF = ae && ['usq', 'q2'].includes(ae.id) ? { id: ae.id, s: ae.selectionStart, e: ae.selectionEnd } : null;
+  const navKey = stack.length + ':' + c.v + ':' + (c.id || '') + ':' + (c.uid || ''); const still = navKey === lastNavKey; lastNavKey = navKey;
+  root.innerHTML = `<div class="app">${dnav}<div class="scroller"><div class="view ${r.tabs ? '' : 'no-tabs'}${still ? ' still' : ''}">${html}</div></div>${dsk ? '' : tabsHtml}${cta}${comp}</div>`;
   const sc = document.querySelector('.scroller');
   window.scrollTo(0, keep);
+  if (keepF) { const el = document.getElementById(keepF.id); if (el) { el.focus({ preventScroll: true }); try { el.setSelectionRange(keepF.s, keepF.e); } catch (x) {} } }
   if (rootTabs.includes(c.v) && stack.length === 1) stack[0] = c;
   const fid = document.getElementById('faceid'); if (fid) fid.addEventListener('change', async () => { if (fid.checked) { try { await faceidEnable(); S.me.faceid = true; save(); toast(t('saved_ok')); } catch (e) { fid.checked = false; toast(FXL('faceid_fail')); } } else { S.me.faceid = false; delete S.faceidCred; save(); toast(t('saved_ok')); } });
   const oath = document.getElementById('oath'); if (oath) oath.addEventListener('change', () => { document.getElementById('oathgo').disabled = !oath.checked; });

@@ -982,7 +982,7 @@ c732|Nommer administrateur
 c733|Retirer les droits d’administrateur
 c734|Administrateurs
 c735|5 administrateurs au maximum. Retirez d’abord les droits de quelqu’un.
-c736|Rechercher par nom
+c736|Nom, ID Magaam ou code
 c737|Aucune conversation privée pour l’instant
 c738|Vue de l’administrateur principal. Ici, vous pouvez seulement consulter et supprimer les infractions, pas écrire.
 c739|Lecture seule

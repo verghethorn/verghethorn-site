@@ -145,7 +145,7 @@ window.FX = {
   unmake_admin: D('Снять права администратора', 'Remove administrator rights', 'إلغاء صلاحيات المشرف'),
   admins_n: D('Администраторов', 'Administrators', 'المشرفون'),
   admin_limit: D('Можно не больше 5 администраторов. Сначала снимите права с кого-то.', 'There can be at most 5 administrators. Remove someone’s rights first.', 'الحد الأقصى 5 مشرفين. ألغِ صلاحيات أحدهم أولاً.'),
-  user_search: D('Поиск по имени', 'Search by name', 'ابحث بالاسم'),
+  user_search: D('Имя, Magaam ID или код', 'Name, Magaam ID or code', 'الاسم أو معرّف Magaam أو الرمز'),
   no_dms: D('Личных переписок пока нет', 'No private conversations yet', 'لا توجد مراسلات خاصة بعد'),
   watch_mode: D('Режим главного администратора. Здесь вы пишете только от имени «Администрация Nakhlio» и можете удалять нарушения.', 'Chief administrator view. Here you write only as “Nakhlio administration” and can delete violations.', 'وضع المشرف العام. هنا تكتب باسم «إدارة نخليو» فقط ويمكنك حذف المخالفات.'),
   watch_dm: D('Вы смотрите чужую переписку как главный администратор. Писать сюда нельзя.', 'You are viewing someone else’s conversation as the chief administrator. You cannot write here.', 'أنت تشاهد مراسلة الآخرين بصفتك المشرف العام. لا يمكنك الكتابة هنا.'),

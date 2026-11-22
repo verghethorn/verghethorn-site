@@ -982,7 +982,7 @@ c732|Jadikan administrator
 c733|Cabut hak administrator
 c734|Administrator
 c735|Maksimal 5 administrator. Cabut hak salah satunya terlebih dahulu.
-c736|Cari berdasarkan nama
+c736|Nama, ID Magaam atau kode
 c737|Belum ada percakapan pribadi
 c738|Tampilan administrator utama. Di sini Anda hanya dapat melihat dan menghapus pelanggaran, tidak bisa menulis.
 c739|Hanya lihat
