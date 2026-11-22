@@ -78,6 +78,17 @@ const ic = (n, cls) => `<svg class="${cls || ''}" viewBox="0 0 24 24" fill="${FI
 /* ---------- brand & illustrations ---------- */
 const logo = (bg) => `<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="18" fill="${bg || '#0F5C4C'}"/><path d="M15 54V30a17 17 0 0 1 34 0v24z" fill="#F6F1E8"/><g fill="none" stroke="#0F5C4C" stroke-width="2.6" stroke-linecap="round"><path d="M32 52V31"/><path d="M32 31c-4-4-10-4.5-14-1.5"/><path d="M32 31c4-4 10-4.5 14-1.5"/><path d="M32 31c-3-6-8-8.5-12.5-8"/><path d="M32 31c3-6 8-8.5 12.5-8"/><path d="M32 31c-.5-6 .5-10 0-12.5"/></g><circle cx="29" cy="35" r="2.3" fill="#E3A23B"/><circle cx="35" cy="35" r="2.3" fill="#E3A23B"/><circle cx="32" cy="38.5" r="2.3" fill="#E3A23B"/></svg>`;
 const palmShape = (x, h, s) => `<g transform="translate(${x} ${120 - h}) scale(${s})"><path d="M0 ${h / s} C2 ${h / s * .6} -2 ${h / s * .3} 0 0" stroke="currentColor" stroke-width="4" fill="none"/><path d="M0 0c-10-8-24-8-32 2 10-3 20-2 32-2zM0 0c10-8 24-8 32 2-10-3-20-2-32-2zM0 0c-6-12-16-16-26-14 9 2 18 7 26 14zM0 0c6-12 16-16 26-14-9 2-18 7-26 14z" fill="currentColor"/></g>`;
+const skylineTall = () => `<svg class="sky sky-tall" viewBox="0 0 400 240" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+  <circle cx="318" cy="34" r="16" fill="#E3A23B" opacity=".9"/>
+  <g fill="rgba(255,255,255,.13)">
+    <rect x="56" y="30" width="9" height="210"/><path d="M53 32h15l-7.5-16z"/><rect x="59.5" y="6" width="2" height="8"/>
+    <rect x="335" y="30" width="9" height="210"/><path d="M332 32h15l-7.5-16z"/><rect x="338.5" y="6" width="2" height="8"/>
+    <path d="M160 224V198a40 40 0 0 1 80 0v26z"/>
+  </g>
+  <path d="M178 198a22 22 0 0 1 44 0z" fill="#2FA07F" opacity=".9"/><rect x="199" y="166" width="2" height="9" fill="#2FA07F"/>
+  <g transform="translate(0 100)"><g color="rgba(255,255,255,.10)">${palmShape(22, 78, 1)}${palmShape(378, 70, .9)}</g><g color="rgba(255,255,255,.18)">${palmShape(292, 50, .7)}${palmShape(108, 46, .6)}</g></g>
+  <rect x="0" y="216" width="400" height="8" fill="rgba(255,255,255,.12)"/>
+</svg>`;
 const skyline = () => `<svg class="sky" viewBox="0 0 400 120" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
   <circle cx="318" cy="38" r="20" fill="#E3A23B" opacity=".9"/>
   <g color="rgba(255,255,255,.10)">${palmShape(22, 78, 1)}${palmShape(372, 70, .9)}</g>
@@ -268,7 +279,7 @@ V.home = () => {
   const prow = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].map(k => `<div class="${k === np.nx ? 'on' : ''}">${t(k)}<b class="num">${hm(np.pt[k])}</b></div>`).join('');
   const nextDay = DAYS.map(d => ({ d, left: Math.ceil((new Date(d.date + 'T00:00:00+03:00') - Date.now()) / 864e5) })).filter(x => x.left >= 0)[0];
   return { tabs: true, raw: true, html: `
-  <div class="hero hero3">${skyline()}<div class="hero3-pat" aria-hidden="true"></div>
+  <div class="hero hero3">${skylineTall()}<div class="hero3-pat" aria-hidden="true"></div>
     <button class="lang-pill hero2-lang" data-act="go" data-v="lang">${ic('globe')}${esc((LANGS.find(l => l.code === lang) || {}).name)}</button>
     <div class="hero3-c hero4" dir="ltr" lang="en">
       <p class="hero4-loc">Medina — Saudi Arabia</p>
