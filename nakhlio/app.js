@@ -269,7 +269,7 @@ V.home = () => {
   const nextDay = DAYS.map(d => ({ d, left: Math.ceil((new Date(d.date + 'T00:00:00+03:00') - Date.now()) / 864e5) })).filter(x => x.left >= 0)[0];
   return { tabs: true, raw: true, html: `
   <div class="hero hero3 hero5">${skyline()}<div class="hero3-pat" aria-hidden="true"></div><span class="hero-sbar" aria-hidden="true"></span>
-    <button class="lang-pill hero2-lang" data-act="go" data-v="lang">${ic('globe')}${esc((LANGS.find(l => l.code === lang) || {}).name)}</button>
+    <button class="lang-pill hero2-lang" data-act="go" data-v="lang" aria-label="${esc((LANGS.find(l => l.code === lang) || {}).name)}">${ic('globe')}<span dir="ltr">${esc(lang.toUpperCase())}</span></button>
     <div class="hero3-c hero4" dir="ltr" lang="en">
       <h1 class="hero4-loc">Medina — Saudi Arabia</h1>
       <p class="hero5-tag">Life in Medina, made easy</p></div>
