@@ -1447,3 +1447,14 @@ c1173|Siti
 c1174|Adel
 c1175|Bilal
 c1176|Madinah — Arab Saudi
+
+c1177|Belum ada hasil untuk “{q}”
+c1178|Belum ada iklan seperti itu di laman ini. Cuba perkataan lain — lebih ringkas, satu atau dua perkataan.
+c1179|Belum ada iklan yang sepadan dalam “{s}”. Semak semula nanti, lihat seluruh bahagian atau siarkan iklan anda.
+c1180|Tiada padanan tepat untuk “{q}” — ini iklan serupa dari bahagian ini.
+c1181|Contohnya, anda boleh cari:
+c1182|Bahagian yang sepadan
+c1183|rumah
+c1184|kereta
+c1185|penterjemah
+c1186|bungkusan

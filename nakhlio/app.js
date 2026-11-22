@@ -284,6 +284,7 @@ V.home = () => {
     <div class="hero3-c hero4" dir="ltr" lang="en">
       <p class="hero4-loc">Medina — Saudi Arabia</p>
       <h1 class="hero4-big">Your life in Medina</h1></div>
+    <label class="search hero4-search">${ic('search')}<input id="q" type="search" placeholder="${t('search_ph')}" enterkeyhint="search" aria-label="${t('search_ph')}"></label>
   </div>
   <div class="prayer" id="prayerCard">
     <div class="prayer-head"><span class="prayer-ico">${ic('moon')}</span><div><small>${t('next_prayer')}</small><b>${t(np.nx)} · <span class="num">${hm(np.pt[np.nx])}</span></b></div>
@@ -381,6 +382,16 @@ const LX = {
   h3_ayah: X3('Помогайте друг другу в благочестии и богобоязненности', 'Help one another in righteousness and piety', 'وتعاونوا على البر والتقوى'),
   h3_ref: X3('Коран · 5:2', 'Quran · 5:2', 'القرآن · ٥:٢'),
   h3_only: X3('Только для тех, кто сейчас в Медине', 'Only for those who are in Medina now', 'فقط لمن هم في المدينة الآن'),
+  sr_none_t: X3('По запросу «{q}» пока ничего нет', 'Nothing yet for “{q}”', 'لا يوجد شيء بعد لـ «{q}»'),
+  sr_none: X3('На сайте пока нет такого объявления. Попробуйте написать по-другому — короче, одним-двумя словами.', 'There is no such listing on the site yet. Try different words — shorter, one or two words.', 'لا يوجد إعلان كهذا على الموقع بعد. جرّب كلمات أخرى — أقصر، كلمة أو كلمتين.'),
+  sr_sec_none: X3('В разделе «{s}» пока нет подходящих объявлений. Загляните позже, посмотрите весь раздел или разместите своё.', 'No matching listings in “{s}” yet. Check back later, browse the whole section or post your own.', 'لا توجد إعلانات مطابقة في «{s}» بعد. عد لاحقاً، أو تصفّح القسم كله، أو أضف إعلانك.'),
+  sr_wide: X3('Точных совпадений по «{q}» нет — вот похожие объявления из этого раздела.', 'No exact matches for “{q}” — here are similar listings from this section.', 'لا توجد نتائج مطابقة تماماً لـ «{q}» — إليك إعلانات مشابهة من هذا القسم.'),
+  sr_tip: X3('Например, можно искать так:', 'For example, you can search:', 'مثلاً يمكنك البحث هكذا:'),
+  sr_secs: X3('Подходящие разделы', 'Matching sections', 'أقسام مناسبة'),
+  ex_h: X3('квартира', 'apartment', 'شقة'),
+  ex_t: X3('машина', 'car', 'سيارة'),
+  ex_s: X3('переводчик', 'translator', 'مترجم'),
+  ex_p: X3('посылка', 'parcel', 'طرد'),
   h4_loc: X3('Медина — Саудовская Аравия', 'Medina — Saudi Arabia', 'المدينة المنورة — المملكة العربية السعودية'),
   err_req: X3('Заполните это поле.', 'Fill in this field.', 'املأ هذا الحقل.'),
   fresh: X3('Новые объявления', 'New listings', 'أحدث الإعلانات'),
@@ -610,16 +621,63 @@ V.vehicle = (p) => {
   </div>` };
 };
 
-V.explore = (p) => {
-  const q = (p.q || '').trim().toLowerCase();
-  let res = '';
-  if (q) {
-    const hs = HOUSING.filter(h => [L(h.title), h.title.en, h.title.ru, DIST[h.dist].en].join(' ').toLowerCase().includes(q));
-    const ts = TRANSPORT.filter(x => (x.model + ' ' + t(x.kind)).toLowerCase().includes(q));
-    const as = myAds().concat(ADS).filter(a => (txt(a.title) + ' ' + catLabel(a.cat, ADCATS) + ' ' + a.seller.name).toLowerCase().includes(q));
-    const ss = []; for (const c of SVC_CATS) for (const it of c.items) if ([L(it.title), it.title.en, it.title.ru, L(c.name)].join(' ').toLowerCase().includes(q)) ss.push(svcRow(c, it));
-    res = (hs.length + ts.length + as.length + ss.length) ? `<div class="count">${nf(hs.length + ts.length + as.length + ss.length)} ${tn('results', hs.length + ts.length + as.length + ss.length)}</div><div class="list">${ss.join('')}${hs.map(houseCard).join('')}${ts.map(trCard).join('')}${as.map(adRow).join('')}</div>` : emptyBlock();
+/* ---------- site search ---------- */
+const SNORM = (x) => String(x || '').toLowerCase().replace(/ё/g, 'е').replace(/[ً-ْٰـ]/g, '').replace(/[أإآ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه');
+const SSTOP = new Set(['в', 'во', 'на', 'у', 'и', 'с', 'со', 'к', 'по', 'для', 'из', 'от', 'до', 'за', 'или', 'мне', 'нужна', 'нужен', 'нужно', 'нужны', 'ищу', 'где', 'как', 'хочу', 'есть', 'the', 'a', 'an', 'in', 'on', 'at', 'for', 'of', 'to', 'and', 'or', 'near', 'need', 'want', 'looking', 'find', 'with', 'في', 'من', 'على', 'الى', 'إلى', 'عن', 'مع', 'او', 'أو', 'و']);
+const SINTENT = {
+  housing: ['квартир', 'жиль', 'комнат', 'студи', 'аренд', 'сним', 'снять', 'дом', 'вилл', 'кроват', 'койк', 'отел', 'гостиниц', 'ночлег', 'посуточ', 'apartment', 'flat', 'room', 'studio', 'house', 'housing', 'rent', 'villa', 'bed', 'hotel', 'stay', 'accommodation', 'شقه', 'شقق', 'سكن', 'غرفه', 'استوديو', 'ايجار', 'فيلا', 'فندق', 'سرير', 'فلیٹ', 'کمرہ', 'مکان', 'کرایہ', 'daire', 'oda', 'kiral', 'ev', 'apartemen', 'kamar', 'sewa', 'rumah', 'bilik', 'appartement', 'chambre', 'logement', 'location', 'louer', 'आवास', 'कमरा', 'किराय', 'ফ্ল্যাট', 'বাসা', 'ভাড়া', 'آپارتمان', 'اتاق', 'اجاره', 'خانه'],
+  transport: ['машин', 'авто', 'такси', 'самокат', 'скутер', 'мопед', 'велосипед', 'велик', 'прокат', 'водител', 'трансфер', 'car', 'auto', 'taxi', 'scooter', 'bike', 'bicycle', 'driver', 'transfer', 'transport', 'vehicle', 'سياره', 'سيارات', 'تاكسي', 'سكوتر', 'دراجه', 'سائق', 'مواصلات', 'گاڑی', 'ٹیکسی', 'araba', 'taksi', 'mobil', 'motor', 'kereta', 'voiture', 'vélo', 'velo', 'गाड़ी', 'টাক্সি', 'গাড়ি', 'ماشین', 'تاکسی'],
+  services: ['услуг', 'переводч', 'перевод', 'гид', 'экскурс', 'зиярат', 'сопровожд', 'няня', 'уборк', 'ремонт', 'мастер', 'repair', 'service', 'translator', 'translat', 'guide', 'tour', 'ziyarat', 'escort', 'nanny', 'cleaning', 'cleaner', 'خدمه', 'خدمات', 'مترجم', 'ترجمه', 'مرشد', 'زياره', 'تنظيف', 'صيانه', 'سروس', 'مترجم', 'hizmet', 'çevirmen', 'rehber', 'jasa', 'penerjemah', 'pemandu', 'perkhidmatan', 'traducteur', 'guide', 'सेवा', 'अनुवाद', 'সেবা', 'অনুবাদ', 'خدمت'],
+  parcels: ['посылк', 'передач', 'передать', 'груз', 'доставк', 'parcel', 'package', 'deliver', 'courier', 'send', 'طرد', 'شحن', 'توصيل', 'پارسل', 'kargo', 'paket', 'kiriman', 'bungkusan', 'colis', 'पार्सल', 'পার্সেল', 'بسته'],
+  ads: ['объявлен', 'продам', 'продаю', 'купить', 'куплю', 'еда', 'выпечк', 'одежд', 'ads', 'sell', 'buy', 'sale', 'food', 'clothes', 'اعلان', 'بيع', 'شراء', 'اكل'],
+};
+const SEC_OF = { housing: 'housing', transport: 'transport', services: 'services', parcels: 'parcels', ads: 'ads' };
+function siteSearch(raw) {
+  const qn = SNORM(raw).trim(); const toks = qn.split(/[\s,.;:!?()«»"'\/\\\-–—]+/).filter(w => w && w.length >= 2 && !SSTOP.has(w));
+  const stem = (w) => w.length >= 6 ? w.slice(0, w.length - 2) : w.length === 5 ? w.slice(0, 4) : w;
+  const intents = new Set(); const rest = [];
+  toks.forEach(w => { let hit = false; for (const k in SINTENT) if (SINTENT[k].some(x => w.startsWith(SNORM(x)) || (w.length >= 4 && SNORM(x).startsWith(w)))) { intents.add(k); hit = true; } if (!hit) rest.push(w); });
+  const words = (h) => SNORM(h).split(/[\s,.;:!?()«»"'\/\\\-–—]+/).filter(Boolean);
+  const has = (ws, w) => { const st = stem(w); return ws.some(x => x.startsWith(st) || (x.length >= 4 && st.startsWith(x))); };
+  const GEN = ['квартир', 'жиль', 'аренд', 'сним', 'снять', 'посуточ', 'apartment', 'flat', 'housing', 'rent', 'stay', 'accommodation', 'شقه', 'شقق', 'سكن', 'ايجار', 'машин', 'авто', 'прокат', 'car', 'auto', 'vehicle', 'transport', 'سياره', 'سيارات', 'مواصلات', 'услуг', 'service', 'خدمه', 'خدمات', 'посылк', 'parcel', 'package', 'طرد', 'объявлен', 'ads', 'اعلان'].map(SNORM);
+  const gen = (w) => GEN.some(x => w.startsWith(x));
+  let mode = 0; const match = (hay, sec) => { const ws = words(hay); const need = mode === 0 ? toks.filter(w => !(intents.has(sec) && gen(w))) : intents.has(sec) ? rest : null; if (!need) return false; if (!need.length) return intents.has(sec); return need.every(w => has(ws, w)); };
+  const T = (o) => o ? (typeof o === 'string' ? o : [L(o), o.en, o.ru, o.ar].join(' ')) : '';
+  const dn = (k) => T(DIST[k]);
+  const secName = (k) => [t('s_' + k), t('s_' + k + '_d')].join(' ');
+  const out = { toks, intents: [...intents], groups: [] };
+  const add = (sec, items, render) => { if (items.length) out.groups.push({ sec, n: items.length, html: items.map(render).join(''), wide: mode === 1 }); };
+  const collect = () => {
+  if (LV) {
+    ['housing', 'transport', 'services'].forEach(sec => add(sec, LST[sec].filter(x => !x.hidden && match([T(x.title), T(x.desc), dn(x.dist), x.cat, sec === 'services' ? T(svcK(x.cat)[2]) : '', sec === 'transport' ? XL(((VK.find(v => v[0] === x.cat) || VK[0])[2])) : '', sec === 'housing' ? XL('h_' + (x.d.htype || 'apt')) : '', secName(sec)].join(' '), sec)), lstCard));
+  } else {
+    add('housing', HOUSING.filter(h => match([T(h.title), dn(h.dist), secName('housing')].join(' '), 'housing')), houseCard);
+    add('transport', TRANSPORT.filter(x => match([x.model, t(x.kind), secName('transport')].join(' '), 'transport')), trCard);
+    const ss = []; for (const c of SVC_CATS) for (const it of c.items) if (match([T(it.title), T(c.name), secName('services')].join(' '), 'services')) ss.push(svcRow(c, it));
+    if (ss.length) out.groups.push({ sec: 'services', n: ss.length, html: ss.join(''), wide: mode === 1 });
   }
+  add('ads', myAds().concat(ADS).filter(a => !a.hidden && match([T(a.title), T(a.desc), catLabel(a.cat, ADCATS), a.seller && a.seller.name, secName('ads')].join(' '), 'ads')), adRow);
+  add('parcels', PARCELS.filter(x => match([x.from, x.to, T(x.desc), secName('parcels')].join(' '), 'parcels')), parcelRow);
+  };
+  collect(); if (!out.groups.length && intents.size) { mode = 1; collect(); }
+  out.secs = SECTIONS.filter(sc => intents.has(sc.k) || (toks.length && toks.every(w => has(words(secName(sc.k) + ' ' + T(LX['s_' + sc.k])), w))));
+  return out;
+}
+const secBtn = (k) => { const sc = SECTIONS.find(x => x.k === k); return `<button class="row-card" data-act="go" data-v="${k}"><span class="thumb b-${sc.c} c-${sc.c}" style="display:flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:16px">${k === 'mg' && window.mgLogo ? mgLogo('sec') : ic(sc.ic).replace('<svg', '<svg style="width:26px;height:26px"')}</span><span class="grow"><span class="ttl" style="display:block">${t('s_' + k)}</span><span class="sub" style="display:block">${t('s_' + k + '_d')}</span></span>${ic('chev', 'flip').replace('<svg', '<svg style="width:18px;height:18px;color:var(--ink-3)"')}</button>`; };
+function searchResults(raw) {
+  if (LV && lstLoading()) return `<p class="note" style="text-align:center;padding:24px 0">${XL('loading')}</p>`;
+  const r = siteSearch(raw); const total = r.groups.reduce((a, g) => a + g.n, 0);
+  const secs = r.secs.length ? `<div class="sec"><h3>${XL('sr_secs')}</h3></div><div class="list">${r.secs.map(sc => secBtn(sc.k)).join('')}</div>` : '';
+  if (total) return `<div class="count">${nf(total)} ${tn('results', total)}</div>${r.groups.map(g => `<div class="sec"><h3>${t('s_' + g.sec)}</h3><button data-act="go" data-v="${g.sec}">${t('see_all')}</button></div>${g.wide ? `<p class="note" style="margin:-4px 0 10px">${esc(XL('sr_wide').replace('{q}', raw.trim()))}</p>` : ''}<div class="list">${g.html}</div>`).join('')}${secs}`;
+  const ex = ['ex_h', 'ex_t', 'ex_s', 'ex_p'].map(k => `<button class="chip" data-act="srq" data-v="${esc(XL(k))}">${esc(XL(k))}</button>`).join('');
+  const it = r.intents.filter(k => SEC_OF[k])[0];
+  const msg = it ? XL('sr_sec_none').replace('{s}', t('s_' + it)) : XL('sr_none');
+  const act = it && ['housing', 'transport', 'services'].includes(it) ? `<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:14px"><button class="btn soft" data-act="go" data-v="${it}">${t('s_' + it)}</button><button class="btn primary" data-act="lstnew" data-v="${it}">${ic('plus')}${XL(it === 'housing' ? 'post_h' : it === 'transport' ? 'post_t' : 'post_s')}</button></div>` : it ? `<div style="margin-top:14px"><button class="btn soft" data-act="go" data-v="${it}">${t('see_all')}</button></div>` : '';
+  return `<div class="empty srempty">${emptyIllus('search')}<b>${esc(XL('sr_none_t').replace('{q}', raw.trim()))}</b>${esc(msg)}${act}</div><p class="note" style="margin:4px 0 8px;text-align:center">${XL('sr_tip')}</p><div class="srchips">${ex}</div>${secs}`;
+}
+V.explore = (p) => {
+  const q = (p.q || '').trim();
+  const res = q ? searchResults(q) : '';
   return { tabs: true, html: topbar(t('catalog'), { noBack: stack.length < 2 }) + `<div class="wrap">
     <label class="search" style="box-shadow:var(--shadow)">${ic('search')}<input id="q2" type="search" value="${esc(p.q || '')}" placeholder="${t('search_ph')}" enterkeyhint="search" aria-label="${t('search_ph')}"></label>
     ${res}
@@ -1567,6 +1625,7 @@ root.addEventListener('click', (e) => {
     case 'oprep': { const cid = v; LV.chat(cid).then(c => { if (!c) return toast(FXL('send_fail')); const key = 'O:' + c.id; S.chats[key] = { live: true, cid: c.id, kind: c.kind, user1: c.user1, user2: c.user2, t: Date.now(), msgs: [], watch: true }; LV.prof([c.user1, c.user2]).then(() => go('chat', { id: key })); }); break; }
     case 'umore': cur().n = (cur().n || 50) + 50; render(); break;
     case 'ufilt': cur().k = 'users'; cur().f = v; cur().n = 50; render(); break;
+    case 'srq': { if (stack[stack.length - 1].v === 'explore') { cur().q = v; render(); } else go('explore', { q: v }); break; }
     case 'usearch': { const inp = document.querySelector('#usq'); cur().q = inp ? inp.value.trim() : ''; cur().n = 50; render(); break; }
     case 'lrep_old': LV.report('post', v).then(() => toast(t('reported'))).catch(er => toast(FXL('send_fail'))); break;
     case 'ldel': { if (!confirm(FXL('act_delete') + '?')) break; const [ty, id2] = [v.slice(0, v.indexOf(':')), v.slice(v.indexOf(':') + 1)];

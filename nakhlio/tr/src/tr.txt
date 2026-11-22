@@ -1447,3 +1447,14 @@ c1173|Siti
 c1174|Adil
 c1175|Bilal
 c1176|Medine — Suudi Arabistan
+
+c1177|“{q}” için henüz bir şey yok
+c1178|Sitede henüz böyle bir ilan yok. Başka kelimelerle deneyin — daha kısa, bir iki kelime.
+c1179|“{s}” bölümünde henüz uygun ilan yok. Daha sonra tekrar bakın, tüm bölüme göz atın ya da kendi ilanınızı verin.
+c1180|“{q}” için tam eşleşme yok — bu bölümden benzer ilanlar:
+c1181|Örneğin şöyle arayabilirsiniz:
+c1182|Uygun bölümler
+c1183|daire
+c1184|araba
+c1185|çevirmen
+c1186|paket
