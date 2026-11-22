@@ -21,8 +21,8 @@ L.init = async () => {
 const FN = URL_ + '/functions/v1/login-code';
 const fn = async (body) => { const r = await fetch(FN, { method: 'POST', headers: { 'content-type': 'application/json', apikey: KEY }, body: JSON.stringify(body) }); let j = {}; try { j = await r.json(); } catch (e) {} return j; };
 let builtin = false;
-L.sendCode = async (email, lang) => {
-  const j = await fn({ action: 'send', email, lang }).catch(() => ({ error: 'not_configured' }));
+L.sendCode = async (email, lang, app) => {
+  const j = await fn({ action: 'send', email, lang, app: app || (window.MG_APP ? 'magaam' : 'nakhlio') }).catch(() => ({ error: 'not_configured' }));
   if (j.ok) { builtin = false; return true; }
   if (j.error === 'not_configured') { builtin = true; return sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } }).then(ok); }
   const e = new Error(j.error || 'send_failed'); e.code = j.error; throw e;

@@ -698,7 +698,7 @@ if (LV) {
   const regAct = async (a, el) => {
     if (a === 'mgrsend') { const em = document.getElementById('mgem'); if (em) MR.email = em.value.trim().toLowerCase(); const ls = document.getElementById('mglang'); if (ls && ls.value !== NK.lang && NK.setLang) NK.setLang(ls.value);
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(MR.email)) { MR.err = t('err_email'); MR.step = 1; return render(); }
-      el.disabled = true; MR.err = ''; try { await LV.sendCode(MR.email, NK.lang); MR.step = 2; toast(L(window.FX.code_sent) + ' ' + MR.email); } catch (e) { MR.err = L(window.FX.send_fail); }
+      el.disabled = true; MR.err = ''; try { await LV.sendCode(MR.email, NK.lang, 'magaam'); MR.step = 2; toast(L(window.FX.code_sent) + ' ' + MR.email); } catch (e) { MR.err = L(window.FX.send_fail); }
       return NK.boot ? NK.boot() : render(); }
     if (a === 'mgrback') { MR.step = 1; MR.err = ''; return render(); }
     if (a === 'mgrverify') { const c = (document.getElementById('mgcode') || {}).value || ''; if (c.replace(/\D/g, '').length < 6) { MR.err = L(window.FX.code_bad); return render(); }
