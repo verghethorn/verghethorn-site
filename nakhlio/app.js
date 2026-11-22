@@ -270,10 +270,9 @@ V.home = () => {
   return { tabs: true, raw: true, html: `
   <div class="hero hero3">${skyline()}<div class="hero3-pat" aria-hidden="true"></div>
     <button class="lang-pill hero2-lang" data-act="go" data-v="lang">${ic('globe')}${esc((LANGS.find(l => l.code === lang) || {}).name)}</button>
-    <div class="hero3-c hero4">
-      ${lang === 'ar' ? '' : `<p class="hero4-loc">${XL('h4_loc')}</p>`}<p class="hero4-ar" lang="ar" dir="rtl">المدينة المنورة — المملكة العربية السعودية</p>
-      <span class="hero4-line" aria-hidden="true"></span>
-      <figure class="hero4-ayah"><blockquote lang="ar" dir="rtl">وَتَعَاوَنُوا عَلَى الْبِرِّ وَالتَّقْوَىٰ</blockquote>${lang === 'ar' ? '' : `<figcaption>«${XL('h3_ayah')}»</figcaption>`}<cite>${XL('h3_ref')}</cite></figure></div>
+    <div class="hero3-c hero4" dir="ltr" lang="en">
+      <p class="hero4-loc">Medina — Saudi Arabia</p>
+      <h1 class="hero4-big">Your life in Medina</h1></div>
   </div>
   <div class="prayer" id="prayerCard">
     <div class="prayer-head"><span class="prayer-ico">${ic('moon')}</span><div><small>${t('next_prayer')}</small><b>${t(np.nx)} · <span class="num">${hm(np.pt[np.nx])}</span></b></div>
