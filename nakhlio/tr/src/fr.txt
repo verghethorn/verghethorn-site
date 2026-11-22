@@ -1458,3 +1458,12 @@ c1183|appartement
 c1184|voiture
 c1185|traducteur
 c1186|colis
+c1187|Espace utilisé
+c1188|Base de données : textes, annonces, profils
+c1189|Photos, messages vocaux et fichiers
+c1190|Largement assez d’espace. Offre gratuite.
+c1191|Plus de 60 % utilisés — prévoyez le passage à l’offre Pro.
+c1192|Presque plein — passez à l’offre Pro, sinon les publications s’arrêteront.
+c1193|messages
+c1194|fichiers
+c1195|En ligne simultanément — jusqu’à 200 personnes, trafic — 10 Go par mois (offre gratuite).

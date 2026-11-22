@@ -1458,3 +1458,12 @@ c1183|apartemen
 c1184|mobil
 c1185|penerjemah
 c1186|paket
+c1187|Ruang terpakai
+c1188|Database: teks, iklan, profil
+c1189|Foto, pesan suara, dan file
+c1190|Ruang masih cukup. Paket gratis.
+c1191|Lebih dari 60% terpakai — saatnya pindah ke paket Pro.
+c1192|Hampir penuh — pindah ke paket Pro, atau posting baru akan berhenti.
+c1193|pesan
+c1194|file
+c1195|Online bersamaan — hingga 200 orang, trafik — 10 GB per bulan (paket gratis).

@@ -1458,3 +1458,12 @@ c1183|rumah
 c1184|kereta
 c1185|penterjemah
 c1186|bungkusan
+c1187|Ruang digunakan
+c1188|Pangkalan data: teks, iklan, profil
+c1189|Foto, mesej suara dan fail
+c1190|Ruang mencukupi. Pelan percuma.
+c1191|Lebih 60% digunakan — tiba masa beralih ke pelan Pro.
+c1192|Hampir penuh — beralih ke pelan Pro, atau siaran baharu akan berhenti.
+c1193|mesej
+c1194|fail
+c1195|Dalam talian serentak — sehingga 200 orang, trafik — 10 GB sebulan (pelan percuma).

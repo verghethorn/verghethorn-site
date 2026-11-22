@@ -1458,3 +1458,12 @@ c1183|daire
 c1184|araba
 c1185|çevirmen
 c1186|paket
+c1187|Kullanılan alan
+c1188|Veritabanı: metinler, ilanlar, profiller
+c1189|Fotoğraflar, sesli mesajlar ve dosyalar
+c1190|Yeterli alan var. Ücretsiz plan.
+c1191|%60’tan fazlası dolu — Pro plana geçmeyi planlayın.
+c1192|Neredeyse dolu — Pro plana geçin, yoksa yeni paylaşımlar durur.
+c1193|mesaj
+c1194|dosya
+c1195|Aynı anda çevrimiçi — 200 kişiye kadar, trafik — ayda 10 GB (ücretsiz plan).

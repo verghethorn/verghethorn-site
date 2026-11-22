@@ -1223,6 +1223,7 @@ if (LV) {
         <div class="m8admcard"><span class="m8admlogo">${NKL}</span><b>${FXM('nk_admin')}</b><small>${FXM(pr.is_owner ? 'owner_l' : 'adm')}</small>
           <div class="m8admnums"><button data-act="admusers" data-v="mg"><b class="num">${st.mg_users == null ? '…' : nf(st.mg_users)}</b><small>${FXM('st_mg_users')}</small></button><button data-act="admusers" data-v="all"><b class="num">${st.users == null ? '…' : nf(st.users)}</b><small>${FXM('st_users')} Nakhlio</small></button><button data-act="admusers" data-v="new7"><b class="num">${st.new7 == null ? '…' : nf(st.new7)}</b><small>${FXM('st_new7')}</small></button></div></div>
         <p class="m8note" style="margin:0 4px 12px">${small('shield')} ${M('adm_anon')}</p>
+        ${NK.usageCard ? NK.usageCard('mg') : ''}
         <div class="m8list">${row('admop', ic('flag'), FXM('tab_reports') + n(st.reports), 'reports')}${row('admop', ic('check'), FXM('tab_verify') + n(st.verify), 'verify')}${row('admop', ic('headset'), FXM('tab_chats') + n(st.support), 'chats')}${row('admop', ic('users'), FXM('tab_users'), 'users')}</div>
         <div class="m8list">${row('mglangs', ic('globe'), t('language'), '', esc(langName(NK.lang)))}${row('notifset', ic('siren'), FXM('notif_t'))}</div>
         <div class="m8list">${row('admmode', ic('user'), FXM('adm_mode_off'))}</div></div>`, ''); }

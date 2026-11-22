@@ -1438,11 +1438,25 @@ V.profile = () => isAdmin() && LV ? adminProfile() : ({ tabs: true, html: topbar
   ${isAdmin() ? '' : '<!--'}<div class="plist" style="margin-top:14px"><button data-act="go" data-v="operator"><i class="b-clay c-clay">${ic('headset')}</i><span class="grow">${t('operator_panel')}<small>${t('operator_panel_d')}</small></span>${ic('chev', 'flip chev')}</button></div>${isAdmin() ? '' : '-->'}
   <div class="plist" style="margin-top:14px">${S.me ? '' : '<!--'}<button data-act="logout"><i class="b-sky c-sky">${ic('back', 'flip')}</i><span class="grow">${t('logout')}<small dir="ltr" style="text-align:start">${esc(S.me ? [S.me.phone, S.me.email].filter(Boolean).join(' · ') : '')}</small></span></button>${isAdmin() ? `<button data-act="reset"><i class="b-rose c-rose">${ic('x')}</i><span class="grow">${t('reset')}</span></button>` : ''}${S.me ? '' : '-->'}</div>
   </div>` });
+const USE_LIM = { db: 500 * 1048576, files: 1024 * 1048576 };
+const bytesTxt = (b) => b >= 1073741824 ? +(b / 1073741824).toFixed(2) + ' GB' : b >= 1048576 ? (b / 1048576).toFixed(b >= 104857600 ? 0 : 1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB';
+const usePct = (b, lim) => Math.min(100, b / lim * 100);
+const pctTxt = (p) => p > 0 && p < 1 ? '<1%' : Math.round(p) + '%';
+function usageMax() { const u = DATA['adm:usage'] && DATA['adm:usage'].v; return u ? Math.max(usePct(u.db, USE_LIM.db), usePct(u.files, USE_LIM.files)) : null; }
+function usageCard(cls) {
+  const u = want('adm:usage', () => LV.usage()); if (u === undefined) return `<div class="usecard ${cls || ''}"><b>${FXL('use_t')}</b><p class="note" style="margin:8px 0 0">…</p></div>`; if (!u) return '';
+  const row = (label, b, lim) => { const p = usePct(b, lim); const lv = p >= 85 ? 'bad' : p >= 60 ? 'mid' : 'ok';
+    return `<div class="userow"><div class="usetop"><span>${label}</span><b class="num ${lv}">${pctTxt(p)}</b></div><div class="usebar"><i class="${lv}" style="width:${Math.max(p, 1.5).toFixed(1)}%"></i></div><small class="num">${bytesTxt(b)} / ${bytesTxt(lim)}</small></div>`; };
+  const mx = usageMax(); const st = mx >= 85 ? 'use_full' : mx >= 60 ? 'use_warn' : 'use_ok';
+  return `<div class="usecard ${cls || ''}"><div class="usehd"><b>${FXL('use_t')}</b><span class="num ${mx >= 85 ? 'bad' : mx >= 60 ? 'mid' : 'ok'}">${pctTxt(mx)}</span></div>${row(FXL('use_db'), u.db, USE_LIM.db)}${row(FXL('use_files'), u.files, USE_LIM.files)}
+    <p class="usest ${mx >= 85 ? 'bad' : mx >= 60 ? 'mid' : 'ok'}">${FXL(st)}</p><p class="usecnt num">${nf(u.msgs)} ${FXL('use_msgs')} · ${nf(u.items)} ${FXL('use_items')} · ${nf(u.nfiles)} ${FXL('use_nfiles')}</p><p class="usecnt">${FXL('use_live')}</p></div>`;
+}
 function adminProfile() {
   const st = want('adm:stats', () => LV.stats()) || {};
   const row = (act, v, k, icn, label, n) => `<button data-act="${act}" ${v ? `data-v="${v}"` : ''} ${k ? `data-k="${k}"` : ''}><i class="b-palm c-palm">${ic(icn)}</i><span class="grow">${label}</span>${n ? `<span class="tag green num">${nf(n)}</span>` : ''}${ic('chev', 'flip chev')}</button>`;
   return { tabs: true, html: topbar(FXL('adm_badge'), { noBack: true }) + `<div class="wrap narrow">
     <div class="admcard"><span class="admlogo">${logo()}</span><h2>${FXL('nk_admin')}</h2><p>${isOwner() ? FXL('owner_l') : FXL('adm')}</p><div class="admnums"><button data-act="admusers" data-v="all"><b class="num">${st.users == null ? '…' : nf(st.users)}</b><small>${FXL('st_users')} Nakhlio</small></button><button data-act="admusers" data-v="mg"><b class="num">${st.mg_users == null ? '…' : nf(st.mg_users)}</b><small>${FXL('st_mg_users')}</small></button><button data-act="admusers" data-v="new7"><b class="num">${st.new7 == null ? '…' : nf(st.new7)}</b><small>${FXL('st_new7')}</small></button></div></div>
+    ${usageCard()}
     <div class="plist" style="margin-top:14px">${row('admop', 'chats', '', 'headset', FXL('tab_chats'), st.support)}${row('admop', 'reports', '', 'flag', FXL('tab_reports'), st.reports)}${row('admop', 'verify', '', 'check', FXL('tab_verify'), st.verify)}${row('admop', 'users', '', 'users', FXL('tab_users'), st.users)}</div>
     <div class="plist" style="margin-top:14px"><button data-act="notifset"><i class="b-sky c-sky">${ic('siren')}</i><span class="grow">${FXL('notif_t')}</span>${ic('chev', 'flip chev')}</button><button data-act="go" data-v="lang"><i class="b-palm c-palm">${ic('globe')}</i><span class="grow">${t('language')}</span>${ic('chev', 'flip chev')}</button></div>
     <div style="margin-top:14px">${admSwitch()}</div></div>` };
@@ -1476,7 +1490,7 @@ const operatorView = (p) => {
     liveSyncChats(); const k = p.k || 'chats';
     const st = want('adm:stats', () => LV.stats());
     const stat = (n, label, act, v) => `<button class="opstat" ${act ? `data-act="${act}" data-v="${v}"` : 'data-act="noop"'}><b class="num">${n == null ? '…' : nf(n)}</b><small>${label}</small></button>`;
-    const strip = `<div class="opstats">${stat(st && st.users, FXL('st_users') + ' Nakhlio', 'ufilt', 'all')}${stat(st && st.mg_users, FXL('st_mg_users'), 'ufilt', 'mg')}${stat(st && st.verify, FXL('tab_verify'), 'opk', 'verify')}${stat(st && st.new7, FXL('st_new7'), 'ufilt', 'new7')}${stat(st && st.reports, FXL('tab_reports'), 'opk', 'reports')}${stat(st && st.support, FXL('st_support'), 'opk', 'chats')}${stat(st && st.banned, FXL('st_banned'), 'ufilt', 'banned')}${stat(st && st.verified, FXL('st_verified'), 'ufilt', 'verified')}${stat(st && st.admins, FXL('st_admins') + ' / 5', 'ufilt', 'admins')}</div>`;
+    const strip = `<div class="opstats">${stat(st && st.users, FXL('st_users') + ' Nakhlio', 'ufilt', 'all')}${stat(st && st.mg_users, FXL('st_mg_users'), 'ufilt', 'mg')}${stat(st && st.verify, FXL('tab_verify'), 'opk', 'verify')}${stat(st && st.new7, FXL('st_new7'), 'ufilt', 'new7')}${stat(st && st.reports, FXL('tab_reports'), 'opk', 'reports')}${stat(st && st.support, FXL('st_support'), 'opk', 'chats')}${stat(st && st.banned, FXL('st_banned'), 'ufilt', 'banned')}${stat(st && st.verified, FXL('st_verified'), 'ufilt', 'verified')}${stat(st && st.admins, FXL('st_admins') + ' / 5', 'ufilt', 'admins')}${(() => { want('adm:usage', () => LV.usage()); const mx = usageMax(); return `<button class="opstat" data-act="opuse"><b class="num ${mx >= 85 ? 'bad' : mx >= 60 ? 'mid' : ''}">${mx == null ? '…' : pctTxt(mx)}</b><small>${FXL('use_t')}</small></button>`; })()}</div>${p.use ? usageCard('op') : ''}`;
     const seg = `<div class="seg" style="margin:4px 0 14px">${['chats', 'reports', 'verify', 'users'].map(x => `<button class="${x === k || ((k === 'udms' || k === 'umg') && x === 'users') ? 'on' : ''}" data-act="opk" data-v="${x}">${FXL('tab_' + x)}${x === 'verify' && st && st.verify ? ` <span class="num">${st.verify}</span>` : ''}</button>`).join('')}</div>`;
     const uRow = (u) => `<button class="row-card" data-act="admuser" data-v="${u.id}">${liveAv(u.id)}<span class="grow"><span class="ttl" style="display:block">${esc(u.name || '…')}${u.verified ? ' ✓' : ''}</span><span class="sub" style="display:block">${u.is_owner ? FXL('owner_l') + ' · ' : u.is_admin ? FXL('adm') + ' · ' : ''}${u.banned ? `<b style="color:var(--rose)">${FXL('banned_l')}</b> · ` : ''}${u.gender === 'f' ? t('female') : t('male')} · ${new Date(u.created_at).toLocaleDateString(locale())}</span></span></button>`;
     let body = '';
@@ -1554,6 +1568,7 @@ root.addEventListener('click', (e) => {
     case 'opk': cur().k = v; render(); break;
     case 'admuser': admUserSheet(v); break;
     case 'admop': go('operator', { k: v }); break;
+    case 'opuse': cur().use = !cur().use; render(); break;
     case 'admusers': go('operator', { k: 'users', f: v || 'all' }); break;
     case 'notifset': notifSheet(); break;
     case 'vfopen': verifySheet(v === 'mg'); break;
@@ -1843,7 +1858,7 @@ if (LV) {
   wrapV('room', (pp) => liveSpace(pp.id.split(':')[0])); wrapV('event', () => { if (isOwner()) { liveSpace('men'); liveSpace('women'); } else liveSpace(S.me && S.me.gender === 'f' ? 'women' : 'men'); });
   LV.onRoom && setTimeout(() => LV.onRoom(m => { if (m.author === meU()) return; dropData('c:sp:'); if (cur().v === 'room' && cur().id === m.room) { liveSpace(m.room.split(':')[0]); } }), 0);
 }
-window.NK = { openSupport, fieldBad, errReq: () => XL('err_req'), verifySheet, canAdmin, chime, setBadge, isStandalone, isInApp, notifSheet, setLang: (l) => { if (!LANGS.some(x => x.code === l)) return; lang = l; S.lang = l; save(); if (LV && LV.user && LV.profile) LV.updateProfile({ ui_lang: l }).catch(() => {}); }, boot: () => boot(), isPhone, isAdmin, want, dropData, liveAv, pname, meFrom, applyLive, liveSyncChats, loadChat, V, t, L, ic, esc, small, img, avatar, vmark, commentsBlock, loc, nf, toast, sheet, go, back, render, save, openDM, authSheet, resizeImg, txt, cur,
+window.NK = { usageCard, openSupport, fieldBad, errReq: () => XL('err_req'), verifySheet, canAdmin, chime, setBadge, isStandalone, isInApp, notifSheet, setLang: (l) => { if (!LANGS.some(x => x.code === l)) return; lang = l; S.lang = l; save(); if (LV && LV.user && LV.profile) LV.updateProfile({ ui_lang: l }).catch(() => {}); }, boot: () => boot(), isPhone, isAdmin, want, dropData, liveAv, pname, meFrom, applyLive, liveSyncChats, loadChat, V, t, L, ic, esc, small, img, avatar, vmark, commentsBlock, loc, nf, toast, sheet, go, back, render, save, openDM, authSheet, resizeImg, txt, cur,
   get S() { return S; }, get lang() { return lang; }, get stack() { return stack; } };
 boot();
 if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !DEMO) {
