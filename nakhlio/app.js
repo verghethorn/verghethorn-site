@@ -1783,6 +1783,7 @@ function render(scrollTop) {
   root.innerHTML = `<div class="app">${dnav}<div class="scroller"><div class="view ${r.tabs ? '' : 'no-tabs'}${still ? ' still' : ''}">${html}</div></div>${dsk ? '' : tabsHtml}${cta}${comp}</div>`;
   const sc = document.querySelector('.scroller');
   window.scrollTo(0, keep);
+  document.documentElement.classList.toggle('gtop', c.v === 'home' && !dsk && !window.MG_APP);
   if (keepF) { const el = document.getElementById(keepF.id); if (el) { el.focus({ preventScroll: true }); try { el.setSelectionRange(keepF.s, keepF.e); } catch (x) {} } }
   if (rootTabs.includes(c.v) && stack.length === 1) stack[0] = c;
   const fid = document.getElementById('faceid'); if (fid) fid.addEventListener('change', async () => { if (fid.checked) { try { await faceidEnable(); S.me.faceid = true; save(); toast(t('saved_ok')); } catch (e) { fid.checked = false; toast(FXL('faceid_fail')); } } else { S.me.faceid = false; delete S.faceidCred; save(); toast(t('saved_ok')); } });
