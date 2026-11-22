@@ -291,9 +291,10 @@ const pLink = (n, inner) => `<button class="pbtn" data-act="mgp" data-v="${esc(n
 const capHtml = (p) => { const tr = p.who !== '@me' && LANG_OF[p.who] && LANG_OF[p.who] !== NK.lang; return `${esc(txt(p.cap || ''))}${tr ? `<span class="mgtr">${small('translate')}${t('auto_tr')}</span>` : ''}`; };
 
 const ROOTS = ['mg', 'mgchats', 'mgcontacts', 'mgme'];
+const langPill = () => `<button class="mglangpill" data-act="mglangs" aria-label="${t('language')}">${ic('globe')}<span dir="ltr">${esc(String(NK.lang || 'ru').toUpperCase())}</span></button>`;
 const top = (title, on) => { const live = !!window.LIVE; const root = !live || ROOTS.includes(on);
   const lead = !root ? `<button class="mgic" data-act="mgback" aria-label="${t('back')}">${ic('back', 'flip')}</button>` : live && !window.MG_APP ? `<button class="mgic" data-act="tab" data-v="home" aria-label="Nakhlio">${ic('back', 'flip')}</button>` : '';
-  return `<header class="mgtop">${lead}<div class="mgbrand">${title ? `<b>${title}</b>` : '<img class="mgwm" src="img/mgapp/wordmark-dark.png" alt="MAGAAM">'}</div><div class="mgtopr">${live && root && on === 'mgchats' ? `<button class="mgic" data-act="mgplusmenu" aria-label="${M('create')}">${ic('plus')}</button>` : ''}</div></header>`; };
+  return `<header class="mgtop">${lead}<div class="mgbrand">${title ? `<b>${title}</b>` : '<img class="mgwm" src="img/mgapp/wordmark-dark.png" alt="MAGAAM">'}</div><div class="mgtopr">${window.MG_APP && root ? langPill() : ''}${live && root && on === 'mgchats' ? `<button class="mgic" data-act="mgplusmenu" aria-label="${M('create')}">${ic('plus')}</button>` : ''}</div></header>`; };
 const nav = (on) => window.LIVE ? `<nav class="mgnav mgnav5 m8nav">${[['mgchats', 'chat', 'chats', window.__mgUnread], ['mgcontacts', 'users', 'contacts', window.__mgReq], ['mgme', 'user', 'me_t', 0]].map(([v, i2, k, n]) => `<button class="${on === v || (v === 'mgchats' && on === 'mg') || (v === 'mgme' && on === 'mgmine') ? 'on' : ''}" data-act="mggo" data-v="${v}">${ic(i2)}${n ? `<em class="mgtabn num">${n > 99 ? '99+' : n}</em>` : ''}<span>${M(k)}</span></button>`).join('')}</nav>` : _navOld(on);
 const _navOld = (on) => `<nav class="mgnav">${[['mg', 'home', 'feed'], window.LIVE ? ['mgexplore', 'search', 'explore'] : ['mgreels', 'play', 'reels'], ['mgnew', 'plus', 'create'], window.LIVE ? ['mgchats', 'chat', 'chats'] : ['mgfriends', 'users', 'friends'], ['mgme', 'user', null]].map(([v, i, k]) =>
   v === 'mgnew' ? `<button class="mgplus" data-act="mgnew" aria-label="${M('create')}">${ic('plus')}</button>`
@@ -579,17 +580,17 @@ if (LV) {
       : `<p class="note" style="margin:0 0 10px">${L(window.FX.code_sent)} <b dir="ltr">${esc(MR.email)}</b></p><div class="field"><label for="mgcode">${M('code_l')}</label><input id="mgcode" inputmode="numeric" autocomplete="one-time-code" maxlength="8" dir="ltr" style="letter-spacing:6px;font-size:22px;text-align:center"></div>${err}
         <button class="btn primary full mgbtn" data-act="mgrverify">${M('enter')}</button><div style="display:flex;justify-content:space-between;margin-top:12px"><button class="mglink" data-act="mgrback">${M('other_email')}</button><button class="mglink" data-act="mgrsend" data-v="again">${t('get_code')}</button></div>
         <p class="note" style="font-size:12px;margin-top:10px">${L(window.FX.spam_hint)}</p>`;
-    return { html: `<div class="mg mgland"><div class="mgwrap"><div class="mglhead">${mgLogo('big')}<h1 class="mgh1"><img class="mgwm" src="img/mgapp/wordmark-dark.png" alt="MAGAAM"></h1><p>${M('tag2')}</p></div>${invBox()}<div class="mgcard">${body}</div></div></div>` }; };
+    return { html: `<div class="mg mgland">${langPill()}<div class="mgwrap"><div class="mglhead">${mgLogo('big')}<h1 class="mgh1"><img class="mgwm" src="img/mgapp/wordmark-dark.png" alt="MAGAAM"></h1><p>${M('tag2')}</p></div>${invBox()}<div class="mgcard">${body}</div></div></div>` }; };
   let bip = null; window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); bip = e; if (cur().v.startsWith('mg')) render(); });
   const shareIc = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-4px"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>`;
   const plusIc = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:-4px"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg>`;
   const installGate = () => { const ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
-    return { html: `<div class="mg mgland"><div class="mgwrap"><div class="mglhead">${mgLogo('big')}<h1 class="mgh1"><img class="mgwm" src="img/mgapp/wordmark-dark.png" alt="MAGAAM"></h1><p>${M('tag2')}</p></div>${invBox()}<div class="mgcard">
+    return { html: `<div class="mg mgland">${langPill()}<div class="mgwrap"><div class="mglhead">${mgLogo('big')}<h1 class="mgh1"><img class="mgwm" src="img/mgapp/wordmark-dark.png" alt="MAGAAM"></h1><p>${M('tag2')}</p></div>${invBox()}<div class="mgcard">
       <h3 style="margin:0 0 4px">${M('inst_t')}</h3><p class="note" style="margin:0 0 12px">${M('inst_d')}</p>${invCode() ? `<div class="mginvcode">${M('inv_code_keep')} <b dir="ltr">${esc(invCode())}</b></div>` : ''}
       ${bip ? `<button class="btn primary full mgbtn" data-act="mginst">${M('inst_btn')}</button>` : `<ol class="mgsteps"><li><span>1</span>${M('inst_1')} ${shareIc}</li><li><span>2</span>${M('inst_2')} ${plusIc}</li><li><span>3</span>${M('inst_3')}</li></ol>${ios ? `<p class="note" style="font-size:12.5px;margin:10px 0 0">${M('inst_safari')}</p>` : ''}`}
       </div></div>${ios && !bip ? '<div class="mgarrow">↓</div>' : ''}</div>` }; };
   const setupView = () => { const pr = LV.profile || {}; const ph = MR.photo || pr.mg_avatar || pr.photo_url || '';
-    return { html: `<div class="mg mgland"><div class="mgwrap"><div class="mglhead">${mgLogo()}<h2>${M('setup_t')}</h2><p>${M('setup_d')}</p></div>${NK.S.mgPending ? `<div class="mginvcode">${small('chat')} ${M('pend_d')}</div>` : ''}${invBox()}<div class="mgcard">
+    return { html: `<div class="mg mgland">${langPill()}<div class="mgwrap"><div class="mglhead">${mgLogo()}<h2>${M('setup_t')}</h2><p>${M('setup_d')}</p></div>${NK.S.mgPending ? `<div class="mginvcode">${small('chat')} ${M('pend_d')}</div>` : ''}${invBox()}<div class="mgcard">
       <button class="mgsetph" data-act="mgrphoto">${ph ? `<span style="background-image:url(${esc(ph)})"></span>` : `<span>${ic('camera')}</span>`}<b>${M('photo')}</b></button>
       <div class="field"><label for="mgnm">${M('name_l')} *</label><input id="mgnm" maxlength="40" value="${esc(MR.nm != null ? MR.nm : pr.mg_name || pr.name || '')}"></div>
       ${window.MG_APP && !invCode() ? `<div class="field"><label for="mginvc">${M('inv_code_l')} *</label><input id="mginvc" autocapitalize="off" autocorrect="off" spellcheck="false" dir="ltr" maxlength="200" placeholder="abc12345" value="${esc(MR.inv || '')}"><small class="note">${M('inv_only')}</small></div>` : ''}${MR.err ? `<p class="mgerr">${esc(MR.err)}</p>` : ''}
@@ -1024,6 +1025,7 @@ if (LV) {
     if (['mgrsend', 'mgrback', 'mgrverify', 'mgrphoto', 'mgrsave'].includes(a)) { regAct(a, el); return true; }
     if (a === 'mgskipinst') { NK.S.mgSkipInst = true; save(); render(); return true; }
     if (a === 'mginst') { if (bip) { bip.prompt(); bip.userChoice.finally(() => { bip = null; render(); }); } return true; }
+    if (a === 'mglangs') { langsSheet(); return true; }
     if (!NK.S.me && a !== 'mggo') { render(); return true; }
     const fail = (e) => { console.warn(e); toast(FXM('send_fail')); };
     const reload = (k) => { dropData(k || 'mg:'); render(); };
