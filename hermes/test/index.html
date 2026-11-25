@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#003273">
+<meta name="robots" content="noindex, nofollow">
+<title>Hermes 汇通 · Проверка доступа / 访问测试</title>
+<!-- Фаза 0. Страница НАМЕРЕННО без внешних ресурсов: всё грузится с этого же сервера.
+     Рядом должен лежать speedtest.bin (1 МБ) — для замера скорости. -->
+<style>
+  :root{--navy:#003273;--red:#d60000;--amber:#e08a00;--bg:#f6f4ef;--card:#fffefb;--line:#e6e2d8;--muted:#5f6880;--text:#1b2437}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 -apple-system,'PingFang SC','Microsoft YaHei','Noto Sans CJK SC','Segoe UI',Roboto,sans-serif}
+  header{background:var(--navy);color:#fff;padding:14px 16px}
+  header b{font-size:18px} header div{opacity:.8;font-size:13px}
+  main{max-width:720px;margin:0 auto;padding:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+  h2{font-size:16px;margin:0 0 8px}
+  .row{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .row:last-child{border:0}
+  .ok{color:var(--red);font-weight:600} .bad{color:var(--amber);font-weight:600} .muted{color:var(--muted)}
+  button{background:var(--navy);color:#fff;border:0;border-radius:11px;padding:12px 16px;font:inherit;font-weight:600;width:100%;margin-top:8px;cursor:pointer}
+  button.sec{background:#fff;color:var(--navy);border:1px solid var(--line)}
+  textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:10px;padding:8px;font:12px/1.4 ui-monospace,monospace}
+</style>
+</head>
+<body>
+<header><b>Hermes 汇通 · Фаза 0</b><div>Проверка доступа без VPN · 无需VPN的访问测试</div></header>
+<main>
+  <div class="card">
+    <h2>Что делать / 操作说明</h2>
+    <div>1. <b>Выключите VPN.</b> Откройте страницу с телефона (мобильный интернет) и с компьютера. Если вы в Китае — также внутри WeChat (отправьте ссылку себе и откройте).</div>
+    <div>2. Нажмите «Запустить проверку», дождитесь окончания (до 30 сек.).</div>
+    <div>3. Нажмите «Скопировать результат» и пришлите нам.</div>
+    <div class="muted" style="margin-top:8px">1. <b>请关闭VPN。</b>用手机（移动网络）和电脑分别打开本页面；在中国请再用微信内置浏览器打开一次。2. 点击“开始测试”，等待约30秒。3. 点击“复制结果”并发给我们。</div>
+    <button id="run">Запустить проверку / 开始测试</button>
+  </div>
+  <div class="card"><h2>Эта страница / 本页面</h2><div id="self"></div></div>
+  <div class="card"><h2>Скорость сервера / 服务器速度</h2><div id="speed" class="muted">—</div></div>
+  <div class="card"><h2>Доступность внешних сервисов / 外部服务可访问性</h2>
+    <div class="muted" style="font-size:13px">Показывает, на какие сервисы можно опираться при выборе стека. «Недоступно» = заблокировано или очень медленно (&gt;8 с).</div>
+    <div id="ext"></div></div>
+  <div class="card"><h2>Результат / 结果</h2>
+    <textarea id="out" readonly></textarea>
+    <button id="copy" class="sec">Скопировать результат / 复制结果</button>
+  </div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const report={};
+function row(k,v,cls){return `<div class="row"><span>${k}</span><span class="${cls||''}">${v}</span></div>`}
+function selfInfo(){
+  const nav=performance.getEntriesByType('navigation')[0];
+  report.page_load_ms=nav?Math.round(nav.loadEventEnd||nav.duration):null;
+  report.ttfb_ms=nav?Math.round(nav.responseStart-nav.requestStart):null;
+  report.url=location.href; report.time=new Date().toISOString();
+  report.tz=Intl.DateTimeFormat().resolvedOptions().timeZone; report.lang=navigator.language;
+  report.ua=navigator.userAgent; report.wechat=/MicroMessenger/i.test(navigator.userAgent);
+  report.connection=navigator.connection?navigator.connection.effectiveType:null;
+  $('self').innerHTML=row('Загрузка / 加载',report.page_load_ms+' ms')+row('Ответ сервера (TTFB)',report.ttfb_ms+' ms')+row('Часовой пояс / 时区',report.tz)+row('WeChat',report.wechat?'да / 是':'нет / 否');
+}
+async function speed(){
+  const t0=performance.now();
+  try{
+    const r=await fetch('speedtest.bin?'+Date.now(),{cache:'no-store'}); const b=await r.arrayBuffer();
+    const s=(performance.now()-t0)/1000; const mbps=(b.byteLength*8/1e6/s).toFixed(2);
+    report.download_1mb_s=+s.toFixed(2); report.mbps=+mbps;
+    $('speed').innerHTML=row('1 МБ за / 1MB用时',s.toFixed(2)+' s')+row('Скорость / 速度',mbps+' Мбит/с',mbps>2?'ok':'bad');
+  }catch(e){report.download_error=String(e);$('speed').innerHTML=row('Ошибка','speedtest.bin не найден','bad')}
+}
+// Проверка через загрузку картинки/скрипта: не требует CORS. Таймаут 8 с.
+const TARGETS=[
+  ['Google Fonts','https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxK.woff2'],
+  ['Google (google.com)','https://www.google.com/favicon.ico'],
+  ['jsDelivr CDN','https://cdn.jsdelivr.net/npm/react@18.3.1/package.json'],
+  ['unpkg CDN','https://unpkg.com/react@18.3.1/package.json'],
+  ['Cloudflare cdnjs','https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js'],
+  ['Supabase (supabase.co)','https://supabase.com/favicon/favicon.ico'],
+  ['Vercel (vercel.app)','https://vercel.com/favicon.ico'],
+  ['GitHub Pages (github.io)','https://pages.github.com/favicon.ico'],
+  ['Anthropic API','https://api.anthropic.com/'],
+  ['Telegram','https://telegram.org/favicon.ico'],
+  ['Baidu (контроль / 对照)','https://www.baidu.com/favicon.ico'],
+];
+function probe(url){
+  return new Promise(res=>{
+    const t0=performance.now(); let done=false;
+    const fin=ok=>{if(done)return;done=true;res({ok,ms:Math.round(performance.now()-t0)})};
+    setTimeout(()=>fin(false),8000);
+    fetch(url+(url.includes('?')?'&':'?')+'t='+Date.now(),{mode:'no-cors',cache:'no-store'}).then(()=>fin(true)).catch(()=>fin(false));
+  });
+}
+async function ext(){
+  report.external={}; $('ext').innerHTML='';
+  await Promise.all(TARGETS.map(async([name,url])=>{
+    const r=await probe(url); report.external[name]=r.ok?r.ms+'ms':'FAIL';
+    $('ext').insertAdjacentHTML('beforeend',row(name,r.ok?'✓ '+r.ms+' ms':'✗ недоступно / 无法访问',r.ok?'ok':'bad'));
+  }));
+}
+async function run(){
+  $('run').disabled=true;$('run').textContent='Проверяем… / 测试中…';
+  selfInfo(); await speed(); await ext();
+  $('out').value=JSON.stringify(report,null,2);
+  $('run').disabled=false;$('run').textContent='Повторить / 重新测试';
+}
+$('run').onclick=run;
+$('copy').onclick=async()=>{const v=$('out').value;try{await navigator.clipboard.writeText(v)}catch(e){$('out').select();document.execCommand('copy')}$('copy').textContent='Скопировано / 已复制'};
+window.addEventListener('load',()=>setTimeout(selfInfo,50));
+</script>
+</body>
+</html>
