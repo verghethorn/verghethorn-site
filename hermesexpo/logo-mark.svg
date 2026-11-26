@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="HermesExpo International">
+  <circle cx="200" cy="200" r="192.75" fill="none" stroke="#003273" stroke-width="12.5"/>
+  <rect x="87.5" y="89.5" width="41" height="218" rx="3" fill="#003273"/>
+  <rect x="167.5" y="89.5" width="147" height="40" rx="2" fill="#D60000"/>
+  <rect x="128.5" y="176.5" width="186" height="40" rx="2" fill="#003273"/>
+  <rect x="167.5" y="267.5" width="147" height="40" rx="2" fill="#003273"/>
+</svg>
